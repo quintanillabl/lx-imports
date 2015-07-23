@@ -1,0 +1,1 @@
+<input type="text" class="form-control text-right" value="${(value instanceof Number)?formatNumber(number:value,type:'percent'):value}" disabled>
