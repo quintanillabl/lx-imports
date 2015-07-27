@@ -144,7 +144,6 @@ log4j.main = {
         info  'grails.app.controllers.com.luxsoft'
         info  'grails.app.services.com.luxsoft'
         info  'grails.app.jobs'
-        debug 'grails.app.services.com.luxsoft.impapx.contabilidad'
         debug 'com.luxsoft.impapx'
 
       }

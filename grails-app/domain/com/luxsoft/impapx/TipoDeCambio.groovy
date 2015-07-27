@@ -46,4 +46,14 @@ class TipoDeCambio {
 		hb.append(id)
 		return hb.toHashCode()
 	}
+
+	static buscarTipoDeCambioOperativo(){
+		def dia=new Date()-1;
+		return buscarTipoDeCambioDelDia(dia)
+	}
+
+	static buscarTipoDeCambioDelDia(Date dia){
+		def tc=TipoDeCambio.find("from TipoDeCambio t where date(t.fecha)=? and t.monedaFuente=?",[dia,MonedaUtils.DOLARES])
+		return tc
+	}
 }

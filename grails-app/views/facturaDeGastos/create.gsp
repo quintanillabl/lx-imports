@@ -22,20 +22,19 @@
  					</div>
  				</g:hasErrors>
 				<legend>  <span id="conceptoLabel">Propiedades</span></legend> 
-				<g:hiddenField name="id" value="${facturaDeGastosInstance.id}"/>
-				<g:hiddenField name="version" value="${facturaDeGastosInstance.version}"/>
 				<f:with bean="facturaDeGastosInstance">
 				<div class="col-md-6">
 					<f:field property="proveedor" widget-class="form-control" 
 						wrapper="bootstrap3" widget-required="true"/>
+					<f:field property="documento" widget-class="form-control" wrapper="bootstrap3"/>
 					<f:field property="fecha" wrapper="bootstrap3" widget-required="true"/>
 					<f:field property="vencimiento" wrapper="bootstrap3"  />
-					<f:field property="moneda" wrapper="bootstrap3"/>
-					<f:field property="tc" widget-class="form-control tc" wrapper="bootstrap3" widget-type="text"/>
-					<f:field property="documento" widget-class="form-control" wrapper="bootstrap3"/>
+					<f:display property="moneda" wrapper="bootstrap3"/>
+					<f:display property="tc" widget-class="form-control tc" wrapper="bootstrap3" widget-type="text"/>
 					<f:field property="comentario" widget-class="form-control" wrapper="bootstrap3"/>
 				</div>
-				<div class="col-md-6" id="totalesPanel">
+
+				%{-- <div class="col-md-6" id="totalesPanel">
 					<f:field property="importe" widget-class="form-control moneda" 
 						wrapper="bootstrap3" widget-required="true" widget-type="text"/>
 					<f:field property="descuentos" widget-class="form-control moneda" wrapper="bootstrap3" widget-type="text"/>
@@ -47,7 +46,7 @@
 					<f:field property="total" widget-class="form-control moneda" wrapper="bootstrap3" widget-type="text"/>
 					<f:field property="descuento" widget-class="form-control moneda" wrapper="bootstrap3" widget-type="text"/>
 					<f:field property="rembolso" widget-class="form-control moneda" wrapper="bootstrap3" widget-type="text"/>
-				</div>
+				</div> --}%
 				</f:with>		
  			
  			</div>					
@@ -65,6 +64,7 @@
 
  		</div>
  		</g:form>
+ 		<%--
  		 	<script type="text/javascript">
  		 		$(function(){
 
@@ -113,14 +113,13 @@
  			    		  var name=$(this).attr('name');
  			    		  var newVal=$(this).autoNumeric('get');
  			    		  $(this).val(newVal);
- 			    		  //console.log('Enviando elemento numerico con valor:'+name+" : "+val+ " new val:"+newVal);
  			    		});
-
  			    		//e.preventDefault(); 
  			    		return true;
  					});
  		 		})
  		 	</script>
+ 		 	--%>
  	</content>
 
  	

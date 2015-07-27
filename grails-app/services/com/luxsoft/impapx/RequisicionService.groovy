@@ -7,12 +7,22 @@ import grails.validation.ValidationException;
 import com.luxsoft.impapx.cxp.Anticipo;
 
 import util.MonedaUtils;
+import com.luxsoft.impapx.TipoDeCambio
 
 class RequisicionService {
 
+	// def save(Requisicion requisicion){
+	// 	if(requisicion.moneda==MonedaUtils.PESOS){
+	// 		requisicion.tc=1.0
+	// 	}else{
+	// 		requisicion.tc=TipoDeCambio
+	// 	}
+	// }
+
     def asignarFacturas(Requisicion r,def facturas) {
-		
+		log.info 'Asignando facturas a la requiscion: '+r
 		facturas.each {
+			
 			if(it){
 				def fac=CuentaPorPagar.get(it.toLong())
 				def total=fac.getSaldoActual()
@@ -41,6 +51,7 @@ class RequisicionService {
 					}
 					//fac.requisitado+=det.total
 					r.addToPartidas(det)
+					log.info "Factura ${fac} asignada..."
 				}
 			}
 		}

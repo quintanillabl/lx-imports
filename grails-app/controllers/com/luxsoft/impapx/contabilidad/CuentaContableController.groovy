@@ -4,6 +4,10 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.springframework.dao.DataIntegrityViolationException
 
+import grails.plugin.springsecurity.annotation.Secured
+
+
+@Secured(["hasRole('CONTABILIDAD')"])
 class CuentaContableController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
@@ -131,9 +135,19 @@ class CuentaContableController {
 		render view: 'edit', model: [cuentaContableInstance: cuenta]
 		
 	}
-	
+
+	@Secured(["hasRole('USUARIO')"])
 	def cuentasDeDetalleJSONList(){
-		def cuentas=CuentaContable.findAllByClaveIlikeAndDetalle(params.term+"%",true,[max:100,sort:"clave",order:"desc"])
+		
+		def term='%'+params.term.trim()+'%'
+
+        def query=CuentaContable.where{
+            (detalle==true && (clave=~term || descripcion=~term) ) 
+        }
+        def cuentas=query.list(max:50, sort:"clave",order:'desc')
+
+		// def cuentas=CuentaContable
+		// 	.findAllByClaveIlikeAndDetalle(params.term+"%",true,[max:100,sort:"clave",order:"desc"])
 		
 		def cuentasList=cuentas.collect { it ->
 			def desc="$it.clave  $it.descripcion"

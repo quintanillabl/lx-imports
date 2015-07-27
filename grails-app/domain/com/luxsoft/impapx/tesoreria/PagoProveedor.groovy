@@ -32,6 +32,7 @@ class PagoProveedor {
 				return "tipoDeMonedaError"
 		})
 		
+		
     }
 	
 	static mapping ={

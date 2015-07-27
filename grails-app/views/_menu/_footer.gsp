@@ -9,13 +9,18 @@
 				Empresa: "${session.empresa}"
 				</strong>
 			</a>
-			<p class="navbar-text navbar-left"> 
-			
+			<p class="navbar-text navbar-left">
+				
 			</p>
-			<p class="navbar-text navbar-right">Usuario: 
+			
+			<p class="navbar-text navbar-right"> T.C.:
 				<a href="#" class="navbar-link">
-					<sec:loggedInUserInfo field="username"/>
+					<g:if test="${!session.tipoDeCambio}">
+						 NO REGISTRADO PARA ${new Date().text()}
+					</g:if> 
+					%{-- <sec:loggedInUserInfo field="username"/> --}%
 				</a>
+				
 			</p>
 		</sec:ifLoggedIn>
 		<sec:ifNotLoggedIn>

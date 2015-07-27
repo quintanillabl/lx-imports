@@ -16,9 +16,10 @@ class FacturaDeGastosService {
 		return fac
 	}
 
-    def agregarPartida(long gastoId,ConceptoDeGasto concepto) {
-		
-		def gasto=FacturaDeGastos.findById(gastoId,[fetch:[conceptos:'eager']])
+    def agregarPartida(ConceptoDeGastoCommand command) {
+		log.info 'Agrgando concepto: '+command
+		def gasto=FacturaDeGastos.findById(command.factura,[fetch:[conceptos:'eager']])
+		def concepto=command.toGasto()
 		def importe=concepto.importe
 		concepto.ietu=importe
 		concepto.impuesto=importe*(concepto.impuestoTasa/100)

@@ -51,7 +51,7 @@
                                         controller="facturaDeGastos">
                                         <g:message code="facturaDeGastos.list.label" default="Otros gastos"/>
                                     </g:link>
-                                    <g:link class="list-group-item" controller="requisicion" action="list">
+                                    <g:link class="list-group-item" controller="requisicion" action="index">
                                         <!-- <i class="icon-list"></i> -->
                                         <g:message code="requisicion.list.label" default="Requisiciones"/>
                                     </g:link>

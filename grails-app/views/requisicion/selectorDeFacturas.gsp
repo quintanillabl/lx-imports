@@ -1,13 +1,10 @@
 <!doctype html>
 <html>
 <head>
-<meta name="layout" content="luxor">
-<title>Facturas pendientes de pago</title>
-	<r:require module="luxorSimpleTable"/>
+	<title>Facturas pendientes de pago</title>
 </head>
 <body>
 	<div class="container">
-	
 		<div class="row">
 			<div class="well alert">
 			<strong>Facturas pendientes de pago</strong>
@@ -19,8 +16,8 @@
 		</div>
 		
 		<div class="row">
-			<div class="span12">
-				<a id="asignar" href="#" class="btn">Agregar</a>
+			<div class="col-md-2">
+				<a id="asignar" href="#" class="btn btn-success">Agregar</a>
 				<table id="grid" class="grid table table-striped table-hover table-bordered table-condensed">
 					<thead>
 						<tr>
@@ -55,11 +52,26 @@
 			</div>
 		</div>
 	</div>
-	<r:script>
+	<script>
 		$(function(){
-		
+			
+			$(".grid tbody tr").hover(function(){
+				$(this).toggleClass("info");
+			});
+			$(".grid tbody tr").click(function(){
+				$(this).toggleClass("success selected");
+			});
+			var selectRows=function(){
+				var res=[];
+				var data=$(".grid .selected").each(function(){
+					var tr=$(this);
+					res.push(tr.attr("id"));
+				});
+				return res;
+			};
+			
 			$("#asignar").click(function(){
-				var res=selectedRows();
+				var res=selectRows();
 				if(res==""){
 					alert("Debe seleccionar al menos una factura");
 					return
@@ -86,7 +98,7 @@
 			});
 			
 		});
-	</r:script>
+	</script>
 	
 </body>
 </html>

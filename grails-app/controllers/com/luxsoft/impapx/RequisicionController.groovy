@@ -1,275 +1,132 @@
 package com.luxsoft.impapx
 
-import com.luxsoft.impapx.cxp.Anticipo
+
+
+import static org.springframework.http.HttpStatus.*
+import grails.transaction.Transactional
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
-import org.springframework.dao.DataIntegrityViolationException
+import grails.plugin.springsecurity.annotation.Secured
 
-import util.MonedaUtils;
-
+@Secured(["hasAnyRole('COMPRAS','TESORERIA')"])
+@Transactional(readOnly = true)
 class RequisicionController {
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
-	
-	def requisicionService
+    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-    def index() {
-        redirect controller:'cuentaPorPagar', action: 'list', params: params
+    def requisicionService
+
+    def index(Integer max) {
+        params.max = Math.min(max ?: 40, 100)
+        params.sort=params.sort?:'lastUpdated'
+        params.order='desc'
+        respond Requisicion.list(params), model:[requisicionInstanceCount: Requisicion.count()]
     }
 
-    def list() {
-        params.max = Math.min(params.max ? params.int('max') : 100, 200)
-		params.sort=params.sort?:'id'
-		params.order=params.order?:'desc'
-        [requisicionInstanceList: Requisicion.list(params), requisicionInstanceTotal: Requisicion.count()]
+    def show(Requisicion requisicionInstance) {
+        respond requisicionInstance
     }
 
     def create() {
-		switch (request.method) {
-		case 'GET':
-        	[requisicionInstance: new Requisicion(fecha:new Date(),fechaDelPago:new Date()+1,moneda:MonedaUtils.DOLARES,tc:1)]
-			break
-		case 'POST':
-			println 'Persistiendo requisicon: '+params
-	        def requisicionInstance = new Requisicion(params)
-			
-			if(requisicionInstance.concepto.startsWith('ANTICIPO')){
-				def embarque=Embarque.get(params.long('embarque.id'))
-				requisicionService.generarAnticipo(requisicionInstance, embarque)
-				
-				flash.message = message(code: 'default.created.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), requisicionInstance.id])
-				redirect action: 'edit', id: requisicionInstance.id
-				break
-				
-			}
-	        if (!requisicionInstance.save(flush: true)) {
-	            render view: 'create', model: [requisicionInstance: requisicionInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.created.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), requisicionInstance.id])
-	        redirect action: 'edit', id: requisicionInstance.id
-			break
-		}
+        respond new Requisicion(fecha:new Date())
     }
 
-    def show() {
-        def requisicionInstance = Requisicion.get(params.id)
-        if (!requisicionInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), params.id])
-            redirect action: 'list'
+    @Transactional
+    def save(Requisicion requisicionInstance) {
+        if (requisicionInstance == null) {
+            notFound()
+            return
+        }
+        if (requisicionInstance.hasErrors()) {
+            respond requisicionInstance.errors, view:'create'
+            return
+        }
+        requisicionInstance.save flush:true
+        flash.message = message(code: 'default.created.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), requisicionInstance.id])
+        redirect action:'edit',id:requisicionInstance.id
+        
+    }
+
+    def edit(Requisicion requisicionInstance) {
+        respond requisicionInstance
+    }
+
+    @Transactional
+    def update(Requisicion requisicionInstance) {
+        if (requisicionInstance == null) {
+            notFound()
             return
         }
 
-        [requisicionInstance: requisicionInstance]
-    }
-
-    def edit() {
-		switch (request.method) {
-		case 'GET':
-	        def requisicionInstance = Requisicion.findById(params.id,[fetch:[partidas:'select']])
-	        if (!requisicionInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        [requisicionInstance: requisicionInstance]
-			break
-		case 'POST':
-			def requisicionInstance = Requisicion.findById(params.id,[fetch:[partidas:'select']])
-	        if (!requisicionInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (requisicionInstance.version > version) {
-	                requisicionInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'requisicion.label', default: 'Requisicion')] as Object[],
-	                          "Another user has updated this Requisicion while you were editing")
-	                render view: 'edit', model: [requisicionInstance: requisicionInstance]
-	                return
-	            }
-	        }
-
-			//println 'Actualizando requisicion: '+params
-	        requisicionInstance.properties = params
-			requisicionInstance.actualizarImportes()
-			
-	        if (!requisicionInstance.save(flush: true)) {
-	            render view: 'edit', model: [requisicionInstance: requisicionInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), requisicionInstance.id])
-	        redirect action: 'show', id: requisicionInstance.id
-			break
-		}
-    }
-
-    def delete() {
-        def requisicionInstance = Requisicion.get(params.id)
-        if (!requisicionInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), params.id])
-            redirect action: 'list'
+        if (requisicionInstance.hasErrors()) {
+            respond requisicionInstance.errors, view:'edit'
             return
         }
 
-        try {
-            requisicionInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), params.id])
-            redirect action: 'list'
-        }
-        catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), params.id])
-            redirect action: 'show', id: params.id
+        requisicionInstance.save flush:true
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'Requisicion.label', default: 'Requisicion'), requisicionInstance.id])
+                redirect requisicionInstance
+            }
+            '*'{ respond requisicionInstance, [status: OK] }
         }
     }
-	
-	def selectorDeFacturas(long requisicionId){
-		def requisicion=Requisicion.get(requisicionId)
-		//def res=CuentaPorPagar.findAllByProveedorAndMonedaAndSaldoGreaterThan(requisicion.proveedor,requisicion.moneda,0.0)
-		//def hql="from CuentaPorPagar p where p.proveedor=?  and p.saldo-p.requisitado>0 and moneda=?"
-		def hql="from CuentaPorPagar p where p.proveedor=?   and p.total-p.requisitado>0 and moneda=?"
-		def res=CuentaPorPagar.findAll(hql,[requisicion.proveedor,requisicion.moneda])
-		
-		[requisicionInstance:requisicion,cuentaPorPagarInstanceList:res,cuentasPorPagarTotal:res.size()]
-	}
-	
-	def asignarFacturas(){
-		println 'Asignando facturas a requisicion'+params
-		def dataToRender=[:]
-		JSONArray jsonArray=JSON.parse(params.partidas);
-		def requisicion= Requisicion.findById(params.requisicionId,[fetch:[partidas:'select']])
-		requisicionService.asignarFacturas(requisicion, jsonArray)
-		
-		dataToRender.requisicionId=requisicion.id
-		render dataToRender as JSON
-	}
-	 
-	def eliminarPartidas(){
-		
-		def dataToRender=[:]
-		def requisicion= Requisicion.findById(params.requisicionId,[fetch:[partidas:'select']])
-		JSONArray jsonArray=JSON.parse(params.partidas);
-		requisicionService.eliminarPartidas(requisicion,jsonArray)
-		dataToRender.requisicionId=requisicion.id
-		render dataToRender as JSON
-	}
-	
-	/**
-	 * @TODO Verificar si se sigue ocupando
-	 * @param requisicionId
-	 * @return
-	 */
-	def registrarFactura(long requisicionId){
-		println ' Agregando requisicion a factura'+params
-		def requisicionInstance = Requisicion.get(params.requisicionId)
-        if (!requisicionInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), params.id])
-            redirect action: 'list'
+
+    @Transactional
+    def delete(Requisicion requisicionInstance) {
+
+        if (requisicionInstance == null) {
+            notFound()
             return
         }
-		[requisicionInstance: requisicionInstance]
 
-	}
-	
-	/**
-	 * @TODO Verificar si se sigue ocupando
-	 * @return
-	 */
-	def facturasDisponiblesJSON(){
-		println 'Obteniento json data: '+params
-		//Usamos Where Queries http://grails.org/doc/latest/guide/GORM.html#whereQueries
-		def facturas=CuentaPorPagar.findAll(sort:"fecha"){
-			proveedor.id==params.long('proveedorId') && documento=~params.term+'%'
-		}
-		println 'Facturas localizadas: '+facturas.size
-		def facturasList=facturas.collect {
-			[id:it.documento,label:it.toString(),value:it.toString(),facturaId:it.id]
-		}
-		render facturasList as JSON
-	}
-	
-	def anticipos() {
-		params.max = Math.min(params.max ? params.int('max') : 50, 100)
-		[requisicionInstanceList: Requisicion.findAllByConceptoLike('ANTICIPO%',params)
-			, requisicionInstanceTotal: Requisicion.countByConceptoLike('ANTICIPO%')]
-	}
-	
-	def createAnticipo(){
-		switch (request.method) {
-		case 'GET':
-        	[requisicionInstance: new Requisicion(fecha:new Date(),fechaDelPago:new Date()+1,concepto:'ANTICIPO')]
-			break
-		case 'POST':
-	        def requisicionInstance = new Requisicion(params)
-			requisicionInstance=requisicionService.generarAnticipo(requisicionInstance)
-	        if (!requisicionInstance) {
-	            render view: 'createAnticipo', model: [requisicionInstance: requisicionInstance]
-	            return
-	        }
+        requisicionInstance.delete flush:true
 
-			flash.message = message(code: 'default.created.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), requisicionInstance.id])
-	        redirect action: 'showAnticipo', id: requisicionInstance.id
-			break
-		}
-	}
-	
-	def editAnticipo() {
-		switch (request.method) {
-		case 'GET':
-			def requisicionInstance = Requisicion.findById(params.id,[fetch:[partidas:'select']])
-			if (!requisicionInstance) {
-				flash.message = message(code: 'default.not.found.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), params.id])
-				redirect action: 'list'
-				return
-			}
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Requisicion.label', default: 'Requisicion'), requisicionInstance.id])
+                redirect action:"index", method:"GET"
+            }
+            '*'{ render status: NO_CONTENT }
+        }
+    }
 
-			[requisicionInstance: requisicionInstance]
-			break
-		case 'POST':
-			def requisicionInstance = Requisicion.findById(params.id,[fetch:[partidas:'select']])
-			if (!requisicionInstance) {
-				flash.message = message(code: 'default.not.found.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), params.id])
-				redirect action: 'list'
-				return
-			}
+    protected void notFound() {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), params.id])
+                redirect action: "index", method: "GET"
+            }
+            '*'{ render status: NOT_FOUND }
+        }
+    }
 
-			if (params.version) {
-				def version = params.version.toLong()
-				if (requisicionInstance.version > version) {
-					requisicionInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-							  [message(code: 'requisicion.label', default: 'Requisicion')] as Object[],
-							  "Another user has updated this Requisicion while you were editing")
-					render view: 'edit', model: [requisicionInstance: requisicionInstance]
-					return
-				}
-			}
-			requisicionInstance.properties = params
-			if (!requisicionInstance.save(flush: true)) {
-				render view: 'edit', model: [requisicionInstance: requisicionInstance]
-				return
-			}
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), requisicionInstance.id])
-			redirect action: 'show', id: requisicionInstance.id
-			break
-		}
-	}
-	
-	
-	
-	def showAnticipo() {
-		def requisicionInstance = Requisicion.get(params.id)
-		if (!requisicionInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), params.id])
-			redirect action: 'list'
-			return
-		}
+    @Transactional
+    def selectorDeFacturas(Requisicion requisicion){
+        def hql="from CuentaPorPagar p where p.proveedor=?   and p.total-p.requisitado>0 and moneda=? and total-pagosAplicados>0 order by p.fecha,p.documento "
+        def res=CuentaPorPagar.findAll(hql,[requisicion.proveedor,requisicion.moneda])
+        [requisicionInstance:requisicion,cuentaPorPagarInstanceList:res,cuentasPorPagarTotal:res.size()]
+    }
 
-		[requisicionInstance: requisicionInstance]
-	}
+    @Transactional
+    def asignarFacturas(){
+        def dataToRender=[:]
+        JSONArray jsonArray=JSON.parse(params.partidas);
+        def requisicion= Requisicion.findById(params.requisicionId,[fetch:[partidas:'select']])
+        requisicionService.asignarFacturas(requisicion, jsonArray)
+        dataToRender.requisicionId=requisicion.id
+        render dataToRender as JSON
+    }
+
+    @Transactional
+    def eliminarPartidas(){
+        def dataToRender=[:]
+        def requisicion= Requisicion.findById(params.requisicionId,[fetch:[partidas:'select']])
+        JSONArray jsonArray=JSON.parse(params.partidas);
+        requisicionService.eliminarPartidas(requisicion,jsonArray)
+        dataToRender.requisicionId=requisicion.id
+        render dataToRender as JSON
+    }
 }

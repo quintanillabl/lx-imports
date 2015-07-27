@@ -14,8 +14,8 @@
  			</div>
 			<ul class="nav nav-tabs" id="mainTab">
 				<li class="active" ><a href="#facturasPanel" data-toggle="tab">Factura</a></li>
-				<li><a href="#embarquesPanel" data-toggle="tab">Embarques</a></li>
-				<li><a href="#contenedoresPanel" data-toggle="tab">Contenedores</a></li>
+				<li><a href="#conceptosPanel" data-toggle="tab">Conceptos</a></li>
+				<li><a href="#cuentaPanel" data-toggle="tab">CxP</a></li>
 			</ul>
  		  	
  			<div class="panel-body ">
@@ -52,17 +52,45 @@
 							<f:display property="retTasa" widget="porcentaje" widget-class="form-control" wrapper="bootstrap3"/>
 							<f:display property="retImp" widget="money" wrapper="bootstrap3"/>
 							<f:display property="total" widget="money" wrapper="bootstrap3"/>
-							<f:display property="descuento" widget="money" wrapper="bootstrap3"/>
+
+							%{-- <f:display property="descuento" widget="money" wrapper="bootstrap3"/>
 							<f:display property="rembolso" widget="money" wrapper="bootstrap3"/>
+							<f:display property="otros" widget="money" wrapper="bootstrap3"/>
+							<f:display property="pagosAplicados" widget="money" wrapper="bootstrap3"/>
+							<f:display property="saldoActual" widget="money" wrapper="bootstrap3"/> --}%
 							
 						</div>
 						</f:with>
 					</div>
-					<div class="tab-pane fade in" id="embarquesPanel">
-						PENDIENTE
+					
+					<div class="tab-pane fade in" id="conceptosPanel">
+						
+						<g:render template="conceptosGrid"/>
 					</div>
-					<div class="tab-pane fade in" id="contenedoresPanel">
-						CONTENEDORES PENDIENTES
+
+					
+					<div class="tab-pane fade in" id="cuentaPanel">
+						
+						<f:with bean="facturaDeGastosInstance">
+						<div class="col-md-6">
+							<legend>  <span id="conceptoLabel">Cuenta por pagar</span></legend> 
+							<f:display property="total" widget="money" wrapper="bootstrap3"/>
+							<f:display property="descuento" widget="money" wrapper="bootstrap3"/>
+							<f:display property="rembolso" widget="money" wrapper="bootstrap3"/>
+							<f:display property="otros" widget="money" wrapper="bootstrap3"/>
+							<f:display property="pagosAplicados" widget="money" wrapper="bootstrap3"/>
+							<f:display property="saldoActual" widget="money" wrapper="bootstrap3"/>
+						</div>
+						<div class="col-md-6">
+							<legend>  <span id="conceptoLabel">Requisición</span></legend> 
+							<f:display property="fecha" wrapper="bootstrap3" widget-required="true"/>
+							<f:display property="vencimiento" wrapper="bootstrap3"  />
+							<f:display property="requisitado" widget="money" wrapper="bootstrap3"/>
+							<f:display property="pendienteRequisitar" widget="money" wrapper="bootstrap3" label="Pendiente"/>
+
+							
+						</div>
+						</f:with>
 					</div>
 				</div>		
  			
@@ -73,7 +101,10 @@
  					<g:link class="btn btn-default " action="index"  >
  						<i class="fa fa-step-backward"></i> Facturas
  					</g:link>
- 					<lx:editButton id="${facturaDeGastosInstance.id}"/>
+ 					<g:if test="${facturaDeGastosInstance.requisitado<=0.0}">
+ 						<lx:editButton id="${facturaDeGastosInstance.id}"/>
+ 					</g:if>
+ 					
  					<lx:createButton />
  				</div>
  			</div><!-- end .panel-footer -->

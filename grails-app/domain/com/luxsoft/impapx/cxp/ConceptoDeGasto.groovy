@@ -22,7 +22,7 @@ class ConceptoDeGasto {
 	BigDecimal ietu
 	BigDecimal total
 	MovimientoDeCuenta egreso
-	String tipo
+	String tipo='GASTOS'
 	
 	BigDecimal descuento=0
 	BigDecimal rembolso=0
@@ -50,9 +50,9 @@ class ConceptoDeGasto {
 		comentarioOtros nullable:true
     }
 	
-	static mapping = {
-		concepto fetch:'join'
-	}
+	// static mapping = {
+	// 	concepto fetch:'join'
+	// }
 	
 	boolean equals(Object obj){
 		if(!obj.instanceOf(ConceptoDeGasto))

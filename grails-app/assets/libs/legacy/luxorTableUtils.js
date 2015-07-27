@@ -8,7 +8,7 @@ $(function(){
 		$(this).toggleClass("success selected");
 	});
 
-	$(".simpleGrid").on('hover','tr',function(){
+	$(".simpleGrid tbody").on('hover','tr',function(){
 		$(this).toggleClass("info");
 	});
 		
@@ -26,12 +26,14 @@ $(function(){
 		
 	function selectAllRows(){
 		$(".simpleGrid tbody tr").addClass("success selected");
-	}
+	};
 		
 	function clearAllRows(){
 		$(".simpleGrid tbody tr").removeClass("success selected");
-	}
-		
+	};
+
+	
+
 	function selectedRows(){
 		var res=[];
 		var data=$(".simpleGrid .selected").each(function(){
@@ -39,6 +41,6 @@ $(function(){
 			res.push(tr.attr("id"));
 		});
 		return res;
-	}
+	};
 		
 });
