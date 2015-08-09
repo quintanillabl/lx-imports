@@ -12,19 +12,17 @@
 </head>
 <body>
 
-	<div class="container">
-		
-		<div class="row">
+	<div class=" row wrapper border-bottom white-bg page-heading">
+		<h2><g:message code="default.list.label" args="[entityName]" /></h2>
+		<g:if test="${flash.message}">
+			<span class="label label-warning">${flash.message}</span>
+		</g:if>
+	</div>
 
-			<div class="col-md-12">
-				<div class="well well-sm">
-					<h3><g:message code="default.list.label" args="[entityName]" /></h3>
-					<g:if test="${flash.message}">
-						<span class="label label-warning">${flash.message}</span>
-					</g:if>
-				</div>
-			</div>
-		</div><!-- end .row -->
+	<div class="wrapper wrapper-content animated fadeInRight">
+
+		
+		
 
 		<div class="row toolbar-panel">
 		    

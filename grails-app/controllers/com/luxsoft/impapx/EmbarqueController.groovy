@@ -289,6 +289,4 @@ class EmbarqueController {
         render( template:"contenedoresGrid",model:[contenedores:rows])
     }
 
-    
-
 }

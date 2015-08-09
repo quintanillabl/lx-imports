@@ -16,6 +16,7 @@ class RequisicionController {
 
     def requisicionService
 
+
     def index(Integer max) {
         params.max = Math.min(max ?: 40, 100)
         params.sort=params.sort?:'lastUpdated'
@@ -62,16 +63,10 @@ class RequisicionController {
             respond requisicionInstance.errors, view:'edit'
             return
         }
-
         requisicionInstance.save flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'Requisicion.label', default: 'Requisicion'), requisicionInstance.id])
-                redirect requisicionInstance
-            }
-            '*'{ respond requisicionInstance, [status: OK] }
-        }
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'Requisicion.label', default: 'Requisicion'), requisicionInstance.id])
+        redirect action:'edit',id:requisicionInstance.id
+        
     }
 
     @Transactional
@@ -128,5 +123,79 @@ class RequisicionController {
         requisicionService.eliminarPartidas(requisicion,jsonArray)
         dataToRender.requisicionId=requisicion.id
         render dataToRender as JSON
+    }
+
+    def createPartida(Requisicion requisicion){
+        println 'Agregando partida: '+params
+         render(template:"/requisicionDet/createForm",model:[requisicion:requisicion,requisicionDetInstance:new RequisicionDet()])
+    }
+
+    @Transactional
+    def savePartida(RequisicionDetCommand command) {
+        if (command == null) {
+            notFound()
+            return
+        }
+        
+        if (command.hasErrors()) {
+            flash.message="Errores de validacion al tratar de insertar partida"
+            redirect action:'edit',id:command.requisicion.id
+            return
+        }
+        
+        def requisicion=command.requisicion
+        
+        def det=command.toRequisicionDet()
+        requisicionService.agregarPartida(requisicion.id, det)
+        redirect action: 'edit', id: requisicion.id
+    }
+
+    def embarquesDisponiblesJSONList(){
+        println 'Embarques disponibles para anticipo: '+params
+        def embarques=Embarque.findAll(
+            "from Embarque e where e.id=? "
+            ,[params.long('term')],[max:10])
+        def embarquesList=embarques.collect { row ->
+            def label=row.toString()
+            [id:row.id,label:label,value:label]
+        }
+        println 'Embarques registrados: '+embarquesList.size()
+        render embarquesList as JSON
+    }
+}
+
+import org.grails.databinding.BindingFormat
+import grails.validation.Validateable
+
+@Validateable
+class RequisicionDetCommand {
+
+    Requisicion requisicion
+
+    String documento
+
+    @BindingFormat('dd/MM/yyyy')
+    Date fechaDocumento
+
+    BigDecimal totalDocumento=0
+
+    Embarque embarque
+
+    BigDecimal total
+
+    static constraints={
+        importFrom RequisicionDet
+        requisicion nullable:false
+        
+    }
+
+    RequisicionDet toRequisicionDet(){
+        def r=new RequisicionDet()
+        r.documento=documento
+        r.fechaDocumento=fechaDocumento
+        r.totalDocumento=totalDocumento
+        r.embarque=embarque
+        r.total=total
+        return r
     }
 }

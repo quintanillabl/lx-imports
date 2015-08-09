@@ -75,9 +75,17 @@ class CoreTagLib {
         def controller=attrs.controller?:controllerName
         def label=attrs.label?:'Regresar'
         def id=attrs.id
-        def clazz=attrs.class?:'btn btn-default'
+        def clazz=attrs.class?:'btn btn-outline btn-default'
         def model=[action:action,controller:controller,id:id,label:label,clazz:clazz]
         out << render(template:"/common/buttons/backButton" ,model:model)
+    }
+
+    def errorsHeader={ attrs ->
+        def bean=attrs.bean
+        if(!bean)
+            throw new IllegalArgumentException("Tag errorsHeader requiere del parametro   bean ")
+        out << render(template:"/common/components/errorsHeader" ,model:[it:bean])
+        
     }
 
     def dateCell={attrs ->
@@ -124,5 +132,76 @@ class CoreTagLib {
     def idFormat={ attrs ->
         out <<g.formatNumber(number:attrs.id, format:"###")
 
+    }
+
+    /**
+    *
+    * Genera un TD apropiado para la columna de identificacion 
+    * 
+    * @attrs id REQUIRED La propiedad id del bean a mostrar
+    * @attrs action La accion para el Link generado default show
+    * @attrs controller El controlador para la accion
+    **/
+    def idTableRow={ attrs ->
+        def action=attrs.action?:'show'
+        def controller=attrs.controller?:controllerName
+        def id=attrs.id
+        if(!id)
+            throw new IllegalArgumentException("Tag lx:idTableRow Debe pasar el  id ")
+        StringBuilder sb = new StringBuilder()
+        // sb <<"<td> ${g.link(action:action,controller:controller,id:id)}"
+        // sb <<"</td>"
+        // out<<sb.toString()
+
+        sb << """
+            <td>
+                <a href="${g.createLink(action:action,controller:controller,id:id)}">${id}</a>
+            </td>
+        """
+        out<<sb.toString()
+    }
+
+    /**
+     * Presneta un td formateao en moneda para el importe especificado
+     * 
+     * @attrs number REQUIRED El numero a formatear en moneda
+     */
+    def moneyTableRow={ attrs ->
+        //out << "<td class="${attrs.number>0?'text-success':'text-danger'}">"
+        def number=attrs.number
+        out <<"""
+           <td class="${number>=0?'text-success':'text-danger'}"> 
+        """
+        //out <<"<td class=${number>=0?text-success:text-danger}>" 
+        out << lx.moneyFormat(number:attrs.number)
+        out << "</td>"
+    }
+
+    def iboxBackButton={ attrs ->
+        def action=attrs.action?:'index'
+        StringBuilder sb = new StringBuilder()
+        sb << """
+            <a href="${g.createLink(action:action)}"><i class='fa fa-step-backward'></i></a>
+        """
+        out<<sb.toString()
+    }
+
+    def iboxTitle={ attrs ->
+        def title=attrs.title?:''
+        StringBuilder sb = new StringBuilder()
+        sb << """
+            <div class="ibox-title">
+                <h5>${title}</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                    <a class="close-link">
+                        <i class="fa fa-times"></i>
+                    </a>
+                </div>
+            </div>
+        """
+        out<<sb.toString()
     }
 }

@@ -18,7 +18,6 @@
 					<g:if test="${!session.tipoDeCambio}">
 						 NO REGISTRADO PARA ${new Date().text()}
 					</g:if> 
-					%{-- <sec:loggedInUserInfo field="username"/> --}%
 				</a>
 				
 			</p>

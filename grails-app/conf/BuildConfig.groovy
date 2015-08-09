@@ -84,15 +84,15 @@ grails.project.dependency.resolution = {
         runtime ':hibernate4:4.3.8.1' // or ':hibernate:3.6.10.19'
         //runtime ":hibernate4:4.3.5.4" // or ":hibernate:3.6.10.16"
         runtime ":database-migration:1.4.0"
-        runtime ":jquery:1.11.1"
+        //runtime ":jquery:1.11.1"
 
 
         //compile ":build-test-data:2.2.2"
         compile ":build-test-data:2.4.0"
 
         // UI Front
-        runtime ":twitter-bootstrap:3.3.4"
-        runtime ":font-awesome-resources:4.3.0.2"
+        //runtime ":twitter-bootstrap:3.3.4"
+        //runtime ":font-awesome-resources:4.3.0.2"
         compile ":platform-core:1.0.0"
         compile ":fields:1.5.1"
 

@@ -7,9 +7,33 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(["hasRole('TESORERIA')"])
 class TipoDeCambioController {
 	
-	static scaffold = true
-	
+	//static scaffold = true
+
+
+	def create(){
+		[tipoDeCambioInstance:new TipoDeCambio(fecha:new Date())]
+	}
+	def beforeInterceptor = {
+    	if(!session.periodoTesoreria){
+    		session.periodoTesoreria=new Date()
+    	}
+	}
+
+	def cambiarPeriodo(){
+		def fecha=params.date('fecha', 'dd/MM/yyyy')
+		session.periodoTesoreria=fecha
+		redirect(uri: request.getHeader('referer') )
+	}
+
 	@Secured(["hasAnyRole('TESORERIA','COMPRAS','CONTABILIDAD')"])
+    def index(Integer max) {
+        def periodo=session.periodoTesoreria
+        def list=TipoDeCambio
+        	.findAll("from TipoDeCambio t where date(t.fecha) between ? and ?  order by t.fecha desc",[periodo.inicioDeMes(),periodo.finDeMes()])
+        [tipoDeCambioInstanceList: list]
+    }
+	
+	
 	def list(){
 		params.max = Math.min(params.max ? params.int('max') : 20, 100)
 		params.sort="fecha"

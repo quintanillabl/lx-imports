@@ -9,7 +9,11 @@ import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 
 import util.Rounding;
+//import groovy.transform.ToString
+import groovy.transform.EqualsAndHashCode
 
+//@ToString(includes='nombre',includeNames=true,includePackage=false)
+@EqualsAndHashCode(includes='id')
 class Requisicion {
 	
 	Proveedor proveedor
@@ -67,7 +71,7 @@ class Requisicion {
     }
 	
 	static mapping ={
-		proveedor fetch:'join'
+		//proveedor fetch:'join'
 		//pagoProveedor fetch:'join'
 		partidas cascade: "all-delete-orphan"
 	}
@@ -97,21 +101,6 @@ class Requisicion {
 		return "Id: ${id}  $proveedor $total ($moneda) $formaDePago"
 	}
 	
-	boolean equals(Object obj){
-		if(!obj.instanceOf(Requisicion))
-			return false
-		if(this.is(obj))
-			return true
-		def eb=new EqualsBuilder()
-		eb.append(id, obj.id)
-		return eb.isEquals()
-	}
-	
-	int hashCode(){
-		def hb=new HashCodeBuilder(17,35)
-		hb.append(id)
-		return hb.toHashCode()
-	}
 	
 	
 

@@ -6,6 +6,9 @@ import com.luxsoft.impapx.tesoreria.MovimientoDeCuenta;
 import grails.converters.JSON
 import org.springframework.dao.DataIntegrityViolationException
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasAnyRole('COMPRAS','TESORERIA')"])
 class AnticipoController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET','POST'], delete: 'POST']
@@ -134,6 +137,7 @@ class AnticipoController {
 	
 	def disponiblesJSONList(){
 		//println 'Embarques disponibles para anticipo: '+params
+		//sleep(5000)
 		def anticipos=Anticipo.findAll(
 			"from Anticipo a where  a.sobrante is null and a.requisicion.concepto=? and a.total-a.requisicion.total>0"
 			,['ANTICIPO'])

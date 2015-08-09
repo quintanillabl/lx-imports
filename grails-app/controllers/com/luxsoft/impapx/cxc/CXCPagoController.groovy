@@ -4,27 +4,42 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.springframework.dao.DataIntegrityViolationException
 
-import com.luxsoft.impapx.Venta;
+import com.luxsoft.impapx.Venta
+import util.MonedaUtils
 
-import util.MonedaUtils;
+import grails.plugin.springsecurity.annotation.Secured
 
+@Secured(["hasRole('TESORERIA')"])
 class CXCPagoController {
-
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    
+    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
 	def cobranzaService
-	def filterPaneService
-	
-    def index() {
-        redirect action: 'list', params: params
-    }
 
-    def list() {
-		println 'List: '+params
-        params.max = Math.min(params.max ? params.int('max') : 30, 50)
-		params.sort='id'
-		params.order='desc'
-        [CXCPagoInstanceList: CXCPago.list(params), CXCPagoInstanceTotal: CXCPago.count()]
+	def filterPaneService
+
+	def beforeInterceptor = {
+    	if(!session.periodoTesoreria){
+    		session.periodoTesoreria=new Date()
+    	}
+	}
+
+	def cambiarPeriodo(){
+		def fecha=params.date('fecha', 'dd/MM/yyyy')
+		session.periodoTesoreria=fecha
+		redirect(uri: request.getHeader('referer') )
+	}
+
+    def index(Integer max) {
+    	//params.max = Math.min(max ?: 40, 100)
+        // params.sort=params.sort?:'lastUpdated'
+        // params.order='desc'
+        def periodo=session.periodoTesoreria
+        def list=CXCPago.findAll("from CXCPago c where date(c.ingreso.fecha) between ? and ?  order by c.ingreso.fecha desc"
+        	,[periodo.inicioDeMes(),periodo.finDeMes()]
+        	)
+        log.info 'Cobros registrados en el periodo '+list.size()
+        [cobros: list ]
     }
 	
 	def filter(){

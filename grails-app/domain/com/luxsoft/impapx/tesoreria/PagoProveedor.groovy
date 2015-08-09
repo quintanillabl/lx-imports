@@ -36,9 +36,9 @@ class PagoProveedor {
     }
 	
 	static mapping ={
-		requisicion fetch:'join'
-		egreso fetch:'join'
-		pago fetch:'join'
+		//requisicion fetch:'join'
+		//egreso fetch:'join'
+		//pago fetch:'join'
 	}
 	
 	String toString(){

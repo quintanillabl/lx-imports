@@ -4,7 +4,7 @@ import org.springframework.web.servlet.i18n.FixedLocaleResolver
 import com.luxsoft.cfdi.CfdiCadenaBuilder
 import com.luxsoft.cfdi.CfdiSellador
 import com.luxsoft.cfdi.CfdiTimbrador
-
+import com.luxsoft.lx.MarshallerRegistrar
 
 // Place your Spring DSL code here
 beans = {
@@ -61,6 +61,8 @@ beans = {
 	cfdiSellador(CfdiSellador){
 		cadenaBuilder=ref("cfdiCadenaBuilder")
 	}
+
+	lxRegistar(MarshallerRegistrar){}
 	
 	
 }

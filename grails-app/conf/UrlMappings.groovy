@@ -7,6 +7,7 @@ class UrlMappings {
             }
         }
         "/"(controller:"home")
+        "/requisiciones"(resources:'requisicionRest')
         "500"(view:'/error')
         
 	}

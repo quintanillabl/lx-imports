@@ -95,7 +95,7 @@ grails.hibernate.osiv.readonly = false
 //         // TODO: grails.serverURL = "http://www.changeme.com"
 //     }
 // }
-
+//grails.plugin.springsecurity.auth.loginFormUrl='/login/login2'
 environments {
     development {
         grails.logging.jul.usebridge = true
@@ -214,7 +214,7 @@ environments{
           ventas='FACTURA'
         }
     }
-    grails.assets.bundle=true
+    // grails.assets.bundle=true
   }
     
   production{
@@ -245,8 +245,8 @@ beans {
 }
 grails.plugins.twitterbootstrap.fixtaglib = true
 
-//grails.plugin.databasemigration.updateOnStart = true
-//grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
+grails.plugin.databasemigration.updateOnStart = true
+grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
 grails.databinding.dateFormats = ['dd/MM/yyyy', 'dd-MM-yyyy HH:mm:ss.S', "dd-MM-yyyy'T'hh:mm:ss'Z'"]
 
 
