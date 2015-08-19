@@ -34,7 +34,12 @@
         	<i class="fa fa-tachometer"></i> <span class="nav-label">Tableros</span> <span class="fa arrow"></span>
         </a>
         <ul class="nav nav-second-level collapse">
-            <li class="active"><a href="index.html">Compras</a></li>
+            <li class="active">
+                <g:link action="homeDashboard" controller="home">
+                    <i class="fa fa-area-chart"></i> Inicio
+                </g:link>
+            </li>
+            <li ><a href="index.html">Compras</a></li>
             <li><a href="dashboard_2.html">Ventas</a></li>
             <li><a href="dashboard_3.html">Tesoreria</a></li>
         </ul>

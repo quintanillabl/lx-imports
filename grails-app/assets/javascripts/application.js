@@ -35,6 +35,13 @@
 // Sparkline  
 //= require plugins/sparkline/jquery.sparkline.min.js
 
+// Flot
+//= require plugins/flot/jquery.flot.js
+//= require plugins/flot/jquery.flot.tooltip.min.js
+//= require plugins/flot/jquery.flot.spline.js
+//= require plugins/flot/jquery.flot.resize.js
+//= require plugins/flot/jquery.flot.pie.js
+
 // ChartJS 
 //= require plugins/chartJs/Chart.min.js
 
