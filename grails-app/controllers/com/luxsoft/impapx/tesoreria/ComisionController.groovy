@@ -1,136 +1,159 @@
 package com.luxsoft.impapx.tesoreria
 
-import org.springframework.dao.DataIntegrityViolationException
 
-import com.luxsoft.impapx.TipoDeCambio;
 
-import util.MonedaUtils;
+import static org.springframework.http.HttpStatus.*
+import grails.transaction.Transactional
+import grails.converters.JSON
+import grails.plugin.springsecurity.annotation.Secured
+import com.luxsoft.impapx.TipoDeCambio
+import util.MonedaUtils
 
+@Secured(["hasRole('TESORERIA')"])
+@Transactional(readOnly = true)
 class ComisionController {
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-    def index() {
-        redirect action: 'list', params: params
-    }
+    def beforeInterceptor = {
+    	if(!session.periodoTesoreria){
+    		session.periodoTesoreria=new Date()
+    	}
+	}
 
-    def list() {
-        params.max = Math.min(params.max ? params.int('max') : 100, 500)
+	def cambiarPeriodo(){
+		def fecha=params.date('fecha', 'dd/MM/yyyy')
+		session.periodoTesoreria=fecha
+		redirect(uri: request.getHeader('referer') )
+	}
+
+    def index(Integer max) {
 		params.sort="fecha"
 		params.order="desc"
-        [comisionInstanceList: Comision.list(params), comisionInstanceTotal: Comision.count()]
+		def periodo=session.periodoTesoreria
+		def list=Comision.findAll("from Comision c where date(c.fecha) between ? and ?",
+			[periodo.inicioDeMes(),periodo.finDeMes()],
+			params)
+        [comisionInstanceList:list]
+    }
+
+    def show(Comision comisionInstance) {
+        respond comisionInstance
     }
 
     def create() {
-		switch (request.method) {
-		case 'GET':
-			params.tc=1
-			params.fecha=new Date()
-			params.impuestoTasa=16
-        	[comisionInstance: new Comision(params)]
-			break
-		case 'POST':
-			 println 'Alta de comision '+params
-	        def comisionInstance = new Comision(params)
-			
-			if(comisionInstance.cuenta.moneda!=MonedaUtils.PESOS){
-				// Pendiente hasta tener el bean de TipoDeCambio
-				/*
-				def fecha=comisionInstance.fecha
-				def tipoDeCambio=TipoDeCambio.findByFechaAndMonedaOrigenAndMonedaFuenta(
-						fecha
-						,MonedaUtils.PESOS
-						,comisionInstance.cuenta.moneda)
-				if(!tipoDeCambio){
-					flash.message="No existe tipo de cambio registrado para la fecha: "+fecha+ " debe solicitar que se registre para poder proceeder"
-					render view: 'create', model: [comisionInstance: comisionInstance]
-					return
-				}¡*/
-			}else{
-				comisionInstance.tc=1
-			}
-	        if (!comisionInstance.save(flush: true)) {
-	            render view: 'create', model: [comisionInstance: comisionInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.created.message', args: [message(code: 'comision.label', default: 'Comision'), comisionInstance.id])
-	        redirect action: 'show', id: comisionInstance.id
-			break
-		}
+        respond new Comision(fecha:new Date(),impuestoTasa:16.00)
     }
 
-    def show() {
-        def comisionInstance = Comision.get(params.id)
-        if (!comisionInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'comision.label', default: 'Comision'), params.id])
-            redirect action: 'list'
+    @Transactional
+    def save(ComisionCommand command) {
+        if (command == null) {
+            notFound()
+            return
+        }
+        if (command.hasErrors()) {
+            render view:'create',model:[comisionInstance:command]
+            return
+        }
+        
+        def comisionInstance =command.toComision()
+
+        if(command.cuenta.moneda!=MonedaUtils.PESOS){
+            def cuenta=command.cuenta
+            def dia=command.fecha-1
+            def tc=TipoDeCambio.find("from TipoDeCambio t where date(t.fecha)=? and t.monedaFuente=?",[dia,cuenta.moneda])
+            if(!tc){
+                flash.message="No existe Tipo de cambio  en ${cuenta.moneda} para el ${dia.format('dd/MM/yyyy')} "
+                render view:'create',model:[comisionInstance:command]
+                return
+            }
+        }
+        comisionInstance=comisionInstance.save failOnError:true
+        flash.message = "ComisiÃ³n bancaria ${comisionInstance.id} registrada"
+        redirect comisionInstance
+    }
+
+    def edit(Comision comisionInstance) {
+        respond comisionInstance
+    }
+
+    @Transactional
+    def update(Comision comisionInstance) {
+        if (comisionInstance == null) {
+            notFound()
             return
         }
 
-        [comisionInstance: comisionInstance]
-    }
-
-    def edit() {
-		switch (request.method) {
-		case 'GET':
-	        def comisionInstance = Comision.get(params.id)
-	        if (!comisionInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'comision.label', default: 'Comision'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        [comisionInstance: comisionInstance]
-			break
-		case 'POST':
-	        def comisionInstance = Comision.get(params.id)
-	        if (!comisionInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'comision.label', default: 'Comision'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (comisionInstance.version > version) {
-	                comisionInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'comision.label', default: 'Comision')] as Object[],
-	                          "Another user has updated this Comision while you were editing")
-	                render view: 'edit', model: [comisionInstance: comisionInstance]
-	                return
-	            }
-	        }
-
-	        comisionInstance.properties = params
-
-	        if (!comisionInstance.save(flush: true)) {
-	            render view: 'edit', model: [comisionInstance: comisionInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'comision.label', default: 'Comision'), comisionInstance.id])
-	        redirect action: 'show', id: comisionInstance.id
-			break
-		}
-    }
-
-    def delete() {
-        def comisionInstance = Comision.get(params.id)
-        if (!comisionInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'comision.label', default: 'Comision'), params.id])
-            redirect action: 'list'
+        if (comisionInstance.hasErrors()) {
+            respond comisionInstance.errors, view:'edit'
             return
         }
 
-        try {
-            comisionInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'comision.label', default: 'Comision'), params.id])
-            redirect action: 'list'
-        }
-        catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'comision.label', default: 'Comision'), params.id])
-            redirect action: 'show', id: params.id
+        comisionInstance.save flush:true
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'Comision.label', default: 'Comision'), comisionInstance.id])
+                redirect comisionInstance
+            }
+            '*'{ respond comisionInstance, [status: OK] }
         }
     }
+
+    @Transactional
+    def delete(Comision comisionInstance) {
+
+        if (comisionInstance == null) {
+            notFound()
+            return
+        }
+
+        comisionInstance.delete flush:true
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Comision.label', default: 'Comision'), comisionInstance.id])
+                redirect action:"index", method:"GET"
+            }
+            '*'{ render status: NO_CONTENT }
+        }
+    }
+
+    protected void notFound() {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'comision.label', default: 'Comision'), params.id])
+                redirect action: "index", method: "GET"
+            }
+            '*'{ render status: NOT_FOUND }
+        }
+    }
+}
+
+import com.luxsoft.impapx.CuentaBancaria;
+import grails.validation.Validateable
+
+@Validateable
+class ComisionCommand {
+
+	Date fecha
+	CuentaBancaria cuenta
+	BigDecimal comision
+	BigDecimal impuestoTasa
+	BigDecimal impuesto
+	String comentario
+	String referenciaBancaria
+
+	static constraints = {
+		importFrom Comision
+		impuestoTasa minSize:0.1,maxSize:99.00
+	}
+
+	def toComision(){
+		def comision=new Comision()
+		comision.properties=properties
+        comision.tc=1
+		return comision
+	}
+	
 }

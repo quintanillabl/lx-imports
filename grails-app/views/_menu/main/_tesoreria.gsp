@@ -1,6 +1,6 @@
 
 <g:set var="tesoreriaControllers" 
-    value="${['banco','cuentaBancaria','movimientoDeCuenta','saldoDeCuenta','pagoProveedor','compraDeMoneda','CXCPago','TipoDeCambio']}" />
+    value="${['banco','cuentaBancaria','movimientoDeCuenta','saldoDeCuenta','pagoProveedor','compraDeMoneda','CXCPago','tipoDeCambio','traspaso','comision','cheque']}" />
 
 <li class="${tesoreriaControllers.contains(webRequest.controllerName)?'active':''}">
     <a href="#"><i class="fa fa-calendar"></i>
@@ -29,8 +29,17 @@
             <li class="${webRequest.controllerName=='CXCPago'?'active':''}">
                 <g:link controller="CXCPago" >Cobros</g:link>
             </li>
-            <li class="${webRequest.controllerName=='TipoDeCambio'?'active':''}">
-                <g:link controller="TipoDeCambio" >Tipo de cambio</g:link>
+            <li class="${webRequest.controllerName=='tipoDeCambio'?'active':''}">
+                <g:link controller="tipoDeCambio" >Tipo de cambio</g:link>
+            </li>
+            <li class="${webRequest.controllerName=='traspaso'?'active':''}">
+                <g:link controller="traspaso" >Traspasos</g:link>
+            </li>
+            <li class="${webRequest.controllerName=='comision'?'active':''}">
+                <g:link controller="comision" >Comisiones</g:link>
+            </li>
+            <li class="${webRequest.controllerName=='cheque'?'active':''}">
+                <g:link controller="cheque" >Cheques</g:link>
             </li>
         </sec:ifAnyGranted>
     </ul>

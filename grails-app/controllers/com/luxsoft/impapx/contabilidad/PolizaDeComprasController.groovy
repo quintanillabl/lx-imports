@@ -1,25 +1,43 @@
 package com.luxsoft.impapx.contabilidad
 
-import org.hibernate.AssertionFailure;
+import org.hibernate.AssertionFailure
 
-import util.Rounding;
+import util.Rounding
 
-import com.luxsoft.impapx.CuentaDeGastos;
-import com.luxsoft.impapx.CuentaPorPagar;
-import com.luxsoft.impapx.Embarque;
-import com.luxsoft.impapx.EmbarqueDet;
-import com.luxsoft.impapx.FacturaDeImportacion;
-import com.luxsoft.impapx.GastosDeImportacion;
-import com.luxsoft.impapx.Pedimento;
-import com.luxsoft.impapx.TipoDeCambio;
+import com.luxsoft.impapx.CuentaDeGastos
+import com.luxsoft.impapx.CuentaPorPagar
+import com.luxsoft.impapx.Embarque
+import com.luxsoft.impapx.EmbarqueDet
+import com.luxsoft.impapx.FacturaDeImportacion
+import com.luxsoft.impapx.GastosDeImportacion
+import com.luxsoft.impapx.Pedimento
+import com.luxsoft.impapx.TipoDeCambio
+import grails.plugin.springsecurity.annotation.Secured
 
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeComprasController {
 	
 	def polizaService
 
-   def index() {
-	   redirect action: 'list', params: params
-    }
+    def beforeInterceptor = {
+    	if(!session.periodoContable){
+    		session.periodoContable=new Date()
+    	}
+	}
+
+	def cambiarPeriodo(){
+		def fecha=params.date('fecha', 'dd/MM/yyyy')
+		session.periodoContable=fecha
+		redirect(uri: request.getHeader('referer') )
+	}	
+	
+	def index() {
+		def sort=params.sort?:'fecha'
+		def order=params.order?:'desc'
+		def periodo=session.periodoContable
+		def polizas=Poliza.findAllByTipoAndFechaBetween('COMPRAS',periodo.inicioDeMes(),periodo.finDeMes(),[sort:sort,order:order])
+		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+	}
 	 
 	def mostrarPoliza(long id){
 		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])

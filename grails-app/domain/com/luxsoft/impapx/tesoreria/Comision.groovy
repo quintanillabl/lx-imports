@@ -5,6 +5,8 @@ import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 
 class Comision {
+
+	static auditable = true
 	
 	Date fecha
 	CuentaBancaria cuenta
@@ -28,9 +30,9 @@ class Comision {
 		movimientos cascad:"all-delete-orphan"
 	}
 	
-	String toString(){
-		return "$fecha.format('dd/MM/yyyy') $cuenta    $importe"
-	}
+	// String toString(){
+	// 	return "${fecha.format('dd/MM/yyyy')} ${cuenta.numero}    ${importe}"
+	// }
 	
 	boolean equals(Object obj){
 		if(!obj.instanceOf(Comision))

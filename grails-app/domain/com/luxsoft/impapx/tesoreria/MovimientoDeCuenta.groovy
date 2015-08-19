@@ -8,6 +8,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder
 
 
 class MovimientoDeCuenta {
+
+	static auditable = true
 	
 	CuentaBancaria cuenta
 	Date fecha

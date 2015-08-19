@@ -19,33 +19,45 @@ import com.luxsoft.impapx.tesoreria.PagoProveedor
 import com.luxsoft.impapx.tesoreria.SaldoDeCuenta
 import com.luxsoft.impapx.tesoreria.Traspaso
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeDiarioFleteController {
 
 	def polizaService
 	
-     def index() {
-	   redirect action: 'list', params: params
-    }
+    def beforeInterceptor = {
+    	if(!session.periodoContable){
+    		session.periodoContable=new Date()
+    	}
+	}
+
+	def cambiarPeriodo(){
+		def fecha=params.date('fecha', 'dd/MM/yyyy')
+		session.periodoContable=fecha
+		redirect(uri: request.getHeader('referer') )
+	}	
+	
+	def index() {
+		def sort=params.sort?:'fecha'
+		def order=params.order?:'desc'
+		def periodo=session.periodoContable
+		def polizas=Poliza.findAllByTipoAndDescripcionIlikeAndFechaBetween(
+			'DIARIO',
+			'%Flete%',
+			periodo.inicioDeMes(),
+			periodo.finDeMes(),
+			[sort:sort,order:order]
+			)
+		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+	}    
 	 
 	def mostrarPoliza(long id){
 		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
 		render (view:'poliza' ,model:[poliza:poliza,partidas:poliza.partidas])
 	}
 	 
-	def list() {
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
-		def sort=params.sort?:'fecha'
-		def order=params.order?:'desc'
-		
-		//def polizas=Poliza.findAllByTipoAndDescripcionFechaBetween('DIARIO',periodo.inicio,periodo.fin,[sort:sort,order:order])
-		def polizas=Poliza.findAllByTipoAndDescripcionIlikeAndFechaBetween('DIARIO','%Flete%',periodo.inicio,periodo.fin,[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-	}
+	
 	
 	def generarPoliza(String fecha){
 		Date dia=Date.parse("dd/MM/yyyy",fecha)

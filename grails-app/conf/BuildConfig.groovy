@@ -103,6 +103,8 @@ grails.project.dependency.resolution = {
         compile ":jasper:1.11.0"
         
         compile ":filterpane:2.4.7"
+        compile ":audit-logging:1.0.5"
+
 
         // Uncomment these to enable additional asset-pipeline capabilities
         //compile ":sass-asset-pipeline:1.9.0"

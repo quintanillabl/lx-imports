@@ -11,6 +11,7 @@ import com.luxsoft.impapx.Venta;
 
 class CXCAplicacion {
 	
+	static auditable = true
 	
 	Date fecha
 	BigDecimal importe

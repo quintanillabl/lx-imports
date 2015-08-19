@@ -10,45 +10,36 @@ import groovy.transform.ToString;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.springframework.dao.DataIntegrityViolationException
+import grails.plugin.springsecurity.annotation.Secured
 
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaController {
 
     static allowedMethods = [create: ['POST'], edit: ['GET', 'POST'], delete: 'POST']
 	
 	def polizaService
 
-    def index() {
-       if(!session.periodoContable){
-		   println 'Asignando periodo contable:..'
-		   PeriodoContable periodo=new PeriodoContable()
-		   periodo.actualizarConFecha()
-		   session.periodoContable=periodo
-	   }
-    }
-	
-	def actualizarPeriodo(PeriodoContable periodo){
-		//println 'Actualizando periodo...'+params
-		//def periodo=new PeriodoContable()
-		//periodo.properties=params
-		periodo.actualizarConFecha()
-		session.periodoContable=periodo
-		redirect action:'index'
-		//println periodo
+    def beforeInterceptor = {
+    	if(!session.periodoContable){
+    		session.periodoContable=new Date()
+    	}
 	}
 
-    def list() {
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
+	def cambiarPeriodo(){
+		def fecha=params.date('fecha', 'dd/MM/yyyy')
+		session.periodoContable=fecha
+		redirect(uri: request.getHeader('referer') )
+	}	
+	
+	def index() {
 		def sort=params.sort?:'fecha'
 		def order=params.order?:'desc'
-		
-		def polizas=Poliza.findAllByTipoAndFechaBetween('GENERICA',periodo.inicio,periodo.fin,[sort:sort,order:order])
+		def periodo=session.periodoContable
+		def polizas=Poliza.findAllByTipoAndFechaBetween('GENERICA',periodo.inicioDeMes(),periodo.finDeMes(),[sort:sort,order:order])
 		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
 	}
+
+    
 
     def create() {
 		switch (request.method) {
@@ -64,7 +55,7 @@ class PolizaController {
 	        if (polizaInstance.hasErrors()) {
 	            render view: 'create', model: [poliza: polizaInstance]
 				//flash.message="Poliza generica con errores no se puede salvar..."
-				//redirect action:'list' model
+				//redirect action:'index' model
 	            return
 	        }
 
@@ -83,7 +74,7 @@ class PolizaController {
         def polizaInstance = Poliza.get(params.id)
         if (!polizaInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'poliza.label', default: 'Poliza'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
 
@@ -96,7 +87,7 @@ class PolizaController {
 	        def polizaInstance = Poliza.get(params.id)
 	        if (!polizaInstance) {
 	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'poliza.label', default: 'Poliza'), params.id])
-	            redirect action: 'list'
+	            redirect action: 'index'
 	            return
 	        }
 
@@ -106,7 +97,7 @@ class PolizaController {
 	        def polizaInstance = Poliza.get(params.id)
 	        if (!polizaInstance) {
 	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'poliza.label', default: 'Poliza'), params.id])
-	            redirect action: 'list'
+	            redirect action: 'index'
 	            return
 	        }
 
@@ -138,14 +129,14 @@ class PolizaController {
         def polizaInstance = Poliza.get(params.id)
         if (!polizaInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'poliza.label', default: 'Poliza'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
 
         try {
             polizaInstance.delete(flush: true)
 			flash.message = message(code: 'default.deleted.message', args: [message(code: 'poliza.label', default: 'Poliza'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
         }
         catch (DataIntegrityViolationException e) {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'poliza.label', default: 'Poliza'), params.id])

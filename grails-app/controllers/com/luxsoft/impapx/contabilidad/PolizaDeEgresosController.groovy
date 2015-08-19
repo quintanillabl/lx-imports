@@ -1,48 +1,51 @@
 package com.luxsoft.impapx.contabilidad
 
-import util.Rounding;
+import util.Rounding
 
-import com.luxsoft.impapx.EmbarqueDet;
-import com.luxsoft.impapx.FacturaDeGastos;
-import com.luxsoft.impapx.TipoDeCambio;
-import com.luxsoft.impapx.tesoreria.Cheque;
-import com.luxsoft.impapx.tesoreria.MovimientoDeCuenta;
-import com.luxsoft.impapx.tesoreria.PagoProveedor;
+import com.luxsoft.impapx.EmbarqueDet
+import com.luxsoft.impapx.FacturaDeGastos
+import com.luxsoft.impapx.TipoDeCambio
+import com.luxsoft.impapx.tesoreria.Cheque
+import com.luxsoft.impapx.tesoreria.MovimientoDeCuenta
+import com.luxsoft.impapx.tesoreria.PagoProveedor
 
+import grails.plugin.springsecurity.annotation.Secured
+
+
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeEgresosController {
 	
 	def polizaService
 
-   def index() {
-	   redirect action: 'list', params: params
-    }
+    def beforeInterceptor = {
+    	if(!session.periodoContable){
+    		session.periodoContable=new Date()
+    	}
+	}
+
+	def cambiarPeriodo(){
+		def fecha=params.date('fecha', 'dd/MM/yyyy')
+		session.periodoContable=fecha
+		redirect(uri: request.getHeader('referer') )
+	}	
+	
+	def index() {
+		def sort=params.sort?:'fecha'
+		def order=params.order?:'desc'
+		def periodo=session.periodoContable
+		def polizas=Poliza.findAllByTipoAndFechaBetween('EGRESO',periodo.inicioDeMes(),periodo.finDeMes(),[sort:sort,order:order])
+		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+	}
 	 
 	def mostrarPoliza(long id){
 		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
 		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
 	}
-	 
-	def list() {
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
-		def sort=params.sort?:'fecha'
-		def order=params.order?:'desc'
-		
-		def polizas=Poliza.findAllByTipoAndFechaBetween('EGRESO',periodo.inicio,periodo.fin,[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-	}
+	
 	
 	def generarPoliza(String fecha){
 		Date dia=Date.parse("dd/MM/yyyy",fecha)
-		
 		params.dia=dia
-		
-		println 'Generando poliza: '+params
-		
 		def pagos=PagoProveedor.findAll("from PagoProveedor p where date(p.egreso.fecha)=? and p.egreso.moneda='USD' and p.egreso.origen=? and p.requisicion.concepto='PAGO'"
 			,[dia,'CXP'])
 		
@@ -67,7 +70,7 @@ class PolizaDeEgresosController {
 				def tc=0
 				
 				//NUEVO
-				//System.out.println("Localizando embarqueDet de factura:******************************************"+fac.id);
+				//System.out.println("Localizando embarqueDet de factura:******************************************"+fac.id)
 				def embarqueDet=EmbarqueDet.find("from EmbarqueDet x where x.factura=?",[fac])
 				if(embarqueDet==null) 
 					throw new RuntimeException("La factura ${fac} (${fac.proveedor.nombre}) no esta relacionada en algun embarque por lo tanto no se puede acceder al pedimento ")
@@ -642,7 +645,7 @@ class PolizaDeEgresosController {
 		}
 	}
 	
-	def private procesarChequesCancelados(Date dia){
+	private procesarChequesCancelados(Date dia){
 		def cheques=Cheque.executeQuery("from Cheque c where date(c.egreso.fecha)=? and c.egreso.comentario='CANCELADO' ",[dia])
 		cheques.each{pago ->
 			

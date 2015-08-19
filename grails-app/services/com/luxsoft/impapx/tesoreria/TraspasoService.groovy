@@ -12,17 +12,6 @@ class TraspasoService {
 		traspaso.impuesto=0
 		traspaso.moneda=cuenta.moneda
 		
-		/*Generando el egreso
-		MovimientoDeCuenta egreso=new MovimientoDeCuenta(traspaso.properties)
-		egreso.cuenta=traspaso.cuentaOrigen
-		egreso.tipo='TRANSFERENCIA'
-		egreso.origen='TESORERIA'
-		egreso.concepto='TRASPASO'
-		traspaso.addToMovimientos(egreso)
-		*/
-		
-		
-		
 		try {
 			
 			MovimientoDeCuenta egreso=new MovimientoDeCuenta(
@@ -57,5 +46,9 @@ class TraspasoService {
 			return traspaso
 		}
 		
+    }
+
+    def deleteTraspaso(Traspaso traspaso){
+    	traspaso.delete flush:true
     }
 }

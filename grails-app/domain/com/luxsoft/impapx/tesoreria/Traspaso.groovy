@@ -8,6 +8,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder
 
 class Traspaso {
 	
+	static auditable = true
+
 	Date fecha
 	CuentaBancaria cuentaOrigen
 	CuentaBancaria cuentaDestino

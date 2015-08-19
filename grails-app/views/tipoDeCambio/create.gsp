@@ -1,13 +1,13 @@
 <!doctype html>
 <html>
 <head>
-	<title>Compra de moneda</title>
+	<title>Tipo de cambio</title>
 	<meta name="layout" content="luxor">
 	<asset:javascript src="forms/forms.js"/>
 </head>
 <body>
 
-<content tag="header">Alta de tipo de cambio</content>
+<content tag="header">Alta de tipo de cambio </content>
 <content tag="subHeader">
 	<ol class="breadcrumb">
     	<li><g:link action="index">Tipos de cambio</g:link></li>
@@ -29,7 +29,13 @@
 				    			<f:field property="fecha" wrapper="bootstrap3"/>
 				    			<f:field property="monedaOrigen"  wrapper="bootstrap3"/>
 				    			<f:field property="monedaFuente"  wrapper="bootstrap3"/>
-				    			<f:field property="factor" widget="numeric" wrapper="bootstrap3"/>
+				    			%{-- <f:field property="factor" widget="tc" wrapper="bootstrap3" /> --}%
+				    			<div class="form-group">
+				    				<label for="factor" class="control-label col-sm-3">Factor</label>
+				    				<div class="col-sm-9">
+				    					<input name="factor" class="form-control tc" value="" required="true">
+				    				</div>
+				    			</div>
 				    			<f:field property="fuente" 
 				    				widget-class="form-control" wrapper="bootstrap3"/>
 				    			<div class="form-group">
@@ -57,7 +63,8 @@
 	            keyboardNavigation: false,
 	            forceParse: false,
 	            calendarWeeks: true,
-	            autoclose: true
+	            autoclose: true,
+	            format: 'dd/mm/yyyy'
 			});
 			$(".tc").autoNumeric('init',{vMin:'0.0000'});
 			$('.chosen-select').chosen();

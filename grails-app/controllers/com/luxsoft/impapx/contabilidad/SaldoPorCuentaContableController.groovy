@@ -9,51 +9,34 @@ import org.apache.commons.lang.time.DateUtils;
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.springframework.dao.DataIntegrityViolationException
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasRole('CONTABILIDAD')"])
 class SaldoPorCuentaContableController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 	
 	def saldoPorCuentaContableService
 
-    def index() {
-       if(!session.periodoContable){
-		   PeriodoContable periodo=new PeriodoContable()
-		   periodo.actualizarConFecha()
-		   session.periodoContable=periodo
-	   }
-	   redirect action:'list'
-    }
-	
-	def actualizarPeriodo(PeriodoContable periodo){
-		
-		//def periodo=new PeriodoContable()
-		//periodo.properties=params
-		periodo.actualizarConFecha()
-		println 'Actualizando periodo...'+periodo
-		session.periodoContable=periodo
-		redirect action:'index'
-		//println periodo
-	}
-	
-	def list() {
-		println 'Obteniento saldos:'+params
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
-		def sort=params.sort?:'fecha'
-		def order=params.order?:'desc'
-		println 'Periodo:'+periodo
-		def saldos=SaldoPorCuentaContable.findAll("from SaldoPorCuentaContable c where c.cuenta.detalle=? and c.year=? and c.mes=? order by c.cuenta.clave"
-			,[false,periodo.year,periodo.month])
-		println 'Saldos existentes:'+saldos.size()
-		[saldoPorCuentaContableInstanceList: saldos, saldoPorCuentaContableInstanceTotal: saldos.size()]
+    def beforeInterceptor = {
+    	if(!session.periodoContable){
+    		session.periodoContable=new Date()
+    	}
 	}
 
+	def cambiarPeriodo(){
+		def fecha=params.date('fecha', 'dd/MM/yyyy')
+		session.periodoContable=fecha
+		redirect(uri: request.getHeader('referer') )
+	}	
 	
-    
+	def index() {
+		def periodo=session.periodoContable
+		def saldos=SaldoPorCuentaContable
+			.findAll("from SaldoPorCuentaContable c where c.cuenta.detalle=? and c.year=? and c.mes=? order by c.cuenta.clave"
+			,[false,periodo.toYear(),periodo.toMonth()])
+		[saldoPorCuentaContableInstanceList: saldos, saldoPorCuentaContableInstanceTotal: saldos.size()]
+	}
 
     def show() {
         def saldoPorCuentaContableInstance = SaldoPorCuentaContable.get(params.id)
@@ -65,8 +48,6 @@ class SaldoPorCuentaContableController {
 
         [saldoPorCuentaContableInstance: saldoPorCuentaContableInstance]
     }
-
-    
 
     def delete() {
         def saldoPorCuentaContableInstance = SaldoPorCuentaContable.get(params.id)
@@ -89,8 +70,8 @@ class SaldoPorCuentaContableController {
 	
 	def actualizarSaldos(){
 		def periodo=session.periodoContable
-		saldoPorCuentaContableService.actualizarSaldos(periodo.year, periodo.month)
-		redirect action:'list'
+		saldoPorCuentaContableService.actualizarSaldos(periodo.toYear(), periodo.toMonth())
+		redirect action:'index'
 	}
 	
 	def subcuentas(long id){

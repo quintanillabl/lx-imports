@@ -3,6 +3,8 @@ package com.luxsoft.impapx.tesoreria
 import com.luxsoft.impapx.CuentaBancaria;
 
 class Cheque {
+
+	static auditable = true
 	
 	CuentaBancaria cuenta
 	int folio

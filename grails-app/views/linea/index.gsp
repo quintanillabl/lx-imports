@@ -7,8 +7,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<g:set var="entityName" value="${message(code: 'linea.label', default: 'Linea')}" />
 	<title><g:message code="default.list.label" args="[entityName]" /></title>
-	<asset:stylesheet src="datatables/dataTables.css"/>
-	<asset:javascript src="datatables/dataTables.js"/> 
+	
 </head>
 <body>
 
@@ -21,11 +20,7 @@
 
 	<div class="wrapper wrapper-content animated fadeInRight">
 
-		
-		
-
 		<div class="row toolbar-panel">
-		    
 		    <div class="col-md-4">
 		    	<input type='text' id="filtro" placeholder="Filtrar" class="form-control" autofocus="on">
 		      </div>
@@ -34,7 +29,6 @@
 		    	<lx:refreshButton/>
 		        <lx:printButton/>
 		        <lx:createButton/>
-		        <lx:searchButton/>
 		    </div>
 		</div>
 
@@ -43,7 +37,6 @@
 				<table id="grid" class="table table-striped table-bordered table-condensed luxor-grid">
 				<thead>
 						<tr>
-						
 							<g:sortableColumn property="nombre" title="${message(code: 'linea.nombre.label', default: 'Nombre')}" />
 						
 							<g:sortableColumn property="dateCreated" title="${message(code: 'linea.dateCreated.label', default: 'Date Created')}" />
@@ -66,13 +59,35 @@
 					</g:each>
 					</tbody>
 				</table>
-				<div class="pagination">
-					<g:paginate total="${lineaInstanceCount ?: 0}" />
-				</div>
+				
 			</div>
 		</div> <!-- end .row 2 -->
 
 	</div>
+	<script type="text/javascript">
+		$(function(){
+			$('#grid').dataTable({
+	            responsive: true,
+	            aLengthMenu: [[100, 150, 200, 250, -1], [100, 150, 200, 250, "Todos"]],
+	            "language": {
+					"url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
+	    		},
+	    		"dom": 'T<"clear">lfrtip',
+	    		"tableTools": {
+	    		    "sSwfPath": "${assetPath(src: 'plugins/dataTables/swf/copy_csv_xls_pdf.swf')}"
+	    		},
+	    		"order": []
+	        });
+	    	$("#filtro").on('keyup',function(e){
+	    		var term=$(this).val();
+	    		$('#grid').DataTable().search(
+					$(this).val()
+	    		        
+	    		).draw();
+	    	});
+		});
+		
+	</script>
 	
 </body>
 </html>

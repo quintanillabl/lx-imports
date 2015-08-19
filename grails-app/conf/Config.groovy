@@ -1,3 +1,4 @@
+import grails.plugin.springsecurity.SpringSecurityUtils
 // locations to search for config files that get merged into the main config;
 // config files can be ConfigSlurper scripts, Java properties files, or classes
 // in the classpath in ConfigSlurper format
@@ -263,5 +264,38 @@ environments {
         // }
     }
 }
+auditLog {
+
+}
+
+auditLog {
+  //verbose = true // verbosely log all changed values to db
+  logIds = true  // log db-ids of associated objects.
+   // Note: if you change next 2 properties, you must update your database schema!       
+  //tablename = 'my_audit' // table name for audit logs.     
+  //largeValueColumnTypes = true // use large column db types for oldValue/newValue.
+  TRUNCATE_LENGTH = 1000
+  cacheDisabled = true
+  //logFullClassName = true
+  //replacementPatterns = ["local.example.xyz.":""] // replace with empty string.
+  actorClosure = { request, session ->
+
+    if (request.applicationContext.springSecurityService.principal instanceof java.lang.String){
+      return request.applicationContext.springSecurityService.principal
+    }
+    //def username = request.applicationContext.springSecurityService.principal?.username
+    def username = request.applicationContext.springSecurityService.getCurrentUser()?.nombre
+    if (SpringSecurityUtils.isSwitched()){
+      username = SpringSecurityUtils.switchedUserOriginalUsername+" AS "+username
+    }
+    return username
+  }
+  stampEnabled = true
+  //stampAlways = false
+  stampCreatedBy = 'createdBy' // fieldname
+  stampLastUpdatedBy = 'lastUpdatedBy' // fieldname
+
+}
+
 
 

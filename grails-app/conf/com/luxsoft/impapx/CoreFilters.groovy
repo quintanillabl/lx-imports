@@ -22,6 +22,9 @@ class CoreFilters {
                 if(!session.empresa){
                     session.empresa=Empresa.first()
                 }
+                if(!session.tipoDeCambio){
+                    session.tipoDeCambio=TipoDeCambio.buscarTipoDeCambioOperativo()
+                }
                 /*
                 if(!session.periodoContable){
                     def today=new Date()

@@ -1,5 +1,8 @@
 package com.luxsoft.impapx.contabilidad
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeGastosController {
 
     def index() {

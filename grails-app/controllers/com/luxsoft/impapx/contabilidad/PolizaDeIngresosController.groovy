@@ -5,33 +5,39 @@ import util.Rounding;
 
 import com.luxsoft.impapx.cxc.CXCAplicacion;
 import com.luxsoft.impapx.cxc.CXCPago;
+import grails.plugin.springsecurity.annotation.Secured
 
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeIngresosController {
 
     def polizaService
 
-   def index() {
-	   redirect action: 'list', params: params
-    }
+    def beforeInterceptor = {
+    	if(!session.periodoContable){
+    		session.periodoContable=new Date()
+    	}
+	}
+
+	def cambiarPeriodo(){
+		def fecha=params.date('fecha', 'dd/MM/yyyy')
+		session.periodoContable=fecha
+		redirect(uri: request.getHeader('referer') )
+	}	
+	
+	def index() {
+		def sort=params.sort?:'fecha'
+		def order=params.order?:'desc'
+		def periodo=session.periodoContable
+		def polizas=Poliza.findAllByTipoAndFechaBetween('INGRESO',periodo.inicioDeMes(),periodo.finDeMes(),[sort:sort,order:order])
+		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+	}
 	 
 	def mostrarPoliza(long id){
 		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
 		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
 	}
 	 
-	def list() {
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
-		def sort=params.sort?:'fecha'
-		def order=params.order?:'desc'
-		
-		def polizas=Poliza.findAllByTipoAndFechaBetween('INGRESO',periodo.inicio,periodo.fin,[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-	}
+	
 	
 	def generarPoliza(String fecha){
 		Date dia=Date.parse("dd/MM/yyyy",fecha)
@@ -153,6 +159,6 @@ class PolizaDeIngresosController {
 		//poliza.folio=polizaService.nextFolio(poliza)
 	//	poliza.save(failOnError:true)
 		poliza=polizaService.salvarPoliza(poliza)
-		redirect action: 'list'
+		redirect action: 'index'
 	}
 }
