@@ -5,7 +5,9 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(["hasRole('USUARIO')"])
 class HomeController {
 
-    def index() { }
+    def index() {
+    	redirect action:'homeDashboard'
+    }
 
     def homeDashboard(){
     }
