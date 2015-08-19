@@ -53,16 +53,16 @@
 	                            <div class="col-xs-4">
 	                                <div class=" m-l-md">
 	                                <span class="h4 font-bold m-t block">$ 406,100</span>
-	                                <small class="text-muted m-b block">Sales marketing report</small>
+	                                <small class="text-muted m-b block">Ventas mensuales</small>
 	                                </div>
 	                            </div>
 	                            <div class="col-xs-4">
 	                                <span class="h4 font-bold m-t block">$ 150,401</span>
-	                                <small class="text-muted m-b block">Annual sales revenue</small>
+	                                <small class="text-muted m-b block">Utilidad anual acumulada</small>
 	                            </div>
 	                            <div class="col-xs-4">
 	                                <span class="h4 font-bold m-t block">$ 16,822</span>
-	                                <small class="text-muted m-b block">Half-year revenue margin</small>
+	                                <small class="text-muted m-b block">Maren a mitad de año</small>
 	                            </div>
 
 	                        </div>
@@ -78,11 +78,11 @@
 	                            <div class="row text-center">
 	                                <div class="col-lg-6">
 	                                    <canvas id="polarChart" width="80" height="80"></canvas>
-	                                    <h5 >Kolter</h5>
+	                                    <h5 >Torras</h5>
 	                                </div>
 	                                <div class="col-lg-6">
 	                                    <canvas id="doughnutChart" width="78" height="78"></canvas>
-	                                    <h5 >Maxtor</h5>
+	                                    <h5 >Burgo</h5>
 	                                </div>
 	                            </div>
 	                            <div class="m-t">
@@ -99,7 +99,7 @@
 	        <div class="col-lg-4">
 	            <div class="ibox float-e-margins">
 	                <div class="ibox-title">
-	                    <h5>New data for the report</h5> <span class="label label-primary">IN+</span>
+	                    <h5>Nuevis datis para el reporte</h5> <span class="label label-primary">IN+</span>
 	                    <div class="ibox-tools">
 	                        <a class="collapse-link">
 	                            <i class="fa fa-chevron-up"></i>
@@ -108,9 +108,9 @@
 	                            <i class="fa fa-wrench"></i>
 	                        </a>
 	                        <ul class="dropdown-menu dropdown-user">
-	                            <li><a href="#">Config option 1</a>
+	                            <li><a href="#">Config opción 1</a>
 	                            </li>
-	                            <li><a href="#">Config option 2</a>
+	                            <li><a href="#">Config opción 2</a>
 	                            </li>
 	                        </ul>
 	                        <a class="close-link">
@@ -127,16 +127,16 @@
 	                            <br/>
 	                            <small class="font-bold">$ 20 054.43</small>
 	                        </div>
-	                        <h4>NYS report new data!
+	                        <h4>Nuevos datos para alcance!
 	                            <br/>
-	                            <small class="m-r"><a href="graph_flot.html"> Check the stock price! </a> </small>
+	                            <small class="m-r"><a href="graph_flot.html"> Checar precios! </a> </small>
 	                        </h4>
 	                        </div>
 	                    </div>
 	                </div>
 	            <div class="ibox float-e-margins">
 	                <div class="ibox-title">
-	                    <h5>Read below comments</h5>
+	                    <h5>Leer los comentarios</h5>
 	                    <div class="ibox-tools">
 	                        <a class="collapse-link">
 	                            <i class="fa fa-chevron-up"></i>
@@ -191,7 +191,7 @@
 	            <div class="col-lg-4">
 	                <div class="ibox float-e-margins">
 	                    <div class="ibox-title">
-	                        <h5>Your daily feed</h5>
+	                        <h5>Comunicados diarios</h5>
 	                        <div class="ibox-tools">
 	                            <span class="label label-warning-light">10 Messages</span>
 	                           </div>

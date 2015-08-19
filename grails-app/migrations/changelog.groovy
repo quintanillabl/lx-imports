@@ -4,7 +4,7 @@ databaseChangeLog = {
 		// TODO add changes and preconditions here
 	}
 
-	include file: 'changelog-001.groovy'
+	//include file: 'changelog-001.groovy'
 
 	include file: 'changelog-002.groovy'
 
