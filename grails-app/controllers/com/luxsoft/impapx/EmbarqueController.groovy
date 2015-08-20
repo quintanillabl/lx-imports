@@ -143,7 +143,7 @@ class EmbarqueController {
     def search(){
         def term='%'+params.term.trim()+'%'
         def query=Embarque.where{
-            (bl=~term || proveedor.nombre=~term || nombre=~term || fechaEmbarque.text()=~term) 
+            (id.toString()=~term || bl=~term || proveedor.nombre=~term || nombre=~term ) 
         }
         def embarques=query.list(max:30, sort:"bl",order:'desc')
 

@@ -1,6 +1,8 @@
 package com.luxsoft.impapx
 
 class Embarque {
+
+	static auditable = true
 	
 	String bl
 	Proveedor proveedor
