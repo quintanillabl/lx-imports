@@ -9,7 +9,7 @@
 			<g:form action="cambiarPeriodo" class="form-horizontal" >
 				<div class="modal-body">
 					<div class="form-group" id="data_4">
-                        <label class="font-noraml">Month select</label>
+                        <label class="font-noraml">Seleccione un mes</label>
                         <div class="input-group date">
                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                             <input type="text" class="form-control" name="fecha"

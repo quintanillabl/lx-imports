@@ -54,6 +54,10 @@ class Periodo implements Comparable<Periodo>{
 	String toString(){
 		"${fechaInicial?.format(defaultFormat)} - ${fechaFinal?.format(defaultFormat)}"
 	}
+
+	String mothLabel(){
+		"${fechaInicial?.format('MMMM')} - ${fechaFinal?.format('MMM')}"
+	}
 	
 	def int dias(){
 		return fechaFinal-fechaInicial

@@ -10,6 +10,7 @@ import org.codehaus.groovy.grails.plugins.jasper.JasperExportFormat
 import org.codehaus.groovy.grails.plugins.jasper.JasperReportDef
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.codehaus.groovy.grails.web.json.JSONObject
+import com.luxsoft.utils.Periodo
 
 
 @Secured(["hasRole('COMPRAS')"])
@@ -24,11 +25,32 @@ class EmbarqueController {
     
     def reportService
 
+    def beforeInterceptor = {
+        if(!session.periodoEmbarques){
+            def d1=new Date()-90
+            session.periodoEmbarques=new Periodo(d1.inicioDeMes(),new Date())
+        }
+    }
+
+    def cambiarPeriodo(Periodo periodo){
+        //def fecha=params.date('fecha', 'dd/MM/yyyy')
+        session.periodoEmbarques=periodo
+        redirect(uri: request.getHeader('referer') )
+    }
+
     def index(Integer max) {
         params.max = Math.min(max ?: 40, 100)
         params.sort=params.sort?:'lastUpdated'
         params.order='desc'
-        respond Embarque.list(params), model:[embarqueInstanceCount: Embarque.count()]
+        def periodo=session.periodoEmbarques
+        // def list=Embarque
+        //     .executeQuery(
+        //         "select e.id,e.bl,e.nombre,e.proveedor.nombre,e.contenedores,e.fechaEmbarque,e.cuentaDeGastos,e.facturado,e.valor-e.facturado from Embarque e where date(e.dateCreated) between ? and ? order by e.dateCreated desc"
+        //         ,[periodo.fechaInicial,periodo.fechaFinal])
+        def list=Embarque.findAll(
+            "from Embarque e  where date(e.dateCreated) between ? and ? order by e.lastUpdated desc",
+            [periodo.fechaInicial,periodo.fechaFinal])
+        [embarqueInstanceList:list]
     }
 
     def show(Embarque embarqueInstance) {
@@ -118,15 +140,16 @@ class EmbarqueController {
         }
     }
 
-    def embarquesAsJSONList(){
+    def search(){
         def term='%'+params.term.trim()+'%'
         def query=Embarque.where{
-            (bl=~term || proveedor.nombre=~term || nombre=~term) 
+            (bl=~term || proveedor.nombre=~term || nombre=~term || fechaEmbarque.text()=~term) 
         }
         def embarques=query.list(max:30, sort:"bl",order:'desc')
 
         def embarquesList=embarques.collect { embarque ->
-            def label=embarque.toString()
+            def label="Id: ${embarque.id} BL: ${embarque.bl} ${embarque.nombre} (${embarque.proveedor.nombre}) ${embarque.fechaEmbarque}"
+            //def label=embarque.toString()
             [id:embarque.id,label:label,value:label]
         }
         render embarquesList as JSON

@@ -10,7 +10,7 @@ class CoreFilters {
 
             before = {
                 if(!session.periodo){
-                    session.periodo=Periodo.ytd()
+                    session.periodo=new Periodo(new Date()-30,new Date())
                 }
                 if(!session.ejercicion){
                     session.ejercicio=Periodo.obtenerYear(new Date())
