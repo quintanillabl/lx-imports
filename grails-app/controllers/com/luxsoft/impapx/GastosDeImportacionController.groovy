@@ -14,10 +14,11 @@ class GastosDeImportacionController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     def index(Integer max) {
-        params.max = Math.min(max ?: 40, 100)
-        params.sort=params.sort?:'lastUpdated'
-        params.order='desc'
-        respond GastosDeImportacion.list(params), model:[gastosDeImportacionInstanceCount: GastosDeImportacion.count()]
+        def periodo=session.periodo
+        def list=GastosDeImportacion.findAll(
+            "from GastosDeImportacion c  where date(c.fecha) between ? and ? order by c.fecha desc",
+            [periodo.fechaInicial,periodo.fechaFinal])
+        [gastosDeImportacionInstanceList:list]
     }
 
     def show(GastosDeImportacion gastosDeImportacionInstance) {
@@ -106,5 +107,18 @@ class GastosDeImportacionController {
             }
             '*'{ render status: NOT_FOUND }
         }
+    }
+
+    def search(){
+        def term='%'+params.term.trim()+'%'
+        def query=GastosDeImportacion.where{
+            (id.toString()=~term || documento=~term || proveedor.nombre=~term ) 
+        }
+        def cuentas=query.list(max:30, sort:"id",order:'desc')
+        def cuentasList=cuentas.collect { cuenta ->
+            def label="Id: ${cuenta.id} Docto:${cuenta.documento} ${cuenta.proveedor} ${cuenta.fecha.format('dd/MM/yyyy')} ${cuenta.total} "
+            [id:cuenta.id,label:label,value:label]
+        }
+        render cuentasList as JSON
     }
 }

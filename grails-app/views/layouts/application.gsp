@@ -49,6 +49,7 @@
 					</div>
 				</div>
 			</div>
+			<g:render template="/_menu/main/right-sidebar"/>
 		</div>
 		<!-- Main navigation
         ===============================================-->

@@ -7,6 +7,7 @@ import org.grails.datastore.mapping.validation.ValidationException;
 import org.springframework.dao.DataIntegrityViolationException
 
 import grails.plugin.springsecurity.annotation.Secured
+import com.luxsoft.utils.Periodo
 
 @Secured(["hasRole('COMPRAS')"])
 class PedimentoController {
@@ -14,6 +15,18 @@ class PedimentoController {
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 	
 	def pedimentoService
+
+	def beforeInterceptor = {
+	    if(!session.periodo){
+	        def d1=new Date()-30
+	        session.periodo=new Periodo(d1.inicioDeMes(),new Date())
+	    }
+	}
+
+	def cambiarPeriodo(Periodo periodo){
+	    session.periodo=periodo
+	    redirect(uri: request.getHeader('referer') )
+	}
 	
 	def list() {
         forward action: 'index', params: params
@@ -199,7 +212,7 @@ class PedimentoController {
 		render dataToRender as JSON
 	}
 
-	def pedimentosAsJSONList(){
+	def search(){
 	    def term='%'+params.term.trim()+'%'
 	    def query=Pedimento.where{
 	        (pedimento=~term || proveedor.nombre=~term || comentario=~term) 
@@ -207,11 +220,10 @@ class PedimentoController {
 	    def pedimentos=query.list(max:30, sort:"id",order:'desc')
 
 	    def pedimentoList=pedimentos.collect { pedimento ->
-	        def label="Id:${pedimento.id} ${pedimento.proveedor.nombre} Ped:${pedimento.pedimento} ${pedimento.fecha.format('dd/MM/yyyy')} ${pedimento.impuesto}"
+	        def label="Id:${pedimento.id} ${pedimento.proveedor.nombre} Ped:${pedimento.pedimento} ${pedimento.fecha.format('dd/MM/yyyy')} Imp: ${pedimento.impuesto}"
 	        [id:pedimento.id,label:label,value:pedimento.id]
 	    }
 	    render pedimentoList as JSON
 	}
-	
-	
+
 }

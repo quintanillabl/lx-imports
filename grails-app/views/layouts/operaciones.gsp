@@ -75,6 +75,26 @@
                                 <lx:refreshButton/>
                                 <lx:createButton/>
                             </div>
+                            <div class="btn-group">
+                                <button type="button" name="operaciones"
+                                        class="btn btn-success btn-outline dropdown-toggle" data-toggle="dropdown"
+                                        role="menu">
+                                        Operaciones <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <g:pageProperty name="page.operaciones"/>
+                                </ul>
+                            </div>
+                            <div class="btn-group">
+                                <button type="button" name="reportes"
+                                        class="btn btn-primary btn-outline dropdown-toggle" data-toggle="dropdown"
+                                        role="menu">
+                                        Reportes <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <g:pageProperty name="page.reportes"/>
+                                </ul>
+                            </div>
                         </div>
                        
                        <g:pageProperty name="page.grid"/>
@@ -84,7 +104,7 @@
             </div>
         </div>
 
-        <g:render template="/common/selectorDePeriodo" model="[periodo:session.periodoEmbarques]"/>
+        <g:render template="/common/selectorDePeriodo" model="[periodo:periodo]"/>
 
         <script type="text/javascript">
             $(function(){

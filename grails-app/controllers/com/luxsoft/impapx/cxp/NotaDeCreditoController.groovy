@@ -8,6 +8,9 @@ import org.springframework.dao.DataIntegrityViolationException
 
 import com.luxsoft.impapx.CuentaPorPagar;
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasRole('COMPRAS')"])
 class NotaDeCreditoController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
@@ -15,15 +18,23 @@ class NotaDeCreditoController {
 	def notaDeCreditoService
 
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    def list() {
-		
-        params.max = Math.min(params.max ? params.int('max') : 50, 100)
-		params.sort="id"
-		params.order='desc'
-        [notaDeCreditoInstanceList: NotaDeCredito.list(params), notaDeCreditoInstanceTotal: NotaDeCredito.count()]
+    	def periodo=session.periodo
+    	def tipo=params.tipo?:'PENDIENTES'
+        def query=NotaDeCredito.where{
+        	fecha>=periodo.fechaInicial && fecha<=periodo.fechaFinal
+        }
+        if(tipo=='APLICADOS'){
+        	query=query.where{
+        		disponible<=0.0
+        	}
+        }
+        if(tipo=='PENDIENTES'){
+        	query=query.where{
+        		aplicado<=0.0
+        	}
+        }
+        [notaDeCreditoInstanceList:query.list([sort:'fecha',order:'desc']),tipo:tipo]
+        
     }
 
     def create() {

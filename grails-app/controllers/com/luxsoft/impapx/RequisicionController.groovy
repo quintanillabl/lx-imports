@@ -18,10 +18,21 @@ class RequisicionController {
 
 
     def index(Integer max) {
-        params.max = Math.min(max ?: 40, 100)
-        params.sort=params.sort?:'lastUpdated'
-        params.order='desc'
-        respond Requisicion.list(params), model:[requisicionInstanceCount: Requisicion.count()]
+
+        def periodo=session.periodo
+        def tipo=params.tipo
+        def hql="from Requisicion c  where date(c.fecha) between ? and ? order by c.fecha desc"
+        
+        if(tipo=="PAGADAS"){
+            hql="from Requisicion c  where c.pagoProveedor.id!=null and date(c.fecha) between ? and ? order by c.fecha desc"
+            println 'PAGADAS'
+        }
+        if(tipo=='PENDIENTES'){
+            hql="from Requisicion c   where c.pagoProveedor=null and date(c.fecha) between ? and ? order by c.fecha desc"
+        }
+
+        def list=Requisicion.findAll(hql,[periodo.fechaInicial,periodo.fechaFinal])
+        [requisicionInstanceList:list,tipo:tipo]
     }
 
     def show(Requisicion requisicionInstance) {

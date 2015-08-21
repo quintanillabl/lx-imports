@@ -43,11 +43,12 @@ class Abono {
 	static mapping ={
 		proveedor fetch:'join'
 		//requisitado formula:'select sum(x.total) from requisicion'
-		aplicado formula:'(select sum(x.total) from aplicacion x where x.abono_id=id)'
+		aplicado formula:'(select COALESCE(sum(x.total),0) from aplicacion x where x.abono_id=id)'
+		disponible formula:'(select total-COALESCE(SUM(x.total),0) from aplicacion x where x.abono_id=id)'
 		aplicaciones cascade: "all-delete-orphan"
 	}
 	
-	static transients = ['disponible']
+	//static transients = ['disponible']
 	
 	String toString(){
 		return " (${fecha?.format('dd/MM/yyyy')})  Total: ${total} ($moneda)";
@@ -59,10 +60,10 @@ class Abono {
 		
 	}
 	
-	BigDecimal getDisponible(){
-		def aplic=aplicado?:0.0
-		return total-aplic
-	}
+	// BigDecimal getDisponible(){
+	// 	def aplic=aplicado?:0.0
+	// 	return total-aplic
+	// }
 	
 	@Override
 	public boolean equals(Object obj) {

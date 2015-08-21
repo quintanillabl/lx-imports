@@ -9,7 +9,7 @@
 				<h4 class="modal-title" id="myModalLabel">Selección de periodo </h4>
 			</div>
 
-			<g:form class="form-horizontal" action="${operacion?:'cambiarPeriodo'}" >
+			<g:form class="form-horizontal" action="${operacion?:'cambiarPeriodo'}" controller="${controller?:'home'}" >
 				
 				<div class="modal-body">
 
@@ -18,7 +18,7 @@
                         <div class="input-group date">
                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                             <input type="text" class="form-control" name="fechaInicial"
-                            	value="${formatDate(date:session.periodoEmbarques.fechaInicial,format:'dd/MM/yyyy')}">
+                            	value="${formatDate(date:session.periodo.fechaInicial,format:'dd/MM/yyyy')}">
                         </div>
 					</div>
 
@@ -27,7 +27,7 @@
                         <div class="input-group date">
                             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                             <input type="text" class="form-control" name="fechaFinal"
-                            	value="${formatDate(date:session.periodoEmbarques.fechaFinal,format:'dd/MM/yyyy')}">
+                            	value="${formatDate(date:session.periodo.fechaFinal,format:'dd/MM/yyyy')}">
                         </div>
 					</div>
 

@@ -17,10 +17,11 @@ class FacturaDeImportacionController {
     def reportService
 
     def index(Integer max) {
-        params.max = Math.min(max ?: 40, 100)
-        params.sort=params.sort?:'lastUpdated'
-        params.order='desc'
-        respond FacturaDeImportacion.list(params), model:[facturaDeImportacionInstanceCount: FacturaDeImportacion.count()]
+        def periodo=session.periodo
+        def list=FacturaDeImportacion.findAll(
+            "from FacturaDeImportacion f  where date(f.fecha) between ? and ? order by f.fecha desc",
+            [periodo.fechaInicial,periodo.fechaFinal])
+        [facturaDeImportacionInstanceList:list]
     }
 
     def show(FacturaDeImportacion facturaDeImportacionInstance) {
@@ -158,6 +159,21 @@ class FacturaDeImportacionController {
     	    file: stream.toByteArray(), 
     	    contentType: 'application/pdf',
     	    fileName:file)
+    }
+
+    def search(){
+        def term='%'+params.term.trim()+'%'
+        def query=FacturaDeImportacion.where{
+            //(id.toString()=~term || documento=~term || proveedor.nombre=~term || comentario=~term || pedimento?.pedimento=~term) 
+            (id.toString()=~term || documento=~term || proveedor.nombre=~term ) 
+        }
+        def cuentas=query.list(max:30, sort:"id",order:'desc')
+
+        def cuentasList=cuentas.collect { cuenta ->
+            def label="Id: ${cuenta.id} Docto:${cuenta.documento} ${cuenta.proveedor} ${cuenta.fecha.format('dd/MM/yyyy')} ${cuenta.total} ${cuenta?.pedimento?.pedimento?:''}"
+            [id:cuenta.id,label:label,value:label]
+        }
+        render cuentasList as JSON
     }
 }
 

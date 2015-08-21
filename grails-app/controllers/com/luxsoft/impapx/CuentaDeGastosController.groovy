@@ -18,11 +18,11 @@ class CuentaDeGastosController {
 	def cuentaDeGastosService
 
     def index(Integer max) {
-	    params.max = Math.min(max ?: 40, 100)
-	    params.sort=params.sort?:'id'
-	    params.order='desc'
-       [cuentaDeGastosInstanceList: CuentaDeGastos.list(params), cuentaDeGastosInstanceCount: CuentaDeGastos.count()]
-        
+	    def periodo=session.periodo
+	    def list=CuentaDeGastos.findAll(
+            "from CuentaDeGastos c  where date(c.fecha) between ? and ? order by c.fecha desc",
+            [periodo.fechaInicial,periodo.fechaFinal])
+        [cuentaDeGastosInstanceList:list]
     }
 
     def filter = {
@@ -211,10 +211,10 @@ class CuentaDeGastosController {
 		render embarquesList as JSON
 	}
 
-	def cuentasAsJSONList(){
+	def search(){
 	    def term='%'+params.term.trim()+'%'
 	    def query=CuentaDeGastos.where{
-	        (id.toString()=~term || proveedor.nombre=~term || comentario=~term) 
+	        (id.toString()=~term || proveedor.nombre=~term || comentario=~term || embarque.bl=~term) 
 	    }
 	    def cuentas=query.list(max:30, sort:"id",order:'desc')
 

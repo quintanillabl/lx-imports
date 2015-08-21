@@ -17,10 +17,11 @@ class FacturaDeGastosController {
     def facturaDeGastosService
 
     def index(Integer max) {
-        params.max = Math.min(max ?: 40, 100)
-        params.sort=params.sort?:'lastUpdated'
-        params.order='desc'
-        respond FacturaDeGastos.list(params), model:[facturaDeGastosInstanceCount: FacturaDeGastos.count()]
+        def periodo=session.periodo
+        def list=FacturaDeGastos.findAll(
+            "from FacturaDeGastos c  where date(c.fecha) between ? and ? order by c.fecha desc",
+            [periodo.fechaInicial,periodo.fechaFinal])
+        [facturaDeGastosInstanceList:list]
     }
 
     def show(FacturaDeGastos facturaDeGastosInstance) {
@@ -116,6 +117,19 @@ class FacturaDeGastosController {
         //println 'Consultando gasto:'+params
         render(template:"conceptoShowForm",bean:concepto)
         
+    }
+
+    def search(){
+        def term='%'+params.term.trim()+'%'
+        def query=FacturaDeGastos.where{
+            (id.toString()=~term || documento=~term || proveedor.nombre=~term ) 
+        }
+        def cuentas=query.list(max:30, sort:"id",order:'desc')
+        def cuentasList=cuentas.collect { cuenta ->
+            def label="Id: ${cuenta.id} Docto:${cuenta.documento} ${cuenta.proveedor} ${cuenta.fecha.format('dd/MM/yyyy')} ${cuenta.total} "
+            [id:cuenta.id,label:label,value:label]
+        }
+        render cuentasList as JSON
     }
 }
 

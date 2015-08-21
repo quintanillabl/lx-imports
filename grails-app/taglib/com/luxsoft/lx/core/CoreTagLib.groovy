@@ -146,18 +146,18 @@ class CoreTagLib {
         def action=attrs.action?:'show'
         def controller=attrs.controller?:controllerName
         def id=attrs.id
-        if(!id)
-            throw new IllegalArgumentException("Tag lx:idTableRow Debe pasar el  id ")
         StringBuilder sb = new StringBuilder()
-        // sb <<"<td> ${g.link(action:action,controller:controller,id:id)}"
-        // sb <<"</td>"
-        // out<<sb.toString()
-
-        sb << """
-            <td>
-                <a href="${g.createLink(action:action,controller:controller,id:id)}">${id}</a>
-            </td>
-        """
+        if(id){
+            sb << """
+                <td>
+                    <a href="${g.createLink(action:action,controller:controller,id:id)}">${id}</a>
+                </td>
+            """
+        }else{
+            sb << """
+                <td></td>
+            """
+        }
         out<<sb.toString()
     }
 

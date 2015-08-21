@@ -15,6 +15,7 @@
 	Periodo: ${session.periodoEmbarques.mothLabel()}
 </content>
 
+
 <content tag="grid">
 	<table id="grid" class="table table-striped table-bordered table-condensed ">
 		<thead>

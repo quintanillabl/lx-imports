@@ -1,6 +1,7 @@
 package com.luxsoft.impapx
 
 import grails.plugin.springsecurity.annotation.Secured
+import com.luxsoft.utils.Periodo
 
 @Secured(["hasRole('USUARIO')"])
 class HomeController {
@@ -10,5 +11,10 @@ class HomeController {
     }
 
     def homeDashboard(){
+    }
+
+    def cambiarPeriodo(Periodo periodo){
+        session.periodo=periodo
+        redirect(uri: request.getHeader('referer') )
     }
 }

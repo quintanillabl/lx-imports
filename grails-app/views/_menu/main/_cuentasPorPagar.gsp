@@ -1,5 +1,5 @@
 
-<g:set var="cxpMenu" value="${['facturaDeImportacion','gastosDeImportacion','pago','requisicion']}" />
+<g:set var="cxpMenu" value="${['facturaDeImportacion','gastosDeImportacion','pago','requisicion','notaDeCredito','facturaDeImportacion','facturaDeGastos','cuentaDeGastosGenerica']}" />
 
 <li class="${cxpMenu.contains(webRequest.controllerName)?'active':''}">
     <a href="#"><i class="fa fa-calendar"></i>
@@ -14,10 +14,10 @@
             <li class="${webRequest.controllerName=='gastosDeImportacion'?'active':''}">
                 <g:link controller="gastosDeImportacion" >Gastos de Importación</g:link>
             </li>
-            <li class="${webRequest.controllerName=='facturaDeImportacion'?'active':''}" >
+            <li class="${webRequest.controllerName=='pago'?'active':''}" >
                 <g:link  controller="pago" >Pagos</g:link>
             </li>
-            <li>
+            <li class="${webRequest.controllerName=='notaDeCredito'?'active':''}">
                 <g:link controller="notaDeCredito">Notas de Crédito</g:link>
             </li>
             <li>

@@ -30,6 +30,7 @@ class EmbarqueController {
             def d1=new Date()-90
             session.periodoEmbarques=new Periodo(d1.inicioDeMes(),new Date())
         }
+        session.periodo=session.periodoEmbarques
     }
 
     def cambiarPeriodo(Periodo periodo){

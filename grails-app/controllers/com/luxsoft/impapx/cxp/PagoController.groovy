@@ -8,21 +8,35 @@ import org.springframework.dao.DataIntegrityViolationException
 import com.luxsoft.impapx.CuentaPorPagar;
 import grails.converters.JSON
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasRole('COMPRAS')"])
 class PagoController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
 	def pagoService
 		
-    def index() {
-        redirect action: 'list', params: params
-    }
+    
 
-    def list() {
-        params.max = Math.min(params.max ? params.int('max') : 50, 100)
-		params.sort='id'
-		params.order='desc'
-        [pagoInstanceList: Pago.list(params), pagoInstanceTotal: Pago.count()]
+    def index() {
+    	def periodo=session.periodo
+    	def tipo=params.tipo?:'PENDIENTES'
+
+    	def query=Pago.where{
+    		fecha>=periodo.fechaInicial && fecha<=periodo.fechaFinal
+    	}
+    	if(tipo=='APLICADOS'){
+    		query=query.where{
+    			disponible<=0.0
+    		}
+    	}
+    	if(tipo=='PENDIENTES'){
+    		query=query.where{
+    			aplicado<=0.0
+    		}
+    	}
+    	[pagoInstanceList:query.list([sort:'fecha',order:'desc']),tipo:tipo]
     }
 
     
