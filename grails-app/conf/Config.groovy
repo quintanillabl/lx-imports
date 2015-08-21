@@ -161,9 +161,9 @@ log4j.main = {
 
 // Added by the Spring Security Core plugin:
 grails.plugin.springsecurity.securityConfigType = "Annotation"
-grails.plugin.springsecurity.userLookup.userDomainClassName = 'com.luxsoft.sec.Usuario'
-grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.luxsoft.sec.UsuarioRol'
-grails.plugin.springsecurity.authority.className = 'com.luxsoft.sec.Rol'
+grails.plugin.springsecurity.userLookup.userDomainClassName = 'com.luxsoft.sx4.sec.Usuario'
+grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.luxsoft.sx4.sec.UsuarioRole'
+grails.plugin.springsecurity.authority.className = 'com.luxsoft.sx4.sec.Role'
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/':                       ['permitAll'],
 	'/index':                  ['permitAll'],

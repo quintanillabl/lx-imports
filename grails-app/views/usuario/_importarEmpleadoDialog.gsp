@@ -7,7 +7,7 @@
       </div>
       <g:form  action="importarEmpleado" >
 
-      <div class="modal-body">
+      <div class="modal-body ui-front">
         	<g:hiddenField name="id" id="empleadoId"/>
           <div class="form-group">
             <label for="empleadoField" class="control-label">Nombre:</label>
@@ -38,12 +38,11 @@
       var input=$("#empleadoField").autocomplete({
           source:'<g:createLink controller="usuario" action="getEmpleadosAsJSON"/>',
           //source:'/usuario/getEmpleadosAsJSON',
-          minLength:3,
+          minLength:1,
           select:function(e,ui){
             console.log('Valor seleccionado: '+ui.item.id);
             $("#empleadoId").val(ui.item.id);
-          },
-          appendTo: "#importarModal"
+          }
       });
       $('body').on('shown.bs.modal', '.modal', function () {
           $('[id$=empleadoField]').focus();

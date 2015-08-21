@@ -92,7 +92,7 @@
 				  				</tr>
 				  			</thead>
 				  			<tbody>
-				  				<g:each in="${com.luxsoft.sec.Rol.list(sort:'id',order:'asc')}" var="row" status="i">
+				  				<g:each in="${com.luxsoft.sx4.sec.Role.list(sort:'id',order:'asc')}" var="row" status="i">
 				  					<tr>
 				  						<td>${fieldValue(bean:row,field:"id")}</td>
 				  						<td>${fieldValue(bean:row,field:"authority")}</td>

@@ -18,9 +18,13 @@
         		</span>
         	</a>
         	<ul class="dropdown-menu animated fadeInRight m-t-xs">
-                <li><a href="profile.html">Perfil</a></li>
-                <li><a href="contacts.html">Contactos</a></li>
+                <li>
+                    <g:link action="edit" controller="perfil">
+                        <i class="fa fa-user-secret"></i> Perfil
+                    </g:link>
+                </li>
                 <li><a href="mailbox.html">Mensajes</a></li>
+                <li><a href="contacts.html">Notas</a></li>
                 <li class="divider"></li>
                 <li><a href="login.html">Salir </a></li>
 			</ul>
@@ -64,4 +68,5 @@
     <g:render template="/_menu/main/cuentasPorPagar"/>
     <g:render template="/_menu/main/contabilidad"/>
     <g:render template="/_menu/main/tesoreria"/>
+    <g:render template="/_menu/main/sistemas"/>
 </ul>

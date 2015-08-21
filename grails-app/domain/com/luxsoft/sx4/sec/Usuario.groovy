@@ -1,6 +1,10 @@
-package com.luxsoft.sec
+package com.luxsoft.sx4.sec
 
-class Usuario {
+class Usuario implements Serializable {
+
+	private static final long serialVersionUID = 1
+
+	static auditable = true
 
 	transient springSecurityService
 
@@ -36,14 +40,32 @@ class Usuario {
 		numeroDeEmpleado nullable:true
 		sucursal nullable:true,maxSize:20
 		puesto nullable:true,maxSize:30
+		perfil nullable:true,unique:true
 	}
+
+	static hasOne = [perfil:Perfil]
 
 	static mapping = {
 		password column: '`password`'
 	}
 
-	Set<Rol> getAuthorities() {
-		UsuarioRol.findAllByUsuario(this).collect { it.rol }
+	Set<Role> getAuthorities() {
+		UsuarioRole.findAllByUsuario(this).collect { it.role }
+	}
+
+	@Override
+	int hashCode() {
+		username?.hashCode() ?: 0
+	}
+
+	@Override
+	boolean equals(other) {
+		is(other) || (other instanceof Usuario && other.username == username)
+	}
+
+	@Override
+	String toString() {
+		username
 	}
 
 	def beforeInsert() {
@@ -75,6 +97,5 @@ class Usuario {
 		nombre="$nombres $apellidoPaterno $apellidoMaterno"
 	}
 }
-
 
 

@@ -1,12 +1,12 @@
-package com.luxsoft.sec
+package com.luxsoft.sx4.sec
 
-class Rol implements Serializable {
+class Role implements Serializable {
 
 	private static final long serialVersionUID = 1
 
 	String authority
 
-	Rol(String authority) {
+	Role(String authority) {
 		this()
 		this.authority = authority
 	}
@@ -18,7 +18,7 @@ class Rol implements Serializable {
 
 	@Override
 	boolean equals(other) {
-		is(other) || (other instanceof Rol && other.authority == authority)
+		is(other) || (other instanceof Role && other.authority == authority)
 	}
 
 	@Override
