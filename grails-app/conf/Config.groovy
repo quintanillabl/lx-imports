@@ -202,7 +202,7 @@ environments{
           sucursal="OFICINAS"
         }
         empleadosDb{
-          url = 'jdbc:mysql://localhost:3306/rh'
+          url = 'jdbc:mysql://10.10.1.228:3306/rh'
           username = "root"
           password = "sys"
         }
