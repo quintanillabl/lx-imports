@@ -61,8 +61,8 @@
             </nav:menu> 
         </sec:ifAnyGranted>
 	</li>
-    <li>
-        <a href="layouts.html"><i class="fa fa-shopping-cart"></i> <span class="nav-label">Compras</span></a>
+    <li class="${webRequest.controllerName=='compra'?'active':''}">
+        <g:link controller="compra"><i class="fa fa-shopping-cart"></i> <span class="nav-label">Compras</span></g:link>
     </li>
     <g:render template="/_menu/main/importaciones"/>
     <g:render template="/_menu/main/cuentasPorPagar"/>

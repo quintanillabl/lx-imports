@@ -14,11 +14,13 @@ class ProductoController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     def index(Integer max) {
-        params.max = Math.min(max ?: 40, 100)
+        //params.max = Math.min(max ?: 40, 100)
         params.sort=params.sort?:'lastUpdated'
         params.order='desc'
         respond Producto.list(params), model:[productoInstanceCount: Producto.count()]
     }
+
+    
 
     def show(Producto productoInstance) {
         respond productoInstance
@@ -133,7 +135,7 @@ class ProductoController {
         render dataToRender as JSON
     }
         
-    def productosJSONList(){
+    def search(){
         //def productos=Producto.findAllByClaveIlikeOrDescripcionLike(params.term+"%",[max:50,sort:"clave",order:"desc"])
         def term='%'+params.term.trim()+'%'
         def query=Producto.where{

@@ -16,11 +16,19 @@ class CompraController {
     def filterPaneService
 
     def index(Integer max) {
-        params.max = Math.min(max ?: 40, 100)
-        params.sort=params.sort?:'fecha'
-        params.order='desc'
-        respond Compra.list(params), model:[compraInstanceCount: Compra.count()]
+        def periodo=session.periodo
+        def list=Compra.findAll(
+            "from Compra c  where date(c.fecha) between ? and ? order by c.fecha desc",
+            [periodo.fechaInicial,periodo.fechaFinal])
+        [compraInstanceList:list]
     }
+
+    // def index(Integer max) {
+    //     params.max = Math.min(max ?: 40, 100)
+    //     params.sort=params.sort?:'fecha'
+    //     params.order='desc'
+    //     respond Compra.list(params), model:[compraInstanceCount: Compra.count()]
+    // }
 
     def filter = {
         
@@ -119,7 +127,7 @@ class CompraController {
         }
     }
 
-    def comprasAsJSONList(){
+    def search(){
         def term='%'+params.term.trim()+'%'
         def query=Compra.where{
             (folio=~term || proveedor.nombre=~term || comentario=~term) 
