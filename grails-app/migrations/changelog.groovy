@@ -27,5 +27,5 @@ databaseChangeLog = {
 
 	// include file: 'changelog_011.groovy'
 
-	include file: 'changelog_1000.groovy'
+	include file: 'paper-ini.groovy'
 }
