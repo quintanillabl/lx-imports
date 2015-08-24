@@ -66,16 +66,20 @@ class UsuarioController {
             respond usuarioInstance.errors, view:'edit'
             return
         }
+        UsuarioRole.removeAll(usuarioInstance,false)
 
-        usuarioInstance.save flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'Usuario.label', default: 'Usuario'), usuarioInstance.id])
-                redirect usuarioInstance
+        def roles=params.roles
+        roles.each{
+            //println 'Evaluando rol: '+rol
+            def rol=Role.get(it)
+            if(!UsuarioRole.exists(usuarioInstance.id,it.toLong())){
+                UsuarioRole.create(usuarioInstance,rol,false)
             }
-            '*'{ respond usuarioInstance, [status: OK] }
+            
         }
+        usuarioInstance.save failOnError:true
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'Usuario.label', default: 'Usuario'), usuarioInstance.id])
+        redirect usuarioInstance
     }
 
     @Transactional
@@ -120,5 +124,66 @@ class UsuarioController {
     def getEmpleadosAsJSON() {
         def res=usuarioService.getEmpleadosAsJSON(params.term)
         render res
+    }
+
+    @Transactional
+    def cambioDePassword(Usuario usuarioInstance,CambioDePassword command){
+        if(request.method=='GET'){
+            return [usuarioInstance:usuarioInstance,passwordCommand:new CambioDePassword()]
+        }
+        
+        command.validate()
+        if(command.hasErrors()){
+            
+            flash.message="Errores de validación"
+            return [usuarioInstance:usuarioInstance,passwordCommand:command]
+        }
+        usuarioInstance.password=command.password
+        usuarioInstance.save flush:true
+        flash.message="Password actualizado"
+        redirect action:'edit',params:[id:usuarioInstance.id]
+
+    }
+
+    @Secured(["permitAll"])
+    def passwordExpired() {
+       [command:new CambioDePassword(username:session[grails.plugin.springsecurity.SpringSecurityUtils.SPRING_SECURITY_LAST_USERNAME_KEY])]
+    }
+
+    @Secured(["permitAll"])
+    @Transactional
+    def updatePassword(CambioDePassword command){
+        if(command.hasErrors()){
+            render view:'passwordExpired',model:[command:command]
+            return
+        }
+        Usuario user = Usuario.findByUsername(command.username)
+        user.password=command.password
+        user.passwordExpired=false
+        user.save flush:true,failOnError:true
+        flash.message='Password actualizado'
+        redirect uri:'/'
+    }
+
+}
+
+
+class CambioDePassword{
+    
+    String username
+    String currentPassword
+    String password
+    String confirmarPassword
+
+    static constraints={
+        password nullable:false
+        confirmarPassword nullable:false,validator:{ val,obj ->
+            if(obj.password!=val){
+                return 'noMatch'
+            }
+            else{
+                return true;
+            }
+        }
     }
 }

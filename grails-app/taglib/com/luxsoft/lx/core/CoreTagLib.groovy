@@ -89,10 +89,15 @@ class CoreTagLib {
     }
 
     def dateCell={attrs ->
-        //out<<render(template:"/common/deleteDialog")
-        out<<"<td>${g:formatDate(date="attrs.date", format="dd/MM/yyyy")}</td>"
-        // out<<"<td>${g:.formatDate(date:attrs.date,format:'dd/MM/yyyy')}</td>"
-        //out << "<a href="#deleteDialog" class="btn btn-danger"><i class="fa fa-trash"></i> Eliminar</a>"
+        def date=attrs.date
+        StringBuilder sb = new StringBuilder()
+        assert date,"Debe definir la fecha "
+        sb << """
+                <td>
+                    <g:formatDate date="${date}" format:'dd/MM/yyyy'>
+                </td>
+            """
+        out<<sb.toString()
     }
 
     /**

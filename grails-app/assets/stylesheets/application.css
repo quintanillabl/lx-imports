@@ -23,3 +23,15 @@
 .ui-autocomplete-loading {
     background: white url("spinner.gif") right center no-repeat;
  }
+
+.uppercase-field {
+  text-transform: uppercase;
+}
+
+.toolbar-panel{
+    /*margin-bottom: 10px;*/
+    padding-bottom: 5px;
+    padding-top: 5px;
+    /*padding-left: 2px;*/
+
+}

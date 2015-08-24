@@ -16,39 +16,66 @@
 	Periodo:${session.periodo.mothLabel()} 
 </content>
 
+<content tag="operaciones">
+	<li>
+		<a data-toggle="modal" data-target="#importarDialog"><i class="fa fa-upload"></i> Importar compra</a>
+	</li>
+</content>
+
 <content tag="grid">
 	<table id="grid" class="table table-striped table-bordered table-condensed luxor-grid" width="100%">
 		<thead>
 			<tr>
-				<th><g:message code="compra.proveedor.label" default="Proveedor" /></th>
-				<g:sortableColumn property="fecha" title="${message(code: 'compra.fecha.label', default: 'Fecha')}" />
-			
-				<g:sortableColumn property="entrega" title="${message(code: 'compra.entrega.label', default: 'Entrega')}" />
-			
-				<g:sortableColumn property="depuracion" title="${message(code: 'compra.depuracion.label', default: 'Depuracion')}" />
-			
-				<g:sortableColumn property="comentario" title="${message(code: 'compra.comentario.label', default: 'Comentario')}" />
-			
-				<g:sortableColumn property="moneda" title="${message(code: 'compra.moneda.label', default: 'Moneda')}" />
-			
+				<th>Id</th>
+				<th>Proveedor</th>
+				<th>Folio</th>
+				<th>Fecha</th>
+				<th>Entrega</th>
+				<th>Depuración</th>
+				<th>Comentario</th>
+				<th>Moneda</th>
+				<th>Creado</th>
 			</tr>
 		</thead>
 		<tbody>
-			<g:each in="${compraInstanceList}" status="i" var="compraInstance">
+			<g:each in="${compraInstanceList}" status="i" var="row">
 				<tr>
-				
-					<td><g:link action="show" id="${compraInstance.id}">${fieldValue(bean: compraInstance, field: "proveedor")}</g:link></td>
-				
-					<td><g:formatDate date="${compraInstance.fecha}" /></td>
-					<td><g:formatDate date="${compraInstance.entrega}" /></td>
-					<td><g:formatDate date="${compraInstance.depuracion}" /></td>
-					<td>${fieldValue(bean: compraInstance, field: "comentario")}</td>
-					<td>${fieldValue(bean: compraInstance, field: "moneda")}</td>
-				
+					<lx:idTableRow id="${row.id}"/>
+					<td><g:link action="show" id="${row.id}">${fieldValue(bean: row, field: "proveedor")}</g:link></td>
+					<td>${fieldValue(bean: row, field: "folio")}</td>
+					<td><g:formatDate date="${row.fecha}" /></td>
+					<td><g:formatDate date="${row.entrega}" /></td>
+					<td><g:formatDate date="${row.depuracion}" /></td>
+					<td>${fieldValue(bean: row, field: "comentario")}</td>
+					<td>${fieldValue(bean: row, field: "moneda")}</td>
+					<td><g:formatDate date="${row.dateCreated}" /></td>
 				</tr>
 			</g:each>
 		</tbody>
 	</table>
+
+	<div class="modal fade" id="importarDialog" tabindex="-1">
+		<div class="modal-dialog ">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">Importar compra desde SIIPAP</h4>
+				</div>
+				
+				<g:form controller="importador" action="importarCompra"	name="importarForm">
+					<input id="folio" class="form-control" type="text" name="folio"  placeholder="Digite el folio a importar" autofocus="autofocus" required="true">
+					
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<g:submitButton class="btn btn-info" name="aceptar"
+								value="Importar" />
+					</div>
+				</g:form>
+			</div><!-- moda-content -->
+		</div><!-- modal-di -->
+	</div>
+
 </content>
 
 <content tag="searchService">

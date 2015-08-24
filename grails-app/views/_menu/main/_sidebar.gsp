@@ -11,7 +11,9 @@
         	<a data-toggle="dropdown" class="dropdown-toggle" href="#">
         	    <span class="clear"> 
         	    	<span class="block m-t-xs"> 
-        	    		<strong class="font-bold">Rubén Cancino</strong>
+        	    		<strong class="font-bold">
+                            ${applicationContext.springSecurityService.getCurrentUser()?.nombres}
+                        </strong>
         	        </span> 
         	    	<span class="text-muted text-xs block">Sistemas <b class="caret"></b>
         	    	</span> 
@@ -61,9 +63,7 @@
             </nav:menu> 
         </sec:ifAnyGranted>
 	</li>
-    <li class="${webRequest.controllerName=='compra'?'active':''}">
-        <g:link controller="compra"><i class="fa fa-shopping-cart"></i> <span class="nav-label">Compras</span></g:link>
-    </li>
+    
     <g:render template="/_menu/main/importaciones"/>
     <g:render template="/_menu/main/cuentasPorPagar"/>
     <g:render template="/_menu/main/contabilidad"/>

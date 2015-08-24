@@ -3,34 +3,60 @@
     <div class="col-md-3">
     	<input type='text' id="filtro" placeholder="Filtrar" class="form-control" autofocus="on">
     </div>
-
     <div class="btn-group">
-    	<g:if test="${embarqueInstance.facturado<=0}">
-	        <g:link action="comprasPendientes" class="btn btn-primary btn-sm" id="${embarqueInstance.id}">
-	        	<i class="fa fa-plus"></i> Agregar
-	        </g:link> 
-	        <button  class="btn btn-danger btn-sm" onclick="eliminarPartidas()">
+        <button type="button" name="operaciones"
+                class="btn btn-success btn-outline dropdown-toggle" data-toggle="dropdown"
+                role="menu">
+                Operaciones <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+        	<g:if test="${embarqueInstance.facturado<=0}">
+        		<li>
+        			<g:link action="comprasPendientes" id="${embarqueInstance.id}">
+        				<i class="fa fa-plus"></i> Agregar
+        			</g:link> 
+        		</li>
+        		<li>
+        			<a data-target="#asignarFacturaDialog" data-toggle="modal">Asignar factura</a>
+        		</li>
+        		<li>
+        			<g:link action="print"  id="${embarqueInstance.id}">
+        			    <i class="fa fa-print"></i> Imprimir
+        			</g:link> 
+        		</li>
+        		<li>
+        			<a  onclick="cancelarFacturas()"> Canclear asignación</a>
+        		</li>
+        		<li>
+        			<a data-target="#asignarContendorDialog" data-toggle="modal">Asignar Contenedor</a>
+        			
+        		</li>
+        		<li>
+        			<g:link  action="eliminarFaltantes" id="${embarqueInstance.id}"
+        				onclick="return confirm('Eliminar partidas sin kilos netos asignados?');">
+        				<i class="icon-plus icon-white"></i>Eliminar faltantes
+        			</g:link>
+        		</li>
+        	</g:if>
+            
+        </ul>
+    </div>
+	%{-- <div class="col-md-6">
+	    <div class="btn-broup">
+	    	<g:link action="comprasPendientes" id="${embarqueInstance.id}" class="btn btn-outline btn-primary">
+	    		<i class="fa fa-plus"></i> Agregar
+	    	</g:link> 
+	        <button  class="btn btn-outline btn-danger " onclick="eliminarPartidas()">
 				<i class="fa fa-trash"></i>  Eliminar partidas
 			</button>
-			<button  class="btn btn-default btn-sm" data-target="#asignarFacturaDialog" data-toggle="modal">
-				Asignar Factura
-			</button>
-			<button  id="#cancelarFacturaBtn "  onclick="cancelarFacturas()" class="btn btn-default btn-sm">
-			  	Cancelar asignación
-			</button>
-			<button  class="btn btn-default btn-sm" data-target="#asignarContendorDialog" data-toggle="modal">
-				Asignar Contenedor
-			</button>
-			<g:link class="btn btn-default btn-sm" action="eliminarFaltantes" id="${embarqueInstance.id}"
-				onclick="return confirm('Eliminar partidas sin kilos netos asignados?');">
-				<i class="icon-plus icon-white"></i>Eliminar faltantes
-			</g:link>
-    	</g:if>
-        
-		<g:link action="print" class="btn btn-default btn-sm" id="${embarqueInstance.id}">
-		    <i class="fa fa-print"></i> Imprimir
-		</g:link> 
-    </div>
+	    </div>
+
+	</div> --}%
+    
+	
+	
+
+    
     
     
 </div>

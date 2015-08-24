@@ -193,48 +193,30 @@ grails.plugin.springsecurity.roleHierarchy = '''
    VENTAS > OPERADOR
    COMPRAS > OPERADOR
 '''
-
+grails.plugin.springsecurity.failureHandler.exceptionMappings = [
+   'org.springframework.security.authentication.CredentialsExpiredException': '/usuario/passwordExpired'
+]
+grails.plugin.springsecurity.apf.storeLastUsername=true
 environments{
     
   development{
     luxor{
-        sx4{
-          sucursal="OFICINAS"
-        }
         empleadosDb{
           url = 'jdbc:mysql://10.10.1.228:3306/rh'
           username = "root"
           password = "sys"
         }
-        econtaDb{
-          url = 'jdbc:mysql://localhost:3306/econta'
-          username = "root"
-          password = "sys"
-        }
-        series{
-          ventas='FACTURA'
-        }
+        
     }
     // grails.assets.bundle=true
   }
     
   production{
     luxor{
-        sx4{
-          sucursal="OFICINAS"
-        }
         empleadosDb{
           url = 'jdbc:mysql://10.10.1.228:3306/rh'
           username = "root"
           password = "sys"
-        }
-        econtaDb{
-          url = 'jdbc:mysql://10.10.1.228:3306/econta'
-          username = "root"
-          password = "sys"
-        }
-        series{
-          ventas='FACTURA'
         }
     }
   }
@@ -244,7 +226,7 @@ beans {
       shared = true
   }
 }
-grails.plugins.twitterbootstrap.fixtaglib = true
+
 
 grails.plugin.databasemigration.updateOnStart = true
 grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
@@ -263,9 +245,6 @@ environments {
         //     grails.plugin.databasemigration.updateOnStartFileNames = ['testchangelog.groovy']
         // }
     }
-}
-auditLog {
-
 }
 
 auditLog {

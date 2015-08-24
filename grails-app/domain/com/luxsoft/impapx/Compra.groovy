@@ -3,6 +3,8 @@ package com.luxsoft.impapx
 import java.util.Currency;
 
 class Compra {
+
+	static auditable = true
 	
 	Proveedor proveedor
 	Date fecha

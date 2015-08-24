@@ -44,10 +44,6 @@ class EmbarqueController {
         params.sort=params.sort?:'lastUpdated'
         params.order='desc'
         def periodo=session.periodoEmbarques
-        // def list=Embarque
-        //     .executeQuery(
-        //         "select e.id,e.bl,e.nombre,e.proveedor.nombre,e.contenedores,e.fechaEmbarque,e.cuentaDeGastos,e.facturado,e.valor-e.facturado from Embarque e where date(e.dateCreated) between ? and ? order by e.dateCreated desc"
-        //         ,[periodo.fechaInicial,periodo.fechaFinal])
         def list=Embarque.findAll(
             "from Embarque e  where date(e.dateCreated) between ? and ? order by e.lastUpdated desc",
             [periodo.fechaInicial,periodo.fechaFinal])
@@ -68,21 +64,22 @@ class EmbarqueController {
             notFound()
             return
         }
-
+        embarqueInstance.with{
+            nombre=embarqueInstance?.nombre?.toUpperCase()
+            bl=embarqueInstance?.bl?.toUpperCase()
+            comentario=embarqueInstance?.comentario?.toUpperCase()
+            moneda=Currency.getInstance('USD')
+            tc=1
+            embarqueInstance.validate()
+        }
         if (embarqueInstance.hasErrors()) {
             respond embarqueInstance.errors, view:'create'
             return
         }
 
         embarqueInstance.save flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'embarque.label', default: 'Embarque'), embarqueInstance.id])
-                redirect embarqueInstance
-            }
-            '*' { respond embarqueInstance, [status: CREATED] }
-        }
+        flash.message = message(code: 'default.created.message', args: [message(code: 'embarque.label', default: 'Embarque'), embarqueInstance.id])
+        redirect embarqueInstance
     }
 
     def edit(Embarque embarqueInstance) {

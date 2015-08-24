@@ -10,6 +10,7 @@
 	<content tag="header">
 		Consola para la administración usuarios y derechos
 	</content>
+	<content tag="subHeader"></content>
 
 	<content tag="periodo"></content>
 	<content tag="operaciones">

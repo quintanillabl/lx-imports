@@ -4,6 +4,8 @@ import com.luxsoft.utils.Periodo
 import com.luxsoft.impapx.Empresa
 class CoreFilters {
 
+    
+
     def filters = {
         
         all(controller:'*', action:'*') {
@@ -25,6 +27,9 @@ class CoreFilters {
                 if(!session.tipoDeCambio){
                     session.tipoDeCambio=TipoDeCambio.buscarTipoDeCambioOperativo()
                 }
+                // if(!session.username){
+                //     session.username=applicationContext.springSecurityService.getCurrentUser().nombre
+                // }
                 /*
                 if(!session.periodoContable){
                     def today=new Date()
