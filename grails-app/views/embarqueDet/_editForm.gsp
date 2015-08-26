@@ -128,8 +128,7 @@
 		
 		
 		$("#cantidad").focusout(function(){
-
-			/*
+			
 			var cantidad=$(this).autoNumeric('get');
 
 			var kilosPorMillar=$("#kilosPorMillar").val();
@@ -141,7 +140,7 @@
 
 			//console.log('Kilos estimados:' +cantidad+'/'+factor+' * '+kilosPorMillar);
 			$("#kilosEstimados").val(kilosEstimados);	
-			*/
+			
 		});
 
 	});

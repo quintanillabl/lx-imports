@@ -4,41 +4,37 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.springframework.dao.DataIntegrityViolationException
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasAnyRole('VENTAS','COMPRAS')"])
 class DistribucionController {
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [create: 'GET',save:'POST', edit: 'GET', delete: 'DELETE',update:'PUT']
 
-    def index() {
-        redirect action: 'list', params: params
+    def index(Integer max) {
+
+        def periodo=session.periodo
+        def tipo=params.tipo
+        def hql="from Distribucion c  where date(c.fecha) between ? and ? order by c.fecha desc"
+        def list=Distribucion.findAll(hql,[periodo.fechaInicial,periodo.fechaFinal])
+        [distribucionInstanceList:list,tipo:tipo]
     }
 
-    def list() {
-        //params.max = Math.min(params.max ? params.int('max') : 50, 100)
-		params.sort='id'
-		params.order='desc'
-        [distribucionInstanceList: Distribucion.list(params), distribucionInstanceTotal: Distribucion.count()]
+    def create(){
+    	[distribucionInstance: new Distribucion(fecha:new Date())]
+    }
+    
+    def save(Distribucion distribucionInstance){
+    	if(distribucionInstance.hasErrors()){
+    		render view:'create',model:[distribucionInstance:distribucionInstance]
+    		return
+    	}
+    	distribucionInstance.save failOnError:true,flush:true
+    	flash.message="Distribución ${distribucionInstance.id} generada"
+    	redirect action:'edit',id:distribucionInstance.id
     }
 
-    def create() {
-		switch (request.method) {
-		case 'GET':
-			params.fecha=new Date()
-        	[distribucionInstance: new Distribucion(params)]
-			break
-		case 'POST':
-		
-			//params.embarque=Embarque.get(params.embarqueId)
-	        def distribucionInstance = new Distribucion(params)
-	        if (!distribucionInstance.save(flush: true)) {
-	            render view: 'create', model: [distribucionInstance: distribucionInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.created.message', args: [message(code: 'distribucion.label', default: 'Distribucion'), distribucionInstance.id])
-	        redirect action: 'edit', id: distribucionInstance.id
-			break
-		}
-    }
+    
 
     def show() {
         def distribucionInstance = Distribucion.get(params.id)
@@ -51,68 +47,23 @@ class DistribucionController {
         [distribucionInstance: distribucionInstance]
     }
 
-    def edit() {
-		switch (request.method) {
-		case 'GET':
-	        def distribucionInstance = Distribucion.get(params.id)
-	        if (!distribucionInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'distribucion.label', default: 'Distribucion'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        [distribucionInstance: distribucionInstance]
-			break
-		case 'POST':
-	        def distribucionInstance = Distribucion.get(params.id)
-	        if (!distribucionInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'distribucion.label', default: 'Distribucion'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (distribucionInstance.version > version) {
-	                distribucionInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'distribucion.label', default: 'Distribucion')] as Object[],
-	                          "Another user has updated this Distribucion while you were editing")
-	                render view: 'edit', model: [distribucionInstance: distribucionInstance]
-	                return
-	            }
-	        }
-
-	        distribucionInstance.properties = params
-
-	        if (!distribucionInstance.save(flush: true)) {
-	            render view: 'edit', model: [distribucionInstance: distribucionInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'distribucion.label', default: 'Distribucion'), distribucionInstance.id])
-	        redirect action: 'show', id: distribucionInstance.id
-			break
-		}
+    def edit(Distribucion distribucionInstance){
+    	[distribucionInstance:distribucionInstance]
     }
 
-    def delete() {
-		println 'eliminando params: '+params
-        def distribucionInstance = Distribucion.get(params.id)
-        if (!distribucionInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'distribucion.label', default: 'Distribucion'), params.id])
-            redirect action: 'list'
-            return
-        }
+    def update(Distribucion distribucionInstance){
+    	if(distribucionInstance.hasErrors()){
+    		render view:'edit',model:[distribucionInstance:distribucionInstance]
+    		return
+    	}
+    	distribucionInstance.save failOnError:true
+    }
 
-        try {
-            distribucionInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'distribucion.label', default: 'Distribucion'), params.id])
-            redirect action: 'list'
-        }
-        catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'distribucion.label', default: 'Distribucion'), params.id])
-            redirect action: 'show', id: params.id
-        }
+    def delete(Distribucion distribucionInstance) {
+		
+        distribucionInstance.delete flush:true
+        flash.message="Distribución ${distribucionInstance.id} eliminada"
+        redirect action:'index'
     }
 	
 	def embarquesDisponiblesJSONList(){
@@ -125,10 +76,7 @@ class DistribucionController {
 		render embarquesList as JSON
 	}
 	
-	def selectorDePartidas( ){
-		//println 'selector de partidas: '+params
-		
-		//print 'Projection: '+res.getClass()
+	def selectorDePartidas(Distribucion distribucion ){
 		def embarques=EmbarqueDet.findAll(
 			"from EmbarqueDet d where d.embarque.id=? and d.contenedor not in(select x.contenedor from DistribucionDet x where x.distribucion.id=? )"
 				,[params.long('embarqueId'),params.long('id')])
@@ -136,16 +84,16 @@ class DistribucionController {
 			it.contenedor
 		}
 		def res =embarques.groupBy({it.contenedor})
-		
 		[distribucionId:params.id
 			,sucursal:params.sucursal
 			,embarqueId:params.embarqueId
 			,partidas:res]
 	}
 	
-	def asignarContenedor(){
+	def asignarContenedor(Distribucion dist,String sucursal){
 		//println 'asignando contenedor: '+params
-		def dist=Distribucion.get(params.distribucionId)
+		//def dist=Distribucion.get(params.distribucionId)
+		//println 'Agregando adignacion a coleccion: '+dist.partidas.size()
 		def embarques=EmbarqueDet.findAll("from EmbarqueDet d left join fetch d.compraDet c left join fetch c.compra com where d.embarque=?",[dist.embarque])
 		JSONArray jsonArray=JSON.parse(params.partidas);
 		
@@ -154,7 +102,7 @@ class DistribucionController {
 				row.contenedor==it
 			}
 			asignables.each { row ->
-				println 'Asignando EmbarqueDet: '+row.class
+				println 'Asignando EmbarqueDet: '+row.class+'  Registro: '+row
 				def dd=new DistribucionDet()
 				dd.embarqueDet=row
 				dd.contenedor=row.contenedor
@@ -162,14 +110,14 @@ class DistribucionController {
 				dd.cantidad=row.cantidad
 				dd.kilosNetos=row.kilosNetos
 				dd.cantidadPorTarima=dd.cantidad/dd.tarimas
-				dd.sucursal=params.sucursal
+				dd.sucursal=sucursal
 				dd.comentarios=row.compraDet.compra.comentario
-				dist.addToPartidas(dd)
-				
+				def res=dist.addToPartidas(dd)
+				dist.save flush:true
 			}
-			
+			dist.save failOnError:true,flush:true
 		}
-		dist.save(failOnError:true)
+		//dist.save(failOnError:true)
 		def res=[disttribucionId:dist.id]
 		render res as JSON
 	}
@@ -180,27 +128,11 @@ class DistribucionController {
 		JSONArray jsonArray=JSON.parse(params.partidas);
 		jsonArray.each {det ->
 			def found=dist.partidas.find{ it.id==det.toLong()}
-			println 'Eliminando: DistribucionDet: '+found.id+ " Size: "+dist.partidas.size()
+			//println 'Eliminando: DistribucionDet: '+found.id+ " Size: "+dist.partidas.size()
 			dist.removeFromPartidas(found)
-			println 'After:'+dist.partidas.size()
+			//println 'After:'+dist.partidas.size()
 		}
-		//dist.save(flush:true)
-		/*
-		JSONArray jsonArray=JSON.parse(params.partidas);
-		def dist=null
-		jsonArray.each {
-			def det=DistribucionDet.get(it.toLong())
-			det.delete(flush:true)
-			//if(dist==null)
-				//dist=det.distribucion
-			//println 'Eliminando distribucionDet: '+det.id +
-			//dist.removeFromPartidas(det)
-		}
-		//dist=dist.save(flush:true)
-		//render(template:'partidasGrid',partidas:dist.partidas)
-		//render [res:'OK'] as JSON
-		 
-		 */
+		dist.save failOnError:true,flush:true
 		render 'OK'
 		
 	}
@@ -244,7 +176,7 @@ class DistribucionController {
 	}
 	
 	def selectorParaFechaDeEntrega(){
-		println 'selector de partidas: '+params
+		//println 'selector de partidas: '+params
 		def embarques=EmbarqueDet.findAll(
 			"from EmbarqueDet d where d.embarque.id=? and d.contenedor  in(select x.contenedor from DistribucionDet x where x.distribucion.id=? )"
 				,[params.long('embarqueId'),params.long('id')])
@@ -270,12 +202,13 @@ class DistribucionController {
 			def selected=distribucion.partidas.findAll{
 				it.contenedor==contenedor
 			}
-			println 'Partidas seleccionadas: '+selected
+			//println 'Partidas seleccionadas: '+selected
 			selected.each {
-				println 'Entrega: '+it.id+'  Fecha; '+fechaEntrega
+				//println 'Entrega: '+it.id+'  Fecha; '+fechaEntrega
 				it.programacionDeEntrega=fechaEntrega
 			}
 		}
+		distribucion.save failOnError:true,flush:true
 		dataToRender.res='OK'
 		render dataToRender as JSON
 	}

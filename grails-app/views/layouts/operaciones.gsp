@@ -129,7 +129,6 @@
                 });
 
                 $('.date').bootstrapDP({
-                    minViewMode: 1,
                     format: 'dd/mm/yyyy',
                     keyboardNavigation: false,
                     forceParse: false,

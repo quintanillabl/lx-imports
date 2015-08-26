@@ -4,6 +4,8 @@ import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 
 class CompraDet {
+
+	static auditable = true
 	
 	Producto producto
 	BigDecimal solicitado

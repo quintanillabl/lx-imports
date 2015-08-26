@@ -43,12 +43,13 @@
 				<p class="form-control-static"><g:formatDate date="${cfdiInstance?.fecha}" format="dd/MM/yyyy"/> </p>
 			</div>
 		</div>
-		<div class="form-group">
+		
+		%{-- <div class="form-group">
 			<label for="socio" class="col-sm-2 control-label">Receptor</label>
 			<div class="col-sm-4">
 				<p class="form-control-static"><g:fieldValue bean="${cfdiInstance}" field="receptor"/> </p>
 			</div>
-		</div>
+		</div> 
 		
 		<div class="form-group">
 			<label for="socio" class="col-sm-2 control-label">RFC</label>
@@ -56,7 +57,7 @@
 				<p class="form-control-static"><g:fieldValue bean="${cfdiInstance}" field="receptorRfc"/> </p>
 			</div>
 		</div>
-				
+				--}%
 	</fieldset>
 
 

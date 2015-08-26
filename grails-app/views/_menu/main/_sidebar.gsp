@@ -63,10 +63,12 @@
             </nav:menu> 
         </sec:ifAnyGranted>
 	</li>
-    
+
+    <g:render template="/_menu/main/operaciones"/>
     <g:render template="/_menu/main/importaciones"/>
     <g:render template="/_menu/main/cuentasPorPagar"/>
     <g:render template="/_menu/main/contabilidad"/>
     <g:render template="/_menu/main/tesoreria"/>
     <g:render template="/_menu/main/sistemas"/>
+    
 </ul>

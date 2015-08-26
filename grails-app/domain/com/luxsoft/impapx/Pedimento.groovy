@@ -16,6 +16,8 @@ import util.Rounding;
  *
  */
 class Pedimento {
+
+	static auditable = true
 	
 	Date fecha
 	String pedimento

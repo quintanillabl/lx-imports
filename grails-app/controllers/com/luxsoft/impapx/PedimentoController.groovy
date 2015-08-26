@@ -40,23 +40,21 @@ class PedimentoController {
     }
 
     def create() {
-		switch (request.method) {
-		case 'GET':
-        	[pedimentoInstance: new Pedimento(params)]
-			break
-		case 'POST':
-			println 'Alta de pedimento: '+params
-			params.pedimento=params.pedimento?.replace('-', '')
-	        def pedimentoInstance = new Pedimento(params)
-	        if (!pedimentoInstance.save(flush: true)) {
-	            render view: 'create', model: [pedimentoInstance: pedimentoInstance]
-	            return
-	        }
+    	[pedimentoInstance: new Pedimento(fecha:new Date())]
+    }
 
-			flash.message = message(code: 'default.created.message', args: [message(code: 'pedimento.label', default: 'Pedimento'), pedimentoInstance.id])
-	        redirect action: 'edit', id: pedimentoInstance.id
-			break
-		}
+    def save(Pedimento pedimentoInstance){
+    	
+    	pedimentoInstance.pedimento=pedimentoInstance.pedimento?.replace('-', '')
+    	pedimentoInstance.validate()
+    	if(pedimentoInstance.hasErrors()){
+    		flash.message="Errores de validacion"
+    		render view:'create',model:[pedimentoInstance:pedimentoInstance]
+    		return
+    	}
+    	pedimentoInstance.save failOnError:true
+    	flash.message="Pedimento ${pedimentoInstance.id} registrado"
+    	redirect action:'edit', id:pedimentoInstance.id 
     }
 
     def show() {
@@ -114,6 +112,16 @@ class PedimentoController {
 		}
     }
 
+    def update(Pedimento pedimentoInstance){
+    	if(pedimentoInstance.hasErrors()){
+    		render view:'edit',model:[pedimentoInstance:pedimentoInstance]
+    		return
+    	}
+    	pedimentoInstance.save failOnError:true,flush:true
+    	flash.message="Pedimento ${pedimentoInstance.id} actualizado "
+    	redirect action:'edit',id:pedimentoInstance.id
+    }
+
     def delete() {
         def pedimentoInstance = Pedimento.get(params.id)
         if (!pedimentoInstance) {
@@ -164,22 +172,9 @@ class PedimentoController {
 	 * @return
 	 */
 	def eliminarAsignacionDeEmbarques(){
-		
 		JSONArray jsonArray=JSON.parse(params.partidas);
-		def pedimento=Pedimento.findById(params.long('pedimentoId'),[fetch:[embarques:'select']])
-		jsonArray.each{
-			def id=it.toLong()
-			def embarqueDet=pedimento.embarques.find{ det ->
-				det.id==id
-			}
-			if(embarqueDet){
-				pedimento.removeFromEmbarques(embarqueDet)
-				embarqueDet.pedimento=null
-				embarqueDet.gastosPorPedimento=0
-			}
-		}
-		pedimento.actualizarCostos()
-		pedimento.actualizarImpuestos()
+		def pedimentoId=params.long('pedimentoId')
+		def pedimento=pedimentoService.quitarEmbarques(pedimentoId,jsonArray)
 		render(template:'embarquesGrid',model:[pedimentoInstance:pedimento])
 	}
 	

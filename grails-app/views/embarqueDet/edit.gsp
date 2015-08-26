@@ -5,8 +5,6 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>Partida de embarque ${embarqueDetInstance.id}</title>
 	<asset:javascript src="forms/forms.js"/>
-	<asset:stylesheet src="jquery-ui.css"/>
-	<asset:javascript src="jquery-ui/autocomplete.js"/>
 
 </head>
 <body>

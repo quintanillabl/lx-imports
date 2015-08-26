@@ -296,8 +296,6 @@ class EmbarqueController {
         render (template:'costosGrid' ,model: [partidas: list,embarqueInstance:embarque])
     }
 
-
-
     def contenedoresDeEmbarque(Long id){
         def contenedores=EmbarqueDet.executeQuery("\
             select d.embarque.id,d.embarque.bl ,d.contenedor,sum(d.kilosNetos) as kilosNetos \
@@ -309,5 +307,28 @@ class EmbarqueController {
         }
         render( template:"contenedoresGrid",model:[contenedores:rows])
     }
+
+    @Transactional
+    def eliminarPartidas(){
+        log.info 'Eliminando partidas de embarque :'+params
+        def res=embarqueService.eliminarPartidas(params)
+        def data=[status:'OK']
+        render data as JSON
+    }
+
+    @Transactional
+    def asignandoContenedor(String contenedor){
+        log.info "Asignando contenedor ${contenedor} "+params.partidas
+        JSONArray jsonArray=JSON.parse(params.partidas);
+        jsonArray.each{
+            def det=EmbarqueDet.get(it.toLong())
+            det.contenedor=contenedor
+            det.save flush:true
+        }
+        def res=[contenedor:params.contenedor]
+        render res as JSON
+    }
+
+   // def disponibles=EmbarqueDet.executeQuery("select distinct(det.embarque) from EmbarqueDet det where det not in(select v.embarque from VentaDet v)")
 
 }

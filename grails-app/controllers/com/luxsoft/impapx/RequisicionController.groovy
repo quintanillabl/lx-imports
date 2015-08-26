@@ -8,6 +8,7 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import grails.plugin.springsecurity.annotation.Secured
 
+
 @Secured(["hasAnyRole('COMPRAS','TESORERIA')"])
 @Transactional(readOnly = true)
 class RequisicionController {
@@ -15,6 +16,8 @@ class RequisicionController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     def requisicionService
+
+    def reportService
 
 
     def index(Integer max) {
@@ -172,6 +175,19 @@ class RequisicionController {
         }
         println 'Embarques registrados: '+embarquesList.size()
         render embarquesList as JSON
+    }
+
+    def print(Requisicion requisicion){
+        def command=reportService.buildCommand(session.empresa,'Requisicion')
+        params.COMPANY=session.empresa.nombre
+        params.ID=requisicion.id
+        params.MONEDA=requisicion.moneda.toString()
+        def stream=reportService.build(command,params)
+        def file="Requisicion_${requisicion.id}.pdf"
+        render(
+            file: stream.toByteArray(), 
+            contentType: 'application/pdf',
+            fileName:file)
     }
 }
 

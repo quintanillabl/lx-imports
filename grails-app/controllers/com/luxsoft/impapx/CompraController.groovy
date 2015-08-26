@@ -5,6 +5,7 @@ package com.luxsoft.impapx
 import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 import grails.converters.JSON
+import org.codehaus.groovy.grails.web.json.JSONArray
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(["hasRole('COMPRAS')"])
@@ -15,6 +16,8 @@ class CompraController {
 
     def filterPaneService
 
+    def compraService
+
     def index(Integer max) {
         def periodo=session.periodo
         def list=Compra.findAll(
@@ -23,29 +26,14 @@ class CompraController {
         [compraInstanceList:list]
     }
 
-    // def index(Integer max) {
-    //     params.max = Math.min(max ?: 40, 100)
-    //     params.sort=params.sort?:'fecha'
-    //     params.order='desc'
-    //     respond Compra.list(params), model:[compraInstanceCount: Compra.count()]
-    // }
-
-    def filter = {
-        
-        if(!params.max) params.max = 10
-        render( view:'index',
-            model:[ compraInstanceList: filterPaneService.filter( params, Compra ),
-            compraInstanceCount: filterPaneService.count( params, Compra ),
-            filterParams: org.grails.plugin.filterpane.FilterPaneUtils.extractFilterParams(params),
-            params:params ] )
-    }
+    
 
     def show(Compra compraInstance) {
         respond compraInstance
     }
 
     def create() {
-        respond new Compra(params)
+        respond new Compra(fecha:new Date())
     }
 
     @Transactional
@@ -140,4 +128,52 @@ class CompraController {
         }
         render comprasList as JSON
     }
+
+    @Transactional
+    def agregarPartida(PartidaDeCompraCommand command){
+        log.info "Agregando "+command
+        def compra=compraService.agregarPartida(command.compra,command.producto,command.cantidad)
+        flash.message="Partida agregada a la compra ${compra.id}"
+        redirect action:'edit',id:compra.id
+    }
+
+    @Transactional
+    def eliminarPartida(){
+        def data=[:]
+        def compraInstance = Compra.findById(params.compraId,[fetch:[partidas:'eager']])
+        JSONArray jsonArray=JSON.parse(params.partidas);
+        //println 'Partidas a eliminar: '+jsonArray
+        try {
+            jsonArray.each {
+                def det=CompraDet.get(it.toLong())
+                
+                if(det){
+                    
+                    compraInstance.removeFromPartidas(det)
+                    //println 'Eliminando : '+det+ 'res: '+compraInstance.partidas.size()
+                }
+            }
+            compraInstance.save(failOnError:true)
+            data.res='PARTIDAS_ELIMINADAS'
+        }
+        catch (RuntimeException e) {
+            e.printStackTrace()
+            data.res="ERROR"
+            data.error=ExceptionUtils.getRootCauseMessage(e)
+        }
+        render data as JSON
+    }
 }
+
+class PartidaDeCompraCommand{
+    Compra compra
+    Producto producto
+    BigDecimal cantidad
+
+    String toString(){
+        "Partida de compra ${compra.id} Producto:${producto}  Cantidad:${cantidad}"
+    }
+
+}
+
+

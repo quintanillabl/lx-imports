@@ -8,124 +8,71 @@ import org.codehaus.groovy.grails.web.json.JSONArray
 import org.springframework.dao.DataIntegrityViolationException
 import com.luxsoft.cfdi.Cfdi
 
+import grails.plugin.springsecurity.annotation.Secured
 
+@Secured(["hasAnyRole('VENTAS','COMPRAS')"])
 class VentaController {
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [create: 'GET', edit:'GET',save:'POST',update:'PUT',delete: 'DELETE']
 	
 	def ventaService
 	def printService
 
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    def list() {
-        params.max = Math.min(params.max ? params.int('max') : 50, 500)
 		params.sort='id'
 		params.order= "desc"
-        [ventaInstanceList: Venta.findAllByTipo('VENTA',params), ventaInstanceTotal: Venta.countByTipo('VENTA')]
+		def periodo=session.periodo
+		def args=[periodo.fechaInicial,periodo.fechaFinal,'VENTA']
+		def list=Venta.findAll(
+			"from Venta v where date(v.fecha) between ? and ? and v.tipo=? order by v.fecha desc",
+			args)
+		println list.size()
+        [ventaInstanceList:list]
     }
 
     def create() {
-		switch (request.method) {
-		case 'GET':
-		println 'Creando venta con: '+params
-			params.tc=1.0
-			def venta=new Venta(params)
-			venta.fecha=new Date()
-			venta.cuentaDePago="0000"
-			venta.clase=params.clase
-        	[ventaInstance:venta]
-			break
-		case 'POST':
-			println 'Generando venta: '+params
-			//params.cliente=Cliente.get(params.cliente)
-			params.vencimiento=new Date()
-			params.importe=0
-			params.impuestos=0
-			params.descuentos=0
-			params.subtotal=0
-			params.total=0
-			params.kilos=0
-	        def ventaInstance = new Venta(params)
-	        if (!ventaInstance.save(flush: true)) {
-	            render view: 'create', model: [ventaInstance: ventaInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.created.message', args: [message(code: 'venta.label', default: 'Venta'), ventaInstance.id])
-	        redirect action: 'edit', id: ventaInstance.id
-			break
-		}
+    	respond new Venta(fecha:new Date(),cuentaDePago:'0000',clase:params.clase)
     }
 
-    def show() {
-        def ventaInstance = Venta.get(params.id)
+    def save(Venta ventaInstance){
+    	if(ventaInstance.hasErrors()){
+    		render view:'create',model:[ventaInstance:ventaInstance]
+    		return
+    	}
+    	ventaInstance.save failOnError:true,flush:true
+    	flash.message = message(code: 'default.created.message', args: [message(code: 'venta.label', default: 'Venta'), ventaInstance.id])
+	    redirect action: 'edit', id: ventaInstance.id
+    }
+
+    def show(Venta ventaInstance) {
         if (!ventaInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'venta.label', default: 'Venta'), params.id])
             redirect action: 'list'
             return
         }
-		def cfdi=Cfdi.findBySerieAndOrigen('FAC',params.id)
+		def cfdi=Cfdi.findBySerieAndOrigen('FAC',ventaInstance.id)
 		if(cfdi?.comentario?.contains("CANCELADO"))
 			cfdi=null
         [ventaInstance: ventaInstance,cfdi:cfdi]
     }
 
-    def edit() {
-		switch (request.method) {
-		case 'GET':
-			
-			def ventaInstance=Venta.findById(params.id,[fetch:[partidas:'select']])
-	        if (!ventaInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'venta.label', default: 'Venta'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-			//def cfdi=Cfdi.findByOrigen(params.id.toString())
-			def cfdi=Cfdi.findBySerieAndOrigen('FAC',params.id)
-			//println 'Cfdi localizado: '+cfdi
-	        [ventaInstance: ventaInstance,partidas:ventaInstance.partidas,cfdi:cfdi]
-			break
-		case 'POST':
-	        def ventaInstance = Venta.findById(params.id,[fetch:[partidas:'select']])
-	        if (!ventaInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'venta.label', default: 'Venta'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
+    def update(Venta ventaInstance){
+    	if(ventaInstance.hasErrors()){
+    		def cfdi=Cfdi.findBySerieAndOrigen('FAC',params.id)
+    		render view:'edit',model:[ventaInstance:ventaInstance,cfdi:cfdi]
+    		return
+    	}
+    	ventaInstance.save failOnError:true,flush:true
+    	flash.message="Venta ${ventaInstance.id} actualizada"
+    	redirect action:'edit',id:ventaInstance.id
+    }
 
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (ventaInstance.version > version) {
-	                ventaInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'venta.label', default: 'Venta')] as Object[],
-	                          "Another user has updated this Venta while you were editing")
-	                render view: 'edit', model: [ventaInstance: ventaInstance]
-	                return
-	            }
-	        }
-			//no se permiten cambios de cliente
-			bindData(ventaInstance,params,[exclude:'cliente'])
-			ventaInstance.cuentaDePago=ventaInstance.cliente.cuentaDePago
-				
-	        //ventaInstance.properties = params
-
-	        if (!ventaInstance.save(flush: true)) {
-	            render view: 'edit', model: [ventaInstance: ventaInstance]
-	            return
-	        } 
-
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'venta.label', default: 'Venta'), ventaInstance.id])
-	        redirect action: 'show', id: ventaInstance.id
-			break
-		}
+    def edit(Venta ventaInstance) {
+    	def cfdi=Cfdi.findBySerieAndOrigen('FAC',params.id)
+	    [ventaInstance: ventaInstance,cfdi:cfdi]
     } 
 
-    def delete() {
-        def ventaInstance = Venta.get(params.id)
-		
+    def delete(Venta ventaInstance) {
         if (!ventaInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'venta.label', default: 'Venta'), params.id])
             redirect action: 'list'
@@ -136,27 +83,12 @@ class VentaController {
 			redirect action: 'list'
 			return
 		}
-
-        try {
-            ventaInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'venta.label', default: 'Venta'), params.id])
-            redirect action: 'list'
-        }
-        catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'venta.label', default: 'Venta'), params.id])
-            redirect action: 'show', id: params.id
-        }
+        ventaInstance.delete(flush: true)
+		flash.message = message(code: 'default.deleted.message', args: [message(code: 'venta.label', default: 'Venta'), params.id])
+        redirect action: 'index'
     }
 	
 	def contenedoresPendientes(){
-		
-		//println 'Buscando contenedores pendientes...'+params
-		/*
-		def contenedores=EmbarqueDet.executeQuery("\
-			select distinct(d.contenedor) from DistribucionDet d \
-			where d.embarqueDet.precioDeVenta>0 \
-			  and d.embarqueDet not in(select x.embarque.id from VentaDet x )")
-			  */
 		def contenedores=DistribucionDet.executeQuery("\
 			select distinct(d.contenedor) from EmbarqueDet d \
 			 where d.precioDeVenta>=0\
@@ -164,7 +96,6 @@ class VentaController {
 			 and d.pedimento!=null \
 			 and d not in(select x.embarque from VentaDet x )\
 			 order by d.contenedor ",[params.term+'%'],[max: 10])
-		//println 'Contenedores registrados: '+contenedores.size()
 		def res=contenedores.collect{ row ->
 			[id:row,label:row,value:row]
 		}
@@ -172,6 +103,7 @@ class VentaController {
 	}
 	
 	def agregarContenedor(long ventaId,String contenedor){
+		println 'Agregando contenedor: '+params
 		try {
 			def venta=ventaService.agregarContenedor(ventaId, contenedor)
 			venta=Venta.findById(venta.id,[fetch:[partidas:'select']])
@@ -182,8 +114,6 @@ class VentaController {
 			def partidas=VentaDet.findAll("from VentaDet d where d.venta.id=?",[e.venta.id])
 			render template:"partidas",model:[ventaInstance:e.venta,partidas:partidas]
 		} 
-		
-		
 	}
 	
 	def eliminarPartidas(){

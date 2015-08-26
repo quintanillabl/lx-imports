@@ -29,7 +29,7 @@ class FacturaDeImportacionController {
     }
 
     def create() {
-        respond new FacturaDeImportacion(params)
+        respond new FacturaDeImportacion(fecha:new Date(),vencimiento:new Date()+1)
     }
 
     @Transactional

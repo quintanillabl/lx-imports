@@ -1,6 +1,6 @@
 <%@ page import="com.luxsoft.impapx.DistribucionDet" %>
 <div class="btn-group">
-	
+
 	<g:link action="selectorDePartidas" class="btn btn-primary" id="${distribucionInstance?.id}"
 		params="[embarqueId:distribucionInstance.embarque.id]">
 		<i class="icon-plus icon-white"></i>
@@ -11,34 +11,16 @@
 		<i class="icon-trash icon-white"></i>
 		<g:message code="default.button.delete.label" default="Delete" />
 	</button>
-	
-  	
-  	
-  	<g:link action="selectorParaFechaDeEntrega" class="btn " id="${distribucionInstance?.id}"
+
+  	<g:link action="selectorParaFechaDeEntrega" class="btn " id="${distribucionInstance?.id}" class="btn btn-default btn-outline"
 		params="[embarqueId:distribucionInstance.embarque.id]">
 		<i class="icon-plus icon-white"></i>
 		Entrega
 	</g:link>
-	
-  	<%--
-  	<button  class="btn" data-target="#asignarEntregaDialog" data-toggle="modal">
-  		Entrega
-  	</button> 
-  	<button  class="btn" data-target="#asignarEntradaDialog" data-toggle="modal">
-  		Entrada
-  	</button>--%>
-  	<button  class="btn" data-target="#programacionDeEntrega" data-toggle="modal">
+  	
+  	<button  class="btn btn-default btn-outline" data-target="#programacionDeEntrega" data-toggle="modal">
   		Reporte
   	</button>
-  	
-	<%--
-	<g:link class="btn "  action="impresionDeDistribucion" id="${distribucionInstance.id}" target="_blank">
-		<i class="icon-print"></i>
-		Imprimir
-	</g:link>
-	 --%>
-	
-	
 	
 </div>
 
@@ -53,21 +35,35 @@
 </g:jasperReport>
 
 
-<div class="modal hide fade" id="programacionDeEntrega" tabindex=-1 role="dialog" aria-labelledby="myModalLabel">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h4 class="myModalLabel">Programación de entrega</h4>
+<div class="modal fade" id="programacionDeEntrega" tabindex="-1">
+	<div class="modal-dialog ">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="myModalLabel">Programación de entrega</h4>
+			</div>
+			
+			<div class="modal-body">
+				<g:jasperReport jasper="ProgramacionDeEntregaDeContenedores" format="PDF" name="" buttonPosition="bottom">
+					<g:hiddenField name="ID" value="${distribucionInstance.id}"/>
+					<input id="ICONTACTO" type="text" name="ICONTACTO" value="" placeholder="Contacto" class="input-xxlarge">
+					<input id="ITELEFONO" type="text" name="ITELEFONO" value="" placeholder="Dirección" class="input-xxlarge">
+					<input id="IDIRECCION" type="text" name="IDIRECCION" value="" placeholder="Teléfono" class="input-xxlarge">
+				</g:jasperReport>
+			</div>
+			
+			<div class="modal-footer">
+				
+			</div>
+			
+
+		</div>
+		<!-- moda-content -->
 	</div>
-	<div class="modal-body">
-		<g:jasperReport jasper="ProgramacionDeEntregaDeContenedores" format="PDF" name="" buttonPosition="bottom">
-			<g:hiddenField name="ID" value="${distribucionInstance.id}"/>
-			<input id="ICONTACTO" type="text" name="ICONTACTO" value="" placeholder="Contacto" class="input-xxlarge">
-			<input id="ITELEFONO" type="text" name="ITELEFONO" value="" placeholder="Dirección" class="input-xxlarge">
-			<input id="IDIRECCION" type="text" name="IDIRECCION" value="" placeholder="Teléfono" class="input-xxlarge">
-		</g:jasperReport>
-	</div>
-	
+	<!-- modal-di -->
 </div>
+
+
 
 <div class="modal hide fade" id="asignarEntregaDialog" tabindex=-1 role="dialog" 
 	aria-labelledby="myModalLabel">
@@ -87,14 +83,14 @@
 				
 				<div class="form-actions">
 					<a href="#" class="btn" data-dismiss="modal">Cancelar</a>
-					<g:submitToRemote 
+					%{-- <g:submitToRemote 
 						url="[controller:'distribucion', action:'asignarFechaEntrega']"
 						before="hideEntregaForm()"
 						onComplete="reloadPage();"
 						class="btn btn-primary"
 						value="Aceptar"
 						 >
-					</g:submitToRemote>
+					</g:submitToRemote> --}%
 				</div>
 				
 			</g:form>
@@ -123,14 +119,14 @@
 				
 				<div class="form-actions">
 					<a href="#" class="btn" data-dismiss="modal">Cancelar</a>
-					<g:submitToRemote 
+					%{-- <g:submitToRemote 
 						url="[controller:'distribucion', action:'asignarFechaEntrada']"
 						before="hideEntradaForm()"
 						onComplete="reloadPage();"
 						class="btn btn-primary"
 						value="Aceptar"
 						 >
-					</g:submitToRemote>
+					</g:submitToRemote> --}%
 				</div>
 				
 			</g:form>
@@ -140,6 +136,56 @@
 	
 </div>
 
+<script type="text/javascript">
+	$(function(){
+		$('#partidasGrid').dataTable({
+			aLengthMenu: [[20, 40, 60, 100, -1], [20, 40,60, 100, "Todos"]],
+            responsive: true,
+            "language": {
+				"url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
+    		},
+    		"order": []
+        });
+		$("tbody tr").on('click',function(){
+			$(this).toggleClass("success selected");
+		});
+        function selectedRows(){
+			var res=[];
+			var data=$("tr.selected").each(function(){
+				var tr=$(this);
+				res.push(tr.attr("id"));
+			});
+			return res;
+		};
+
+        $("#elimiarBtn").click(function(e){
+        	var res=selectedRows();
+        	if(res.length==0){
+        		alert('Debe seleccionar al menos un registro');
+        		return;
+        	}
+        	var ok=confirm('Quitar  ' + res.length+' partida(s)?');
+        	if(!ok)
+        		return;
+        	console.log('Removiendo facturas: '+res);
+
+        	$.post(
+        		"${createLink(controller:'distribucion',action:'eliminarPartida')}",
+        		{
+        			partidas:JSON.stringify(res)
+        			,distribucionId:${distribucionInstance.id}
+        		}).done(function(data){
+        			location.reload();
+        		}).fail(function(jqXHR, textStatus, errorThrown){
+        			console.log(errorThrown);
+        			alert("Error: "+errorThrown);
+        		});
+        	
+        });
+	});
+</script>
+
+<%--
 <r:script>
 	
 	$(function(){
@@ -196,14 +242,7 @@
 			});
 		}
 		
-		function selectedRows(){
-			var res=[];
-			var data=$("tr.selected").each(function(){
-				var tr=$(this);
-				res.push(tr.attr("id"));
-			});
-			return res;
-		}
+		
 		
 		$("#partidasGrid tbody tr").live('click',function(){
 			console.log('Ultima seleccion:'+$(this).last().attr('id'))
@@ -270,3 +309,4 @@
 	}		
 				
 </r:script>
+--%>

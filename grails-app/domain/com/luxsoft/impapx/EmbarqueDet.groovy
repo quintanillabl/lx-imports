@@ -8,6 +8,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder
 import util.Rounding;
 
 class EmbarqueDet {
+
+	static auditable = true
 	
 	Producto producto
 	CompraDet compraDet

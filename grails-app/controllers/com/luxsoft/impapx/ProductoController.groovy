@@ -134,6 +134,14 @@ class ProductoController {
         }
         render dataToRender as JSON
     }
+
+    def productosJSONList(){
+        def productos=Producto.findAllByClaveIlike(params.term+"%",[max:50,sort:"clave",order:"desc"])
+        def productosList=productos.collect { prov ->
+            [id:prov.id,label:prov.toString(),value:prov.toString(),precioCredito:prov.precioCredito]
+        }
+        render productosList as JSON
+    }
         
     def search(){
         //def productos=Producto.findAllByClaveIlikeOrDescripcionLike(params.term+"%",[max:50,sort:"clave",order:"desc"])

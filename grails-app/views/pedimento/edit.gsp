@@ -2,50 +2,49 @@
 <%@ page contentType="text/html;charset=ISO-8859-1" %>
 <!doctype html>
 <html>
-	<head>
-		<g:set var="entityName" value="${message(code: 'pedimento.label', default: 'Pedimento')}" />
-		<title><g:message code="default.edit.label" args="[entityName]" /></title>
-		<asset:javascript src="forms/forms.js"/>
-		<asset:stylesheet src="datatables/dataTables.css"/>
-		<asset:javascript src="datatables/dataTables.js"/> 
-	</head>
-	<body>
-		<div class="container">
-			<div class="row">
-				<div class="col-md-12">
-					<div class="page-header">
-						<h1>Pedimento: ${pedimentoInstance.pedimento} <small>${pedimentoInstance.proveedor}</small></h1>
-						<g:if test="${flash.message}">
-						  	<span class="label label-warning">${flash.message}</span>
-						</g:if>
-					</div>
-				</div>
-			</div>
+<head>
+	<meta name="layout" content="luxor">
+	<title>Pedimento ${pedimentoInstance.id}</title>
+	<asset:javascript src="forms/forms.js"/>
+</head>
+<body>
 
-			<div class="row">
-				<div class="col-md-12">
+<content tag="header">
+	Pedimento: ${pedimentoInstance.pedimento} (${pedimentoInstance.proveedor})
+</content>
+
+<content tag="subHeader">
+	<ol class="breadcrumb">
+    	<li><g:link action="index">Pedimentos</g:link></li>
+    	<li><g:link action="create">Alta</g:link></li>
+    	<li><g:link action="show" id="${pedimentoInstance.id}">Consulta</g:link></li>
+    	<li class="active"><strong>Edición</strong></li>
+	</ol>
+</content>
+
+<content tag="document">
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="ibox float-e-margins">
+				<lx:iboxTitle title="Titulo"/>
+			    <div class="ibox-content">
 					<ul class="nav nav-tabs" role="tablist">
-						<li class="">
-							<g:link action="index" >
-							    <i class="fa fa-step-backward"></i> Pedimentos
-							</g:link> 
-						</li>
 						<li class="active"><a href="#pedimento" data-toggle="tab">Pedimento</a></li>
 						<li class=""><a href="#embarques" data-toggle="tab">Embarques</a></li>
 					</ul>
-			  		<div class="tab-content"> <!-- Tab Content -->
+					<div class="tab-content"> 
 						<div class="tab-pane active" id="pedimento">
 							<g:render template="editForm" bean="${pedimentoInstance}"/>
 						</div>
 						<div class="tab-pane" id="embarques">
 							<g:render template="embarquesPanel" bean="${pedimentoInstance}"/>
 						</div>
-			  		</div>	<!-- End Tab Content -->
-				</div>
+			  		</div>	
+			    </div>
 			</div>
-			
-			
 		</div>
+	</div>
+</content>
 		
-	</body>
+</body>
 </html>

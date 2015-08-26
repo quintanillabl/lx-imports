@@ -18,6 +18,7 @@ class ReportService {
 	def jasperService	
 	
 
+
     ByteArrayOutputStream build(ReportCommand command,Map params){
     	if (command.hasErrors()) {
     	    throw new ValidationException('Errores de validacion en ReportCommand',command.errors)
@@ -29,6 +30,27 @@ class ReportService {
     		)
     	ByteArrayOutputStream  stream=jasperService.generateReport(reportDef)
 		return stream
+    }
+
+    ByteArrayOutputStream build(ReportCommand command,Map params,def data){
+        if (command.hasErrors()) {
+            throw new ValidationException('Errores de validacion en ReportCommand',command.errors)
+        }
+        def reportDef=new JasperReportDef(
+            name:command.reportName,
+            fileFormat:command.getJasperFormat(),
+            parameters:params,
+            reportData:data
+            )
+        ByteArrayOutputStream  stream=jasperService.generateReport(reportDef)
+        return stream
+    }
+
+    def buildCommand(def empresa,String report){
+        def command=new ReportCommand()
+        command.reportName=report
+        command.empresa=empresa
+        return command
     }
 
 }

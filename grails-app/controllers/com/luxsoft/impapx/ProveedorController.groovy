@@ -151,6 +151,7 @@ class ProveedorController {
         render provProducto as JSON
     }
     
+     @Transactional
     def actualizarCostoUnitarioEnProductos(){
         println 'Actualizar costo unitario de productos params:'+params
         JSONArray jsonArray=JSON.parse(params.partidas);
@@ -183,6 +184,7 @@ class ProveedorController {
         [productos:res,productosTotal:res.size(),proveedor:p]
     }
 
+     @Transactional
     def registrarProductos(){
         def data=[:]
         def proveedor = Proveedor.findById(params.proveedorId,[fetch:[productos:'eager']])
@@ -192,6 +194,7 @@ class ProveedorController {
             proveedor.addToProductos(producto:prod,costoUnitario:0.0,gramos:prod.gramos)
         }
         proveedor.save(failOnError:true)
+        flash.message="Nuevos productos asignados "
         render data as JSON
     }
 }

@@ -40,7 +40,7 @@
 					<div class="ibox-content">
 						<lx:errorsHeader bean="${requisicionInstance}"/>
 						<g:form name="createForm" action="save" class="form-horizontal" method="POST">	
-							<p>Registro de requisición de pago.</p>
+							
 							<f:with bean="requisicionInstance">
 								<f:field property="proveedor" 
 									wrapper="bootstrap3" widget-tabindex="2"/>

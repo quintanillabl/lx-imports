@@ -51,6 +51,9 @@
 //= require sugar.js
 //= require plugins/chosen/chosen.jquery.js
 
+//Mask
+//= require plugins/mask/jquery.mask.min.js
+
 
 //= require_self
 $(function(){

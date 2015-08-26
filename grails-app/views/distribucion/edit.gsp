@@ -1,77 +1,44 @@
 <%@ page import="com.luxsoft.impapx.Distribucion" %>
 <!doctype html>
 <html>
-	<head>
-		<meta name="layout" content="luxor">
-		<g:set var="entityName" value="${message(code: 'pedimento.label', default: 'Distribución')}" />
-		<title><g:message code="default.edit.label" args="[entityName]" /></title>
-		<r:require module="datepicker"/>
-		<r:require module="dataTables"/>
-		<r:require module="luxorForms"/>
-		<r:require module="luxorTableUtils"/>
-		
-		
-	</head>
-	<body>
-		<div class="container-fluid">
-		<div class="row-fluid">
+<head>
+	<meta name="layout" content="luxor">
+	<title>Distribución</title>
+	<asset:javascript src="forms/forms.js"/>
+</head>
 
-			<div class="span2">
-				<div class="well">
-					<ul class="nav nav-list">
-						<li class="nav-header">${entityName}</li>
-						<li>
-							<g:link class="list" action="list">
-								<i class="icon-list"></i>
-								<g:message code="default.list.label" args="[entityName]" />
-							</g:link>
-						</li>
-						<li>
-							<g:link class="create" action="create">
-								<i class="icon-plus"></i>
-								<g:message code="default.create.label" args="[entityName]" />
-							</g:link>
-						</li>
-					</ul>
-				</div>
-			</div>
-			
-			<div class="span10">
+<content tag="header"> Distribución: ${distribucionInstance.id}   Embarque: ${distribucionInstance.embarque.nombre} BL:${distribucionInstance.embarque.bl}</content>
+<content tag="subHeader">
+	<ol class="breadcrumb">
+    	<li><g:link action="index">Distribuciones</g:link></li>
+    	<li class="active"><strong>Edición</strong></li>
+	</ol>
+</content>
 
-				<div class="alert">
-					<h4><strong>
-					Lista de distribución: ${distribucionInstance.id} ( Embarque:${distribucionInstance.embarque})
-					</strong></h4>
-					
+<content tag="document">
+	<div class="ibox float-e-margins">
+		<lx:iboxTitle title="Cuenta de gastos"/>
+	    <div class="ibox-content">
+
+			<ul class="nav nav-tabs" id="myTab">
+				<li class="active"><a href="#partidas" data-toggle="tab"><i class="fa fa-th-list"></i>  Partidas</a></li>
+				<li class=""><a href="#distribucion" data-toggle="tab"><i class="fa fa-pencil"></i>  Propiedades</a></li>
+			</ul>
+
+	  		<div class="tab-content"> <!-- Tab Content -->
+	  			<div class="tab-pane active" id="partidas">
+	  				<br>
+	  				<g:render template="partidasPanel" bean="${distribucionInstance}"/>
+	  			</div>			
+				<div class="tab-pane " id="distribucion">
+					<br>
+					<g:render template="editForm" bean="${distribucionInstance}"/>
 				</div>
 				
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
+	  		</div>	<!-- End Tab Content -->
+	    </div>
+	</div>
+</content>
 
-				<g:hasErrors bean="${distribucionInstance}">
-				<bootstrap:alert class="alert-error">
-				<ul>
-					<g:eachError bean="${distribucionInstance}" var="error">
-					<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-					</g:eachError>
-				</ul>
-				</bootstrap:alert>
-				</g:hasErrors>
-				<ul class="nav nav-tabs" id="myTab">
-					<li class=""><a href="#distribucion" data-toggle="tab">Distribución</a></li>
-					<li class="active"><a href="#partidas" data-toggle="tab">Lista</a></li>
-				</ul>
-				<div class="tab-content">
-					<div class="tab-pane " id="distribucion">
-						<g:render template="editForm" bean="${distribucionInstance}"/>
-					</div>
-					<div class="tab-pane active" id="partidas">
-						<g:render template="partidasPanel" bean="${distribucionInstance}"/>
-					</div>
-				</div>
-			</div>
-		</div>
-		</div>
-	</body>
+	
 </html>

@@ -11,10 +11,11 @@
 				<th class="header">BL</th>
 				<th class="header">Vto</th>
 				<th class="header">Moneda</th>
+				<th>T.C.</th>
 				<th class="header">Total</th>
 				<th class="header">Pagos</th>
 				<th class="header">Saldo</th>
-				<th class="header">Creada</th>
+				<th>Requisitado</th>
 				<th class="header">Modificada</th>
 			</tr>
 		</thead>
@@ -36,12 +37,12 @@
 					<td>
 						${fieldValue(bean: row, field: "moneda")}
 					</td>
+					<td>${row.tc}</td>
 					<td><lx:moneyFormat number="${row.total}"/></td>
 					<td><lx:moneyFormat number="${row.pagosAplicados}"/></td>
 					<td><lx:moneyFormat number="${row.saldoActual}"/></td>
 					
-					<td><abbr title="${g.formatDate(date:row.dateCreated)}">
-						...</abbr></td>
+					<td><lx:moneyFormat number="${row.requisitado}"/></td>
 					<td><abbr title="${g.formatDate(date:row.lastUpdated)}">
 						...</abbr></td>
 				</tr>

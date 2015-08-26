@@ -15,6 +15,27 @@ class PedimentoService {
 		} 
 		pedimento.save(failOnError:true)
     }
+
+
+    def quitarEmbarques(Long pedimentoId,def jsonArray){
+    	def pedimento=Pedimento.get(pedimentoId)
+    	jsonArray.each{
+    		def id=it.toLong()
+    		def embarqueDet=pedimento.embarques.find{ det ->
+    			det.id==id
+    		}
+    		if(embarqueDet){
+    			pedimento.removeFromEmbarques(embarqueDet)
+    			embarqueDet.pedimento=null
+    			embarqueDet.gastosPorPedimento=0
+    			embarqueDet.save flus:true
+    		}
+    	}
+    	pedimento.actualizarCostos()
+    	pedimento.actualizarImpuestos()
+    	pedimento.save flush:true
+
+    }
 }
 
 class PedimentoException extends RuntimeException{

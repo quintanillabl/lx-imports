@@ -1,20 +1,4 @@
-<div>
-
-	<g:if test="${flash.gridMessage}">
-		<bootstrap:alert class="alert-error">${flash.gridMessage}</bootstrap:alert>
-	</g:if>
-	
-	<g:hasErrors bean="${ventaInstance}">
-		<bootstrap:alert class="alert-error">
-		<ul>
-			<g:eachError bean="${ventaInstance}" var="error">
-				<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-			</g:eachError>
-		</ul>
-		</bootstrap:alert>
-	</g:hasErrors>
-	
-	<table id="partidasGrid" class=" simpleGrid table table-striped table-bordered table-condensed">
+<table id="grid" class=" table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
 				<th>Clave</th>
@@ -30,7 +14,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			<g:each in="${partidas}" var="row">
+			<g:each in="${ventaInstance.partidas}" var="row">
 				<tr id="${row.id }" >
 					
 					<td>
@@ -94,4 +78,3 @@
 			</tr>
 		</tfoot>
 	</table>
-</div>

@@ -3,8 +3,6 @@
 <html>
 	<head>
 		<title>Selector de compras a detalle</title>
-		<asset:stylesheet src="datatables/dataTables.css"/>
-		<asset:javascript src="datatables/dataTables.js"/> 
 	</head>
 <body>
 	<div class="container">
@@ -79,6 +77,19 @@
 	</div>
 	<script>
 		$(function(){
+
+			// $('#grid').dataTable({
+			//     responsive: true,
+			//     aLengthMenu: [[20, 40, 60, 100, -1], [20, 40,60, 100, "Todos"]],
+			//     "language": {
+			//         "url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
+			//     },
+			//     "dom": 'T<"clear">lfrtip',
+			//     "tableTools": {
+			//         "sSwfPath": "${assetPath(src: 'plugins/dataTables/swf/copy_csv_xls_pdf.swf')}"
+			//     },
+			//     "order": []
+			// });
 
 			var table=$('#grid').dataTable( {
 			    	"paging":   true,

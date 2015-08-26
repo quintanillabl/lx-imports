@@ -1,59 +1,40 @@
 <%@ page import="com.luxsoft.impapx.Pedimento" %>
 <!doctype html>
 <html>
-	<head>
-		<meta name="layout" content="luxor">
-		<g:set var="entityName" value="${message(code: 'pedimento.label', default: 'Pedimento')}" />
-		<title><g:message code="default.create.label" args="[entityName]" /></title>
-		<r:require module="luxorForms"/>
-	</head>
-	<body>
-		<div class="row-fluid">
-			
-			<div class="span3">
-				<div class="well">
-					<ul class="nav nav-list">
-						<li class="nav-header">${entityName}</li>
-						<li>
-							<g:link class="list" action="list">
-								<i class="icon-list"></i>
-								<g:message code="default.list.label" args="[entityName]" />
-							</g:link>
-						</li>
-						<li class="active">
-							<g:link class="create" action="create">
-								<i class="icon-plus icon-white"></i>
-								<g:message code="default.create.label" args="[entityName]" />
-							</g:link>
-						</li>
-					</ul>
-				</div>
-			</div>
-			
-			<div class="span9">
+<head>
+	<meta name="layout" content="createForm">
+	<g:set var="entityName" value="${message(code: 'pedimento.label', default: 'Pedimento')}" scope="request"/>
+	<g:set var="entity" value="${pedimentoInstance}" scope="request" />
+	<title>Alta de Pedimento</title>
+</head>
+<body>
+	
 
-				<div class="page-header">
-					<h3><g:message code="default.create.label" args="[entityName]" /></h3>
-				</div>
+<content tag="formFields">
+	<f:with bean="${pedimentoInstance}" >
+		<g:if test="${pedimentoInstance.id}">
+			<f:display property="id" wrapper="bootstrap3" />
+		</g:if>
+		<f:field property="pedimento" widget-autofocus="true" wrapper="bootstrap3" widget-class="form-control" />
+		<f:field property="proveedor" wrapper="bootstrap3"  label="Agente aduanal"/>
+		<f:field property="fecha" wrapper="bootstrap3" />
+		<f:field property="dta" wrapper="bootstrap3" widget="money"/>
+		<f:field property="prevalidacion" wrapper="bootstrap3" widget="money"/>
+		<f:field property="arancel" wrapper="bootstrap3" widget="money"/>
+		<f:field property="tipoDeCambio" wrapper="bootstrap3"  widget="tc"/>
+		<f:field property="impuestoTasa" wrapper="bootstrap3" widget="porcentaje"/>
+		<f:field property="comentario" wrapper="bootstrap3" widget-class="form-control"/>
+	</f:with>
 
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
+<script type="text/javascript">
+	$(function(){
+		$("#pedimento").mask("99-99-9999-9999999");
+		
+	});
+</script>
+	
+</content>
+</body>
 
-				<g:hasErrors bean="${pedimentoInstance}">
-				<bootstrap:alert class="alert-error">
-				<ul>
-					<g:eachError bean="${pedimentoInstance}" var="error">
-					<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-					</g:eachError>
-				</ul>
-				</bootstrap:alert>
-				</g:hasErrors>
-
-				<g:render template="form" bean="${pedimentoInstance}"/>
-				
-			</div>
-
-		</div>
-	</body>
+	
 </html>

@@ -14,14 +14,6 @@ class CuentaDeGastosService {
 		Assert.notNull(factura,"No existe la factura de gastos: "+facturaId)
 		
 		cuenta.facturas.add(factura)
-		//factura.cuentaDeGastos=cuenta
-		//cuenta=cuenta.save(failOnError:true)
-		//factura.save(failOnError:true)
-		//println 'Cuenta actualizada ...'
-		
-		//Actualizacion de costos
-		//cuenta.actualizarGastosDeImportacion()
-		
 		def embarque=cuenta.embarque
 		if(embarque){
 			println 'Actualiando gastos en embarqueDet: '+embarque+' Facturas en cuenta de gastos: '+cuenta.facturas.size()
@@ -55,46 +47,43 @@ class CuentaDeGastosService {
 				def res=it.kilosNetos*incrementable/kilosTotales
 				it.incrementables=res
 			}
+			embarque.save flush:true
 		}
 		
 		cuenta=cuenta.save(failOnError:true)
 		return [cuentaDeGastos:cuenta,factura:factura]
 		
-		/*
-		try {
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			return [error:e.message]
-		}*/
-		
     }
 	
 	def eliminarFacturas(def cuentaDeGastosId,def facturas){
 		def cuenta=CuentaDeGastos.findById(cuentaDeGastosId,[fetch:[facturas:'eager']])
-		println 'Procesando eliminacion de facturas para cuenta de gastos: '+cuenta
+		//println 'Procesando eliminacion de facturas para cuenta de gastos: '+cuenta
 		facturas.each{
 			def facturaId=it.toLong()
 			def factura=GastosDeImportacion.get(facturaId)
-			println 'Factura a eliminar: '+factura
+			
 			if(factura){
 				def res=cuenta.facturas.remove(factura)
-				println 'Eliminacion: '+res
+				if(res){
+					log.info "Factura quitada: "+factura
+				}
+				//log.info 'Eliminacion: '+res
 				//factura.cuentaDeGastos=null
 			}
 		}
 		cuenta=cuenta.save(failOnError:true) 
-		println 'Facturas asignadas: '+cuenta.facturas.size()
+		//println 'Facturas asignadas: '+cuenta.facturas.size()
 		def embarque=cuenta.embarque
 		if(embarque){
 			def importe=cuenta.facturas.sum 0, {it.importe}
 			
 			def kilosTotales=embarque.partidas.sum {it.kilosNetos}
-			println 'Importe a prorratear: '+importe+ 'total kilos: '+kilosTotales
+			//println 'Importe a prorratear: '+importe+ 'total kilos: '+kilosTotales
 			embarque.partidas.each {
 				def gasto=it.kilosNetos*importe/kilosTotales
 				it.gastosHonorarios=gasto
 			}
+			embarque.save flush:true
 		}
 		
 		return cuenta

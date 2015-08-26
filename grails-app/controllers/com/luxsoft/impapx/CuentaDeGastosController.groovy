@@ -11,7 +11,7 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(["hasRole('COMPRAS')"])
 class CuentaDeGastosController {
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [create:'GET',save:'POST', edit:'GET', delete: 'POST',update:'PUT']
 
 	def filterPaneService
 
@@ -39,78 +39,35 @@ class CuentaDeGastosController {
     }
 
     def create() {
-		switch (request.method) {
-		case 'GET':
-        	[cuentaDeGastosInstance: new CuentaDeGastos(fecha:new Date())]
-			break
-		case 'POST':
-	        def cuentaDeGastosInstance = new CuentaDeGastos(params)
-	        if (!cuentaDeGastosInstance.save(flush: true)) {
-	            render view: 'create', model: [cuentaDeGastosInstance: cuentaDeGastosInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.created.message', args: [message(code: 'cuentaDeGastos.label', default: 'CuentaDeGastos'), cuentaDeGastosInstance.id])
-	        redirect action: 'edit', id: cuentaDeGastosInstance.id
-			break
-		}
+		[cuentaDeGastosInstance: new CuentaDeGastos(fecha:new Date())]
     }
 
-    def show() {
-        def cuentaDeGastosInstance = CuentaDeGastos.get(params.id)
-        if (!cuentaDeGastosInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'cuentaDeGastos.label', default: 'CuentaDeGastos'), params.id])
-            redirect action: 'list'
-            return
-        }
+    def save(CuentaDeGastos cuentaDeGastosInstance){
+    	if(cuentaDeGastosInstance.hasErrors()){
+    		render view:'create',model:[cuentaDeGastosInstance:cuentaDeGastosInstance]
+    		return
+    	}
+    	cuentaDeGastosInstance.save failOnError:true,flush:true
+    	flash.message="Cuenta de gastos ${cuentaDeGastosInstance.id} generada"
+    	redirect action:'edit',id:cuentaDeGastosInstance.id
+    }
 
+    def show(CuentaDeGastos cuentaDeGastosInstance) {
         [cuentaDeGastosInstance: cuentaDeGastosInstance]
     }
 
-    def edit() {
-		switch (request.method) {
-		case 'GET':
-	        def cuentaDeGastosInstance = CuentaDeGastos.get(params.id)
-	        if (!cuentaDeGastosInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'cuentaDeGastos.label', default: 'CuentaDeGastos'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
+    def edit(CuentaDeGastos cuentaDeGastosInstance) {
+		[cuentaDeGastosInstance: cuentaDeGastosInstance]
+    }
 
-	        [cuentaDeGastosInstance: cuentaDeGastosInstance]
-			break
-		case 'POST':
-			println 'actualizando cuenta de gastos: '+params
-	        def cuentaDeGastosInstance = CuentaDeGastos.get(params.id)
-	        if (!cuentaDeGastosInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'cuentaDeGastos.label', default: 'CuentaDeGastos'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (cuentaDeGastosInstance.version > version) {
-	                cuentaDeGastosInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'cuentaDeGastos.label', default: 'CuentaDeGastos')] as Object[],
-	                          "Another user has updated this CuentaDeGastos while you were editing")
-	                render view: 'edit', model: [cuentaDeGastosInstance: cuentaDeGastosInstance]
-	                return
-	            }
-	        }
-
-			
-	        cuentaDeGastosInstance.properties = params
-			
-	        if (!cuentaDeGastosInstance.save(flush: true)) {
-	            render view: 'edit', model: [cuentaDeGastosInstance: cuentaDeGastosInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'cuentaDeGastos.label', default: 'CuentaDeGastos'), cuentaDeGastosInstance.id])
-	        redirect action: 'show', id: cuentaDeGastosInstance.id
-			break
-		}
+    def update(CuentaDeGastos cuentaDeGastosInstance){
+    	if(cuentaDeGastosInstance.hasErrors()){
+    		render view:'edit',model:[cuentaDeGastosInstance:cuentaDeGastosInstance]
+    		return
+    	}
+    	cuentaDeGastosInstance.save flush:true
+    	flash.message="Cuenta de gastos ${cuentaDeGastosInstance.id} actualizada"
+    	redirect action:'edit',id:cuentaDeGastosInstance.id
     }
 
     def delete() {
@@ -170,20 +127,20 @@ class CuentaDeGastosController {
 		render res as JSON
 		
 	}
+
 	
-	def agregarFactura(){
+	def agregarFactura(Long cuentaDeGastosId,Long facturaId){
+
 		def dataToRender=[:]
-		def res=cuentaDeGastosService.agregarFactura(params.long('cuentaDeGastosId'), params.long('facturaId'))
-		dataToRender.total=res.total
-		render dataToRender as JSON
-		/*
 		try{
-			def res=cuentaDeGastosService.agregarFactura(params.long('cuentaDeGastosId'), params.long('facturaId'))
+			def res=cuentaDeGastosService.agregarFactura(cuentaDeGastosId, facturaId)
 			dataToRender.total=res.total
+			render dataToRender as JSON
 		}catch(Exception ex){
+			log.error ex
 			dataToRender.error=ExceptionUtils.getRootCauseMessage(ex)
 		}
-		render dataToRender as JSON*/
+		render dataToRender as JSON
 	}
 		
 	def eliminarFacturas(){

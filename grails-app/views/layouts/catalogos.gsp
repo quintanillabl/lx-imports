@@ -30,9 +30,7 @@
                     <div class="ibox-title">
                         <h5>${pageProperty(name:'page.gridTitle')?:'Registros'} </h5>
                         <div class="ibox-tools">
-                            <a data-target="#periodoDialog" data-toggle="modal" >
-                                <i class="fa fa-calendar"></i> 
-                            </a>
+                            
                             <a class="collapse-link">
                                 <i class="fa fa-chevron-up"></i>
                             </a>
@@ -48,9 +46,6 @@
                             <div class="col-md-3">
 
                                 <div class="input-group">
-                                        <span class="input-group-btn">
-                                            <button data-target="#periodoDialog" data-toggle="modal" class="btn  btn-outline btn-success ">
-                                        <i class="fa fa-calendar"></i> 
                                     </button>
                                         </span>
                                     <input type='text' id="filtro" placeholder="Filtrar" class="form-control" autofocus="on">
