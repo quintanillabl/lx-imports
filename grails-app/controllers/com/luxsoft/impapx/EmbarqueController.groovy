@@ -79,7 +79,7 @@ class EmbarqueController {
 
         embarqueInstance.save flush:true
         flash.message = message(code: 'default.created.message', args: [message(code: 'embarque.label', default: 'Embarque'), embarqueInstance.id])
-        redirect embarqueInstance
+        redirect action:'edit',id:embarqueInstance.id
     }
 
     def edit(Embarque embarqueInstance) {

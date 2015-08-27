@@ -105,14 +105,15 @@ environments {
     }
     production {
         grails.logging.jul.usebridge = false
+        grails.app.context = '/paperx2'
         // TODO: grails.serverURL = "http://www.changeme.com"
     }
     test{
         grails.plugin.springsecurity.debug.useFilter = false
         grails.plugin.springsecurity.active = false
     }
-    paper {
-      grails.app.context = '/paperx'
+    impapx {
+      grails.app.context = '/impapx'
     }
 }
 
@@ -132,11 +133,11 @@ log4j.main = {
     }
     appenders {
         console name:'stdout', layout:pattern(conversionPattern: '%-5p [%c{1}] %m%n')
-        file name:'file', file:System.properties['user.home']  + '/.grails/${appName}.log',
+        file name:'file', file:System.properties['user.home']  + '/.grails/lx-imports.log',
              layout: pattern(conversionPattern: '%-5p [%t] %c{1}: %m%n')
         rollingFile name:'importacionLog',
                     maxFileSize:'1MB',
-                    file:System.properties['user.home']  + '/.grails/${appName}.log',
+                    file:System.properties['user.home']  + '/.grails/lx-imports.log',
                     maxBackupIndex:7,
                     layout: pattern(conversionPattern: '%-5p %d{DATE} [%c{1}] %m%n')
 

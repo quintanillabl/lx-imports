@@ -47,29 +47,20 @@
 							alert("Error");
 						});
 				}
-				
-				
-				// $.ajax({
-				// 	url:"${createLink(controller:'tipoDeCambio', action:'ajaxTipoDeCambioDiaAnterior')}",
-				// 	success:function(response){
-				// 		console.log('OK: '+response);
-				// 		if(response!=null){
-				// 			if(response.factor!=null){
-				// 				$("#tc").val(response.factor);
-				// 				console.log('Tipo de cambio: '+response.factor);
-				// 			}else if(response.error!=null){
-				// 				alert(response.error);
-				// 			}
-				// 		}
-				// 	},
-				// 	data:{
-				// 		fecha:date
-				// 	},
-				// 	error:function(request,status,error){
-				// 		alert("Error: "+status);
-				// 	}
-				// });
-				
+			});
+
+			$("#importe").on('blur',function(){
+				var importe=$("#importe").autoNumeric('get');
+				$("#subTotal").autoNumeric('set',importe);
+				$("#total").autoNumeric('set',importe);
+			});
+
+			$("#descuento").on('blur',function(){
+				var importe=$("#importe").autoNumeric('get');
+				var desc=$(this).autoNumeric('get');
+				importe=importe-desc;
+				$("#subTotal").autoNumeric('set',importe);
+				$("#total").autoNumeric('set',importe);
 			});
 		});
 	</script>
