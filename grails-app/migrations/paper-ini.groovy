@@ -329,19 +329,19 @@ databaseChangeLog = {
 	}
 
 	changeSet(author: "rcancino (generated)", id: "1440255167612-31") {
-		dropForeignKeyConstraint(baseTableName: "cxcabono", baseTableSchemaName: "lx_imports", constraintName: "FKA67508E1302DA9BC")
+		dropForeignKeyConstraint(baseTableName: "cxcabono",  constraintName: "FKA67508E1302DA9BC")
 	}
 
 	changeSet(author: "rcancino (generated)", id: "1440255167612-32") {
-		dropForeignKeyConstraint(baseTableName: "user_role", baseTableSchemaName: "lx_imports", constraintName: "FK143BF46AF5916CE6")
+		dropForeignKeyConstraint(baseTableName: "user_role",  constraintName: "FK143BF46AF5916CE6")
 	}
 
 	changeSet(author: "rcancino (generated)", id: "1440255167612-33") {
-		dropForeignKeyConstraint(baseTableName: "user_role", baseTableSchemaName: "lx_imports", constraintName: "FK143BF46A9ABC30C6")
+		dropForeignKeyConstraint(baseTableName: "user_role",  constraintName: "FK143BF46A9ABC30C6")
 	}
 
 	changeSet(author: "rcancino (generated)", id: "1440255167612-34") {
-		dropForeignKeyConstraint(baseTableName: "venta", baseTableSchemaName: "lx_imports", constraintName: "FK6AE6A4C302DA9BC")
+		dropForeignKeyConstraint(baseTableName: "venta",  constraintName: "FK6AE6A4C302DA9BC")
 	}
 
 	changeSet(author: "rcancino (generated)", id: "1440255167612-40") {
@@ -459,4 +459,6 @@ databaseChangeLog = {
 	changeSet(author: "rcancino (generated)", id: "1440255167612-39") {
 		addForeignKeyConstraint(baseColumnNames: "usuario_id", baseTableName: "usuario_role", constraintName: "FK_55sbft3wldu0yr078kdq6hwxe", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "usuario", referencesUniqueColumn: "false")
 	}
+
+	
 }

@@ -1,7 +1,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<meta name="layout" content="createForm"/>
+	<meta name="layout" content="luxor"/>
 	<title>Usuario: ${usuarioInstance.id}</title>
 </head>
 <body>

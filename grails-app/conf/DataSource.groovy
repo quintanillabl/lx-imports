@@ -25,7 +25,7 @@ environments {
             //url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
             pooled = true
             dbCreate=""
-            url = "jdbc:mysql://localhost/lx_imports?autoReconnect=true"
+            url = "jdbc:mysql://localhost/paperx?autoReconnect=true"
             driverClassName = "com.mysql.jdbc.Driver"
             dialect = org.hibernate.dialect.MySQL5InnoDBDialect
             username = "root"
@@ -57,11 +57,11 @@ environments {
           //url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE"
           pooled = true
           dbCreate=""
-          url="jdbc:mysql://localhost/lx_impapa?autoReconnect=true"
+          url="jdbc:mysql://10.10.1.228/paperx2?autoReconnect=true"
           driverClassName = "com.mysql.jdbc.Driver"
           dialect = org.hibernate.dialect.MySQL5InnoDBDialect
           username = "root"
-          password = "sys1"
+          password = "sys"
           properties {
               maxActive = 10
               maxIdle = 10

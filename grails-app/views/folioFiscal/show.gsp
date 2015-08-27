@@ -1,5 +1,5 @@
 
-<%@ page import="com.luxsoft.cfd.FolioFiscal" %>
+
 <!doctype html>
 <html>
 	<head>
