@@ -280,6 +280,9 @@
       	    return true;
       	});
       	// End asignacion de contenedores
+
+      	//Eliminar partidas
+      	
 		
 	});
 	
@@ -410,7 +413,8 @@
 			},
 			success:function(data,textStatus,jqXHR){
 				console.log('Partidas eleiminadas: '+data.eliminadas);
-				location.reload();
+				//location.reload();
+				window.location.reload(true);
 			},
 			error:function(request,status,error){
 				//alert("Error: "+error);

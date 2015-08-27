@@ -16,27 +16,13 @@ class PedimentoController {
 	
 	def pedimentoService
 
-	def beforeInterceptor = {
-	    if(!session.periodo){
-	        def d1=new Date()-30
-	        session.periodo=new Periodo(d1.inicioDeMes(),new Date())
-	    }
-	}
-
-	def cambiarPeriodo(Periodo periodo){
-	    session.periodo=periodo
-	    redirect(uri: request.getHeader('referer') )
-	}
-	
-	def list() {
-        forward action: 'index', params: params
-    }
-
     def index(Integer max) {
-        params.max = Math.min(max ?: 40, 100)
         params.sort=params.sort?:'lastUpdated'
         params.order='desc'
-        respond Pedimento.list(params), model:[pedimentoInstanceCount: Embarque.count()]
+        def periodo=session.periodo
+        def list=Pedimento.findAll("from Pedimento p where date(p.fecha) between ? and ? order by p.id desc ",[periodo.fechaInicial,periodo.fechaFinal])
+        println 'Pedimentos: '+list.size()+' Periodo: '+periodo.fechaInicial
+       	[pedimentoInstanceList: list]
     }
 
     def create() {

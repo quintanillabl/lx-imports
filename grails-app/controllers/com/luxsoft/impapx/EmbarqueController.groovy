@@ -329,6 +329,20 @@ class EmbarqueController {
         render res as JSON
     }
 
+    def imprimirAnalisisDeCosteo(Embarque embarqueInstance){
+        
+        def command=reportService.buildCommand(session.empresa,'AnalisisDeCosteoDeImportacion')
+        params.COMPANY=session.empresa.nombre
+        params.ID=embarqueInstance.id
+        println 'Imprimiendo analisis: '+params
+        def stream=reportService.build(command,params)
+        def file="AnalisisDeCosteoDeImportacion_${embarqueInstance.id}.pdf"
+        render(
+            file: stream.toByteArray(), 
+            contentType: 'application/pdf',
+            fileName:file)
+    }
+
    // def disponibles=EmbarqueDet.executeQuery("select distinct(det.embarque) from EmbarqueDet det where det not in(select v.embarque from VentaDet v)")
 
 }

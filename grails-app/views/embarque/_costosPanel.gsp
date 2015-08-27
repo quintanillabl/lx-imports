@@ -21,7 +21,7 @@
 			</g:link>
 		</g:if>
 		
-		<g:link action="imprimirAnalisisDeCosteo" class="btn btn-default btn-outline" id="id">
+		<g:link action="imprimirAnalisisDeCosteo" class="btn btn-default btn-outline" id="${embarqueInstance.id}">
 		    <i class="fa fa-print"></i> Imprimir análisis
 		</g:link> 
 	</div>

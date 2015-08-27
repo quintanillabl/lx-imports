@@ -18,7 +18,7 @@
 	<table id="grid" class="table table-striped table-hover table-bordered table-condensed ">
 		<thead>
 			<tr>
-				<th>Folio</th>
+				<th>Id</th>
 				<th>Pedimento</th>
 				<th>Agente</th>
 				<th>Fecha</th>

@@ -28,7 +28,7 @@ class PedimentoService {
     			pedimento.removeFromEmbarques(embarqueDet)
     			embarqueDet.pedimento=null
     			embarqueDet.gastosPorPedimento=0
-    			embarqueDet.save flus:true
+    			embarqueDet.save flush:true
     		}
     	}
     	pedimento.actualizarCostos()

@@ -169,7 +169,8 @@
 					success:function(data,textStatus,jqXHR){
 						console.log('Rres: '+data.documento);
 						//alert('Compras unitarias asignadas exitosamente');
-						window.location.href='${createLink(controller:'embarque',action:'edit',params:[id:embarque.id])}';
+						window.location.href="${createLink(controller:'embarque',action:'edit',params:[id:embarque.id])}";
+
 
 					},
 					error:function(request,status,error){
