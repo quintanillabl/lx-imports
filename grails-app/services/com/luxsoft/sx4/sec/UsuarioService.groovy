@@ -39,6 +39,7 @@ class UsuarioService {
     		        //usuario.nip=RandomStringUtils.randomNumeric(4)
     		        usuario.username=RandomStringUtils.random(6, true, true)
     		        usuario.password='123'
+                    usuario.passwordExpired=true
     		        usuario.save flush:true,failOnError:true
     		    }
     		}

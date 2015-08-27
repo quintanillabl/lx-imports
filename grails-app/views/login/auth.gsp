@@ -17,9 +17,9 @@
 			<div class="col-md-6">
 				<h2 class="font-bold">Bienvenido a <span class="text-navy">LX-IMPORTS </span></h2>
 				<p>
-				   Sistema de administración para todo el ciclo de importación y comerciailización de bienes y servicios                
+				   Sistema de administración para  importación y comerciailización de bienes               
 				</p>
-				<p><small>Control inteligente para todo el ciclo de la compercialización</small>
+				<p><small>Control inteligente para su negocio</small>
 				</p>
 			</div>
 			
