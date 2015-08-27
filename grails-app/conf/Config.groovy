@@ -111,7 +111,11 @@ environments {
         grails.plugin.springsecurity.debug.useFilter = false
         grails.plugin.springsecurity.active = false
     }
+    paper {
+      grails.app.context = '/paperx'
+    }
 }
+
 
 // log4j configuration
 log4j.main = {
@@ -125,6 +129,17 @@ log4j.main = {
         //             file:"$logDir/kyo-luxor.log",
         //             maxBackupIndex:7
         //             layout: pattern(conversionPattern: '%-5p [%t] %c{1}: %m%n')
+    }
+    appenders {
+        console name:'stdout', layout:pattern(conversionPattern: '%-5p [%c{1}] %m%n')
+        file name:'file', file:System.properties['user.home']  + '/.grails/${appName}.log',
+             layout: pattern(conversionPattern: '%-5p [%t] %c{1}: %m%n')
+        rollingFile name:'importacionLog',
+                    maxFileSize:'1MB',
+                    file:System.properties['user.home']  + '/.grails/${appName}.log',
+                    maxBackupIndex:7,
+                    layout: pattern(conversionPattern: '%-5p %d{DATE} [%c{1}] %m%n')
+
     }
 
     error  'org.codehaus.groovy.grails.web.servlet',        // controllers
