@@ -31,8 +31,8 @@
 					${fieldValue(bean: row, field: "id")}</g:link>
 				</td>
 				<td><lx:shortDate date="${row.fecha}" /></td>
-				<td>${fieldValue(bean: row, field: "factura.cfd.folio")}</td>
-				<td>${fieldValue(bean: row, field: "factura.cfd.fecha")}</td>
+				<td>${fieldValue(bean: row, field: "factura.facturaFolio")}</td>
+				<td>${fieldValue(bean: row, field: "factura.fechaFactura")}</td>
 				<td><lx:moneyFormat number="${row.factura.total }" /></td>	
 				<td><lx:moneyFormat number="${row.factura.saldoActual }" /></td>
 				<td><lx:moneyFormat number="${row.total }" /></td>

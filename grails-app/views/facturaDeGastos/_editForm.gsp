@@ -1,4 +1,4 @@
-<legend>  <span id="conceptoLabel">Propiedades</span></legend> 
+<br>
 <g:form name="updateForm" action="update" class="form-horizontal" id="${facturaDeGastosInstance.id}" method="PUT">
 	<f:with bean="facturaDeGastosInstance">
 		<div class="row">

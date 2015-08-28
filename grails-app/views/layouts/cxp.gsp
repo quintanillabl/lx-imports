@@ -9,7 +9,8 @@
 
         <div class="row wrapper border-bottom white-bg page-heading">
             <div class="col lg 10">
-                <h2>${pageProperty(name:'page.header')?:'Falta page.header'} ${session.periodo}</h2>
+                %{-- <h2>${pageProperty(name:'page.header')?:'Falta page.header'} ${session.periodo}</h2> --}%
+                <g:pageProperty name="page.header"/>
                 <g:if test="${flash.message}">
                     <small><span class="label label-warning ">${flash.message}</span></small>
                 </g:if> 
