@@ -1,23 +1,21 @@
-<r:require module="luxorTableUtils"/>
 <div class="btn-toolbar">
 	<div class="btn-group ">
-		<g:if test="${CXCAbonoInstance.cfd==null}">
-			<g:if test="${CXCAbonoInstance.tipo!='BONIFICACION' && !CXCAbonoInstance.cfd}">
+		<g:if test="${CXCAbonoInstance.cfdi==null}">
+			<g:if test="${CXCAbonoInstance.tipo!='BONIFICACION' }">
 				<g:link action="selectorDeFacturas" 
 					params="['pagoId':CXCAbonoInstance.id,'disponible':CXCAbonoInstance.disponible]"
 					class="btn btn-primary" >
-					<i class="icon-ok icon-white"></i> Agregar
+					<i class="fa fa-plus"></i> Agregar
 				</g:link>
   				<button id="eliminarBtn" class="btn btn-danger">
-  					<i class="icon-trash icon-white"></i>Eliminar
+  					<i class="fa fa-trash"></i>Eliminar
   				</button>
 			</g:if>
 		</g:if>
-		
 	</div>
 </div>
 <table id="grid"
-	class="simpleGrid table table-striped table-hover table-bordered table-condensed">
+	class="grid table table-hover table-bordered table-condensed">
 	<thead>
 		<tr>
 			<th class="header">Cantidad</th>
@@ -82,16 +80,23 @@
 		</tr>
 	</tfoot>
 </table>
-<r:script>
+<script>
 
 $(function(){
+
+	function selectedRows(){
+		var res=[];
+		var data=$("tbody tr.selected").each(function(){
+			var tr=$(this);
+			res.push(tr.attr("id"));
+		});
+		return res;
+	};
 	
 	$("#eliminarBtn").click(function(e){
 		eliminar();
 	});
-	
-	
-	
+
 	function eliminar(){
 		var res=selectedRows();
 		if(res.length==0){
@@ -102,7 +107,6 @@ $(function(){
 		if(!ok)
 			return;
 		console.log('Cancelando facturas: '+res);
-		
 		$.ajax({
 			url:"${createLink(action:'eliminarAplicaciones')}",
 			data:{
@@ -119,12 +123,5 @@ $(function(){
 	}
 	
 });
-function selectedRows(){
-	var res=[];
-	var data=$("tbody tr.selected").each(function(){
-		var tr=$(this);
-		res.push(tr.attr("id"));
-	});
-	return res;
-}
-</r:script>
+
+</script>

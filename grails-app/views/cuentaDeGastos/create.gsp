@@ -20,7 +20,7 @@
 				value="${value?.id}"
 				from="${com.luxsoft.impapx.EmbarqueDet.executeQuery("select distinct(det.embarque) from EmbarqueDet det where det not in(select v.embarque from VentaDet v)")}" 
 				optionKey="id" 
-				optionValue="nombre"
+				
 				
 				/>
 		</f:field>

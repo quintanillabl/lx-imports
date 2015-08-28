@@ -146,16 +146,7 @@ class CobranzaService {
 		nota.actualizarImportes()		
 		nota.save(flush:true)
 		return nota
-		/*
-		try {
-			nota.impuestoTasa=16.00
-			nota.total=0
-			nota.actualizarImportes()
-			def res=nota.save(failOnError:true)
-			return res
-		} catch (Exception e) {
-			throw new CobranzaEnPagoException(pago:nota,message:ExceptionUtils.getRootCauseMessage(e))
-		}*/
+		
 	}
 	
 	def asignarPartidasParaNota(CXCNota nota,def facturas) {

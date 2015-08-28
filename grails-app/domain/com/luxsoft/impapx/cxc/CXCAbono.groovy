@@ -16,10 +16,10 @@ class CXCAbono {
 	Date fecha
 	Cliente cliente
 	Currency moneda
-	BigDecimal tc
-	BigDecimal importe
-	BigDecimal impuesto
-	BigDecimal total
+	BigDecimal tc=1
+	BigDecimal importe=0
+	BigDecimal impuesto=0
+	BigDecimal total=0
 	BigDecimal totalMN=0
 	BigDecimal aplicado=0
 	BigDecimal disponible=0
@@ -96,7 +96,7 @@ class CXCAbono {
 	}
 	
 	String toString(){
-		return " Folio: $id $fecha?.format('dd/MM/yyyy') $cliente    $total ($moneda)"
+		return " Folio: $id ${fecha?.format('dd/MM/yyyy')} $cliente    $total ($moneda)"
 	}
 	
 	boolean equals(Object obj){

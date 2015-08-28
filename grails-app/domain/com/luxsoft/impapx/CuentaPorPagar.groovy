@@ -3,7 +3,8 @@ package com.luxsoft.impapx
 import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 
-import com.luxsoft.impapx.cxc.CXCAplicacion;
+import com.luxsoft.impapx.cxc.CXCAplicacion
+import com.luxsoft.impapx.cxp.ComprobanteFiscal
 
 class CuentaPorPagar {
 	
@@ -62,6 +63,7 @@ class CuentaPorPagar {
 		requisitado(nullable:true)
 		retTasa(nullable:true)
 		retImp(nullable:true)
+		comprobante nullable:true
 		
     }
 	
@@ -70,6 +72,8 @@ class CuentaPorPagar {
 		requisitado formula:'(select ifnull(sum(x.total),0) from requisicion_det x where x.factura_id=id)'
 		pagosAplicados formula:'(select ifnull(sum(x.total),0) from aplicacion x where x.factura_id=id)'
 	}
+
+	static hasOne = [comprobante: ComprobanteFiscal]
 	
 	static transients = ['pendienteRequisitar','saldoActual','saldoAlCorte']
 	

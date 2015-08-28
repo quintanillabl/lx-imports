@@ -1,6 +1,5 @@
-<r:require module="luxorTableUtils"/>
-<div class="btn-toolbar">
-	<div class="btn-group ">
+
+<div class="btn-group ">
 		<g:link action="selectorDeFacturas" 
 				params="['pagoId':CXCAbonoInstance.id,'disponible':CXCAbonoInstance.disponibleMN]"
 				class="btn btn-primary" >
@@ -10,7 +9,6 @@
   			<i class="icon-trash icon-white"></i>Eliminar
   		</button>
 	</div>
-</div>
 <table id="grid"
 	class="simpleGrid table table-striped table-hover table-bordered table-condensed">
 	<thead>
@@ -54,9 +52,18 @@
 		</tr>
 	</tfoot>
 </table>
-<r:script>
+<script>
 
 $(function(){
+
+	function selectedRows(){
+		var res=[];
+		var data=$("tbody tr.selected").each(function(){
+			var tr=$(this);
+			res.push(tr.attr("id"));
+		});
+		return res;
+	};
 	
 	$("#eliminarBtn").click(function(e){
 		eliminar();
@@ -91,12 +98,5 @@ $(function(){
 	}
 	
 });
-function selectedRows(){
-	var res=[];
-	var data=$("tbody tr.selected").each(function(){
-		var tr=$(this);
-		res.push(tr.attr("id"));
-	});
-	return res;
-}
-</r:script>
+
+</script>

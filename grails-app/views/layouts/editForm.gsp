@@ -40,7 +40,7 @@
                             <lx:errorsHeader bean="${entity}"/>
                             <g:form name="updateForm" action="update" class="form-horizontal" method="PUT">  
                                 <g:hiddenField name="id" value="${entity.id}"/>
-                                <g:hiddenField name="id" value="${entity.version}"/>
+                                <g:hiddenField name="version" value="${entity.version}"/>
                                 <g:pageProperty name="page.formFields"/>
                                 <div class="form-group">
                                     <div class="col-lg-offset-3 col-lg-9">

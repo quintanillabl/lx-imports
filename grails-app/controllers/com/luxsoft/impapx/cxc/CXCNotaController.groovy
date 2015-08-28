@@ -8,107 +8,80 @@ import com.luxsoft.impapx.Venta
 import grails.converters.JSON
 import util.MonedaUtils
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasAnyRole('COMPRAS','VENTAS')"])
 class CXCNotaController {
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [create:'GET',save:'POST',edit:'GET',update:'PUT',delete: 'DELETE']
 
 	def cobranzaService
+
 	def comprobanteFiscalNotaService
+
 	def printService
+
 	def cfdiService
+
     def index() {
-        redirect action: 'list', params: params
+    	def tipo=params.tipo?:'TODAS'
+    	def periodo=session.periodo
+        def list=CXCNota.findAll("from CXCNota c where date(c.fecha) between ? and ? order by c.id desc",
+        	[periodo.fechaInicial,periodo.fechaFinal])
+        [CXCNotaInstanceList:list,tipo:'TODAS']
     }
 
-    def list() {
-        params.max = Math.min(params.max ? params.int('max') : 100, 500)
-        [CXCNotaInstanceList: CXCNota.list(params), CXCNotaInstanceTotal: CXCNota.count()]
+    def create(){
+    	[CXCNotaInstance: new CXCNota(fecha:new Date(),moneda:MonedaUtils.PESOS,tc:1,tipo:'DESCUENTO')]
     }
 
-    def create() {
-		switch (request.method) {
-		case 'GET':
-        	[CXCNotaInstance: new CXCNota(fecha:new Date(),moneda:MonedaUtils.PESOS,tc:1,tipo:'DESCUENTO')]
-			break
-		case 'POST':
-		//println 'Posting: '+params
-	        def CXCNotaInstance = new CXCNota(params)
-			if(StringUtils.isBlank( CXCNotaInstance.tipo)){
-				flash.message="Requiere definir el tipo de nota"
-				render view: 'create', model: [CXCNotaInstance: CXCNotaInstance]
-				return
-			}
-			def res=cobranzaService.registrarNota(CXCNotaInstance)
-			if (res.hasErrors() ) {
-				render view: 'create', model: [CXCNotaInstance: res]
-	            return
-			}
-			flash.message = "Nota de crédito generada: ${res.id}".encodeAsHTML()
-			redirect action: 'edit', id: res.id
-			
-			/*
-			try {
-				
-			} catch (CobranzaEnPagoException e) {
-				render view: 'create', model: [CXCPagoInstance: e.pago]
-				return
-			}*/
-		}
+    def save(CXCNota CXCNotaInstance){
+    	if(CXCNotaInstance.hasErrors()){
+    		render view:'create',model:[CXCNotaInstance:CXCNotaInstance]
+    		return
+    	}
+    	def res=cobranzaService.registrarNota(CXCNotaInstance)
+		flash.message = "Nota de crédito generada: ${res.id}".encodeAsHTML()
+		redirect action: 'edit', id: res.id
     }
+    
 
-    def show() {
-        def CXCNotaInstance = CXCNota.get(params.id)
-        if (!CXCNotaInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'CXCNota.label', default: 'CXCNota'), params.id])
-            redirect action: 'list'
-            return
-        }
-
+    def show(CXCNota CXCNotaInstance) {
         [CXCNotaInstance: CXCNotaInstance]
     }
-
-    def edit() {
-		switch (request.method) {
-		case 'GET':
-	        def CXCNotaInstance = CXCNota.findById(params.id,[fetch:[aplicaciones:'select',partidas:'select']])
-	        if (!CXCNotaInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'CXCNota.label', default: 'CXCNota'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-			
-	        [CXCNotaInstance: CXCNotaInstance]
-			break
-		case 'POST':
-			flash.message = "Las porpiedades generales de la nota no son editables"
-			redirect action: 'edit', id: CXCNotaInstance.id
-		}
+    def edit(CXCNota CXCNotaInstance){
+    	[CXCNotaInstance:CXCNotaInstance]
     }
 
-    def delete() {
-        def CXCNotaInstance = CXCNota.get(params.id)
-        if (!CXCNotaInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'CXCNota.label', default: 'CXCNota'), params.id])
-            redirect action: 'list'
-            return
-        }
+    def update(CXCNota CXCNotaInstance){
+    	if(CXCNotaInstance.getCfdi()){
+    		flash.message="Nota ya timbrada no se puede modificar"
+    		respond CXCNotaInstance
+    		return;
+    	}
+    	if(CXCNotaInstance.hasErrors()){
+    		render view:'edit',model:[CXCNotaInstance:CXCNotaInstance]
+    		return
+    	}
+    	CXCNotaInstance.save flush:true
+    	flash.message="Nota ${CXCNotaInstance.id} actualizada"
+    	redirect action:'edit',id:CXCNotaInstance.id
+    }
 
-        try {
-            CXCNotaInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'CXCNota.label', default: 'CXCNota'), params.id])
-            redirect action: 'list'
+    def delete(CXCNota CXCNotaInstance) {
+        if(CXCNotaInstance.getCfdi()){
+        	flash.message="Nota ${CXCNotaInstance.id} ya timbrada no se puede eliminar"
+        	respond CXCNotaInstance
+        	return
         }
-        catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'CXCNota.label', default: 'CXCNota'), params.id])
-            redirect action: 'show', id: params.id
-        }
+        CXCNotaInstance.delete(flush: true)
+        flash.message = message(code: 'default.deleted.message', args: [message(code: 'CXCNota.label', default: 'CXCNota'), params.id])
+        redirect action: 'index'
+        
     }
 	
-	def selectorDeFacturas(long pagoId){
-		def abono=CXCAbono.get(pagoId)
-		//def hql="from Venta p where p.cliente.id=?  and p.moneda=? order by id desc"
+	def selectorDeFacturas(CXCAbono abono){
 		def hql="from Venta p where p.cliente.id=?  and p.total-p.pagosAplicados>0 order by id desc"
-		//def res=Venta.findAll(hql,[abono.cliente.id,abono.moneda])
 		def max=Math.min(params.int('max')?:10, 100)
 		def offset=params.int('offset')?:0
 		def res = Venta.findAllByClienteAndMoneda(abono.cliente,abono.moneda,[sort:'id',order:'desc',max:max,offset:offset])
@@ -116,24 +89,19 @@ class CXCNotaController {
 	}
 	
 	def generarPartidas(){
-		println 'Generando partidas par nota de credito'+params
 		def dataToRender=[:]
 		JSONArray jsonArray=JSON.parse(params.partidas);
 		def nota= CXCNota.findById(params.abonoId,[fetch:[partidas:'select']])
 		cobranzaService.asignarPartidasParaNota(nota, jsonArray)
-		println 'Partidas: '+jsonArray
 		dataToRender.abonoId=nota.id
 		render dataToRender as JSON
 	}
 	
 	def generarAplicaciones(){
-		println 'Generando aplicaciones  para  facturas a requisicion'+params
 		def dataToRender=[:]
 		JSONArray jsonArray=JSON.parse(params.partidas);
 		def pago= CXCNota.findById(params.abonoId,[fetch:[aplicaciones:'select']])
-		println 'Nota :'+pago
 		cobranzaService.aplicarFacturas(pago, jsonArray)
-		
 		dataToRender.pagoId=pago.id
 		render dataToRender as JSON
 	}
@@ -152,13 +120,10 @@ class CXCNotaController {
 			redirect action:'list'
 		}
 		def cfdi=cfdiService.generarCfdi(nota)
-		//render view:'/cfdi/show',model:[cfdiInstance:cfdi]
-		//redirect action:'show',params:[id:id]
 		redirect controller:"cfdi", action:"show",params:[id:cfdi.id]
 	}
 	
 	def imprimirCfd(){
-		//println 'Generando CFD: '+params
 		def nota=CXCNota.get(params.ID)
 		def cfd=nota.getCfd().comprobante
 		def conceptos=nota.getCfd().getComprobante().getConceptos().getConceptoArray()
@@ -180,7 +145,6 @@ class CXCNotaController {
 			}
 			return res
 		}
-		//def repParams=CFDIPrintServices.resolverParametros(nota.getCfd().getComprobante())
 		def repParams=printService.resolverParametros(nota.getCfd().getComprobante())
 		params<<repParams
 		params.FECHA=cfd.fecha.getTime().format("yyyy-MM-dd'T'HH:mm:ss")

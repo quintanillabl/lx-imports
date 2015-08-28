@@ -13,6 +13,8 @@ class GastosDeImportacionController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
+    def comprobanteFiscalService
+
     def index(Integer max) {
         def periodo=session.periodo
         def list=GastosDeImportacion.findAll(
@@ -120,5 +122,18 @@ class GastosDeImportacionController {
             [id:cuenta.id,label:label,value:label]
         }
         render cuentasList as JSON
+    }
+
+    def importarCfdi(){
+        def xml=request.getFile('xmlFile')
+        
+        if(xml==null){
+            flash.message="Archivo XML no localizado"
+            redirect(uri: request.getHeader('referer') )
+            return
+        }
+        def cxp=comprobanteFiscalService.importar(xml,new GastosDeImportacion())
+        flash.message="Cuenta por pagar generada para el CFDI:  ${xml.getName()}"
+        redirect action:'edit',id:cxp.id
     }
 }

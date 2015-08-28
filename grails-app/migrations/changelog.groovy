@@ -27,5 +27,7 @@ databaseChangeLog = {
 
 	// include file: 'changelog_011.groovy'
 
-	include file: 'paper-ini.groovy'
+	//include file: 'paper-ini.groovy'
+	
+	include file: 'CfdiGastosModel.groovy'
 }

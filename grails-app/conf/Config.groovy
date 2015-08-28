@@ -105,7 +105,7 @@ environments {
     }
     production {
         grails.logging.jul.usebridge = false
-        grails.app.context = '/paperx2'
+        //grails.app.context = '/paperx2'
         // TODO: grails.serverURL = "http://www.changeme.com"
     }
     test{
@@ -113,7 +113,7 @@ environments {
         grails.plugin.springsecurity.active = false
     }
     impapx {
-      grails.app.context = '/impapx'
+      //grails.app.context = '/impapx'
     }
 }
 

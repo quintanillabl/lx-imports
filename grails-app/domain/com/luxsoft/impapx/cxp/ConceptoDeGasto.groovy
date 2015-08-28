@@ -19,7 +19,7 @@ class ConceptoDeGasto {
 	BigDecimal retension=0
 	BigDecimal retensionIsrTasa=0
 	BigDecimal retensionIsr=0
-	BigDecimal ietu
+	BigDecimal ietu=0
 	BigDecimal total
 	MovimientoDeCuenta egreso
 	String tipo='GASTOS'
