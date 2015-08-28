@@ -23,11 +23,16 @@ class ComprobanteFiscalService {
         def data=xml.attributes()
         log.debug 'Comprobante:  '+xml.attributes()  
 
-        def receptor=xml.breadthFirst().find { it.name() == 'Receptor'}
+        
         def empresa=Empresa.first()
-        def empresaRfc=Empresa.findByRfc(receptor.attributes()['rfc'])
-        if(empresa.rfc!=empresaRfc){
-            throw new ComprobanteFiscalException(message:"El CFDI ${cfdiFile.getOriginalFilename()} no es corresponde a esta  empresa ")
+        
+        def receptorNode=xml.breadthFirst().find { it.name() == 'Receptor'}
+        def receptorRfc=receptorNode.attributes()['rfc']
+        
+       
+        if(empresa.rfc!=receptorRfc){
+            throw new ComprobanteFiscalException(
+                message:"Em el CFDI ${cfdiFile.getOriginalFilename()} el receptor (${receptorRfc}) no es para esta empresa (${empresa.rfc})")
         }
         def emisorNode= xml.breadthFirst().find { it.name() == 'Emisor'}
         def nombre=emisorNode.attributes()['nombre']
@@ -81,7 +86,7 @@ class ComprobanteFiscalService {
         cxp.descuentos=0
         cxp.subTotal=0
         cxp.impuestos=0
-        cxp.total=0
+        cxp.total=data['subTotal'] as BigDecimal
         cxp.retTasa=0
         cxp.retImp=0
         cxp.comentario="CFDI Importado"
@@ -92,6 +97,7 @@ class ComprobanteFiscalService {
                 if(t.attributes()['impuesto']=='IVA'){
                     def tasa=t.attributes()['tasa'] as BigDecimal
                     cxp.impuestos=t.attributes()['importe'] as BigDecimal
+                    cxp.tasaDeImpuesto=tasa
                 }
             }
         }

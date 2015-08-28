@@ -71,35 +71,21 @@ class GastosDeImportacionController {
             respond gastosDeImportacionInstance.errors, view:'edit'
             return
         }
-
         gastosDeImportacionInstance.save flush:true
+        flash.message = message(code: 'default.updated.message', args: [message(code: 'GastosDeImportacion.label', default: 'GastosDeImportacion'), gastosDeImportacionInstance.id])
+        redirect action:'edit',id:gastosDeImportacionInstance.id
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'GastosDeImportacion.label', default: 'GastosDeImportacion'), gastosDeImportacionInstance.id])
-                redirect gastosDeImportacionInstance
-            }
-            '*'{ respond gastosDeImportacionInstance, [status: OK] }
-        }
     }
 
     @Transactional
     def delete(GastosDeImportacion gastosDeImportacionInstance) {
-
         if (gastosDeImportacionInstance == null) {
             notFound()
             return
         }
-
         gastosDeImportacionInstance.delete flush:true
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'GastosDeImportacion.label', default: 'GastosDeImportacion'), gastosDeImportacionInstance.id])
-                redirect action:"index", method:"GET"
-            }
-            '*'{ render status: NO_CONTENT }
-        }
+        flash.message = message(code: 'default.deleted.message', args: [message(code: 'GastosDeImportacion.label', default: 'GastosDeImportacion'), gastosDeImportacionInstance.id])
+        redirect action:"index", method:"GET"
     }
 
     protected void notFound() {
@@ -125,6 +111,7 @@ class GastosDeImportacionController {
         render cuentasList as JSON
     }
 
+    @Transactional
     def importarCfdi(){
         def xml=request.getFile('xmlFile')
         if(xml==null){
@@ -134,12 +121,14 @@ class GastosDeImportacionController {
         }
         try {
             def cxp=comprobanteFiscalService.importar(xml,new GastosDeImportacion())
-            flash.message="Cuenta por pagar generada para el CFDI:  ${xml.getName()}"
+            flash.message="Cuenta por pagar generada para el CFDI:  ${xml.getOriginalFilename()}"
+            redirect action:'edit',id:cxp.id
         }
         catch(ComprobanteFiscalException e) {
             flash.message="Errores en la importación"
             flash.error=e.message
+            redirect action:'index'
         }
-        redirect action:'edit',id:cxp.id
+        
     }
 }

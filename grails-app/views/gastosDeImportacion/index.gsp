@@ -48,10 +48,10 @@
  					<g:each in="${gastosDeImportacionInstanceList}" var="row">
  						<tr>
  							<td>
- 								<g:link action="show" id="${row.id}">
+ 								<g:link action="edit" id="${row.id}">
  									<lx:idFormat id="${row.id}"/>
  								</g:link></td>
- 							<td><g:link action="show" id="${row.id}">
+ 							<td><g:link action="edit" id="${row.id}">
  									${fieldValue(bean: row, field: "proveedor.nombre")}
  								</g:link>
  							</td>
