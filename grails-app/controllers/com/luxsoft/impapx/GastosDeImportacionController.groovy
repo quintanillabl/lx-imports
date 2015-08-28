@@ -6,6 +6,7 @@ import static org.springframework.http.HttpStatus.*
 import grails.transaction.Transactional
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import com.luxsoft.impapx.cxp.ComprobanteFiscalException
 
 @Secured(["hasRole('COMPRAS')"])
 @Transactional(readOnly = true)
@@ -126,14 +127,19 @@ class GastosDeImportacionController {
 
     def importarCfdi(){
         def xml=request.getFile('xmlFile')
-        
         if(xml==null){
             flash.message="Archivo XML no localizado"
             redirect(uri: request.getHeader('referer') )
             return
         }
-        def cxp=comprobanteFiscalService.importar(xml,new GastosDeImportacion())
-        flash.message="Cuenta por pagar generada para el CFDI:  ${xml.getName()}"
+        try {
+            def cxp=comprobanteFiscalService.importar(xml,new GastosDeImportacion())
+            flash.message="Cuenta por pagar generada para el CFDI:  ${xml.getName()}"
+        }
+        catch(ComprobanteFiscalException e) {
+            flash.message="Errores en la importación"
+            flash.error=e.message
+        }
         redirect action:'edit',id:cxp.id
     }
 }
