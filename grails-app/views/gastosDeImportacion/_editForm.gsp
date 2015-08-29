@@ -50,10 +50,27 @@
 	</form>
 	 <div class="form-group">
 			<div class="col-lg-offset-3 col-lg-9">
-            	<button id="saveBtn" class="btn btn-primary ">
-                	<i class="fa fa-floppy-o"></i> Descargar
-                </button>
-                <lx:backButton/>
+                <g:link action="validarEnElSat" onclick="return confirm('Validar en el SAT?');"
+                		class="btn btn-default btn-outline" id="${gastosDeImportacionInstance.comprobante.id}">
+                	    <i class="fa fa-check-square-o"></i> Validar (SAT)
+                </g:link> 
+                <g:if test="${gastosDeImportacionInstance.comprobante.acuse}">
+                	<g:link  action="mostrarAcuse" 
+                		id="${gastosDeImportacionInstance.comprobante.id}"
+                		class="btn btn-default btn-outline" >
+                		<i class="fa fa-file-code-o"></i> Acuse
+                	</g:link>
+                	
+                </g:if>
+                <g:if test="${gastosDeImportacionInstance.comprobante}">
+                	<g:link class="btn btn-default btn-outline" 
+                		action="mostrarCfdi" id="${gastosDeImportacionInstance.comprobante.id}">CFDI</g:link>
+                	<g:link  action="descargarAcuse" 
+                		id="${gastosDeImportacionInstance.comprobante.id}"
+                		class="btn btn-default btn-outline" >
+                		<i class="fa fa-download"></i>  CFDI
+                	</g:link>
+                </g:if>
             </div>
 		</div>
 	</g:if>

@@ -91,7 +91,7 @@ class FacturaDeGastosController {
         //log.info 'Concepto: '+command
         def concepto=command.toGasto()
         def fac=facturaDeGastosService.agregarPartida(command)
-        render view:'edit', model: [facturaDeGastosInstance: fac]
+        redirect action:'edit', id:fac.id
     }
 
     @Transactional
@@ -110,6 +110,7 @@ class FacturaDeGastosController {
             data.res="ERROR"
             data.error=ExceptionUtils.getRootCauseMessage(e)
         }
+        flash.message="Concepto eliminado"
         render data as JSON
     }
 
