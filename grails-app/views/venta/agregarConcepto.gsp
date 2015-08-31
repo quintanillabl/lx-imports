@@ -4,22 +4,89 @@
 <head>
 	<meta name="layout" content="luxor">
 	<g:set var="entityName" value="${message(code: 'venta.label', default: 'Venta')}" />
-	<title><g:message code="default.create.label" args="[entityName]" /></title>
-	<r:require module="luxorForms"/>
+	<title>Partida de venta</title>
+	<asset:javascript src="forms/forms.js"/>
+	
 </head>
 <body>
+<content tag="header">
+	Venta ${ventaInstance.id} (${ventaInstance.cliente})
+</content>
+<content tag="subHeader">
+	<ol class="breadcrumb">
+    	<li><g:link controller="venta" action="edit" id="${ventaInstance.id}">Venta ${ventaInstance.id}</g:link></li>
+    	<li class="active"><strong>Partida nueva</strong></li>
+	</ol>
+</content>
+
+<content tag="document">
+	<div class="col-md-8">
+		<div class="ibox float-e-margins">
+			<lx:iboxTitle title="Partida de venta"/>
+		    <div class="ibox-content">
+					<g:form class="form-horizontal" name="createForm" action="agregarConcepto" id="${ventaInstance.id}">
+						<fieldset>
+							<f:with bean="ventaDetInstance" >
+
+								<f:field property="producto" wrapper="bootstrap3" widget-class="form-control chosen-select"/>
+								<f:field property="cantidad" widget="numeric" wrapper="bootstrap3"/>
+								<f:field property="precio" widget="money" wrapper="bootstrap3"/>
+								<f:field property="descuentos" widget="porcentaje" wrapper="bootstrap3"/>
+								<f:field property="comentario" wrapper="bootstrap3" widget-class="form-control"/>
+							</f:with>
+							<div class="form-group">
+							    <div class="col-lg-offset-3 col-lg-9">
+							        <button id="saveBtn" class="btn btn-primary ">
+							            <i class="fa fa-floppy-o"></i> Salvar
+							        </button>
+							        <lx:backButton/>
+							    </div>
+							</div>
+						</fieldset>
+					</g:form>
+		    </div>
+		</div>	
+	</div>
+	
+	<script type="text/javascript">
+		$('.chosen-select').chosen();
+		$(".numeric").autoNumeric('init',{vMin:'0'},{vMax:'9999'});
+		$(".money").autoNumeric('init',{wEmpty:'zero',mRound:'B',aSign: '$'});
+		$(".tc").autoNumeric('init',{vMin:'0.0000'});
+		$(".porcentaje").autoNumeric('init',{altDec: '%', vMax: '99.99'});
+
+		$('form[name=createForm]').submit(function(e){
+		    console.log("Desablidatndo submit button....");
+
+		    var button=$("#saveBtn");
+		    button.attr('disabled','disabled')
+		    .html('Procesando...');
+
+		    $(".money,.porcentaje,.numeric,.tc",this).each(function(index,element){
+		      var val=$(element).val();
+		      var name=$(this).attr('name');
+		      var newVal=$(this).autoNumeric('get');
+		      $(this).val(newVal);
+		    });
+		    //e.preventDefault(); 
+		    return true;
+		});
+
+		$('.auto').blur(function(){
+			var precio=$("#precio").autoNumeric('get');
+			var cantidad=$("#cantidad").autoNumeric('get');
+			
+			//var importe=(+importe)+(+impuestos);
+			//console.log('Importe : '+importe+ 'Impuestos:'+impuestos+' Total:'+total);
+			//$('#impuestos').autoNumericSet(impuestos);
+			//$('#total').autoNumericSet(total);
+		});
+	</script>
+</content>
+
 	<div class="container">
 		
-		<div class="row">
-			<div class="span12">
-				<div class="alert">
-					<h4><strong>
-					<g:link action='edit' id="${ventaInstance.id}">Venta: ${ventaInstance.id} ( ${ventaInstance.cliente})</g:link>
-					</strong></h4>
-				</div>
-				
-			</div>
-		</div>
+		
 		
 		<div class="row">
 			<div class="span12">
@@ -43,23 +110,7 @@
 		
 		<div>
 			<fieldset>
-			<g:form class="form-horizontal" action="agregarConcepto" id="${ventaInstance.id}">
-				<fieldset>
-					<f:with bean="ventaDetInstance" >
-						<f:field property="producto"/>
-						<f:field property="cantidad"/>
-						<f:field property="precio" input-id="precio" input-class="auto"/>
-						<f:field property="descuentos" input-id="descuentos"/>
-						<f:field property="comentario" input-class="input-xxlarge"/>
-					</f:with>
-					<div class="form-actions">
-						<button type="submit" class="btn btn-primary">
-							<i class="icon-shopping-cart icon-white"></i>
-							Agregar
-						</button>
-					</div>
-				</fieldset>
-		</g:form>
+			
 		</fieldset>
 	</div>
 		 

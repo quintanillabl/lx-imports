@@ -125,18 +125,22 @@ class VentaController {
 			def det=VentaDet.get(it.toLong())
 			if(venta==null)
 				venta=det.venta
-			def contenedor=det.embarque.contenedor
-				
-			println 'Eliminando ventas asignadas con contenedor: '+contenedor
-			def partidasPorContenedor=venta.partidas.findAll { ventaDet->
-				ventaDet.embarque.contenedor==contenedor
-			}
-			println 'Partidas de la venta: '+venta.partidas.size()
-			println 'Partidas encontradas con contenedor: '+partidasPorContenedor.size()
-			partidasPorContenedor.each {ventaDet->
-				venta.removeFromPartidas(ventaDet)
-			}
-			println 'Partidas de la venta after delete: '+venta.partidas.size()
+			if(det.embarque){
+				def contenedor=det.embarque.contenedor
+				println 'Eliminando ventas asignadas con contenedor: '+contenedor
+				def partidasPorContenedor=venta.partidas.findAll { ventaDet->
+					ventaDet.embarque.contenedor==contenedor
+				}
+				println 'Partidas de la venta: '+venta.partidas.size()
+				println 'Partidas encontradas con contenedor: '+partidasPorContenedor.size()
+				partidasPorContenedor.each {ventaDet->
+					venta.removeFromPartidas(ventaDet)
+				}
+				println 'Partidas de la venta after delete: '+venta.partidas.size()
+				}else{
+					venta.removeFromPartidas(det)
+				}
+			
 			
 		}
 		venta.save(flush:true)

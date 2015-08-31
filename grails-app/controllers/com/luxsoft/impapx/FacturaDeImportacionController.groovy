@@ -7,6 +7,7 @@ import grails.transaction.Transactional
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.lang.StringUtils
+import com.luxsoft.utils.Periodo
 
 @Secured(["hasRole('COMPRAS')"])
 @Transactional(readOnly = true)
@@ -16,10 +17,22 @@ class FacturaDeImportacionController {
 
     def reportService
 
+    def beforeInterceptor = {
+        if(!session.periodoParaPagos){
+            session.periodoParaPagos=new Periodo(new Date(),new Date()+7)
+        }
+    }
+
+    def cambiarPeriodo(Periodo periodo){
+        session.periodoParaPagos=periodo
+        redirect(uri: request.getHeader('referer') )
+    }
+
+
     def index(Integer max) {
         def periodo=session.periodo
         def list=FacturaDeImportacion.findAll(
-            "from FacturaDeImportacion f  where date(f.fecha) between ? and ? order by f.fecha desc",
+            "from FacturaDeImportacion f  where date(f.fecha) between ? and ?  and f.saldo>0 order by f.fecha desc",
             [periodo.fechaInicial,periodo.fechaFinal])
         [facturaDeImportacionInstanceList:list]
     }
@@ -116,26 +129,21 @@ class FacturaDeImportacionController {
     	params.max = Math.min(params.max ? params.int('max') : 200, 1000)
     	params.sort='id'
     	params.order= "desc"
-    	if(!params.fechaInicial)
-    		params.fechaInicial=new Date()
-    	if(!params.fechaFinal)
-    		params.fechaFinal=new Date()+7
     	
-    	// FacturasPorPeriodoCommand cmd=new FacturasPorPeriodoCommand()
-    	// cmd.properties=params
-    	// println 'Periodo: '+cmd+' Proveedor: '+cmd?.proveedor?.id
+        def periodo=session.periodoParaPagos
     	
     	def facturas=[]
     	if(StringUtils.isNotBlank(params.proveedor)){
-    		Proveedor p=Proveedor.get(params.long('proveedor.id'))
-    		cmd.proveedor=p
-    		facturas=FacturaDeImportacion.findAllByProveedorAndVencimientoBetween(p,params.fechaInicial,params.fechaFinal,params)
+    		Proveedor p=Proveedor.get(params.long('proveedor'))
+    		
+    		facturas=FacturaDeImportacion
+                .findAllByProveedorAndVencimientoBetween(p,periodo.fechaInicial,periodo.fechaFinal,params)
     	}
     	else{
-    		facturas=FacturaDeImportacion.findAllByVencimientoBetween(params.fechaInicial,params.fechaFinal,params)
+    		facturas=FacturaDeImportacion.findAllByVencimientoBetween(periodo.fechaInicial,periodo.fechaFinal,params)
     	}
     	flash.message='Facturas: '+facturas.size()
-    	[facturaDeImportacionInstanceList: facturas,facturaDeImportacionInstanceCount: facturas.size()]
+    	[facturaDeImportacionInstanceList: facturas]
     }
 
     def imprimirProgramacionDePagos(){

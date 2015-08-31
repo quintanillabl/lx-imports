@@ -1,7 +1,7 @@
 <div class="btn-group">
 	
 	<g:if test="${!ventaInstance.cfdi}">
-			<g:if test="${ventaInstance.clase=='generica'}">
+			<g:if test="${ventaInstance.clase=='GENERICA'}">
 				<g:link action="agregarConcepto" class="btn btn-primary" id="${ventaInstance.id}">
 					<i class="icon-plus icon-white"></i>
 		  			 Agregar concepto
