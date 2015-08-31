@@ -1,8 +1,12 @@
 package com.luxsoft.impapx.cxp
 
 import com.luxsoft.impapx.*
+import grails.plugin.springsecurity.annotation.Secured
 
+@Secured(["hasAnyRole('USUARIO','COMPRAS','TESORERIA','CONTABILIDAD')"])
 class ComprobanteFiscalController {
+
+    def comprobanteFiscalService
 
     def index() { }
 
@@ -25,6 +29,19 @@ class ComprobanteFiscalController {
         }
         flash.message="Cuenta por pagar generada para el CFDI:  ${xml.getName()}"
         redirect controller:controller, action:'edit',id:cxp.id
+    }
+    
+
+    def validar(ComprobanteFiscal cf){
+        cf=comprobanteFiscalService.validar(cf)
+        redirect(uri: request.getHeader('referer') )
+
+    }
+
+    def mostrarAcuse(ComprobanteFiscal cf){
+        def acuse=comprobanteFiscalService.toAcuse(cf.acuse)
+        def xml=comprobanteFiscalService.toXml(acuse)
+        render(text: xml, contentType: "text/xml", encoding: "UTF-8")
     }
 
 }

@@ -131,4 +131,16 @@ class GastosDeImportacionController {
         }
         
     }
+
+    // def validar(GastosDeImportacion gasto){
+    //     if(!gasto.comprobante){
+    //         flash.message="No se a registrado el CFDI del gasto ${gasto.id}"
+    //         redirect action:'edit',id:gasto.id
+    //         return
+    //     }
+    //     comprobanteFiscalService.validar(gasto.comprobante)
+    //     flash.message="Validación SAT generada"
+    //     redirect action:'edit',id:gasto.id
+        
+    // }
 }

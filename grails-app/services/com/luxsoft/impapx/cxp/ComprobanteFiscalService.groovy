@@ -1,13 +1,23 @@
 package com.luxsoft.impapx.cxp
 
-
+import javax.xml.bind.JAXBContext
+import javax.xml.bind.JAXBException
+import javax.xml.bind.Marshaller
+import javax.xml.bind.Unmarshaller
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
+import org.apache.commons.lang.exception.ExceptionUtils
+
 import com.luxsoft.impapx.*
+import com.luxsoft.cfdi.Acuse
+
 
 
 class ComprobanteFiscalService {
 
 	static transactional = false
+
+    def  consultaService
 
     def importar(def cfdiFile,def cxp){
     	
@@ -63,6 +73,7 @@ class ComprobanteFiscalService {
         def uuid=timbre.attributes()['UUID']
             
         def subTotal=data['subTotal'] as BigDecimal
+        def total=data['total'] as BigDecimal
         def comprobanteFiscal=ComprobanteFiscal.findByUuid(uuid)
         if(comprobanteFiscal){
         	throw new RuntimeException("CFDI ${uuid} ya importado");
@@ -73,7 +84,10 @@ class ComprobanteFiscalService {
     		cfdiFileName:cfdiFile.getOriginalFilename(),
     		uuid:uuid,
     		serie:serie,
-    		folio:folio
+    		folio:folio,
+            emisorRfc:rfc,
+            receptorRfc:receptorRfc,
+            total:total
         )
         
         cxp.proveedor=proveedor
@@ -86,7 +100,7 @@ class ComprobanteFiscalService {
         cxp.descuentos=0
         cxp.subTotal=0
         cxp.impuestos=0
-        cxp.total=data['subTotal'] as BigDecimal
+        cxp.total=total
         cxp.retTasa=0
         cxp.retImp=0
         cxp.comentario="CFDI Importado"
@@ -119,8 +133,13 @@ class ComprobanteFiscalService {
             }
         }
         registrarConceptos(cxp,xml)
+        if(!comprobanteFiscal.validate()){
+            log.error 'Errores de validacion: '+comprobanteFiscal.errors
+        }
         cxp.comprobante=comprobanteFiscal
-        cxp.save failOnError:true,flush:true
+
+        cxp.save flush:true,failOnError:true
+        log.info 'Cuenta por pogar importada: '+cxp
         return cxp
     }
 
@@ -148,6 +167,69 @@ class ComprobanteFiscalService {
                 gasto.addToPartidas(det)
             }
             */
+        }
+    }
+
+    def validar(ComprobanteFiscal cf){
+        //Acuse acuse=buscarAcuse(cf.cxp.proveedor.rfc,cf.cxp.proveedor.)
+        try {
+            Acuse acuse=buscarAcuse(cf.emisorRfc,cf.receptorRfc,cf.total,cf.uuid)
+            
+            JAXBContext context = JAXBContext.newInstance(Acuse.class);
+            Marshaller m = context.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            ByteArrayOutputStream out=new ByteArrayOutputStream()
+            m.marshal(acuse,out);
+            
+            cf.acuse=out.toByteArray()
+            cf.acuseEstado=acuse.getEstado().getValue().toString()
+            cf.acuseCodigoEstatus=acuse.getCodigoEstatus().getValue().toString()
+            cf.save flush:true,failOnError:true
+            log.info 'CFDI validado '+cf.id
+            return cf
+        }
+        catch(Exception e) {
+            log.error e
+            String msg=ExceptionUtils.getRootCauseMessage(e)
+            throw new ComprobanteFiscalException(message:msg,comprobante:cf)
+        }
+    }
+
+    def Acuse buscarAcuse(String emisorRfc,String receptorRfc,BigDecimal total,String uuid){
+        DecimalFormat format=new DecimalFormat("####.000000")
+        String stotal=format.format(total)
+        String qq="?re=$emisorRfc&rr=$receptorRfc&tt=$stotal&id=$uuid"
+        log.info 'Validando en SAT Expresion impresa: '+qq
+        Acuse acuse=consultaService.consulta(qq)
+        log.info 'Acuse obtenido: '+acuse
+        return acuse
+    }
+
+    
+
+    def  toXml(Acuse acuse){
+        try {
+            JAXBContext context = JAXBContext.newInstance(Acuse.class);
+            Marshaller m = context.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            StringWriter w=new StringWriter();
+            m.marshal(acuse,w);
+            return w.toString();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+    }
+
+    def  toAcuse(byte[] data){
+        try {
+            JAXBContext context = JAXBContext.newInstance(Acuse.class)
+            Unmarshaller u = context.createUnmarshaller()
+            ByteArrayInputStream is=new ByteArrayInputStream(data)
+            Object o = u.unmarshal( is )
+            return (Acuse)o
+            
+        } catch (JAXBException e) {
+            e.printStackTrace();
         }
     }
 

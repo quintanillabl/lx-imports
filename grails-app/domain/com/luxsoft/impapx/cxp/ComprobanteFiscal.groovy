@@ -10,6 +10,10 @@ class ComprobanteFiscal {
 	String serie
 	String folio
 
+	String emisorRfc
+	String receptorRfc
+	BigDecimal total
+
 	byte[] acuse
 	String acuseEstado
 	String acuseCodigoEstatus
@@ -27,4 +31,7 @@ class ComprobanteFiscal {
 		acuseEstado nullable:true,maxSize:100
 		acuseCodigoEstatus nullable:true,maxSize:100
     }
+
+
+    
 }

@@ -12,13 +12,21 @@
 <content tag="periodo">
 	Periodo:${session.periodo.mothLabel()} 
 </content>
-<content tag="operaiones">
-	<li>
+
+<content tag="operaciones">
+	
+	%{-- <li>
 	    <g:link action="programacionDePagos"  >
 	        <i class="fa fa-list-ol"></i> Programación de pagos
 	    </g:link> 
+	</li> --}%
+	<li>
+		<a href="#uploadFileDialog" data-toggle="modal" >
+			<i class="fa fa-upload"></i></span> Importar CFDI
+		</a>
 	</li>
 </content>
+
 <content tag="grid">
 	<table id="grid"
 		class="display table table-striped table-hover table-bordered table-condensed">
@@ -67,6 +75,7 @@
 			</g:each>
 		</tbody>
 	</table>
+	<g:render template="/comprobanteFiscal/uploadXmlFile"/>
 </content>
 <content tag="searchService">
 	<g:createLink action="search"/>

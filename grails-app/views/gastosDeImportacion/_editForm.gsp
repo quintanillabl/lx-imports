@@ -50,12 +50,12 @@
 	</form>
 	 <div class="form-group">
 			<div class="col-lg-offset-3 col-lg-9">
-                <g:link action="validarEnElSat" onclick="return confirm('Validar en el SAT?');"
+                <g:link controller="comprobanteFiscal" action="validar" onclick="return confirm('Validar en el SAT?');"
                 		class="btn btn-default btn-outline" id="${gastosDeImportacionInstance.comprobante.id}">
                 	    <i class="fa fa-check-square-o"></i> Validar (SAT)
                 </g:link> 
                 <g:if test="${gastosDeImportacionInstance.comprobante.acuse}">
-                	<g:link  action="mostrarAcuse" 
+                	<g:link  controller="comprobanteFiscal" action="mostrarAcuse" 
                 		id="${gastosDeImportacionInstance.comprobante.id}"
                 		class="btn btn-default btn-outline" >
                 		<i class="fa fa-file-code-o"></i> Acuse

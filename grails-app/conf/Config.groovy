@@ -200,14 +200,14 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 
 grails.plugin.springsecurity.roleHierarchy = '''
    OPERADOR > USUARIO 
-   ADMINISTRACION > CONTABILIDAD > OPERADOR > USUARIO
+   CONTABILIDAD > OPERADOR > USUARIO
+   GASTOS > OPERADOR
+   VENTAS > OPERADOR
+   COMPRAS > OPERADOR
    ADMIN > ADMINISTRACION
    ADMIN > TESORERIA
    ADMIN > VENTAS
    ADMIN > COMPRAS
-   GASTOS > OPERADOR
-   VENTAS > OPERADOR
-   COMPRAS > OPERADOR
 '''
 grails.plugin.springsecurity.failureHandler.exceptionMappings = [
    'org.springframework.security.authentication.CredentialsExpiredException': '/usuario/passwordExpired'
@@ -290,6 +290,22 @@ auditLog {
   stampCreatedBy = 'createdBy' // fieldname
   stampLastUpdatedBy = 'lastUpdatedBy' // fieldname
 
+}
+cxf{
+  client{
+    consultaService{
+      wsdl="https://consultaqr.facturaelectronica.sat.gob.mx/ConsultaCFDIService.svc?singleWsdl"
+      namespace="com.luxsoft.cfdi"
+      //bindingFile = "grails-app/conf/bindings.xml"
+      //client = false //defaults to false
+      //allowChunking = true //false
+      clientInterface = com.luxsoft.cfdi.IConsultaCFDIService
+      serviceEndpointAddress = "https://consultaqr.facturaelectronica.sat.gob.mx/ConsultaCFDIService.svc"
+      receiveTimeout = 120000 //2min
+      connectionTimeout = 120000 //2min
+    }
+    
+  }
 }
 
 
