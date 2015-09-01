@@ -30,7 +30,7 @@
 					</ul>
 					<div class="tab-content">
 					<div class="tab-pane fade in active" id="facturasPanel">
-						<g:render template="editform"/>
+						<g:render template="editForm"/>
 					</div>
 					<div class="tab-pane fade in" id="embarquesPanel">
 						PENDIENTE

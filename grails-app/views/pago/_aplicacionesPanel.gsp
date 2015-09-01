@@ -1,6 +1,4 @@
-<r:require module="luxorTableUtils"/>
-<div class="btn-toolbar">
-	<div class="btn-group ">
+<div class="btn-group ">
 		<g:if test="${abonoInstance.disponible>0}">
 			<g:link action="selectorDeFacturas" 
 				params="['disponible':abonoInstance.disponible]"
@@ -13,10 +11,9 @@
   		<button id="eliminarBtn" class="btn btn-danger">
   			<i class="icon-trash icon-white"></i>Eliminar
   		</button>
-	</div>
 </div>
 <table id="grid"
-	class="simpleGrid table table-striped table-hover table-bordered table-condensed">
+	class="simpleGrid table table-hover table-bordered table-condensed">
 	<thead>
 		<tr>
 			<th class="header">Id</th>
@@ -55,47 +52,47 @@
 		</tr>
 	</tfoot>
 </table>
-<r:script>
-
-$(function(){
-	
-	$("#eliminarBtn").click(function(e){
-		eliminar();
-	});
-	
-	function eliminar(){
-		var res=selectedRows();
-		if(res.length==0){
-			alert('Debe seleccionar al menos un registro');
-			return;
-		}
-		var ok=confirm('Eliminar  ' + res.length+' partida(s)?');
-		if(!ok)
-			return;
-		console.log('Cancelando facturas: '+res);
+<script type="text/javascript">
+	$(function(){
 		
-		$.ajax({
-			url:"${createLink(action:'eliminarAplicaciones')}",
-			data:{
-				abonoId:${abonoInstance.id},partidas:JSON.stringify(res)
-			},
-			success:function(response){
-				
-				location.reload();
-			},
-			error:function(request,status,error){
-				alert("Error: "+status);
-			}
+		$("tbody tr").on('click',function(){
+			$(this).toggleClass("success selected");
 		});
-	}
-	
-});
-function selectedRows(){
-	var res=[];
-	var data=$("tbody tr.selected").each(function(){
-		var tr=$(this);
-		res.push(tr.attr("id"));
+
+		function selectedRows(){
+			var res=[];
+			var data=$("tbody tr.selected").each(function(){
+				var tr=$(this);
+				res.push(tr.attr("id"));
+			});
+			return res;
+		};
+		$("#eliminarBtn").click(function(e){
+			var res=selectedRows();
+			if(res.length==0){
+				alert('Debe seleccionar al menos un registro');
+				return;
+			}
+			var ok=confirm('Eliminar  ' + res.length+' partida(s)?');
+			if(!ok)
+				return;
+			console.log('Cancelando facturas: '+res);
+			
+			$.ajax({
+				url:"${createLink(action:'eliminarAplicaciones')}",
+				data:{
+					abonoId:${abonoInstance.id},partidas:JSON.stringify(res)
+				},
+				success:function(response){
+					
+					location.reload();
+				},
+				error:function(request,status,error){
+					alert("Error: "+status);
+				}
+			});
+		});
+
 	});
-	return res;
-}
-</r:script>
+</script>
+

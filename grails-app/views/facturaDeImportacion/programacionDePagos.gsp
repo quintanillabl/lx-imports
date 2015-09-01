@@ -41,7 +41,10 @@
 				    </g:form>
 				</div>  
 				<div class="btn-group">
-				    <lx:printButton/>
+					<g:form action="imprimirProgramacionDePagos" class="form-horizontal" >
+						<g:hiddenField id="proveedorId2" name="proveedor" />
+						<g:submitButton class="btn btn-info" name="aceptar" value="Imprimir" />
+					</g:form>
 				</div>
 			</div>
 			
@@ -204,6 +207,7 @@
 	            select:function(e,ui){
 	                $("#searchField").val(ui.item.id);
 	                $("#proveedorId").val(ui.item.id);
+	                $("#proveedorId2").val(ui.item.id);
 	                var button=$("#buscarBtn");
 	                button.removeAttr('disabled');
 	            }

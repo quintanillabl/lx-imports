@@ -147,20 +147,19 @@ class FacturaDeImportacionController {
     }
 
     def imprimirProgramacionDePagos(){
-    	if(!params.fechaInicial)
-    		params.fechaInicial=new Date()
-    	if(!params.fechaFinal)
-    		params.fechaFinal=new Date()+7
 
+    	def periodo=session.periodoParaPagos
     	def command=new com.luxsoft.lx.bi.ReportCommand()
     	command.reportName="ProgramacionDePago"
     	command.empresa=session.empresa
+        def proveedor=params.id?:'%'
     	def repParams=[
     		EMPRESA:session.empresa.nombre,
-    	    FECHA_INI:params.fechaInicial.format('dd/MM/yyyy'),
-    	    FECHA_FIN:params.fechaFinal.format('dd/MM/yyyy'),
-    	    PROVEEDOR:'%'
+    	    FECHA_INI:periodo.fechaInicial.format('dd/MM/yyyy'),
+    	    FECHA_FIN:periodo.fechaFinal.format('dd/MM/yyyy'),
+    	    PROVEEDOR:proveedor
     	]
+        println 'Reporte de programacion de pagos: '+repParams
     	def stream=reportService.build(command,repParams)
     	def file="ProgramacionDePagos_"+new Date().format('mmss')+'.'+command.formato.toLowerCase()
     	render(
