@@ -15,6 +15,8 @@ import groovy.transform.EqualsAndHashCode
 //@ToString(includes='nombre',includeNames=true,includePackage=false)
 @EqualsAndHashCode(includes='id')
 class Requisicion {
+
+	static auditable = true
 	
 	Proveedor proveedor
 	String concepto

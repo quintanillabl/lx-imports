@@ -23,15 +23,20 @@ class RequisicionController {
     def index(Integer max) {
 
         def periodo=session.periodo
-        def tipo=params.tipo
-        def hql="from Requisicion c  where date(c.fecha) between ? and ? order by c.fecha desc"
+        def tipo=params.tipo?:'TODAS'
+        def hql=""
         
         if(tipo=="PAGADAS"){
             hql="from Requisicion c  where c.pagoProveedor.id!=null and date(c.fecha) between ? and ? order by c.fecha desc"
-            println 'PAGADAS'
+            
         }
+
         if(tipo=='PENDIENTES'){
             hql="from Requisicion c   where c.pagoProveedor=null and date(c.fecha) between ? and ? order by c.fecha desc"
+        }
+
+        if(tipo=='TODAS'){
+            hql="from Requisicion c  where date(c.fecha) between ? and ? order by date(c.lastUpdated) desc"
         }
 
         def list=Requisicion.findAll(hql,[periodo.fechaInicial,periodo.fechaFinal])
@@ -56,6 +61,15 @@ class RequisicionController {
             respond requisicionInstance.errors, view:'create'
             return
         }
+        if(requisicionInstance.concepto.startsWith('ANTICIPO')){
+            def embarque=Embarque.get(params.long('embarque.id'))
+            requisicionService.generarAnticipo(requisicionInstance, embarque)
+            flash.message = message(code: 'default.created.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), requisicionInstance.id])
+            redirect action: 'edit', id: requisicionInstance.id
+            return
+        }
+
+
         requisicionInstance.save flush:true
         flash.message = message(code: 'default.created.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), requisicionInstance.id])
         redirect action:'edit',id:requisicionInstance.id
@@ -158,7 +172,6 @@ class RequisicionController {
         }
         
         def requisicion=command.requisicion
-        
         def det=command.toRequisicionDet()
         requisicionService.agregarPartida(requisicion.id, det)
         redirect action: 'edit', id: requisicion.id

@@ -70,7 +70,7 @@
 						${fieldValue(bean: row, field: "id")}
 						</g:link>
 					</td>
-					<td><g:link action="edit" id="${row.id}">
+					<td><g:link action="${row.cfdi?'show':'edit'}" id="${row.id}">
 						${fieldValue(bean: row, field: "cliente.nombre")}
 						</g:link>
 					</td>

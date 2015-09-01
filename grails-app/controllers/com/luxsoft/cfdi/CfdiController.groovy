@@ -31,11 +31,13 @@ class CfdiController {
     }
 
     def show(Cfdi cfdi) {
+
 		if(cfdi==null){
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'cfdiInstance.label', default: 'Cfdi'), params.id])
             redirect action: "index", method: "GET"
 		}
-		[cfdiInstance:cfdi]
+		def uri=request.getHeader('referer')
+		[cfdiInstance:cfdi,origen:uri]
     }
 	
 	def mostrarXml(Cfdi cfdi){

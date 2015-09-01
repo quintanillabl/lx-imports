@@ -6,6 +6,8 @@ import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 
 class RequisicionDet {
+
+	static auditable = true
 	
 	String documento
 	Date fechaDocumento

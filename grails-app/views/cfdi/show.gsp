@@ -26,10 +26,16 @@
   					</div>
   					<div class="panel-footer">
   						<div class="btn-group">
+							
+							<g:link class="btn btn-default btn-outline" uri="${origen}">
+								<i class="fa fa-step-backward"></i> Origen</span>
+							</g:link>
 
   							<g:link class="btn btn-default btn-outline" action="index" >
-								<i class="fa fa-step-backward"></i> Comprobantes</span>
+								<i class="fa fa-list"></i> Comprobantes</span>
 							</g:link>
+
+							
   						
   							<g:link class="btn btn-default btn-outline" action="print" id="${cfdiInstance.id}">
 								<span class="glyphicon glyphicon-print"> Imprimir</span>

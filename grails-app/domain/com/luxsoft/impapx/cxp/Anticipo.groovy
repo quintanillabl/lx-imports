@@ -8,6 +8,8 @@ import com.luxsoft.impapx.Requisicion;
 import com.luxsoft.impapx.tesoreria.MovimientoDeCuenta;
 
 class Anticipo {
+
+	static auditable = true
 	
 	Date fecha
 	
