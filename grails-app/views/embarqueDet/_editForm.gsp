@@ -31,9 +31,9 @@
 						name="compraDet" required="true" value="${embarqueDetInstance?.compraDet}" />
 				</f:field>
 				<f:field property="cantidad" 
-					widget-type="string" widget-class="form-control numeric" widget-autofocus="true"/>
-				<f:field property="precio" widget-class="form-control" widget-type="text"/>
-				<f:field property="kilosNetos" widget-class="form-control " widget-type="text"/>
+					widget="numeric"  widget-autofocus="true"/>
+				<f:field property="precio"  widget-class="form-control" widget-type="text"/>
+				<f:field property="kilosNetos"  widget-class="form-control " widget-type="text"/>
 				<f:field property="kilosEstimados"   widget-class="form-control " widget-type="text"/>
 				<f:field property="importe"  widget-class="form-control " widget-type="text" 
 					widget-required="true" />
@@ -65,9 +65,15 @@
 
 <script type="text/javascript">
 	$(function(){
-		//$(".numeric").autoNumeric({wEmpty:'zero',aSep:"",lZero: 'deny'});
+		
+		$(".numeric").autoNumeric({wEmpty:'zero',aSep:"",lZero: 'deny'});
 		//$(".autonumeric").autoNumeric({vMin:'0.000'});
 		//$("#cantidad").autoNumeric({vMin:'0.000'});
+
+		//$(".numeric").autoNumeric('init',{vMin:'0'},{vMax:'9999'});
+		// $(".money").autoNumeric('init',{wEmpty:'zero',mRound:'B',aSign: '$'});
+		// $(".tc").autoNumeric('init',{vMin:'0.0000'});
+		// $(".porcentaje").autoNumeric('init',{altDec: '%', vMax: '99.99'});
 
 		$("#compraDetAuto").focusout(function(){
 			console.log('Localizando precio...');
@@ -115,15 +121,16 @@
 			console.log('Importe : '+importe);
 			$("#importe").val(importe);
 		});
-		$("#kilosNetos").blur(function(){
-			//Actualizamos el 
-			var costo=$("#precio").val();
-			var kilos=$(this).val();
-			kilos=kilos/1000 // Precio por tonelada
-			var importe=kilos*costo;
-			importe=Math.round(importe*100)/100;
-			$("#importe").val(importe);
-		});
+
+		// $("#kilosNetos").blur(function(){
+		// 	//Actualizamos el 
+		// 	var costo=$("#precio").val();
+		// 	var kilos=$(this).val();
+		// 	kilos=kilos/1000 // Precio por tonelada
+		// 	var importe=kilos*costo;
+		// 	importe=Math.round(importe*100)/100;
+		// 	$("#importe").val(importe);
+		// });
 		
 		
 		
@@ -138,7 +145,7 @@
 			var kilosEstimados=(cantidad/factor)*kilosPorMillar;
 			kilosEstimados=Math.round(kilosEstimados*100)/100;
 
-			//console.log('Kilos estimados:' +cantidad+'/'+factor+' * '+kilosPorMillar);
+			console.log('Kilos estimados:' +kilosEstimados);
 			$("#kilosEstimados").val(kilosEstimados);	
 			
 		});
