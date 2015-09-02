@@ -66,7 +66,7 @@ class CfdiConverters {
 	}
 	
 	static ComprobanteDocument toComprobanteFromVenta(Venta source,Empresa empresa){
-		println "Generando ComprobanteDocument para $source.tipo $source.id"
+		
 		final ComprobanteDocument document=ComprobanteDocument.Factory.newInstance()
 		final Comprobante comprobante=document.addNewComprobante()
 		CFDIUtils.depurar(document)
@@ -150,7 +150,7 @@ class CfdiConverters {
 			
 			
 		}
-		println 'ComprobanteDocument generado: '+document
+		//println 'ComprobanteDocument generado: '+document
 		return document
 	}
 	

@@ -29,7 +29,7 @@ class VentaController {
     }
 
     def create() {
-    	respond new Venta(fecha:new Date(),cuentaDePago:'0000',clase:params.clase)
+    	respond new Venta(fecha:new Date(),cuentaDePago:'0000',clase:params.clase,formaDePago:'TRANSFERENCIA')
     }
 
     def save(Venta ventaInstance){

@@ -63,11 +63,7 @@
 									class="btn btn-default btn-outline" >
 									</span> Acuse
 								</g:link>
-								<g:link  action="descargarAcuseXml" controller="cancelacionDeCfdi"
-									id="${cfdiInstance?.cancelacion.id}"
-									class="btn btn-default btn-outline" >
-									</span> Descargar acuse
-								</g:link>
+								
 							</g:if>
 
 							<g:else>
@@ -78,14 +74,7 @@
 							</g:else>
 							
 							
-							%{-- <g:jasperReport
-									controller="cfdi"
-									action="imprimir"
-									jasper="CFDI" 
-									format="PDF" 
-									name="Imprimir CFDI">
-									<g:hiddenField name="id" value="${cfdiInstance.id}"/>
-							</g:jasperReport> --}%
+							
 							
 							<g:jasperReport
 										controller="cfdi"

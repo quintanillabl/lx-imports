@@ -47,10 +47,7 @@
 	  		 				Facturar
 	  					</g:link>
 	  					
-	  					<button class="btn btn-danger" type="submit" name="_action_delete">
-							<i class="icon-trash icon-white"></i>
-							<g:message code="default.button.delete.label" default="Delete" />
-						</button>
+	  					<a href="" class="btn btn-danger " data-toggle="modal" data-target="#deleteDialog"><i class="fa fa-trash"></i> Eliminar</a> 
 	  					
 					</g:else>
 				</div>
@@ -58,6 +55,7 @@
 			
 		</g:form>
 	</div>
+	<g:render template="/common/deleteDialog" bean="${ventaInstance}"/>
 </div>
 
 

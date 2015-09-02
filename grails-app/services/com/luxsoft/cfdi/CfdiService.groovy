@@ -22,6 +22,7 @@ import com.luxsoft.impapx.Venta;
 import com.luxsoft.impapx.cxc.CXCNota;
 import grails.transaction.Transactional
 
+
 class CfdiService implements InitializingBean{
 
 	def grailsApplication
@@ -45,13 +46,12 @@ class CfdiService implements InitializingBean{
 		}
 		if(source instanceof CXCNota)
 			serie='CRE'
-			
-			
+
 		def cfdiFolio=CfdiFolio.findByEmisorAndSerie(empresa.rfc,serie)
 		assert cfdiFolio," Debe registrar folio de  para la serie "+serie
 		def folio=cfdiFolio.next()
 		
-		println "Generando CFDI folio:$folio  Serie:$serie y rfc:$empresa.rfc  Para entidad: $source.tipo"
+		log.info "Generando CFDI folio:$folio  Serie:$serie y rfc:$empresa.rfc  Para entidad: $source.tipo $source.id"
 		def cfdi=CfdiConverters.toCfdi(source,empresa)
 		cfdi.serie=serie
 		cfdi.folio=folio
@@ -81,12 +81,8 @@ class CfdiService implements InitializingBean{
 		cfdi.setXmlName("$cfdi.rfc-$cfdi.serie-$cfdi.folio"+".xml")
 		
 		validarDocumento(document)		
-		cfdi.save(failOnError:true)
-		if(cfdiTimbrador==null){
-			//cfdiTimbrador=new CfdiTimbrador(timbradoDePrueba:false)
-			println 'Algo anda mal el timbrador no puede ser nulo'
-		}
 		cfdi=cfdiTimbrador.timbrar(cfdi,"PAP830101CR3", "yqjvqfofb")
+		cfdi.save(failOnError:true)
 		return cfdi
     }
 	
