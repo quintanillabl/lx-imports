@@ -26,7 +26,7 @@
 				    	<g:form name="createForm" action="save" class="form-horizontal" method="POST">	
 				    		<f:with bean="comisionInstance">
 				    			<f:field property="fecha" wrapper="bootstrap3"/>
-				    			<f:field property="cuenta" wrapper="bootstrap3"/>
+				    			<f:field property="cuenta" wrapper="bootstrap3" widget-class="form-control chosen-select"/>
 				    			<f:field property="comision" widget="money" wrapper="bootstrap3"/>
 				    			<f:field property="impuestoTasa" widget="porcentaje" wrapper="bootstrap3" label="Tasa de impuesto(%)"/>
 				    			<f:field property="impuesto" widget="money"  wrapper="bootstrap3"/>
@@ -67,7 +67,7 @@
 
 			$(".money").autoNumeric('init',{mRound:'B',aSign: '$'});
 			$(".tc").autoNumeric('init',{vMin:'0.0000'});
-			$(".porcentaje").autoNumeric('init',{vMin:'0.01',vMax:'99.00'})
+			$(".porcentaje").autoNumeric('init',{vMin:'0.00',vMax:'99.00'})
 			$('.chosen-select').chosen({placeholder_text_single:'Seleccione una cuenta'});
 			
 			$('form[name=createForm]').submit(function(e){
