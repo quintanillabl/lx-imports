@@ -83,7 +83,8 @@ class SaldoDeCuentaController {
 		if(fecha)
 			session.periodo=Date.parse("dd/MM/yyyy", fecha)
 		//def periodo=Date.parse("dd/MM/yyyy", params.periodo).inicioDeMes()
-		def periodo=session.periodo
+		//def periodo=session.periodo
+		Date periodo=session.periodoTesoreria
 		def saldo=SaldoDeCuenta.findOrCreateByCuentaAndYearAndMes(cuenta,periodo.toYear(),periodo.toMonth())
 		println "Detalle de movientos Cuenta: $cuenta  Saldo:$saldo Periodo:$periodo "
 		if(saldo.id==null){
@@ -102,7 +103,7 @@ class SaldoDeCuentaController {
 			throw new RuntimeException("No existe la cuenta: "+id)
 		
 		//def periodo=Date.parse("dd/MM/yyyy", session.periodo)
-		def periodo=session.periodo
+		Date periodo=session.periodoTesoreria
 		
 		println "Generando estado de cuenta para:$cuenta  al:$periodo"
 		
