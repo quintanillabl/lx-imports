@@ -83,6 +83,7 @@ class CfdiService implements InitializingBean{
 		validarDocumento(document)		
 		cfdi=cfdiTimbrador.timbrar(cfdi,"PAP830101CR3", "yqjvqfofb")
 		cfdi.save(failOnError:true)
+		folio.save flus:true)
 		return cfdi
     }
 	
