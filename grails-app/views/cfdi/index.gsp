@@ -55,26 +55,3 @@
 </body>
 </html>
 
-<!DOCTYPE html>
-<html>
-
-<body>
-	<div class="container">
-
-		<!-- end .row 1 Header -->
-		
-		
-		
-		
-		<div class="row">
-			<div class="col-md-12">
-				
-				%{-- <g:render template="search"/>
-				<g:render template="uploadFileDialog"/> --}%
-			</div>
-		</div>
-
-	</div>
-	
-</body>
-</html>

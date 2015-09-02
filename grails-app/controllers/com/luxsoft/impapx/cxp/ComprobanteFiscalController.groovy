@@ -44,4 +44,9 @@ class ComprobanteFiscalController {
         render(text: xml, contentType: "text/xml", encoding: "UTF-8")
     }
 
+    def mostrarCfdi(ComprobanteFiscal cf){
+        def xml=comprobanteFiscalService.getCfdiXml(cf)
+        render(text: xml, contentType: "text/xml", encoding: "UTF-8")
+    }
+
 }

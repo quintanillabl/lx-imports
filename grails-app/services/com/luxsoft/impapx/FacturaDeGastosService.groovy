@@ -55,12 +55,7 @@ class FacturaDeGastosService {
 		gasto.impuestos=gasto.conceptos.sum(0.0,{it.impuesto})
 		gasto.retImp=gasto.conceptos.sum(0.0,{it.retension})
 		gasto.retensionIsr=gasto.conceptos.sum(0.0,{it.retensionIsr})
-		
-		
-		
 		gasto.total=gasto.importe+gasto.impuestos-gasto.retImp-gasto.retensionIsr
-		//def desc=gasto.conceptos.sum(0.0,{it.descuento?:0.0})
-		//println 'Descuento total de la factura: '+desc
 		gasto.descuento=gasto.conceptos.sum(0.0,{it.descuento?:0.0})
 		gasto.rembolso=gasto.conceptos.sum(0.0,{it.rembolso?:0.0})
 		gasto.otros=gasto.conceptos.sum(0.0,{it.otros?:0.0})

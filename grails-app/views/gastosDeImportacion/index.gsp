@@ -30,23 +30,22 @@
  				class="display table table-striped table-hover table-bordered table-condensed">
  				<thead>
  					<tr>
- 						<g:sortableColumn property="id" title="Id" />
- 						<g:sortableColumn property="proveedor.nombre" title="Proveedor" />
-
- 						<th class="header">Dcto</th>
- 						<th class="header">Fecha</th>
- 						<th class="header">Vto</th>
- 						<th class="header">Moneda</th>
- 						<th class="header">Total</th>
- 						<th class="header">Pagos</th>
- 						<th class="header">Saldo</th>
- 						<th class="header">Creada</th>
- 						<th class="header">Modificada</th>
+						<th>Id</th>
+						<th>Proveedor</th>
+ 						<th>Dcto</th>
+ 						<th>Fecha</th>
+ 						<th>Vto</th>
+ 						<th>Moneda</th>
+ 						<th>Total</th>
+ 						<th>Pagos</th>
+ 						<th>Saldo</th>
+ 						<th>UUID</th>
+ 						<th>Modificada</th>
  					</tr>
  				</thead>
  				<tbody>
  					<g:each in="${gastosDeImportacionInstanceList}" var="row">
- 						<tr>
+ 						<tr class="${row.comprobante?'success':'warning'}">
  							<td>
  								<g:link action="edit" id="${row.id}">
  									<lx:idFormat id="${row.id}"/>
@@ -65,8 +64,11 @@
  							<td><lx:moneyFormat number="${row.pagosAplicados}"/></td>
  							<td><lx:moneyFormat number="${row.saldoActual}"/></td>
  							
- 							<td><abbr title="${g.formatDate(date:row.dateCreated)}">
- 								...</abbr></td>
+ 							<td>
+ 								<abbr title="${row?.comprobante?.uuid}">
+ 								${org.apache.commons.lang.StringUtils.substringAfterLast(row?.comprobante?.uuid,'-')}
+ 								</abbr>
+ 							</td>
  							<td><abbr title="${g.formatDate(date:row.lastUpdated)}">
  								...</abbr></td>
  						</tr>

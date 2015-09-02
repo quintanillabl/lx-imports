@@ -7,7 +7,7 @@
 				<h4 class="modal-title" id="myModalLabel">Selección de archivo XML (CFDI) para importar el gasto</h4>
 			</div>
 			
-			<g:uploadForm class="form" action="importarCfdi" id="${gastoInstance?.id}">
+			<g:uploadForm class="form" action="importarCfdi" id="${it?.id}">
 				<div class="modal-body">
 					
 					<div class="form-group">

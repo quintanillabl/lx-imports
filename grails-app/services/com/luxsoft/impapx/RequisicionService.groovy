@@ -113,4 +113,16 @@ class RequisicionService {
 		}
 		return requisicion
 	}
+
+	def delete(Long id){
+		def requisicion=Requisicion.get(id)
+		if(requisicion.concepto.startsWith('ANTICIPO')){
+			def anticipo=Anticipo.findByRequisicion(requisicion)
+			if(anticipo){
+				anticipo.delete flush:true
+			}
+
+		}
+		requisicion.delete flush:true
+	}
 }

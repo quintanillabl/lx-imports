@@ -24,4 +24,13 @@
 			</div>
 		</div>
 	</f:with>
+	<div class="form-group">
+	    <div class="col-lg-offset-3 col-lg-9">
+	        <button id="saveBtn" class="btn btn-primary ">
+	            <i class="fa fa-floppy-o"></i> Actualizar
+	        </button>
+	        <a href="" class="btn btn-danger " data-toggle="modal" data-target="#deleteDialog"><i class="fa fa-trash"></i> Eliminar</a> 
+	    </div>
+	</div>
 </g:form>
+<g:render template="/common/deleteDialog" bean="${facturaDeGastosInstance}"/>

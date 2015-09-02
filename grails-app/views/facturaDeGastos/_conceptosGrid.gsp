@@ -34,14 +34,14 @@
 			    	${row.id}</g:link>
 			    </td>
 			    <td>
-			    	<a data-toggle="modal" data-target="#conceptoDialog" data-gasto="${row.id}">
+			    	%{-- <a data-toggle="modal" data-target="#conceptoDialog" data-gasto="${row.id}">
 			    		${fieldValue(bean: row, field: "concepto.clave")}
-			    	</a>
-			    	%{-- <g:link controller="conceptoDeGasto" action="show" id="${row.id}">
-			    		
-			    	</g:link> --}%
+			    	</a> --}%
+			    	<g:link controller="conceptoDeGasto" action="edit" id="${row.id}">
+			    		${fieldValue(bean: row, field: "concepto.clave")}
+			    	</g:link>
 			    </td>
-				<td>${fieldValue(bean: row, field: "concepto.descripcion")}</td>
+				<td>${fieldValue(bean: row, field: "descripcion")}</td>
 				<td>${fieldValue(bean: row, field: "tipo")}</td>
 				<td><lx:moneyFormat number="${row.importe }" /></td>
 				<td><lx:moneyFormat number="${row.impuesto }" /></td>

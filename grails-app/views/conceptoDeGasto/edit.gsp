@@ -1,111 +1,113 @@
 <%@ page import="com.luxsoft.impapx.cxp.ConceptoDeGasto" %>
 <!doctype html>
 <html>
-	<head>
-		<meta name="layout" content="luxor">
-		<g:set var="entityName" value="${message(code: 'conceptoDeGasto.label', default: 'ConceptoDeGasto')}" />
-		<title><g:message code="default.edit.label" args="[entityName]" /></title>
-		<r:require module="luxorForms"/>
-	</head>
-	<body>
-		<div class="row-fluid">
+<head>
+	<meta name="layout" content="luxor">
+	<title>Concepto ${conceptoDeGastoInstance.id}</title>
+	<asset:javascript src="forms/forms.js"/>
+</head>
 
+<content tag="header">
+	Concepto de gasto ${conceptoDeGastoInstance.id}
+</content>
+<content tag="subHeader">
+	<ol class="breadcrumb">
+		<li><g:link action="index">Factura de gasto: ${conceptoDeGastoInstance.factura}</g:link></li>
+	</ol>
+</content>
+
+<content tag="document">
+	<div class="row">
+	    <div class="col-lg-8">
+	        <div class="ibox float-e-margins">
+	            <div class="ibox-title">
+	                <h5>Factura ${conceptoDeGastoInstance.factura}</h5>
+	            </div>
+	            <div class="ibox-content">
+	                <lx:errorsHeader bean="${conceptoDeGastoInstance}"/>
+	                <g:form name="updateForm" action="update" class="form-horizontal" method="PUT">  
+	                    <g:hiddenField name="id" value="${conceptoDeGastoInstance.id}"/>
+	                    <g:hiddenField name="version" value="${conceptoDeGastoInstance.version}"/>
+	                    <f:with bean="conceptoDeGastoInstance">
+	                    	<g:hiddenField name="factura.id" value="${conceptoDeGastoInstance?.factura?.id }"/>
+	                    	
+	                    	<f:field property="concepto" >
+	                    		<g:hiddenField id="conceptoId" name="concepto.id" 
+	                    			value="${conceptoDeGastoInstance?.concepto?.id}"/>
+	                    		<g:field type="text" id="concepto" name="conceptoDesc" required="true" class="form-control" 
+	                    			value="${conceptoDeGastoInstance?.concepto}"/>
+	                    	</f:field>
+	                    	<f:field property="tipo" value="${conceptoDeGastoInstance?.tipo}" widget-class="chosen-select"/>
+	                    	<f:field property="descripcion" widget-required="true"  widget-class="form-control"/>
+	                    
+	                    	<f:field property="importe" widget="money" input-id="c_Importe" input-class="moneyField"/>
+	                    	<f:field property="impuestoTasa" widget="porcentaje"/>
+	                    	<f:field property="impuesto" widget="money"/>
+	                    	<f:field property="retensionTasa" widget="porcentaje"/>
+	                    	<f:field property="retension" widget="money"/>
+	                    	<f:field property="retensionIsrTasa" widget="porcentaje"/>
+	                    	<f:field property="retensionIsr" widget="money"/>
+	                    	<f:field property="descuento"  widget="money"/>
+	                    	<f:field property="rembolso"  widget="money" label="Vales"/>
+	                    	<f:field property="fechaRembolso"  label="Fecha Vales"/>
+	                    	<f:field property="otros"  widget-class="form-control"/>
+	                    	<f:field property="comentarioOtros" widget-class="form-control" />
+	                    </f:with>
+	                    <div class="form-group">
+	                        <div class="col-lg-offset-3 col-lg-9">
+	                            <button id="saveBtn" class="btn btn-primary ">
+	                                <i class="fa fa-floppy-o"></i> Actualizar
+	                            </button>
+	                            <lx:backButton/>
+	                        </div>
+	                    </div>
+	                </g:form>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<script type="text/javascript">
+		$(function(){
+			$("#concepto").autocomplete({
+				source:'<g:createLink controller="cuentaContable" action="cuentasDeDetalleJSONList"/>',
+				minLength:3,
+				select:function(e,ui){
+					console.log('Valor seleccionado: '+ui.item.id);
+					$("#conceptoId").val(ui.item.id);
+				}
+			});
 			
-			
-			<div class="span9">
+			$('#c_Importe').blur(function(){
+				console.log('Importe registrado');
+				var importe=$("#c_Importe").autoNumericGet();
+				$('#c_ietu').autoNumericSet(importe);
+			});
+			$('.chosen-select').chosen();
+			$(".numeric").autoNumeric('init',{vMin:'0'},{vMax:'9999'});
+			$(".money").autoNumeric('init',{wEmpty:'zero',mRound:'B',aSign: '$'});
+			$(".tc").autoNumeric('init',{vMin:'0.0000'});
+			$(".porcentaje").autoNumeric('init',{altDec: '%', vMax: '99.99'});
 
-				<div class="page-header">
-					<h3><g:message code="default.edit.label" args="[entityName]" /></h3>
-				</div>
+			$('form[name=updateForm]').submit(function(e){
+			    console.log("Desablidatndo submit button....");
 
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
+			    var button=$("#saveBtn");
+			    button.attr('disabled','disabled')
+			    .html('Procesando...');
 
-				<g:hasErrors bean="${conceptoDeGastoInstance}">
-				<bootstrap:alert class="alert-error">
-				<ul>
-					<g:eachError bean="${conceptoDeGastoInstance}" var="error">
-					<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-					</g:eachError>
-				</ul>
-				</bootstrap:alert>
-				</g:hasErrors>
+			    $(".money,.porcentaje,.numeric,.tc",this).each(function(index,element){
+			      var val=$(element).val();
+			      var name=$(this).attr('name');
+			      var newVal=$(this).autoNumeric('get');
+			      $(this).val(newVal);
+			    });
+			    //e.preventDefault(); 
+			    return true;
+			});
+		});
+	</script>
+</content>
 
-				<fieldset>
-					<g:form class="form-horizontal" action="edit" id="${conceptoDeGastoInstance?.id}" >
-						<g:hiddenField name="version" value="${conceptoDeGastoInstance?.version}" />
-						<fieldset>
-							<f:with bean="conceptoDeGastoInstance">
-								<g:hiddenField name="factura.id" value="${conceptoDeGastoInstance?.factura?.id }"/>
-								
-								<f:field property="concepto" >
-									<g:hiddenField id="conceptoId" name="concepto.id" 
-										value="${conceptoDeGastoInstance?.concepto?.id}"/>
-									<g:field type="text" id="concepto" name="conceptoDesc" required="true" class="input-xxlarge" 
-										value="${conceptoDeGastoInstance?.concepto}"/>
-								</f:field>
-								<f:field property="tipo" value="${conceptoDeGastoInstance?.tipo}"/>
-								<f:field property="descripcion" input-required="true"  input-class="input-xxlarge"/>
-						 
-								<f:field property="importe" input-required="true" input-id="c_Importe" input-class="moneyField"/>
-								<f:field property="ietu" input-required="true" input-id="c_ietu" input-class="moneyField"/>
-								<f:field property="impuestoTasa" input-required="true" input-class="tasa"/>
-								<f:field property="impuesto" input-required="true" input-class="moneyField"/>
-								<f:field property="retensionTasa" input-required="true" input-class="tasa"/>
-								<f:field property="retension" input-required="true" input-class="moneyField"/>
-								<f:field property="retensionIsrTasa" input-required="true" input-class="tasa"/>
-								<f:field property="retensionIsr" input-required="true" input-class="moneyField"/>
-								<f:field property="descuento"  input-class="moneyField"/>
-								<f:field property="rembolso"  input-class="moneyField" label="Vales"/>
-								<f:field property="fechaRembolso"  input-id="fechaRembolso" label="Fecha Vales"/>
-								<f:field property="otros"  input-class="moneyField"/>
-								<f:field property="comentarioOtros"  />
-							</f:with>
-							<div class="form-actions">
-								<button type="submit" class="btn btn-primary">
-									<i class="icon-ok icon-white"></i>
-									<g:message code="default.button.update.label" default="Update" />
-								</button>
-								<button type="submit" class="btn btn-danger" name="_action_delete" formnovalidate>
-									<i class="icon-trash icon-white"></i>
-									<g:message code="default.button.delete.label" default="Delete" />
-								</button>
-							</div>
-						</fieldset>
-					</g:form>
-				</fieldset>
-
-			</div>
-			
-<r:script>
-
-$(function(){
 	
-	$("#concepto").autocomplete({
-			source:'<g:createLink controller="cuentaContable" action="cuentasDeDetalleJSONList"/>',
-			minLength:3,
-			select:function(e,ui){
-				console.log('Valor seleccionado: '+ui.item.id);
-				$("#conceptoId").val(ui.item.id);
-			}
-	});
-	
-	
-	$(".tasa").autoNumeric({aSign: ' %', pSign: 's', vMin:'0.00',vMax: '100.00',wEmpty:'zero'} );
-	$(".moneyField").autoNumeric({vMin:'0.00',wEmpty:'zero',mRound:'B'});
-	$('#c_Importe').blur(function(){
-		console.log('Importe registrado');
-		var importe=$("#c_Importe").autoNumericGet();
-		$('#c_ietu').autoNumericSet(importe);
-	});
-	
-	
-});
-
-</r:script>
-
-		</div>
-	
-	</body>
+</body>
 </html>

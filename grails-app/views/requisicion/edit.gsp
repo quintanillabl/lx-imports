@@ -38,7 +38,7 @@
 								<button id="saveBtn" class="btn btn-primary ">
 									<i class="fa fa-floppy-o"></i> Salvar
 								</button>
-								<lx:deleteButton bean="${requisicionInstance}"/>
+								<a href="" class="btn btn-danger " data-toggle="modal" data-target="#deleteDialog"><i class="fa fa-trash"></i> Eliminar</a> 
 							</g:if>
 							
 						</div>
@@ -154,6 +154,7 @@
 		<!-- modal-di -->
 	</div>
 
+	<g:render template="/common/deleteDialog" bean="${requisicionInstance}"/>
 	
 	
 	<script type="text/javascript">

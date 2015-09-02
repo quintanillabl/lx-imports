@@ -100,6 +100,7 @@ class CuentaContableController extends ContabilidadController{
     	redirect action:'edit', id:cuenta.id
     }
 
+    @Secured(["hasAnyRole('CONTABILIDAD','TESORERIA','COMPRAS','GASTOS')"])
     def cuentasDeDetalleJSONList(){
         def cuentas=CuentaContable.findAllByClaveIlikeAndDetalle(params.term+"%",true,[max:100,sort:"clave",order:"desc"])
         

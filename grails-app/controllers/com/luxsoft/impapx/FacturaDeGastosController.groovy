@@ -9,6 +9,7 @@ import org.codehaus.groovy.grails.web.json.JSONArray
 import grails.plugin.springsecurity.annotation.Secured
 import com.luxsoft.impapx.cxp.ComprobanteFiscalException
 
+
 @Secured(["hasAnyRole('COMRAS','TESORERIA')"])
 @Transactional(readOnly = true)
 class FacturaDeGastosController {
@@ -22,7 +23,7 @@ class FacturaDeGastosController {
     def index(Integer max) {
         def periodo=session.periodo
         def list=FacturaDeGastos.findAll(
-            "from FacturaDeGastos c  where date(c.fecha) between ? and ? order by c.fecha desc",
+            "from FacturaDeGastos c  where date(c.fecha) between ? and ? order by c.lastUpdated desc",
             [periodo.fechaInicial,periodo.fechaFinal])
         [facturaDeGastosInstanceList:list]
     }
@@ -137,7 +138,7 @@ class FacturaDeGastosController {
     }
 
     @Transactional
-    def importarCfdi(){
+    def importarCfdi(FacturaDeGastos facturaDeGastosInstance){
         def xml=request.getFile('xmlFile')
         if(xml==null){
             flash.message="Archivo XML no localizado"
@@ -145,9 +146,16 @@ class FacturaDeGastosController {
             return
         }
         try {
-            def cxp=comprobanteFiscalService.importar(xml,new GastosDeImportacion())
-            flash.message="Cuenta por pagar generada para el CFDI:  ${xml.getOriginalFilename()}"
-            redirect action:'edit',id:cxp.id
+            if(facturaDeGastosInstance){
+                println 'Actualizando datos de CFDI'
+                comprobanteFiscalService.actualizar(facturaDeGastosInstance,xml)
+                redirect action:'edit',id:facturaDeGastosInstance.id
+            }else{
+                def cxp=comprobanteFiscalService.importar(xml,new FacturaDeGastos())
+                flash.message="Cuenta por pagar generada para el CFDI:  ${xml.getOriginalFilename()}"
+                redirect action:'edit',id:cxp.id
+            }
+            
         }
         catch(ComprobanteFiscalException e) {
             flash.message="Errores en la importación"
