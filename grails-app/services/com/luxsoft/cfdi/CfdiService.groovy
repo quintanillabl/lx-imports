@@ -20,6 +20,7 @@ import com.edicom.ediwinws.service.cfdi.CancelaResponse;
 import com.luxsoft.impapx.Empresa;
 import com.luxsoft.impapx.Venta;
 import com.luxsoft.impapx.cxc.CXCNota;
+import grails.transaction.Transactional
 
 class CfdiService implements InitializingBean{
 
@@ -109,7 +110,7 @@ class CfdiService implements InitializingBean{
 		
 	}
 	
-	def Cfdi cancelar(Cfdi cfdi){
+	def Cfdi cancelarOld(Cfdi cfdi){
 		
 		println 'Mandando cancelar CFDI: '+cfdi.uuid
 		
@@ -136,31 +137,24 @@ class CfdiService implements InitializingBean{
 		assert dir.exists(),'Debe existir el directorio: '+dir
 		assert dir.isDirectory()
 		
-		Environment.executeForCurrentEnvironment {
-			production{
-				CfdiClient client=new CfdiClient()
-				CancelaResponse res=client.cancelCfdi(
-							"PAP830101CR3"
-							,"yqjvqfofb"
-							, empresa.getRfc()
-							, uuidList
-							, empresa.getCertificadoDigitalPfx()
-							, empresa.getPasswordPfx())
-				
-				String text=Base64.decode(res.getText())
-				byte[] aka=Base64.decode(res.getAck())
-				String name=cfdi.emisor+'-'+cfdi.serie+'-'+cfdi.folio
-				
-				File akaFile=new File(dir,name+'_CANCELACION_AKA.xml')
-				akaFile.setText(new String(aka))
-				
-				File file1=new File(dir,name+'_CANCELACION_RES.txt')
-				file1.setText(new String(text))
-			}
-			development{
-				println 'Entorno de desarrollo no se manda cancelar con el PAC...'
-			}
-		}
+		CfdiClient client=new CfdiClient()
+		CancelaResponse res=client.cancelCfdi(
+					"PAP830101CR3"
+					,"yqjvqfofb"
+					, empresa.getRfc()
+					, uuidList
+					, empresa.getCertificadoDigitalPfx()
+					, empresa.getPasswordPfx())
+		
+		String text=Base64.decode(res.getText())
+		byte[] aka=Base64.decode(res.getAck())
+		String name=cfdi.emisor+'-'+cfdi.serie+'-'+cfdi.folio
+		
+		File akaFile=new File(dir,name+'_CANCELACION_AKA.xml')
+		akaFile.setText(new String(aka))
+		
+		File file1=new File(dir,name+'_CANCELACION_RES.txt')
+		file1.setText(new String(text))
 		
 		
 		
@@ -169,6 +163,59 @@ class CfdiService implements InitializingBean{
 		cfdi.save(flush:true)
 		
 		return cfdi
+	}
+
+
+	@Transactional
+	def CancelacionDeCfdi cancelar(Cfdi cfdi,String comentario){
+
+		CancelacionDeCfdi cancel=new CancelacionDeCfdi()
+		cancel.cfdi=cfdi
+
+		def rfc=cfdi.getComprobante().emisor.rfc
+
+		def empresa=Empresa.findByRfc(rfc)
+		if(!empresa){
+			throw new CfdiException(message:"No localizo empresa $rfc del CFDI",cfdi:cfdi)
+		}
+		
+		byte[] pfxData=empresa.certificadoDigitalPfx
+		String[] uuids=[cfdi.uuid]
+		def client=new CfdiClient()
+		def passwordPfx=empresa.passwordPfx
+		if(!passwordPfx) throw new CfdiException(message:'No se ha registrado la clave de cancelacion PAC en la empresa: '+empresa,cfdi:cfdi)
+		def usuarioPac="PAP830101CR3"//empresa.usuarioPac
+		def passwordPac="yqjvqfofb"//empresa.passwordPac
+		log.info 'Cancelando cfdi...'
+		CancelaResponse res=client.cancelCfdi(
+					usuarioPac
+					,passwordPac
+					, empresa.getRfc()
+					, uuids
+					, pfxData
+					, passwordPfx);
+		
+		String msg=res.getText()
+		String aka=res.getAck()
+		cancel.aka=Base64.decode(aka.getBytes())
+		cancel.save failOnError:true,flush:true
+		log.info 'Cancelacion: '+cancel
+
+		/*
+		def venta=Venta.findByCfdi(cfdi)
+		if(venta){
+			venta?.cfdi=null
+			venta?.save()
+			venta.modificadoPor=currentUser()
+		}
+		*/
+
+		cfdi.comentario="CANCELADO ORIGEN: "+cfdi.origen
+		cfdi.origen='CANCELACION'
+		cfdi.save(flush:true)
+
+		return cancel
+
 	}
 
 	@Override

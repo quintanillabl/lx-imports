@@ -177,16 +177,14 @@ class CfdiController {
 		
 	}
 	
-	def cancelar(long id){
-		Cfdi cfdi=Cfdi.findById(id)
+	def cancelar(Cfdi cfdi,String comentario){
 		if(cfdi==null){
 			notFound()
 			return
 		}
-		println 'Cancelando cfdi: '+id
-		
-		cfdi=cfdiService.cancelar(cfdi)
-		redirect action:'show',params:[id:id]
+		log.info 'Cancelando cfdi: '+cfdi
+		cfdiService.cancelar(cfdi,comentario)
+		redirect action:'show',params:[id:cfdi.id]
 	}
 	
 	def dataSource_importacion

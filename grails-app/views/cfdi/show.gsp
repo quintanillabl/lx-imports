@@ -57,7 +57,7 @@
 							</button>
 							
 
-							%{-- <g:if test="${cfdiInstance?.cancelacion}">
+							<g:if test="${cfdiInstance?.cancelacion}">
 								<g:link  action="mostrarAcuse" controller="cancelacionDeCfdi"
 									id="${cfdiInstance.cancelacion.id}"
 									class="btn btn-default btn-outline" >
@@ -75,7 +75,7 @@
 										onclick="return confirm('Cancelar CFDI?');" id="${cfdiInstance.id }">
 									<span class="glyphicon glyphicon-remove-circle"></span> Cancelar
 								</g:link>
-							</g:else> --}%
+							</g:else>
 							
 							
 							%{-- <g:jasperReport
@@ -122,6 +122,7 @@
 					</div>
 					<div class="modal-body">
 						<p><small>${cfdiInstance}</small></p>
+						<input type="text" name="comentario" placeholder="Comentario de canelacion" class="form-control">
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>

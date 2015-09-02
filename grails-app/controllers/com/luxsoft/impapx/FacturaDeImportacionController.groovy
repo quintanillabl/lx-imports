@@ -42,7 +42,8 @@ class FacturaDeImportacionController {
     }
 
     def create() {
-        respond new FacturaDeImportacion(fecha:new Date(),vencimiento:new Date()+1)
+        def tc=TipoDeCambio.last()
+        respond new FacturaDeImportacion(fecha:new Date(),vencimiento:new Date()+1,moneda:Currency.getInstance('USD'),tc:tc?.factor)
     }
 
     @Transactional
