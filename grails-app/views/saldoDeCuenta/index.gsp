@@ -130,15 +130,15 @@
 	    		"order": []
             });
 
-            $('#data_4 .input-group.date').datepicker({
-                minViewMode: 1,
-                format: 'dd/mm/yyyy',
-                keyboardNavigation: false,
-                forceParse: false,
-                autoclose: true,
-                todayHighlight: true,
-
-            });
+            
+            $('#data_4 .input-group.date').bootstrapDP({
+            			minViewMode: 1,
+                        format: 'dd/mm/yyyy',
+                        keyboardNavigation: false,
+                        forceParse: false,
+                        autoclose: true,
+                        todayHighlight: true
+                    });
 			
 		});
 	</script>

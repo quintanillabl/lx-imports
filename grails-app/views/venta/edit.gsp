@@ -46,6 +46,18 @@
 			$(".numeric").autoNumeric('init',{vMin:'0'},{vMax:'9999'});
 			$(".money").autoNumeric('init',{wEmpty:'zero',mRound:'B',aSign: '$'});
 			$(".tc").autoNumeric('init',{vMin:'0.0000'});
+			$('#grid').dataTable({
+			    responsive: true,
+			    aLengthMenu: [[20, 40, 60, 100, -1], [20, 40,60, 100, "Todos"]],
+			    "language": {
+			        "url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
+			    },
+			    "dom": 'T<"clear">lfrtip',
+			    "tableTools": {
+			        "sSwfPath": "${assetPath(src: 'plugins/dataTables/swf/copy_csv_xls_pdf.swf')}"
+			    },
+			    "order": []
+			});
 		});
 	</script>
 </content>

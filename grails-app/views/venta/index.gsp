@@ -56,7 +56,7 @@
 							</g:link> --}%
 						</g:if>
 					</td>
-					<td><g:formatDate date="${row.lastUpdated}"/></td>
+					<td><g:formatDate date="${row.lastUpdated}" format="dd/MM/yy HH:mm"/></td>
 				</tr>
 			</g:each>
 		</tbody>

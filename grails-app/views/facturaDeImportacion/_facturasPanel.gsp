@@ -3,20 +3,19 @@
 		class="display table table-striped table-hover table-bordered table-condensed">
 		<thead>
 			<tr>
-				<g:sortableColumn property="id" title="Id" />
-				<g:sortableColumn property="proveedor.nombre" title="Proveedor" />
-
-				<th class="header">Dcto</th>
-				<th class="header">Fecha</th>
-				<th class="header">BL</th>
-				<th class="header">Vto</th>
-				<th class="header">Moneda</th>
+				<td>Id</td>
+				<td>Proveedor</td>
+				<th>Dcto</th>
+				<th>Fecha</th>
+				<th>BL</th>
+				<th>Vto</th>
+				<th>Moneda</th>
 				<th>T.C.</th>
-				<th class="header">Total</th>
-				<th class="header">Pagos</th>
-				<th class="header">Saldo</th>
+				<th>Total</th>
+				<th>Pagos</th>
+				<th>Saldo</th>
 				<th>Requisitado</th>
-				<th class="header">Modificada</th>
+				<th>Modificada</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -43,14 +42,12 @@
 					<td><lx:moneyFormat number="${row.saldoActual}"/></td>
 					
 					<td><lx:moneyFormat number="${row.requisitado}"/></td>
-					<td><abbr title="${g.formatDate(date:row.lastUpdated)}">
+					<td><abbr title="${g.formatDate(date:row.lastUpdated,format:'dd/MM/yy HH:mm')}">
 						...</abbr></td>
 				</tr>
 			</g:each>
 		</tbody>
 	</table>
-	<div class="pagination">
-		<g:paginate total="${facturaDeImportacionInstanceCount ?: 0}" />
-	</div>
+	
 </div>
 

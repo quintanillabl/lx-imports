@@ -4,6 +4,7 @@
 <head>
 	<meta name="layout" content="luxor">
 	<title>Facturas de importación</title>
+	<asset:javascript src="forms/forms.js"/>
 </head>
 <body>
 
@@ -34,7 +35,7 @@
 				<div class="tab-pane active" id="facturasPanel">
 					<div class="row">
 						<br>
-						<g:form class="form-horizontal" action="update" method="PUT">
+						<g:form name="editForm" class="form-horizontal" action="update" method="PUT">
 							<g:hiddenField name="id" value="${facturaDeImportacionInstance.id}"/>
 							<g:hiddenField name="version" value="${facturaDeImportacionInstance.version}"/>
 							<f:with bean="facturaDeImportacionInstance">
@@ -49,11 +50,11 @@
 								<f:field property="comentario" widget-class="form-control" wrapper="bootstrap3"/>
 							</div>
 							<div class="col-md-6">
-								<f:display property="importe" widget="money" wrapper="bootstrap3" />
-								<f:display property="subTotal" widget="money" wrapper="bootstrap3"/>
+								<f:field property="importe" widget="money" wrapper="bootstrap3" />
+								<f:field property="subTotal" widget="money" wrapper="bootstrap3"/>
 								<f:display property="descuentos" widget="money" wrapper="bootstrap3"/>
 								<f:display property="impuestos" widget="money" wrapper="bootstrap3"/>
-								<f:display property="total" widget="money" wrapper="bootstrap3"/>
+								<f:field property="total" widget="money" wrapper="bootstrap3"/>
 								<f:display property="requisitado" widget="money" wrapper="bootstrap3"/>
 							</div>
 							</f:with>
@@ -110,12 +111,46 @@
 
 	<script type="text/javascript">
 		$(function(){
+
+			$(".numeric").autoNumeric('init',{vMin:'0'},{vMax:'9999'});
+			$(".money").autoNumeric('init',{wEmpty:'zero',mRound:'B',aSign: '$'});
+			$(".tc").autoNumeric('init',{vMin:'0.0000'});
+			$(".porcentaje").autoNumeric('init',{altDec: '%', vMax: '99.99'});
 			$('.date').bootstrapDP({
 			    format: 'dd/mm/yyyy',
 			    keyboardNavigation: false,
 			    forceParse: false,
 			    autoclose: true,
 			    todayHighlight: true
+			});
+			$("#importe").on('blur',function(){
+				var importe=$("#importe").autoNumeric('get');
+				$("#subTotal").autoNumeric('set',importe);
+				$("#total").autoNumeric('set',importe);
+			});
+
+			$("#descuento").on('blur',function(){
+				var importe=$("#importe").autoNumeric('get');
+				var desc=$(this).autoNumeric('get');
+				importe=importe-desc;
+				$("#subTotal").autoNumeric('set',importe);
+				$("#total").autoNumeric('set',importe);
+			});
+			$('form[name=editForm]').submit(function(e){
+			    console.log("Desablidatndo submit button....");
+
+			    var button=$("#saveBtn");
+			    button.attr('disabled','disabled')
+			    .html('Procesando...');
+
+			    $(".money,.porcentaje,.numeric,.tc",this).each(function(index,element){
+			      var val=$(element).val();
+			      var name=$(this).attr('name');
+			      var newVal=$(this).autoNumeric('get');
+			      $(this).val(newVal);
+			    });
+			    //e.preventDefault(); 
+			    return true;
 			});
 		});
 	</script>

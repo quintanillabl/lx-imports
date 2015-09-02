@@ -19,14 +19,12 @@ class VentaController {
 	def printService
 
     def index() {
-		params.sort='id'
-		params.order= "desc"
+		
 		def periodo=session.periodo
 		def args=[periodo.fechaInicial,periodo.fechaFinal,'VENTA']
 		def list=Venta.findAll(
-			"from Venta v where date(v.fecha) between ? and ? and v.tipo=? order by v.fecha desc",
+			"from Venta v where date(v.fecha) between ? and ? and v.tipo=? order by v.lastUpdated desc",
 			args)
-		println list.size()
         [ventaInstanceList:list]
     }
 

@@ -32,7 +32,7 @@ class FacturaDeImportacionController {
     def index(Integer max) {
         def periodo=session.periodo
         def list=FacturaDeImportacion.findAll(
-            "from FacturaDeImportacion f  where date(f.fecha) between ? and ?  and f.saldo>0 order by f.fecha desc",
+            "from FacturaDeImportacion f  where date(f.fecha) between ? and ?  and f.saldo>=0 order by f.lastUpdated desc",
             [periodo.fechaInicial,periodo.fechaFinal])
         [facturaDeImportacionInstanceList:list]
     }
