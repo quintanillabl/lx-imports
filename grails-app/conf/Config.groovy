@@ -97,6 +97,7 @@ grails.hibernate.osiv.readonly = false
 //     }
 // }
 //grails.plugin.springsecurity.auth.loginFormUrl='/login/login2'
+
 environments {
     development {
         grails.logging.jul.usebridge = true
@@ -213,6 +214,8 @@ grails.plugin.springsecurity.failureHandler.exceptionMappings = [
    'org.springframework.security.authentication.CredentialsExpiredException': '/usuario/passwordExpired'
 ]
 grails.plugin.springsecurity.apf.storeLastUsername=true
+
+proveedorOrigenParaCompras=42
 environments{
     
   development{
@@ -235,6 +238,9 @@ environments{
           password = "sys"
         }
     }
+  }
+  impapx2{
+    proveedorOrigenParaCompras=60
   }
 }
 beans {
