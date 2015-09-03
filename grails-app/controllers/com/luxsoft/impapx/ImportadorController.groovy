@@ -1,8 +1,11 @@
 package com.luxsoft.impapx
 
 import com.luxsoft.impapx.contabilidad.CuentaContable;
-
 import groovy.sql.Sql
+import org.springframework.jdbc.datasource.SingleConnectionDataSource
+import org.apache.commons.lang.RandomStringUtils
+import org.apache.commons.lang.exception.ExceptionUtils
+import grails.plugin.springsecurity.annotation.Secured
 
 /**
  * Controlador para la importacion de datos desde otras versiones del sistema
@@ -10,8 +13,6 @@ import groovy.sql.Sql
  * @author Ruben Cancino
  *
  */
- import grails.plugin.springsecurity.annotation.Secured
- 
  @Secured(["hasRole('COMPRAS')"])
 class ImportadorController {
 	
@@ -135,8 +136,8 @@ class ImportadorController {
 
 	
 	def importarCompras(){
-		def db=new Sql(dataSource_importacion)
-		def res=db.eachRow("select * from SX_COMPRAS2  where PROVEEDOR_ID=60 and DEPURACION is null and fecha>=? ",[new Date().parse('dd/MM/yyyy','01/02/2012')]) { row ->
+		def sql=sql()
+		def res=sql.eachRow("select * from SX_COMPRAS2  where PROVEEDOR_ID=60 and DEPURACION is null and fecha>=? ",[new Date().parse('dd/MM/yyyy','01/02/2012')]) { row ->
 			Compra c=Compra.findOrCreateByOrigen(row.COMPRA_ID)
 			Proveedor p=Proveedor.findOrSaveByNombre(row.nombre)
 			c.proveedor=p
@@ -178,12 +179,16 @@ class ImportadorController {
 	
 	def importarCompra(long folio){
 		def proveedorOrigenParaCompras=grailsApplication.config.proveedorOrigenParaCompras
-		Compra found=Compra.findByFolio(folio,[fetch:['partidas']])
+		assert proveedorOrigenParaCompras,'No hay proveedor origen de compras para importacion'
+		Compra found=Compra.findByFolio(folio)
+
 		if(found){
 			throw new RuntimeException("Compra $folio ya importada, borrar si se requiere re importar");
 		}
-		def db=new Sql(dataSource_importacion)
-		def res=db.eachRow("select * from SX_COMPRAS2  where PROVEEDOR_ID=?  and folio=? and fecha>'2012-01-01' "
+		log.info 'Importando compra: '+folio + 'proveedorOrigenParaCompras: '+proveedorOrigenParaCompras
+		
+		def sql=sql()
+		def res=sql.eachRow("select * from SX_COMPRAS2  where PROVEEDOR_ID=?  and folio=? and fecha>'2012-01-01' "
 			,[proveedorOrigenParaCompras,folio]) { row ->
 			println 'Procesando: '+row
 			Compra c=Compra.findOrCreateByOrigen(row.COMPRA_ID)
@@ -204,7 +209,7 @@ class ImportadorController {
 			c.total=row.total
 			c.partidas=[]
 			
-			def dets=db.eachRow("select * from sx_compras2_det where compra_id=?",[row.compra_id]) {
+			def dets=sql.eachRow("select * from sx_compras2_det where compra_id=?",[row.compra_id]) {
 				  
 				CompraDet cd=new CompraDet()
 				Producto prod=Producto.findByClave(it.clave)
@@ -223,7 +228,7 @@ class ImportadorController {
 			def comp=c.save(failOnError:true)
 			log.info 'Compra generada: '+comp
 		}
-		redirect (controller:'compra', action:'list',params:[max:20])
+		redirect (controller:'compra', action:'index')
 	}
 	
 	/**
@@ -324,4 +329,15 @@ class ImportadorController {
 		redirect (action:'list',params:[max:100])
 	}
 	*/
+
+	private sql(){
+    	def db=grailsApplication.config.luxor.empleadosDb
+    	SingleConnectionDataSource ds=new SingleConnectionDataSource(
+            driverClassName:'com.mysql.jdbc.Driver',
+            url:"jdbc:mysql://10.10.1.228/produccion",
+            username:"root",
+            password:"sys")
+        Sql sql=new Sql(ds)
+        return sql
+    }
 }
