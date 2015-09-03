@@ -52,10 +52,6 @@
 							<a href="#enviarCorreoForm" data-toggle="modal" class="btn btn-default btn-outline">
 								<span class="glyphicon glyphicon-envelope"></span> Enviar
 							</a>
-							<button class="btn btn-danger btn-outline" data-toggle="modal" data-target="#cancelarCfdiDialog">
-								<i class="fa fa-ban"></i> Cancelar
-							</button>
-							
 
 							<g:if test="${cfdiInstance?.cancelacion}">
 								<g:link  action="mostrarAcuse" controller="cancelacionDeCfdi"
@@ -67,10 +63,9 @@
 							</g:if>
 
 							<g:else>
-								<g:link  action="cancelar" class="btn btn-default btn-outline"  
-										onclick="return confirm('Cancelar CFDI?');" id="${cfdiInstance.id }">
-									<span class="glyphicon glyphicon-remove-circle"></span> Cancelar
-								</g:link>
+								<button class="btn btn-danger btn-outline" data-toggle="modal" data-target="#cancelarCfdiDialog">
+									<i class="fa fa-ban"></i> Cancelar
+								</button>
 							</g:else>
 							
 							

@@ -63,6 +63,12 @@
 				<p class="form-control-static"><g:formatNumber number="${cfdiInstance.total}" type="currency"/> </p>
 			</div>
 		</div>
+		<div class="form-group">
+			<label for="comentario" class="col-sm-2 control-label">Comentario</label>
+			<div class="col-sm-4">
+				<p class="form-control-static">${cfdiInstance.comentario}</p>
+			</div>
+		</div>
 
 		<g:if test="${cfdiInstance.cancelacion}">
 			<label for="total" class="col-sm-2 control-label">Cancelacion</label>

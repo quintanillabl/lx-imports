@@ -171,9 +171,11 @@ databaseChangeLog = {
 	changeSet(author: "rcancino (generated)", id: "1438440044257-24") {
 		addPrimaryKey(columnNames: "usuario_id, rol_id", constraintName: "usuario_rolPK", tableName: "usuario_rol")
 	}
-
+	
 	changeSet(author: "rcancino (generated)", id: "1438440044257-25") {
 		dropForeignKeyConstraint(baseTableName: "cxcabono", baseTableSchemaName: "lx_imports", constraintName: "FKA67508E1302DA9BC")
+
+		
 	}
 
 	changeSet(author: "rcancino (generated)", id: "1438440044257-26") {
@@ -187,6 +189,7 @@ databaseChangeLog = {
 	changeSet(author: "rcancino (generated)", id: "1438440044257-28") {
 		dropForeignKeyConstraint(baseTableName: "venta", baseTableSchemaName: "lx_imports", constraintName: "FK6AE6A4C302DA9BC")
 	}
+	
 
 	changeSet(author: "rcancino (generated)", id: "1438440044257-31") {
 		dropIndex(indexName: "authority_unique_1353003878645", tableName: "role")

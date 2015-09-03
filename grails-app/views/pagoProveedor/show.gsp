@@ -31,8 +31,10 @@
 							<f:display property="requisicion" widget-class="form-control " wrapper="bootstrap3"/>
 							<f:display property="fecha"  wrapper="bootstrap3"/>
 							<f:display property="cuenta" widget-class="form-control chosen-select" wrapper="bootstrap3"/>
-							<f:display property="tipoDeCambio" widget="tc" wrapper="bootstrap3" widget-required="required"/>
-							<f:display property="comentario" widget-class="form-control" wrapper="bootstrap3"/>
+							<f:display property="tipoDeCambio" widget="tc" wrapper="bootstrap3" />
+							<f:display property="egreso"  wrapper="bootstrap3"/>
+							<f:display property="pago"  wrapper="bootstrap3" label="Pago CXP"/>
+							<f:display property="comentario"  wrapper="bootstrap3"/>
 							<div class="form-group">
 								<div class="col-lg-offset-3 col-lg-10">
 									<lx:backButton/>

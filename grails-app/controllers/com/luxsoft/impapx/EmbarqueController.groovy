@@ -238,7 +238,7 @@ class EmbarqueController {
         command.empresa=session.empresa
         def stream=reportService.build(command,[
             ID:embarqueInstance.id as String,
-            EMPRESA:session.empresa.nombre])
+            COMPANY:session.empresa.nombre])
         def file="RelacionDeContenedores_${embarqueInstance.id}_"+new Date().format('mmss')+'.'+command.formato.toLowerCase()
         render(
             file: stream.toByteArray(), 

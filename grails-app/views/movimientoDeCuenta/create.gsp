@@ -38,7 +38,7 @@
 							<f:field property="tc" widget="tc" wrapper="bootstrap3"/>
 							<f:field property="importe" widget="money" wrapper="bootstrap3"/>
 							<f:field property="comentario" widget-class="form-control" wrapper="bootstrap3"/>
-
+							%{-- <f:field property="ingreso" widget-class="form-control" wrapper="bootstrap3" label="Deposito"/> --}%
 							<div class="form-group ">
 								<label class="control-label col-md-3" for="anticipo">Anticipo</label>
 								<div class="col-md-9 ui-front">

@@ -5,6 +5,8 @@ import org.springframework.dao.DataIntegrityViolationException
 import com.luxsoft.impapx.CuentaBancaria;
 import com.luxsoft.impapx.cxc.CXCPago;
 import com.luxsoft.impapx.cxp.Anticipo;
+import grails.converters.JSON
+import org.codehaus.groovy.grails.web.json.JSONArray
 
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -103,10 +105,12 @@ class MovimientoDeCuentaController {
     def create() {
 		switch (request.method) {
 		case 'GET':
-			println 'Alta de movimiento :'+params
-			params.fecha=new Date()
-        	[movimientoDeCuentaInstance: new MovimientoDeCuenta(params),conceptos:params.conceptos]
-			break
+		redirect action:'depositar'
+		return
+			// //println 'Alta de movimiento :'+params.tipo
+			// params.fecha=new Date()
+   //      	[movimientoDeCuentaInstance: new MovimientoDeCuenta(params),conceptos:params.conceptos]
+			// break
 		case 'POST':
 			println 'Generando movimiento: '+params
 			
@@ -174,6 +178,20 @@ class MovimientoDeCuentaController {
             redirect action: 'show', id: params.id
         }
        
+    }
+
+    def search(){
+        def term='%'+params.term.trim()+'%'
+        def query=MovimientoDeCuenta.where{
+            (id.toString()=~term || cuenta.numero=~term || cuenta.banco.nombre=~term || referenciaBancaria=~term || importe.toString()=~term) 
+        }
+        def rows=query.list(max:30, sort:"id",order:'desc')
+
+        def res=rows.collect { mov ->
+            def label=" ${mov.cuenta.numero} (${mov.cuenta.banco.nombre}) ${mov.concepto} ${mov.fecha.format('dd/MM/yyyy')} ${mov.importe} (${mov.moneda}) ${mov.referenciaBancaria}"
+            [id:mov.id,label:label,value:label]
+        }
+        render res as JSON
     }
 	
 	

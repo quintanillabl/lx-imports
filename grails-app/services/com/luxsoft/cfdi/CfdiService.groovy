@@ -176,6 +176,11 @@ class CfdiService implements InitializingBean{
 			throw new CfdiException(message:"No localizo empresa $rfc del CFDI",cfdi:cfdi)
 		}
 		
+		if(cfdi.uuid.contains('-7E57-')){
+			cancelarDePrueba(cfdi,comentario)
+			return 
+		}
+
 		byte[] pfxData=empresa.certificadoDigitalPfx
 		String[] uuids=[cfdi.uuid]
 		def client=new CfdiClient()
@@ -213,6 +218,13 @@ class CfdiService implements InitializingBean{
 
 		return cancel
 
+	}
+
+	def cancelarDePrueba(Cfdi cfdi,String comentario){
+		cfdi.comentario="CANCELADO ORIGEN: "+cfdi.origen
+		cfdi.origen='CANCELACION'
+		cfdi.save(flush:true)
+		return cfdi
 	}
 
 	@Override
