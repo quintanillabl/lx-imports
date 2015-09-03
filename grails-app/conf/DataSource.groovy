@@ -15,7 +15,26 @@ hibernate {
     flush.mode = 'manual' // OSIV session flush mode outside of transactional context
 }
 
-
+dataSource_importacion{
+  dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+  driverClassName = 'com.mysql.jdbc.Driver'
+  username = 'root'
+  password = 'sys'
+  url = 'jdbc:mysql://10.10.1.228/produccion'
+  //url = 'jdbc:mysql://localhost/produccion'
+  dbCreate = ''
+  readOnly=true
+  properties {
+    maxActive = 4
+    maxIdle = 2
+    minIdle = 1
+    initialSize = 1
+    minEvictableIdleTimeMillis = 60000
+    timeBetweenEvictionRunsMillis = 60000
+    maxWait = 10000
+    validationQuery = "/* ping */"
+  }
+}
 
 // environment specific settings
 environments {

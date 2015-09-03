@@ -29,9 +29,10 @@ databaseChangeLog = {
 
 	//include file: 'paper-ini.groovy'
 	
-	include file: 'CfdiGastosModel.groovy'
+	//include file: 'CfdiGastosModel.groovy'
 
-	include file: 'CfdiGastosModel_log2.groovy'
+	//include file: 'CfdiGastosModel_log2.groovy'
 
-	include file: 'CancelacionDeCfdi.groovy'
+	//include file: 'CancelacionDeCfdi.groovy'
+	include file: 'CompraDet_log1.groovy'
 }
