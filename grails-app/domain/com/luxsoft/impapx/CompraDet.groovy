@@ -27,6 +27,11 @@ class CompraDet {
 		descuento(scale:2)
     }
 	static transients =['pendiente']
+
+	static mapping ={
+		entregado formula:'(select ifnull(sum(x.cantidad),0) from embarque_det x where x.compra_det_id=id)'
+		
+	}
 	
 	String toString(){
 		return "${producto?.clave}  ${producto?.descripcion} Com: ${compra?.folio} Pend: ${pendiente} Sol:${solicitado} Rec:${entregado}"
