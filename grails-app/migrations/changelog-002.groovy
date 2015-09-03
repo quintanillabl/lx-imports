@@ -173,21 +173,21 @@ databaseChangeLog = {
 	}
 	
 	changeSet(author: "rcancino (generated)", id: "1438440044257-25") {
-		dropForeignKeyConstraint(baseTableName: "cxcabono", baseTableSchemaName: "lx_imports", constraintName: "FKA67508E1302DA9BC")
+		dropForeignKeyConstraint(baseTableName: "cxcabono", baseTableSchemaName: "impapx2", constraintName: "FKA67508E1302DA9BC")
 
 		
 	}
 
 	changeSet(author: "rcancino (generated)", id: "1438440044257-26") {
-		dropForeignKeyConstraint(baseTableName: "user_role", baseTableSchemaName: "lx_imports", constraintName: "FK143BF46AF5916CE6")
+		dropForeignKeyConstraint(baseTableName: "user_role", baseTableSchemaName: "impapx2", constraintName: "FK143BF46AF5916CE6")
 	}
 
 	changeSet(author: "rcancino (generated)", id: "1438440044257-27") {
-		dropForeignKeyConstraint(baseTableName: "user_role", baseTableSchemaName: "lx_imports", constraintName: "FK143BF46A9ABC30C6")
+		dropForeignKeyConstraint(baseTableName: "user_role", baseTableSchemaName: "impapx2", constraintName: "FK143BF46A9ABC30C6")
 	}
 
 	changeSet(author: "rcancino (generated)", id: "1438440044257-28") {
-		dropForeignKeyConstraint(baseTableName: "venta", baseTableSchemaName: "lx_imports", constraintName: "FK6AE6A4C302DA9BC")
+		dropForeignKeyConstraint(baseTableName: "venta", baseTableSchemaName: "impapx2", constraintName: "FK6AE6A4C302DA9BC")
 	}
 	
 
