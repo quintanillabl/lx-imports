@@ -132,10 +132,10 @@ class FacturaDeImportacionController {
     	params.order= "desc"
     	
         def periodo=session.periodoParaPagos
-    	
+    	def p=null
     	def facturas=[]
     	if(StringUtils.isNotBlank(params.proveedor)){
-    		Proveedor p=Proveedor.get(params.long('proveedor'))
+    		p=Proveedor.get(params.long('proveedor'))
     		
     		facturas=FacturaDeImportacion
                 .findAllByProveedorAndVencimientoBetween(p,periodo.fechaInicial,periodo.fechaFinal,params)
@@ -144,7 +144,7 @@ class FacturaDeImportacionController {
     		facturas=FacturaDeImportacion.findAllByVencimientoBetween(periodo.fechaInicial,periodo.fechaFinal,params)
     	}
     	flash.message='Facturas: '+facturas.size()
-    	[facturaDeImportacionInstanceList: facturas]
+    	[facturaDeImportacionInstanceList: facturas,proveedor:p]
     }
 
     def imprimirProgramacionDePagos(){
@@ -155,9 +155,9 @@ class FacturaDeImportacionController {
     	command.empresa=session.empresa
         def proveedor=params.id?:'%'
     	def repParams=[
-    		EMPRESA:session.empresa.nombre,
-    	    FECHA_INI:periodo.fechaInicial.format('dd/MM/yyyy'),
-    	    FECHA_FIN:periodo.fechaFinal.format('dd/MM/yyyy'),
+    		COMPANY:session.empresa.nombre,
+    	    FECHA_INI:periodo.fechaInicial.format('yyyy/MM/dd'),
+    	    FECHA_FIN:periodo.fechaFinal.format('yyyy/MM/dd'),
     	    PROVEEDOR:proveedor
     	]
         println 'Reporte de programacion de pagos: '+repParams

@@ -42,7 +42,7 @@
 				</div>  
 				<div class="btn-group">
 					<g:form action="imprimirProgramacionDePagos" class="form-horizontal" >
-						<g:hiddenField id="proveedorId2" name="proveedor" />
+						<g:hiddenField id="proveedorId2" name="id" value="${proveedor?.id}"/>
 						<g:submitButton class="btn btn-info" name="aceptar" value="Imprimir" />
 					</g:form>
 				</div>
