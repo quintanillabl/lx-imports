@@ -101,7 +101,7 @@
 	    	    	},
 	    	    	aLengthMenu: [[20, 40, 60, 100, -1], [20, 40, 60, 100, "Todos"]],
 	    			iDisplayLength: 20,
-			    	"dom": '<"toolbar col-md-4">rt<"bottom"lp>'
+			    	"order": []
 				} );
 
 				//new $.fn.dataTable.FixedHeader( table );

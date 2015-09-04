@@ -47,8 +47,8 @@ class FacturaDeGastosController {
             return
         }
         facturaDeGastosInstance.save flush:true
-        flash.message = message(code: 'default.created.message', args: [message(code: 'facturaDeGastos.label', default: 'FacturaDeGastos'), facturaDeGastosInstance.id])
-        redirect facturaDeGastosInstance
+        flash.message = "Factura/Gasto registrado ${facturaDeGastosInstance.id}"
+        redirect action:'edit',id:facturaDeGastosInstance.id
     }
 
     def edit(FacturaDeGastos facturaDeGastosInstance) {
@@ -139,6 +139,7 @@ class FacturaDeGastosController {
 
     @Transactional
     def importarCfdi(FacturaDeGastos facturaDeGastosInstance){
+
         def xml=request.getFile('xmlFile')
         if(xml==null){
             flash.message="Archivo XML no localizado"
@@ -147,13 +148,18 @@ class FacturaDeGastosController {
         }
         try {
             if(facturaDeGastosInstance){
-                println 'Actualizando datos de CFDI'
+                
                 comprobanteFiscalService.actualizar(facturaDeGastosInstance,xml)
-                redirect action:'edit',id:facturaDeGastosInstance.id
+                log.info 'CFDI actualizado para cxp: '+facturaDeGastosInstance.id
+                //redirect action:'edit',id:facturaDeGastosInstance.id
+                //redirect action:'edit', id:fac.id
+                redirect action:'index'
+                return
             }else{
                 def cxp=comprobanteFiscalService.importar(xml,new FacturaDeGastos())
                 flash.message="Cuenta por pagar generada para el CFDI:  ${xml.getOriginalFilename()}"
                 redirect action:'edit',id:cxp.id
+                return
             }
             
         }

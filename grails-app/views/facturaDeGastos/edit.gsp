@@ -120,6 +120,13 @@
 							</div>
 							
 						</g:if>
+						<g:else>
+							<div class="btn-group">
+								 <a href="#uploadFileDialog" data-toggle="modal" class="btn btn-success btn-outline">
+									<i class="fa fa-upload"></i></span> Cargar CFDI
+								</a>
+							</div>
+						</g:else>
 					</div>
 				</div>		
 

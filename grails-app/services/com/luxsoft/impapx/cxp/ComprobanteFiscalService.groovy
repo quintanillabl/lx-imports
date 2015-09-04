@@ -227,7 +227,7 @@ class ComprobanteFiscalService {
 
         
         cxp.comprobante=comprobanteFiscal
-        cxp.save flush:true,failOnError:true
+        cxp.save(flush:true)
         log.info 'CFDI de cuenta por pagar actualizado: '+cxp
         return cxp
     }

@@ -249,9 +249,9 @@ class EmbarqueController {
     @Transactional
     def comprasPendientes(long id){
         def embarque=Embarque.get(id)
-        def res=CompraDet.findAll("from CompraDet d left join fetch d.compra c left join fetch c.proveedor p where c.fecha>='2013/07/01' and c.proveedor=?  order by d.compra.folio"
+        def res=CompraDet.findAll("from CompraDet d left join fetch d.compra c left join fetch c.proveedor p where c.fecha>='2013/07/01' and c.proveedor=?  order by d.id desc"
             ,[embarque.proveedor]
-            ,[max:500]
+            ,[max:1000]
             )
         res=res.grep({it.getPendiente()>0})
         [embarque:embarque,compraDetInstanceList:res,compraDetInstanceTotal:res.size()]

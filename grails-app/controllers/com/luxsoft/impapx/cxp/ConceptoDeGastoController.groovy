@@ -31,7 +31,13 @@ class ConceptoDeGastoController {
     		render view:'create',model:[conceptoDeGastoInstance:conceptoDeGastoInstance]
     		return
     	}
+        conceptoDeGastoInstance.with{
+            total=importe+impuesto-retension-retensionIsr
+        }
+        def factura=conceptoDeGastoInstance.factura
+        facturaDeGastosService.actualizar(factura)
     	conceptoDeGastoInstance.save flush:true
+        factura.save flush:true
     	flash.message="Concepto ${conceptoDeGastoInstance.id} actualizado"
     	redirect controller:'facturaDeGastos' ,action:'edit',id:conceptoDeGastoInstance.factura.id
     }

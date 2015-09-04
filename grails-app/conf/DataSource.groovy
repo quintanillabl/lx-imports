@@ -173,27 +173,28 @@ environments {
 
     impapx2 {
       dataSource {
-        dbCreate = ""
-        dialect = org.hibernate.dialect.MySQL5InnoDBDialect
-        driverClassName = 'com.mysql.jdbc.Driver'
-        username = 'root'
-        password = 'sys'
-        url = 'jdbc:mysql://localhost/impapx2'
         pooled = true
+        dbCreate=""
+        url="jdbc:mysql://10.10.1.228/impapx2?autoReconnect=true"
+        //url="jdbc:mysql://localhost/impapx2?autoReconnect=true"
+        driverClassName = "com.mysql.jdbc.Driver"
+        dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+        username = "root"
+        password = "sys"
         properties {
-           maxActive = 5
-           maxIdle = 3
-           initialSize = 3
-           minEvictableIdleTimeMillis=1800000
-           timeBetweenEvictionRunsMillis=1800000
-           numTestsPerEvictionRun=3
-           testOnBorrow=true
-           testWhileIdle=true
-           testOnReturn=true
-           validationQuery = "/* ping */"
-           maxWait = 10000
-           
+            maxActive = 10
+            maxIdle = 10
+            minIdle = 3
+            initialSize = 3
+            minEvictableIdleTimeMillis=1800000
+            timeBetweenEvictionRunsMillis=1800000
+            numTestsPerEvictionRun=3
+            testOnBorrow=true
+            testWhileIdle=true
+            testOnReturn=true
+            maxWait = 10000
         }
+        
       }
     }
     
