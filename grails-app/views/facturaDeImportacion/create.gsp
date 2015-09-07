@@ -55,7 +55,7 @@
 				$("#total").autoNumeric('set',importe);
 			});
 
-			$("#descuento").on('blur',function(){
+			$("#descuentos").on('blur',function(){
 				var importe=$("#importe").autoNumeric('get');
 				var desc=$(this).autoNumeric('get');
 				importe=importe-desc;

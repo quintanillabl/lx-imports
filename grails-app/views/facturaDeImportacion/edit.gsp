@@ -52,8 +52,8 @@
 							<div class="col-md-6">
 								<f:field property="importe" widget="money" wrapper="bootstrap3" />
 								<f:field property="subTotal" widget="money" wrapper="bootstrap3"/>
-								<f:display property="descuentos" widget="money" wrapper="bootstrap3"/>
-								<f:display property="impuestos" widget="money" wrapper="bootstrap3"/>
+								<f:field property="descuentos" widget="money" wrapper="bootstrap3"/>
+								<f:field property="impuestos" widget="money" wrapper="bootstrap3"/>
 								<f:field property="total" widget="money" wrapper="bootstrap3"/>
 								<f:display property="requisitado" widget="money" wrapper="bootstrap3"/>
 							</div>
@@ -129,7 +129,7 @@
 				$("#total").autoNumeric('set',importe);
 			});
 
-			$("#descuento").on('blur',function(){
+			$("#descuentos").on('blur',function(){
 				var importe=$("#importe").autoNumeric('get');
 				var desc=$(this).autoNumeric('get');
 				importe=importe-desc;
