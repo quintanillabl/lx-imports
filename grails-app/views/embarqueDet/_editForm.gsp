@@ -144,7 +144,9 @@
 				factor=1;
 			var kilosEstimados=(cantidad/factor)*kilosPorMillar;
 			kilosEstimados=Math.round(kilosEstimados*100)/100;
-
+			console.log('K x Mill: '+kilosPorMillar);
+			console.log('Factor:'+factor);
+			console.log('Cantidad:'+cantidad);
 			console.log('Kilos estimados:' +kilosEstimados);
 			$("#kilosEstimados").val(kilosEstimados);	
 			
