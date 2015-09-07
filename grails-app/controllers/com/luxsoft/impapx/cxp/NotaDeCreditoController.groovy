@@ -13,7 +13,8 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(["hasRole('COMPRAS')"])
 class NotaDeCreditoController {
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    //static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 	
 	def notaDeCreditoService
 
@@ -38,36 +39,29 @@ class NotaDeCreditoController {
     }
 
     def create() {
-		switch (request.method) {
-		case 'GET':
-        	[notaDeCreditoInstance: new NotaDeCredito(params)]
-			break
-		case 'POST':
-		    println 'Generando nota: '+params
-	        def notaDeCreditoInstance = new NotaDeCredito(params)
-	        if (!notaDeCreditoInstance.save(flush: true)) {
-	            render view: 'create', model: [notaDeCreditoInstance: notaDeCreditoInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.created.message', args: [message(code: 'notaDeCredito.label', default: 'NotaDeCredito'), notaDeCreditoInstance.id])
-	        redirect action: 'show', id: notaDeCreditoInstance.id
-			break
-		}
+    	[notaDeCreditoInstance: new NotaDeCredito(fecha:new Date())]
     }
 
-    def show() {
-        def notaDeCreditoInstance = NotaDeCredito.get(params.id)
-        if (!notaDeCreditoInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'notaDeCredito.label', default: 'NotaDeCredito'), params.id])
-            redirect action: 'list'
+    def save(NotaDeCredito notaDeCreditoInstance){
+    	if (!notaDeCreditoInstance) {
+			flash.message = 
+            redirect action: 'index'
             return
         }
+    	if(notaDeCreditoInstance.hasErrors()){
+    		render view:'create',model:[notaDeCreditoInstance:notaDeCreditoInstance]
+    		return
+    	}
+    	notaDeCreditoInstance.save flush:true
+    	flash.message=message(code: 'default.not.found.message', args: [message(code: 'notaDeCredito.label', default: 'NotaDeCredito'), params.id])
+    	redirect action:'edit',id:notaDeCreditoInstance.id
+    }
 
+    def show(NotaDeCredito notaDeCreditoInstance) {
         [notaDeCreditoInstance: notaDeCreditoInstance]
     }
 
-    def edit(){
+    def edit(NotaDeCredito notaDeCreditoInstance){
     	[notaDeCreditoInstance: notaDeCreditoInstance]
     }
 

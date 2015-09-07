@@ -8,6 +8,8 @@ import util.MonedaUtils;
 import com.luxsoft.impapx.Proveedor;
 
 class Abono {
+
+	static auditable = true
 	
 	Proveedor proveedor
 	Date fecha

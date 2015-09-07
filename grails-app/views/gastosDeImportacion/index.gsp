@@ -54,7 +54,15 @@
  									${fieldValue(bean: row, field: "proveedor.nombre")}
  								</g:link>
  							</td>
- 							<td>${fieldValue(bean: row, field: "documento")}</td>
+ 							<td>
+ 								<g:if test="${row.comprobante}">
+ 									${fieldValue(bean: row, field: "comprobante.serie")} ${fieldValue(bean: row, field: "comprobante.folio")}
+ 								</g:if>
+ 								<g:else>
+ 									${fieldValue(bean: row, field: "documento")}
+ 								</g:else>
+ 								
+ 							</td>
  							<td><lx:shortDate date="${row.fecha }"/></td>
  							<td><lx:shortDate date="${row.vencimiento }"/></td>
  							<td>

@@ -1,109 +1,82 @@
 <%@ page import="com.luxsoft.impapx.cxp.NotaDeCredito" %>
 <!doctype html>
 <html>
-	<head>
-		<meta name="layout" content="taskView">
-		<g:set var="entityName" value="${message(code: 'notaDeCredito.label', default: 'NotaDeCredito')}" />
-		<title><g:message code="default.create.label" args="[entityName]" /></title>
-		<r:require module="luxorForms"/>
-	</head>
-	<body>
-		<content tag="header">
-		<h3>Alta de notas de crédito</h3>
- 	</content>
+<head>
+	<meta name="layout" content="createForm">
+	<g:set var="entityName" value="${message(code: 'notaDeCredito.label', default: 'Nota de crédito')}" scope="request"/>
+	<g:set var="entity" value="${notaDeCreditoInstance}" scope="request" />
+	<title>Alta de nota de crédito</title>
+</head>
+
+<body>
+<content tag="header">
+	Alta de notas de crédito
+</content>
+
+<content tag="formFields">
+	<f:with bean="notaDeCreditoInstance">
+		<f:field property="proveedor" wrapper="bootstrap3"/>
+		<f:field property="concepto" widget-class="form-control" wrapper="bootstrap3"/>
+		<f:field property="moneda" wrapper="bootstrap3"/>
+		<f:field property="tc" widget="tc" wrapper="bootstrap3"/>
+		<f:field property="documento" widget-class="form-control" wrapper="bootstrap3"/>
+		<f:field property="fecha" wrapper="bootstrap3"/>
+		<f:field property="importe" widget="money" wrapper="bootstrap3"/>
+		<f:field property="impuestoTasa" widget="porcentaje" widget-class="autoCalculate" wrapper="bootstrap3"/>
+		<f:field property="impuestos" widget="money" widget-class="autoCalculate" wrapper="bootstrap3"/>
+		<f:field property="total" widget="money" widget-class="autoCalculate " wrapper="bootstrap3"/>
+		<f:field property="comentario" widget-class="form-control" wrapper="bootstrap3"/>
+	</f:with>
+
+	<script type="text/javascript">
+		$(function(){
+			$('form').on('focusout',function(e){
+				console.log("Focusout: "+e);
+				var importe=$("#importe").autoNumeric('get');
+				var tasa=$("#impuestoTasa").autoNumeric('get');
+				var impuestos=importe*(tasa/100);
+				var total=(+importe)+(+impuestos);
+				console.log('Importe : '+importe+ 'Impuestos:'+impuestos+' Total:'+total);
+				$('#impuestos').autoNumeric('set',impuestos);
+				$('#total').autoNumeric('set',total);
+			});
+
+			$("#moneda").change(function(){
+				var date=$("#fecha").val();
+				var selected=$(this).val();
+				if(selected=="MXN"){
+					$("#tc").autoNumeric('set',1.000);
+				}else{
+					if(!date.isBlank()){
+
+						$.post(
+							"${createLink(controller:'tipoDeCambio', action:'ajaxTipoDeCambioDiaAnterior')}",
+							{fecha:date}
+						).done(function(data){
+							if(data.factor!=null){
+								$("#tc").val(data.factor);
+								console.log('Tipo de cambio: '+data.factor);
+							}else if(data.error!=null){
+								alert(data.error);
+							}
+						}).fail(function( jqXHR, textStatus, errorThrown){
+							aler('Error en servicio: '+errorThrown);
+						});
+						console.log('Fecha seleccionada: '+date);
+						
+					}
+				};
+				
+			});
+		});
+	</script>
+
+</content>		
  	
- 	<content tag="consultas">
- 		<%-- <g:render template="/cuentaPorPagar/actions"/>--%>
- 	</content>
- 	<content tag="operaciones">
- 		<li>
- 			<g:link class="list" action="list">
-				<i class="icon-list"></i>
-				Notas
-			</g:link>
- 			<g:link class="" action="create">
-				<i class="icon-plus "></i>
-				Alta de Nota
-			</g:link>
-		</li>
- 	</content>
+
  	
- 	<content tag="document">
-		<g:if test="${flash.message}">
-			<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-		</g:if>
-		<g:hasErrors bean="${notaDeCreditoInstance}">
-			<bootstrap:alert class="alert-error">
-				<ul>
-					<g:eachError bean="${notaDeCreditoInstance}" var="error">
-					<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-					</g:eachError>
-				</ul>
-			</bootstrap:alert>
-		</g:hasErrors>
-		<fieldset>
-			<g:form class="form-horizontal" action="create" >
-				<fieldset>
-					<f:with bean="notaDeCreditoInstance">
-						<f:field property="proveedor"/>
-						<f:field property="concepto"/>
-						<f:field property="moneda"/>
-						<f:field property="tc"/>
-						<f:field property="documento"/>
-						<f:field property="fecha"/>
-						<f:field property="importe" input-class="autoCalculate moneyField"/>
-						<f:field property="impuestoTasa" input-class="autoCalculate"/>
-						<f:field property="impuestos" input-class="autoCalculate moneyField"/>
-						<f:field property="total" input-class="autoCalculate moneyField"/>
-						<f:field property="comentario" input-class="input-xxlarge"/>
-					</f:with>
-					
-					<div class="form-actions">
-						<button type="submit" class="btn btn-primary">
-							<i class="icon-ok icon-white"></i>
-							<g:message code="default.button.create.label" default="Create" />
-						</button>
-					</div>
-				</fieldset>
-			</g:form>
-		</fieldset>
- 	</content>
 		
-	</body>
-<r:script>
-$(function(){
-	//var mon=$("#moneda").val();
-	//$(#moneda).attr('disabled',mon==""MXN);
-	
-	$('#moneda').bind('change',function(e){
-		var selected=$(this).val();
-		if(selected=="MXN"){
-			$("#tc").attr("disabled",true);//.val(1.0);
-			$("#tc").autoNumericSet(1.0);
-		}else
-			$("#tc").attr("disabled",false);
-		
-	});
-	
-	$(".moneyField").autoNumeric({vMin:'0.00',wEmpty:'zero',mRound:'B'});
- 	$("#tc").autoNumeric({vMin:'0.0000'});
-	$("#fecha").mask("99/99/9999");
-	$("#impuestoTasa").autoNumeric({aSign: ' %', pSign: 's', vMin:'0.00',vMax: '100.00',wEmpty:'zero'} );
-	
-	//$('#importe').autoNumeric();
-	//$('#impuestos').autoNumeric();
-	//$('#total').autoNumeric();
-		
-	$('.autoCalculate').blur(function(){
-		var importe=$("#importe").autoNumericGet();
-		var tasa=$("#impuestoTasa").autoNumericGet();
-		var impuestos=importe*(tasa/100);
-		var total=(+importe)+(+impuestos);
-		console.log('Importe : '+importe+ 'Impuestos:'+impuestos+' Total:'+total);
-		$('#impuestos').autoNumericSet(impuestos);
-		$('#total').autoNumericSet(total);
-	});
-	
-});
-</r:script>
+</body>
+
+
 </html>

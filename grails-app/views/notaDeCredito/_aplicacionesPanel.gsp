@@ -1,4 +1,4 @@
-<r:require module="luxorTableUtils"/>
+
 <div class="btn-toolbar">
 	<div class="btn-group ">
 		<g:link action="selectorDeFacturas" 
@@ -12,8 +12,9 @@
   		</button>
 	</div>
 </div>
+
 <table id="grid"
-	class="simpleGrid table table-striped table-hover table-bordered table-condensed">
+	class="table table-striped table-hover table-bordered table-condensed">
 	<thead>
 		<tr>
 			<th class="header">Id</th>
@@ -66,9 +67,42 @@
 	<g:hiddenField name="TIPO" value="NOTA"/>
 </g:jasperReport>
 
-<r:script>
+
+<script type="text/javascript">
 
 $(function(){
+
+	// Grid y seleccion
+	$('#grid').dataTable( {
+    	"paging":   false,
+    	"ordering": false,
+    	"info":     false,
+    	"language": {
+			"url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
+		},
+		//"dom": '',
+		"order": []
+	} );
+	$("#filtro").on('keyup',function(e){
+		var term=$(this).val();
+		$('#grid').DataTable().search(
+			$(this).val()
+		        
+		).draw();
+	});
+	$("tbody tr").on('click',function(){
+		$(this).toggleClass("success selected");
+	});
+			
+
+	function selectedRows(){
+		var res=[];
+		var data=$("tbody tr.selected").each(function(){
+			var tr=$(this);
+			res.push(tr.attr("id"));
+		});
+		return res;
+	}
 	
 	$("#eliminarBtn").click(function(e){
 		eliminar();
@@ -100,13 +134,6 @@ $(function(){
 		});
 	}
 	
-});
-function selectedRows(){
-	var res=[];
-	var data=$("tbody tr.selected").each(function(){
-		var tr=$(this);
-		res.push(tr.attr("id"));
 	});
-	return res;
-}
-</r:script>
+
+</script>
