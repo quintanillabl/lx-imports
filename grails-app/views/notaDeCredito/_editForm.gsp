@@ -3,7 +3,7 @@
 		<br>
 		<g:form name="updateForm" class="form-horizontal" action="update" method="PUT">
 			<g:hiddenField name="id" value="${notaDeCreditoInstance.id}"/>
-			<g:hiddenField name="id" value="${notaDeCreditoInstance.version}"/>
+			<g:hiddenField name="version" value="${notaDeCreditoInstance.version}"/>
 
 			<f:with bean="notaDeCreditoInstance">
 				<f:display property="proveedor" wrapper="bootstrap3"/>
