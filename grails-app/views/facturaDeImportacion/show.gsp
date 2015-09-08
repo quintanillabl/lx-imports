@@ -71,23 +71,20 @@
 						class="simpleGrid table table-striped table-hover table-bordered table-condensed">
 						<thead>
 							<tr>
-								<th class="header">Aplicacion</th>			
-								<th class="header">Fecha</th>
-								<th class="header">Pagado</th>
-								<th class="header">Docto</th>
-								<th class="header">Concepto</th>
-								<th class="header">Comentario</th>
+								<th>Aplicacion</th>			
+								<th>Fecha</th>
+								<th>Pagado</th>
+								<th>Docto</th>
+								<th>Concepto</th>
+								<th>Comentario</th>
 								
 							</tr>
 						</thead>
 						<tbody>
 							<g:each in="${facturaDeImportacionInstance.aplicaciones}" var="row">
 								<tr id="${fieldValue(bean:row, field:"id")}">
-									<td><g:link controller="CXCAplicacion" action="show" id="${row.id}">
-										${fieldValue(bean: row, field: "id")}</g:link>
-									</td>				
+									<td>${fieldValue(bean: row, field: "id")}</td>				
 									<td><lx:shortDate date="${row.fecha}" /></td>
-									
 									<td><lx:moneyFormat number="${row.total }" /></td>
 									<g:if test="${row.abono.instanceOf(com.luxsoft.impapx.cxp.NotaDeCredito)}">
 										<td>${fieldValue(bean: row, field: "abono.documento")}</td>				
