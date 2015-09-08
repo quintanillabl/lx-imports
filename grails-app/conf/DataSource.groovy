@@ -25,9 +25,9 @@ dataSource_importacion{
   dbCreate = ''
   readOnly=true
   properties {
-    maxActive = 4
-    maxIdle = 2
-    minIdle = 1
+    maxActive = 6
+    maxIdle = 4
+    minIdle = 4
     initialSize = 1
     minEvictableIdleTimeMillis = 60000
     timeBetweenEvictionRunsMillis = 60000
