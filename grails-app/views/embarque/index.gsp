@@ -37,7 +37,7 @@
 		</thead>
 		<tbody>
 			<g:each in="${embarqueInstanceList}" status="i" var="embarqueInstance">
-				<tr class="${embarqueInstance.cuentaDeGastos ?'':'error' }">
+				<tr class="${embarqueInstance.cuentaDeGastos ?'':'danger' }">
 					<td>
 						<g:link action="edit" id="${embarqueInstance.id}">
 							${fieldValue(bean: embarqueInstance, field: "id")}

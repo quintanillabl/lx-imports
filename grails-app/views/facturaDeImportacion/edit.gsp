@@ -30,6 +30,7 @@
 				<li class="active" ><a href="#facturasPanel" data-toggle="tab">Factura</a></li>
 				<li><a href="#embarquesPanel" data-toggle="tab">Embarques</a></li>
 				<li><a href="#contenedoresPanel" data-toggle="tab">Contenedores</a></li>
+				<li><a href="#pagosAplicadosPanel" data-toggle="tab">Abonos</a></li>
 			</ul>
 			<div class="tab-content"> 
 				<div class="tab-pane active" id="facturasPanel">
@@ -56,6 +57,8 @@
 								<f:field property="impuestos" widget="money" wrapper="bootstrap3"/>
 								<f:field property="total" widget="money" wrapper="bootstrap3"/>
 								<f:display property="requisitado" widget="money" wrapper="bootstrap3"/>
+								<f:display property="pagosAplicados" widget="money" wrapper="bootstrap3"/>
+								<f:display property="saldo" widget="money" wrapper="bootstrap3"/>
 							</div>
 							</f:with>
 							<div class="form-group">
@@ -74,8 +77,53 @@
 					</div>
 					
 				</div>
-				<div class="tab-pane" id="embarquesPanel">
-					
+				<div class="tab-pane" id="embarquesPanel"></div>
+				<div class="tab-pane" id="pagosAplicadosPanel">
+					<table id="grid"
+						class="simpleGrid table table-striped table-hover table-bordered table-condensed">
+						<thead>
+							<tr>
+								<th class="header">Aplicacion</th>			
+								<th class="header">Fecha</th>
+								
+								<th class="header">Pagado</th>
+								<th class="header">Docto</th>
+								<th class="header">Concepto</th>
+								<th class="header">Comentario</th>
+								
+							</tr>
+						</thead>
+						<tbody>
+							<g:each in="${facturaDeImportacionInstance.aplicaciones}" var="row">
+								<tr id="${fieldValue(bean:row, field:"id")}">
+									<td><g:link controller="CXCAplicacion" action="show" id="${row.id}">
+										${fieldValue(bean: row, field: "id")}</g:link>
+									</td>				
+									<td><lx:shortDate date="${row.fecha}" /></td>
+									
+									<td><lx:moneyFormat number="${row.total }" /></td>
+									<g:if test="${row.abono.instanceOf(com.luxsoft.impapx.cxp.NotaDeCredito)}">
+										<td>${fieldValue(bean: row, field: "abono.documento")}</td>				
+										<td>${fieldValue(bean: row, field: "abono.concepto")}</td>				
+									</g:if>
+									<g:else>
+										<td></td>
+										<td></td>
+									</g:else>
+									<td>${fieldValue(bean: row, field: "comentario")}</td>				
+								</tr>
+							</g:each>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td></td>
+								<td></td>
+								
+								<td><label class="pull-right" >Total: </label></td>
+								<td><lx:moneyFormat number="${facturaDeImportacionInstance.pagosAplicados}" /></td>
+							</tr>
+						</tfoot>
+					</table>
 				</div>
 	  		</div>
 

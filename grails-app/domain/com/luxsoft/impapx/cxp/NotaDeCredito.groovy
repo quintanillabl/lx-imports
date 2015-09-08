@@ -2,7 +2,7 @@ package com.luxsoft.impapx.cxp
 
 class NotaDeCredito extends Abono{
 
-	static auditable = true
+	//static auditable = true
 	
 	String documento
 	String concepto

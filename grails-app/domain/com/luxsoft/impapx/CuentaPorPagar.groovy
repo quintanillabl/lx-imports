@@ -3,8 +3,9 @@ package com.luxsoft.impapx
 import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 
-import com.luxsoft.impapx.cxc.CXCAplicacion
+
 import com.luxsoft.impapx.cxp.ComprobanteFiscal
+import com.luxsoft.impapx.cxp.Aplicacion
 
 class CuentaPorPagar {
 	
@@ -74,6 +75,8 @@ class CuentaPorPagar {
 	}
 
 	static hasOne = [comprobante: ComprobanteFiscal]
+	
+	static hasMany = [aplicaciones:Aplicacion]
 	
 	static transients = ['pendienteRequisitar','saldoActual','saldoAlCorte']
 	

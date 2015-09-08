@@ -38,7 +38,7 @@ class FacturaDeImportacionController {
     }
 
     def show(FacturaDeImportacion facturaDeImportacionInstance) {
-        respond facturaDeImportacionInstance
+        [facturaDeImportacionInstance:facturaDeImportacionInstance]
     }
 
     def create() {

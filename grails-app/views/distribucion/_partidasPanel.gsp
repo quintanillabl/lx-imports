@@ -31,6 +31,7 @@
 		model="[partidas:distribucionInstance.partidas]" />
 </div>
 <g:jasperReport jasper="ListaDeDistribucion" format="PDF,HTML,XLS" name="Imprimir Lista">
+	<g:hiddenField name="COMPANY" value="${session.empresa.nombre}"/>
 	<g:hiddenField name="ID" value="${distribucionInstance.id}"/>
 </g:jasperReport>
 
@@ -46,6 +47,7 @@
 			<div class="modal-body">
 				<g:jasperReport jasper="ProgramacionDeEntregaDeContenedores" format="PDF" name="" buttonPosition="bottom">
 					<g:hiddenField name="ID" value="${distribucionInstance.id}"/>
+					<g:hiddenField name="COMPANY" value="${session.empresa.nombre}"/>
 					<input id="ICONTACTO" type="text" name="ICONTACTO" value="" placeholder="Contacto" class="input-xxlarge">
 					<input id="ITELEFONO" type="text" name="ITELEFONO" value="" placeholder="Dirección" class="input-xxlarge">
 					<input id="IDIRECCION" type="text" name="IDIRECCION" value="" placeholder="Teléfono" class="input-xxlarge">
