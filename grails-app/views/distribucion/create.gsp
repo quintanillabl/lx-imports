@@ -19,7 +19,6 @@
 				value="${value?.id}"
 				from="${com.luxsoft.impapx.Embarque.findAll("from Embarque e where e not in(select d.embarque from Distribucion d)")}" 
 				optionKey="id" 
-				optionValue="nombre"
 				
 				/>
 		</f:field>
