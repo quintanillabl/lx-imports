@@ -48,6 +48,7 @@
  						name="Imprimir">
 						<g:hiddenField name="cuentaId" value="${saldoDeCuenta.cuenta.id}"/>
 						<g:hiddenField name="periodo" value="${periodo.text()}"/>
+						<g:hiddenField name="COMPANY" value="${session.empresa.nombre}"/>
 					</g:jasperReport>
 
 
