@@ -76,6 +76,7 @@
 		$(function(){
 			
 			$('.input-group.date').bootstrapDP({
+				format: 'dd/mm/yyyy',
 	            todayBtn: "linked",
 	            keyboardNavigation: false,
 	            forceParse: false,

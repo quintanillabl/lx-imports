@@ -107,15 +107,23 @@
 						                	<g:link class="btn btn-default btn-outline" 
 						                		controller="comprobanteFiscal" action="mostrarCfdi" 
 						                		id="${facturaDeGastosInstance.comprobante.id}">CFDI</g:link>
-						                	<g:link  action="descargarAcuse" 
+						                	
+						                	<g:link  controller="comprobanteFiscal" action="mostrarCfdi" 
 						                		id="${facturaDeGastosInstance.comprobante.id}"
 						                		class="btn btn-default btn-outline" >
-						                		<i class="fa fa-download"></i> Descargar CFDI
+						                		  CFDI (XML)
 						                	</g:link>
+
+						                	<g:link  controller="comprobanteFiscal" action="descargarCfdi" 
+						                		id="${facturaDeGastosInstance.comprobante.id}"
+						                		class="btn btn-default btn-outline" >
+						                		<i class="fa fa-download"></i>  CFDI
+						                	</g:link>
+
 						                </g:if>
-						                <a href="#uploadFileDialog" data-toggle="modal" class="btn btn-success btn-outline">
+						                %{-- <a href="#uploadFileDialog" data-toggle="modal" class="btn btn-success btn-outline">
 											<i class="fa fa-upload"></i></span> Cargar CFDI
-										</a>
+										</a> --}%
 						            </div>
 							</div>
 							

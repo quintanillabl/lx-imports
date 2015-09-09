@@ -54,9 +54,9 @@ class ComprobanteFiscalService {
         def nombre=emisorNode.attributes()['nombre']
         def rfc=emisorNode.attributes()['rfc']
         def proveedor=Proveedor.findByRfc(rfc)
-            
+        
         if(!proveedor){
-            log.debug "Alta de proveedor: $nombre ($rfc)"
+            log.info "Alta de proveedor: $nombre ($rfc)"
             def domicilioFiscal=emisorNode.breadthFirst().find { it.name() == 'DomicilioFiscal'}
             def dom=domicilioFiscal.attributes()
             def direccion=new Direccion(
@@ -93,7 +93,8 @@ class ComprobanteFiscalService {
     		folio:folio,
             emisorRfc:rfc,
             receptorRfc:receptorRfc,
-            total:total
+            total:total,
+            fecha:fecha
         )
         
         cxp.proveedor=proveedor
@@ -159,10 +160,10 @@ class ComprobanteFiscalService {
         SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
 
         def data=xml.attributes()
-        log.debug 'Comprobante:  '+xml.attributes()  
         def empresa=Empresa.first()
         def receptorNode=xml.breadthFirst().find { it.name() == 'Receptor'}
         def receptorRfc=receptorNode.attributes()['rfc']
+        println 'Receptor: '+receptorRfc
         if(empresa.rfc!=receptorRfc){
             throw new ComprobanteFiscalException(
                 message:"Em el CFDI ${cfdiFile.getOriginalFilename()} el receptor (${receptorRfc}) no es para esta empresa (${empresa.rfc})")
@@ -189,45 +190,38 @@ class ComprobanteFiscalService {
             proveedor.save failOnError:true,flush:true
             
         }
-        def serie=xml.attributes()['serie']
-        def folio=xml.attributes()['folio']
-        def fecha=df.parse(xml.attributes()['fecha'])
+        
+        
         def timbre=xml.breadthFirst().find { it.name() == 'TimbreFiscalDigital'}
-        def uuid=timbre.attributes()['UUID']
-            
-        def subTotal=data['subTotal'] as BigDecimal
-        def total=data['total'] as BigDecimal
         
         
         if(cxp.comprobante==null){
-            cxp.comprobante=new ComprobanteFiscal()
+            cxp.comprobante=new ComprobanteFiscal(cxp:cxp,receptorRfc:receptorRfc)
+
         }
-        def comprobanteFiscal=cxp.comprobante
+        def comprobante=cxp.comprobante
         
-        comprobanteFiscal.with{
+        comprobante.with{
+            fecha=df.parse(data['fecha'])
             cfdi=xmlFile.getBytes()
             cfdiFileName=cfdiFile.getOriginalFilename()
-            uuid=uuid
-            serie=serie
-            folio=folio
+            uuid=timbre.attributes()['UUID']
+            serie=data['serie']
+            folio=data['folio']
             emisorRfc=rfc
-            receptorRfc=receptorRfc
-            total=total
+            total=data['total'] as BigDecimal
         }
         
-        // if(cxp.comprobante){
-        //     def found=cxp.comprobante
-        //     cxp.comprobante=null
-        //     found.delete flush:true
-        // }
+        log.info 'Actualizando CFDI: '+comprobante
 
-        // if(comprobanteFiscal){
-        //     throw new RuntimeException("CFDI ${uuid} ya importado");
-        // }
+        cxp.comprobante=comprobante
 
+        comprobante.validate()
+        if(comprobante.hasErrors()){
+            println 'Errores: '+comprobante.errors
+        }
         
-        cxp.comprobante=comprobanteFiscal
-        cxp.save(flush:true)
+        cxp.save(failOnError:true,flush:true)
         log.info 'CFDI de cuenta por pagar actualizado: '+cxp
         return cxp
     }

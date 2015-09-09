@@ -103,8 +103,14 @@
                 </div>
             </div>
         </div>
+        <g:if test="${pageProperty(name:'page.periodoDialog')}">
+            <g:pageProperty name="page.periodoDialog"/>
+        </g:if>
+        <g:else>
+            <g:render template="/common/selectorDePeriodo" model="[periodo:periodo]"/>
+        </g:else>
 
-        <g:render template="/common/selectorDePeriodo" model="[periodo:periodo]"/>
+        
 
         <script type="text/javascript">
             $(function(){

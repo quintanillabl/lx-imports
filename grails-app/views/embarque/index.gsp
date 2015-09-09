@@ -72,45 +72,14 @@
 	</table>
 </content>
 
+<content tag="periodoDialog">
+	<g:render template="/common/selectorDePeriodo" model="[periodo:session.periodoEmbarques,controller:'embarque']"/>
+</content>
+
 <content tag="searchService">
 	<g:createLink action="search"/>
 </content>
 
-%{-- <content tag="document">
-	<script type="text/javascript">
-		$(function(){
- 			$('#grid').dataTable({
-                responsive: true,
-                "language": {
-					"url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
-	    		},
-	    		"dom": 'T<"clear">lfrtip',
-	    		"tableTools": {
-	    		    "sSwfPath": "${assetPath(src: 'plugins/dataTables/swf/copy_csv_xls_pdf.swf')}"
-	    		},
-	    		"order": []
-            });
-	    	$("#filtro").on('keyup',function(e){
-	    		var term=$(this).val();
-	    		$('#grid').DataTable().search(
-					$(this).val()
-	    		        
-	    		).draw();
-	    	});
-			$("#embarqueField").autocomplete({
-				source:'<g:createLink action="embarquesAsJSONList"/>',
-				minLength:3,
-				select:function(e,ui){
-					console.log('Valor seleccionado: '+ui.item.id);
-					$("#embarqueField").val(ui.item.id);
-					$("#id").val(ui.item.id);
-					var button=$("#buscarBtn");
-	    			button.removeAttr('disabled');
-				}
-			});
 
-		});
-	</script>	
-</content> --}%
 </body>
 </html>

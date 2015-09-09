@@ -10,7 +10,7 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(["hasRole('TESORERIA')"])
 class PagoProveedorController {
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'DELETE']
 	
 	def pagoProveedorService
 
@@ -133,23 +133,16 @@ class PagoProveedorController {
 		}
     }
 
-    def delete() {
-        def pagoProveedorInstance = PagoProveedor.get(params.id)
+    def delete(PagoProveedor pagoProveedorInstance) {
         if (!pagoProveedorInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'pagoProveedor.label', default: 'PagoProveedor'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
-
-        try {
-            pagoProveedorInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'pagoProveedor.label', default: 'PagoProveedor'), params.id])
-            redirect action: 'list'
-        }
-        catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'pagoProveedor.label', default: 'PagoProveedor'), params.id])
-            redirect action: 'show', id: params.id
-        }
+        pagoProveedorInstance.delete(flush: true)
+		flash.message = message(code: 'default.deleted.message', args: [message(code: 'pagoProveedor.label', default: 'PagoProveedor'), params.id])
+        redirect action: 'index'
+        
     }
 	
 	def requisicionesDisponiblesJSONList(){

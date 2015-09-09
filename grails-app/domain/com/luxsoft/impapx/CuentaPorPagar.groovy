@@ -9,6 +9,7 @@ import com.luxsoft.impapx.cxp.Aplicacion
 
 class CuentaPorPagar {
 	
+	static auditable = true	
 	
 	Proveedor proveedor
 	String documento

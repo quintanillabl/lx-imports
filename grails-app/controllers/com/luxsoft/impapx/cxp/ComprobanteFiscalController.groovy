@@ -49,4 +49,12 @@ class ComprobanteFiscalController {
         render(text: xml, contentType: "text/xml", encoding: "UTF-8")
     }
 
+    def descargarCfdi(ComprobanteFiscal cf){
+        response.setContentType("application/octet-stream")
+        response.setHeader("Content-disposition", "attachment; filename=\"$cf.cfdiFileName\"")
+        ByteArrayInputStream is=new ByteArrayInputStream(cf.cfdi)
+        response.outputStream << is
+        
+    }
+
 }

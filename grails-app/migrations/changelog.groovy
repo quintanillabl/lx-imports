@@ -26,4 +26,6 @@ databaseChangeLog = {
 	include file: 'CancelacionDeCfdi.groovy'
 	include file: 'CompraDet_log1.groovy'
 
+
+	include file: 'CfdiGastosModel_log3.groovy'
 }

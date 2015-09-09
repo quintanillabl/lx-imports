@@ -38,7 +38,7 @@
 							<div class="form-group">
 								<div class="col-lg-offset-3 col-lg-10">
 									<lx:backButton/>
-									<lx:deleteButton bean="${pagoProveedorInstance}"/>
+									<a href="" class="btn btn-danger " data-toggle="modal" data-target="#deleteDialog"><i class="fa fa-trash"></i> Eliminar</a> 
 								</div>
 							</div>
 						</f:with>
@@ -47,7 +47,7 @@
 			</div>
 		</div>
 	</div>
-	
+	<g:render template="/common/deleteDialog" bean="${pagoProveedorInstance}"/>
 </content>
 </body>
 </html>

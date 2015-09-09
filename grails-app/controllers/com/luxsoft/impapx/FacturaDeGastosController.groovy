@@ -147,13 +147,10 @@ class FacturaDeGastosController {
             return
         }
         try {
-            if(facturaDeGastosInstance){
-                
+            if(facturaDeGastosInstance.id!=null){
                 comprobanteFiscalService.actualizar(facturaDeGastosInstance,xml)
                 log.info 'CFDI actualizado para cxp: '+facturaDeGastosInstance.id
-                //redirect action:'edit',id:facturaDeGastosInstance.id
-                //redirect action:'edit', id:fac.id
-                redirect action:'index'
+                redirect action:'edit',id:facturaDeGastosInstance.id
                 return
             }else{
                 def cxp=comprobanteFiscalService.importar(xml,new FacturaDeGastos())
