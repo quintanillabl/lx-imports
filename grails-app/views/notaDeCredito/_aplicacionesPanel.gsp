@@ -65,6 +65,7 @@
 <g:jasperReport jasper="AplicacionDeAbono" format="PDF,HTML" name="Imprimir">
 	<g:hiddenField name="ID" value="${abonoInstance.id}"/>
 	<g:hiddenField name="TIPO" value="NOTA"/>
+	<g:hiddenField name="COMPANY" value="${session.empresa.nombre}"/>
 </g:jasperReport>
 
 
