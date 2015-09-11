@@ -45,8 +45,8 @@ class CompraDeMonedaController {
     	}
     	compraDeMonedaInstance=compraDeMonedaService.registrarCompra2(compraDeMonedaInstance)
     	flash.message="Compra de moneda ${compraDeMonedaInstance.id} registrada"
-    	//redirect action:'show',params:[id:compraDeMonedaInstance.id]
-    	respond compraDeMonedaInstance
+    	redirect action:'edit',params:[id:compraDeMonedaInstance.id]
+    	
     }
 
     def create() {
