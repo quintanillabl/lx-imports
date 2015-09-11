@@ -186,14 +186,14 @@ class ImportadorController {
 		if(found){
 			throw new RuntimeException("Compra $folio ya importada, borrar si se requiere re importar");
 		}
-		
+		log.info 'Importando compra: '+folio +" Proveedor origen ID: "+proveedorOrigenParaCompras
 		
 		def sql= new Sql(dataSource_importacion)
 
 		def row=sql.firstRow("select * from SX_COMPRAS2  where PROVEEDOR_ID=?  and folio=? and fecha>'2012-01-01' ",
 			,[proveedorOrigenParaCompras,folio])
-
-		log.info 'Importando compra: '+row.folio +" Prov: "+row.nombre
+		log.info 'Importando :'+row
+		
 		Compra c=Compra.findOrCreateByOrigen(row.COMPRA_ID)
 		Proveedor p=Proveedor.findOrSaveByNombre(row.nombre)
 		c.proveedor=p

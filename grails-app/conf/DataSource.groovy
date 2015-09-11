@@ -50,10 +50,10 @@ environments {
             username = "root"
             password = "sys1"
             properties {
-                maxActive = 3
-                maxIdle = 2
-                minIdle = 1
-                initialSize = 1
+                maxActive = 10
+                maxIdle = 10
+                minIdle = 3
+                initialSize = 3
                 minEvictableIdleTimeMillis=1800000
                 timeBetweenEvictionRunsMillis=1800000
                 numTestsPerEvictionRun=3
