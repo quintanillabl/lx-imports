@@ -140,10 +140,10 @@ class CompraDeMonedaService {
 			pago.egreso=egreso
 			pago.tipoDeCambio=c.tipoDeCambioCompra
 			pago.pago=cxp
-			pago.save(failOnError:true)
+			pago.save(failOnError:true,flush:true)
 			c.ingreso=ingreso
 			c.pagoProveedor=pago
-			c.save(failOnError:true)
+			c.save(failOnError:true,flush:true)
 		
 	}
 
