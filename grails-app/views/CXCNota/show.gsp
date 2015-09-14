@@ -10,18 +10,17 @@
 <body>
 	
 	<content tag="header">
-		Nota ${CXCNotaInstance.id}
+		Nota ${CXCNotaInstance.id} Disponible: ${formatNumber(number:entity.disponible,type:'currency')}
  	</content>
  	<content tag="subHeader">
  		<ol class="breadcrumb">
             <li><g:link action="index">${entityName}(s)</g:link></li>
             <li><g:link action="show" id="${entity.id}">Consulta</g:link></li>
-            <g:if test="${CXCNotaInstance.disponible<=0.0}">
+            <g:if test="${CXCNotaInstance.cfdi}">
             	<li><g:link controller="cfdi" action="show" id="${entity.cfdi}"><strong>CFDI</strong></g:link></li>
             </g:if>
-            <g:else>
-            	<li><g:link action="edit" id="${entity.id}"><strong>Edición</strong></g:link></li>
-            </g:else>
+            <li><g:link action="edit" id="${entity.id}"><strong>Edición</strong></g:link></li>
+            
         </ol>
  	</content>
 
