@@ -2,7 +2,10 @@ package com.luxsoft.impapx.cxc
 
 
 import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang.exception.ExceptionUtils
+
 import org.codehaus.groovy.grails.web.json.JSONArray
+
 import org.springframework.dao.DataIntegrityViolationException
 import com.luxsoft.impapx.Venta
 import grails.converters.JSON
@@ -13,7 +16,7 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(["hasAnyRole('COMPRAS','VENTAS')"])
 class CXCNotaController {
 
-    static allowedMethods = [create:'GET',save:'POST',edit:'GET',update:'PUT',delete: 'DELETE']
+    //static allowedMethods = [create:'GET',save:'POST',edit:'GET',update:'PUT',delete: 'DELETE',eliminarAplicaciones:'POST']
 
 	def cobranzaService
 
@@ -80,29 +83,37 @@ class CXCNotaController {
         
     }
 	
-	def selectorDeFacturas(CXCAbono abono){
-		def hql="from Venta p where p.cliente.id=?  and p.total-p.pagosAplicados>0 order by id desc"
-		def max=Math.min(params.int('max')?:10, 100)
-		def offset=params.int('offset')?:0
-		def res = Venta.findAllByClienteAndMoneda(abono.cliente,abono.moneda,[sort:'id',order:'desc',max:max,offset:offset])
-		[pago:abono,facturas:res,facturasTotal:Venta.count()]
+	// def selectorDeFacturas(CXCAbono abono){
+	// 	def hql="from Venta p where p.cliente.id=?  and p.total-p.pagosAplicados>0 order by id desc"
+	// 	def max=Math.min(params.int('max')?:10, 100)
+	// 	def offset=params.int('offset')?:0
+	// 	def res = Venta.findAllByClienteAndMoneda(abono.cliente,abono.moneda,[sort:'id',order:'desc',max:max,offset:offset])
+	// 	[pago:abono,facturas:res,facturasTotal:Venta.count()]
+	// }
+	def selectorDeFacturas(CXCNota abono){
+		if(abono.disponible<=0.0){
+			flash.message="Cobro sin disponible para aplicar"
+			redirect action:'edit', id:abono.id
+			return
+		}
+		def hql="from Venta p where p.cliente.id=?  and p.total-p.pagosAplicados>0 order by p.fecha desc"
+		def res=Venta.findAll(hql,[abono.cliente.id])
+		[pago:abono,facturas:res,facturasTotal:res.size()]
 	}
 	
-	def generarPartidas(){
+	def generarPartidas(CXCNota nota){
 		def dataToRender=[:]
 		JSONArray jsonArray=JSON.parse(params.partidas);
-		def nota= CXCNota.findById(params.abonoId,[fetch:[partidas:'select']])
 		cobranzaService.asignarPartidasParaNota(nota, jsonArray)
 		dataToRender.abonoId=nota.id
 		render dataToRender as JSON
 	}
 	
-	def generarAplicaciones(){
+	def generarAplicaciones(Long id){
 		def dataToRender=[:]
 		JSONArray jsonArray=JSON.parse(params.partidas);
-		def pago= CXCNota.findById(params.abonoId,[fetch:[aplicaciones:'select']])
-		cobranzaService.aplicarFacturas(pago, jsonArray)
-		dataToRender.pagoId=pago.id
+		cobranzaService.generarAplicacionesDeNota(id, jsonArray)
+		dataToRender.pagoId=id
 		render dataToRender as JSON
 	}
 	
@@ -150,5 +161,25 @@ class CXCNotaController {
 		params.FECHA=cfd.fecha.getTime().format("yyyy-MM-dd'T'HH:mm:ss")
 		chain(controller:'jasper',action:'index',model:[data:modelData],params:params)
 		
+	}
+
+
+
+	def eliminarAplicaciones(Long id){
+		
+		log.info 'Params: '+params
+		def data=[:]
+		JSONArray jsonArray=JSON.parse(params.partidas);
+		try {
+			cobranzaService.eliminarAplicacionDeNota(id,jsonArray)
+			data.res='APLICACIONES_ELIMINADAS'
+		}
+		catch (RuntimeException e) {
+			e.printStackTrace()
+			data.res="ERROR"
+			data.error=ExceptionUtils.getRootCauseMessage(e)
+		}
+		
+		render data as JSON
 	}
 }

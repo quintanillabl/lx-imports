@@ -1,16 +1,16 @@
 
 <div class="btn-group ">
 		<g:link action="selectorDeFacturas" 
-				params="['pagoId':CXCAbonoInstance.id,'disponible':CXCAbonoInstance.disponibleMN]"
+				id="${CXCAbonoInstance.id}"
 				class="btn btn-primary" >
 			<i class="icon-ok icon-white"></i> Agregar
 		</g:link>
-  		<button id="eliminarBtn" class="btn btn-danger">
+  		<button id="eliminarAplicacionesBtn" class="btn btn-danger">
   			<i class="icon-trash icon-white"></i>Eliminar
   		</button>
 	</div>
-<table id="grid"
-	class="simpleGrid table table-striped table-hover table-bordered table-condensed">
+<table id="aplicacionesGrid"
+	class="table table-hover table-bordered table-condensed">
 	<thead>
 		<tr>
 			<th class="header">Id</th>
@@ -19,7 +19,7 @@
 			<th class="header">Fecha(Docto)</th>	
 			<th class="header">Importe (Docto)</th>
 			<th class="header">Saldo (Docto)</th>
-			<th class="header">Pagado</th>
+			<th class="header">Aplicado</th>
 			
 		</tr>
 	</thead>
@@ -27,9 +27,7 @@
 		<g:each in="${aplicaciones}" var="row">
 			<tr id="${row.id}">
 			    
-				<td><g:link controller="CXCAplicacion" action="edit" id="${row.id}">
-					${fieldValue(bean: row, field: "id")}</g:link>
-				</td>
+				<td>${fieldValue(bean: row, field: "id")}</td>
 				<td><lx:shortDate date="${row.fecha}" /></td>
 				<td>${fieldValue(bean: row, field: "factura.facturaFolio")}</td>
 				<td>${fieldValue(bean: row, field: "factura.fechaFactura")}</td>
@@ -55,47 +53,52 @@
 <script>
 
 $(function(){
-
-	function selectedRows(){
+	
+	// Grid y seleccion
+	$('#aplicacionesGrid').dataTable( {
+    	"paging":   false,
+    	"ordering": false,
+    	"info":     false,
+    	"language": {
+			"url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
+		},
+		//"dom": '',
+		"order": []
+	} );
+	
+	$("#aplicacionesGrid tbody tr").on('click',function(){
+		$(this).toggleClass("info selected");
+	});
+	
+	$("#eliminarAplicacionesBtn").click(function(e){
 		var res=[];
-		var data=$("tbody tr.selected").each(function(){
+		var data=$("#aplicacionesGrid tbody tr.selected").each(function(){
 			var tr=$(this);
 			res.push(tr.attr("id"));
 		});
-		return res;
-	};
-	
-	$("#eliminarBtn").click(function(e){
-		eliminar();
-	});
-	
-	
-	
-	function eliminar(){
-		var res=selectedRows();
+
 		if(res.length==0){
 			alert('Debe seleccionar al menos un registro');
 			return;
 		}
-		var ok=confirm('Eliminar  ' + res.length+' partida(s)?');
+		var ok=confirm('Eliminar '+res.length+' aplicaciones ?');
 		if(!ok)
 			return;
-		console.log('Cancelando facturas: '+res);
-		
-		$.ajax({
-			url:"${createLink(action:'eliminarAplicaciones')}",
-			data:{
-				pagoId:${CXCAbonoInstance.id},partidas:JSON.stringify(res)
-			},
-			success:function(response){
-				
-				location.reload();
-			},
-			error:function(request,status,error){
-				alert("Error: "+status);
-			}
+		console.log('Eliminando aplicaciones: '+res);
+		$.post(
+			"${createLink(action:'eliminarAplicaciones')}",
+			{id:${CXCAbonoInstance.id},partidas:JSON.stringify(res)}
+		).done(function(data){
+			console.log('OK :'+data);
+			window.location.reload(true);
+		}).fail(function(jqXHR, textStatus, errorThrown){
+			console.log(errorThrown);
+			alert("Error: "+errorThrown);
 		});
-	}
+		
+	});
+	
+	
 	
 });
 

@@ -172,6 +172,38 @@ class CobranzaService {
 		
 	}
 	
+	def generarAplicacionesDeNota(Long id,def facturas) {
+		
+		CXCNota abono=CXCNota.get(id)
+		
+		def disponible=abono.getDisponibleMN()
+		
+		facturas.each {
+			def fac=Venta.get(it.toLong())
+			
+			def saldo=fac.saldoActual
+			def importe=0
+			if(disponible>=saldo)
+				importe=saldo
+			else
+				importe=disponible
+			disponible-=importe
+			println "Aplicando $importe Saldo: $saldo Disponible:$disponible"
+			def ap=new CXCAplicacion(
+				fecha:new Date()
+				,total:importe
+				,impuestoTasa:abono.impuestoTasa?:0.0
+				,importe:0.0
+				,impuesto:0.0
+				,factura:fac)
+			abono.addToAplicaciones(ap)
+		}
+		def res=abono.save(failOnError:true)
+		abono.actualizarAplicado()
+		return res
+	}
+
+
 	def aplicarFacturas(CXCAbono abono,def facturas) {
 		
 		def disponible=abono.getDisponibleMN()
@@ -200,6 +232,27 @@ class CobranzaService {
 		}
 		def res=abono.save(failOnError:true)
 		abono.actualizarAplicado()
+		return res
+	}
+
+	def eliminarAplicacionDeNota(Long id,def partidas){
+
+		CXCNota nota=CXCNota.get(id)
+		log.info 'Eliminando aplicaciones: '+partidas + ' De Nota: '+nota
+		partidas.each {
+			log.info 'Buscando aplicacion: '+it
+			def found=nota.aplicaciones.find{ det->
+				det.id==it.toLong()
+			}
+			if(found){
+				boolean ok=nota.removeFromAplicaciones(found)
+				log.info 'Eliminando aplicacion: '+found+ 'Res: '+ok
+			}else{
+				log.info 'No existe la aplicaicon: '+it
+			}
+
+		}
+		def res=nota.save(failOnError:true)
 		return res
 	}
 	

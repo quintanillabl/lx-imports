@@ -11,7 +11,7 @@
 <body>
 	
 	<content tag="header">
-		Nota ${CXCNotaInstance.id}
+		Nota ${CXCNotaInstance.id} Disponible: ${formatNumber(number:entity.disponible,type:'currency')}
  	</content>
  	<content tag="subHeader">
  		<ol class="breadcrumb">

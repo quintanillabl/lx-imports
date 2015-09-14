@@ -77,7 +77,7 @@ class Venta {
 		saldoActual formula:'(select total-ifnull(sum(x.total),0) from CXCAplicacion x where x.factura_id=id)'
 	}
 	
-	static transients = ['saldoActual','cfdi','factura','fechaFactura']
+	static transients = ['cfdi','factura','fechaFactura']
 	
 	// public BigDecimal getSaldoActual(){
 	// 	def pag=pagosAplicados?:0.0
