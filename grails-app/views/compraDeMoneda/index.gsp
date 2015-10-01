@@ -55,7 +55,7 @@
 	            				var="row">
 	            				<tr>
 	            					<td>
-	            						<g:link action="show" id="${row.id}">
+	            						<g:link action="edit" id="${row.id}">
 	            							${fieldValue(bean: row, field: "id")}
 	            						</g:link>
 	            					</td>
@@ -71,12 +71,7 @@
 	            			</g:each>
 	            		</tbody>
 	            	</table>
-	            	<div class="pagination">
-	            		<boots:paginate total="${compraDeMonedaInstanceTotal ?: 0}" />
-	            	</div>
-	            	<ul class="pagination" >
-	            	    
-	            	</ul>
+	            	
 	            </div>
 	        </div>
 	    </div>

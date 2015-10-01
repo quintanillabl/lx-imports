@@ -25,10 +25,10 @@ dataSource_importacion{
   dbCreate = ''
   readOnly=true
   properties {
-    maxActive = 6
-    maxIdle = 4
-    minIdle = 4
-    initialSize = 1
+    maxActive = 10
+    maxIdle = 10
+    minIdle = 3
+    initialSize = 3
     minEvictableIdleTimeMillis = 60000
     timeBetweenEvictionRunsMillis = 60000
     maxWait = 10000
@@ -45,6 +45,7 @@ environments {
             pooled = true
             dbCreate=""
             url = "jdbc:mysql://localhost/paperx2?autoReconnect=true"
+           // url = "jdbc:mysql://10.10.1.228/paperx2?autoReconnect=true"
             driverClassName = "com.mysql.jdbc.Driver"
             dialect = org.hibernate.dialect.MySQL5InnoDBDialect
             username = "root"
