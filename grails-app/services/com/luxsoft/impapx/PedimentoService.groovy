@@ -12,6 +12,7 @@ class PedimentoService {
 			
 		embarqueDetList.each {
 			pedimento.addToEmbarques(it)
+            pedimento.actualizarCostos()
 		} 
 		pedimento.save(failOnError:true)
     }
@@ -28,6 +29,7 @@ class PedimentoService {
     			pedimento.removeFromEmbarques(embarqueDet)
     			embarqueDet.pedimento=null
     			embarqueDet.gastosPorPedimento=0
+
     			embarqueDet.save flush:true
     		}
     	}

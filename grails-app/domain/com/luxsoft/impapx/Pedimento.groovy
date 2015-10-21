@@ -115,11 +115,18 @@ class Pedimento {
 	}
 	
 	def actualizarCostos(){
+	
 		def importe=getTotal()
 		def kilosTotales=embarques.sum {it.kilosNetos}
+
+
 		embarques.each {
+
+
 			def gasto=it.kilosNetos*importe/kilosTotales
 			gasto=gasto.setScale(2, BigDecimal.ROUND_HALF_UP);
+
+	
 			it.gastosPorPedimento=gasto
 			
 		}
