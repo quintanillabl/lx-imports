@@ -188,7 +188,14 @@ class ImportadorController {
 		}
 		log.info 'Importando compra: '+folio +" Proveedor origen ID: "+proveedorOrigenParaCompras
 		
-		def sql= new Sql(dataSource_importacion)
+		SingleConnectionDataSource ds=new SingleConnectionDataSource(
+		        driverClassName:'com.mysql.jdbc.Driver',
+		        url:'jdbc:mysql://10.10.1.228/produccion',
+		        username:'root',
+		        password:'sys')
+		Sql sql=new Sql(ds)
+
+		//def sql= new Sql(dataSource_importacion)
 
 		def row=sql.firstRow("select * from SX_COMPRAS2  where PROVEEDOR_ID=?  and folio=? and fecha>'2012-01-01' ",
 			,[proveedorOrigenParaCompras,folio])
