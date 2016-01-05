@@ -189,10 +189,12 @@ class ImportadorController {
 		log.info 'Importando compra: '+folio +" Proveedor origen ID: "+proveedorOrigenParaCompras
 		
 		SingleConnectionDataSource ds=new SingleConnectionDataSource(
+
 		        driverClassName:'com.mysql.jdbc.Driver',
 		        url:'jdbc:mysql://10.10.1.228/produccion',
 		        username:'root',
-		        password:'sys')
+		        password:'sys',
+		        suppressClose:true)
 		Sql sql=new Sql(ds)
 
 		//def sql= new Sql(dataSource_importacion)
