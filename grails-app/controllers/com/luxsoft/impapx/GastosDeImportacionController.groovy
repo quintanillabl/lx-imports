@@ -7,6 +7,8 @@ import grails.transaction.Transactional
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import com.luxsoft.impapx.cxp.ComprobanteFiscalException
+import com.luxsoft.impapx.cxp.*
+import com.luxsoft.impapx.*
 
 @Secured(["hasRole('COMPRAS')"])
 @Transactional(readOnly = true)
@@ -112,7 +114,8 @@ class GastosDeImportacionController {
     }
 
     @Transactional
-    def importarCfdi(){
+    def importarCfdi(GastosDeImportacion gastosDeImportacionInstance){
+
         def xml=request.getFile('xmlFile')
         if(xml==null){
             flash.message="Archivo XML no localizado"
@@ -120,9 +123,32 @@ class GastosDeImportacionController {
             return
         }
         try {
-            def cxp=comprobanteFiscalService.importar(xml,new GastosDeImportacion())
-            flash.message="Cuenta por pagar generada para el CFDI:  ${xml.getOriginalFilename()}"
-            redirect action:'edit',id:cxp.id
+            if(gastosDeImportacionInstance.id!=null){
+                comprobanteFiscalService.actualizar(gastosDeImportacionInstance,xml)
+                log.info 'CFDI actualizado para cxp: '+gastosDeImportacionInstance.id
+                redirect action:'edit',id:gastosDeImportacionInstance.id
+                return
+            }else{
+                try {
+                    def cxp=comprobanteFiscalService.importar(xml,new GastosDeImportacion())
+                    flash.message="Cuenta por pagar generada para el CFDI:  ${xml.getOriginalFilename()}"
+                    redirect action:'edit',id:cxp.id
+                    return
+                }
+                catch(ComprobanteExistenteException ex) {
+                    log.info 'Cfdi ta importado: '+ex.comprobante.uuid
+                    def cfdi = ex.comprobante
+                    def cxp = cfdi.cxp
+                    flash.message="CFDI YA IMPORTADO en la factura Id:${cxp.id} Docto:${cxp.documento}"+ex.message
+                    if(cxp.instanceOf(GastosDeImportacion)){
+                        redirect action:'show',id:cxp.id
+                        return
+                    }else if(cxp.instanceOf(FacturaDeGastos)){
+                        redirect controller:'facturaDeGastos',action:'show',id:cxp.id
+                        return
+                    }
+                }
+            }
         }
         catch(ComprobanteFiscalException e) {
             flash.message="Errores en la importación"
@@ -132,15 +158,38 @@ class GastosDeImportacionController {
         
     }
 
-    // def validar(GastosDeImportacion gasto){
-    //     if(!gasto.comprobante){
-    //         flash.message="No se a registrado el CFDI del gasto ${gasto.id}"
-    //         redirect action:'edit',id:gasto.id
+    // @Transactional
+    // def importarCfdi(){
+    //     def xml=request.getFile('xmlFile')
+    //     if(xml==null){
+    //         flash.message="Archivo XML no localizado"
+    //         redirect(uri: request.getHeader('referer') )
     //         return
     //     }
-    //     comprobanteFiscalService.validar(gasto.comprobante)
-    //     flash.message="Validación SAT generada"
-    //     redirect action:'edit',id:gasto.id
+    //     try {
+    //         def cxp=comprobanteFiscalService.importar(xml,new GastosDeImportacion())
+    //         flash.message="Cuenta por pagar generada para el CFDI:  ${xml.getOriginalFilename()}"
+    //         redirect action:'edit',id:cxp.id
+    //     }
+    //     catch(ComprobanteExistenteException ex) {
+    //         // flash.message="Errores en la importación"
+    //         // flash.error=e.message
+    //         // redirect action:'index'
+    //         log.info 'Cfdi ta importado: '+ex.comprobante.uuid
+    //         def cfdi = ex.comprobante//ComprobanteFiscal.get(ex.comprobante.id)
+    //         def cxp = cfdi.cxp
+    //         flash.message="CFDI YA IMPORTADO en la factura Id:${cxp.id} Docto:${cxp.documento}"+ex.message
+    //         if(cxp.instanceOf(GastosDeImportacion)){
+    //             redirect action:'show',id:cxp.id
+    //             return
+    //         }else if(cxp.instanceOf(FacturaDeGastos)){
+    //             redirect controller:'facturaDeGastos',action:'show',id:cxp.id
+    //             return
+    //         }
+            
+    //     }
         
     // }
+
+   
 }

@@ -4,9 +4,9 @@
     <a href="#"><i class="fa fa-usd"></i> <span class="nav-label">Ventas</span><span class="fa arrow"></span></a>
     <sec:ifAnyGranted roles="VENTAS,ADMIN">
         <ul class="nav nav-second-level collapse">
-        	<li class="${webRequest.controllerName=='distribucion'?'active':''}">
+        	%{-- <li class="${webRequest.controllerName=='distribucion'?'active':''}">
         	    <g:link controller="distribucion"><i class="fa fa-random"></i> <span class="nav-label">Distribución</span></g:link>
-        	</li>
+        	</li> --}%
         	<li class="${webRequest.controllerName=='venta'?'active':''}">
         	    <g:link controller="venta"><i class="fa fa-money"></i> <span class="nav-label">Ventas</span></g:link>
         	</li>

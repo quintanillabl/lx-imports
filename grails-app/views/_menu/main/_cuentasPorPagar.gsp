@@ -1,5 +1,6 @@
 
-<g:set var="cxpMenu" value="${['facturaDeImportacion','gastosDeImportacion','pago','requisicion','notaDeCredito','facturaDeImportacion','facturaDeGastos','cuentaDeGastosGenerica']}" />
+<g:set var="cxpMenu" 
+    value="${['facturaDeImportacion','gastosDeImportacion','pago','requisicion','notaDeCredito','facturaDeImportacion','facturaDeGastos','cuentaDeGastosGenerica','cuentaPorPagar']}" />
 
 <li class="${cxpMenu.contains(webRequest.controllerName)?'active':''}">
     <a href="#"><i class="fa fa-calendar"></i>
@@ -7,6 +8,10 @@
     </a>
     <ul class="nav nav-second-level collapse">
         <sec:ifAnyGranted roles="COMPRAS,ADMIN">
+
+            %{-- <li class="${webRequest.controllerName=='cuentaPorPagar'?'active':''}" >
+                <g:link controller="cuentaPorPagar">Facturas (Todas)</g:link>
+            </li> --}%
             
             <li class="${webRequest.controllerName=='facturaDeImportacion'?'active':''}" >
                 <g:link controller="facturaDeImportacion">Facturas de Importaciones </g:link>
@@ -20,11 +25,11 @@
             <li class="${webRequest.controllerName=='notaDeCredito'?'active':''}">
                 <g:link controller="notaDeCredito">Notas de Crédito</g:link>
             </li>
-            <li>
+            %{-- <li>
                 <g:link controller="facturaDeImportacion" action="detalleDeFacturas">
                         Detalle de Facturas
                 </g:link>
-            </li>
+            </li> --}%
         </sec:ifAnyGranted>
         <sec:ifAnyGranted roles="COMPRAS,ADMIN,TESORERIA">
             <li class="${webRequest.controllerName=='facturaDeGastos'?'active':''}" >

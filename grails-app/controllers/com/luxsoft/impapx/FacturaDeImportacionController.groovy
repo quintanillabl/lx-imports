@@ -128,7 +128,7 @@ class FacturaDeImportacionController {
     def programacionDePagos(){
     	
     	params.max = Math.min(params.max ? params.int('max') : 200, 1000)
-    	params.sort='id'
+    	params.sort='vencimiento'
     	params.order= "desc"
     	
         def periodo=session.periodoParaPagos
@@ -143,6 +143,8 @@ class FacturaDeImportacionController {
     	else{
     		facturas=FacturaDeImportacion.findAllByVencimientoBetween(periodo.fechaInicial,periodo.fechaFinal,params)
     	}
+        facturas = facturas.findAll {it.saldo}
+        facturas = facturas.sort {a,b-> a.proveedor.nombre <=> b.proveedor.nombre ?: a.vencimiento <=> b.vencimiento}
     	flash.message='Facturas: '+facturas.size()
     	[facturaDeImportacionInstanceList: facturas,proveedor:p]
     }
@@ -187,12 +189,15 @@ class FacturaDeImportacionController {
 
 class FacturasPorPeriodoCommand{
 	
+    Proveedor proveedor
+
 	Date fechaInicial=new Date()-90
+
 	Date fechaFinal=new Date()
-	Proveedor proveedor
+	
 	
 	String toString(){
-		return fechaInicial.text() +' al '+fechaFinal.text() 
+		return proveedor?:''+fechaInicial.text() +' al '+fechaFinal.text() 
 	}
 	
 }

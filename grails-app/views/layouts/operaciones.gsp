@@ -109,7 +109,10 @@
         <g:else>
             <g:render template="/common/selectorDePeriodo" model="[periodo:periodo]"/>
         </g:else>
-
+        
+        <g:if test="${pageProperty(name:'page.searchPanel')}">
+            <g:pageProperty name="page.searchPanel"/>
+        </g:if>
         
 
         <script type="text/javascript">

@@ -21,6 +21,7 @@
 			<f:display property="lineaDeCredito" wrapper="bootstrap3"/>
 			<f:display property="plazo" wrapper="bootstrap3"/>
 			<f:display property="vencimentoBl" wrapper="bootstrap3" />
+			<f:display property="agenciaAduanal" wrapper="bootstrap3" />
 		</div>
 	</div>
 	<f:display property="direccion" />

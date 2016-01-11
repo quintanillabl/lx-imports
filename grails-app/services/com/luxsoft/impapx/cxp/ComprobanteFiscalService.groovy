@@ -82,7 +82,7 @@ class ComprobanteFiscalService {
         def total=data['total'] as BigDecimal
         def comprobanteFiscal=ComprobanteFiscal.findByUuid(uuid)
         if(comprobanteFiscal){
-        	throw new RuntimeException("CFDI ${uuid} ya importado");
+        	throw new ComprobanteExistenteException(comprobanteFiscal);
         }
 
     	comprobanteFiscal=new ComprobanteFiscal(
@@ -353,4 +353,16 @@ class ComprobanteFiscalService {
 class ComprobanteFiscalException extends RuntimeException{
     String message
     ComprobanteFiscal comprobante
+}
+
+class ComprobanteExistenteException extends RuntimeException{
+    
+    String message
+    ComprobanteFiscal comprobante
+
+    
+    ComprobanteExistenteException(ComprobanteFiscal comprobante){
+        this.comprobante=comprobante
+        this.message = 'CFDI ya existente '+comprobante.uuid
+    }
 }

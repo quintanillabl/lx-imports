@@ -149,28 +149,7 @@
 					alert("Error asignando facturas: "+errorThrown);
 				});
 
-				// $.ajax({
-				// 	url:"${createLink(controller:'proveedor',action:'actualizarCostoUnitarioEnProductos')}",
-				// 	dataType:"json",
-				// 	data:{
-				// 		costoUnitario:costoUnitario,partidas:JSON.stringify(res)
-				// 	},
-				// 	success:function(data,textStatus,jqXHR){
-				// 		console.log('Rres: '+data.costoUnitario);
-				// 		$('.selected td[name=costoUnitario]').text(data.costoUnitario);
-				// 		$("#asignarPrecioDialog").modal("hide");
-				// 		clearAllRows();
-
-				// 	},
-				// 	error:function(request,status,error){
-				// 		console.log(error);
-				// 		alert("Error: "+error);
-				// 	},
-				// 	complete:function(){
-				// 		clearAllRows();
-				// 		$("#asignarPrecioDialog").show('false');
-				// 	}
-				// });
+				
 	    		return true;
 			});
 

@@ -8,7 +8,8 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import grails.plugin.springsecurity.annotation.Secured
 import com.luxsoft.impapx.cxp.ComprobanteFiscalException
-
+import com.luxsoft.impapx.cxp.*
+import com.luxsoft.impapx.*
 
 @Secured(["hasAnyRole('COMRAS','TESORERIA')"])
 @Transactional(readOnly = true)
@@ -153,12 +154,26 @@ class FacturaDeGastosController {
                 redirect action:'edit',id:facturaDeGastosInstance.id
                 return
             }else{
-                def cxp=comprobanteFiscalService.importar(xml,new FacturaDeGastos())
-                flash.message="Cuenta por pagar generada para el CFDI:  ${xml.getOriginalFilename()}"
-                redirect action:'edit',id:cxp.id
-                return
+                try {
+                    def cxp=comprobanteFiscalService.importar(xml,new FacturaDeGastos())
+                    flash.message="Cuenta por pagar generada para el CFDI:  ${xml.getOriginalFilename()}"
+                    redirect action:'edit',id:cxp.id
+                    return
+                }
+                catch(ComprobanteExistenteException ex) {
+                    log.info 'Cfdi ta importado: '+ex.comprobante.uuid
+                    def cfdi = ex.comprobante
+                    def cxp = cfdi.cxp
+                    flash.message="CFDI YA IMPORTADO en la factura Id:${cxp.id} Docto:${cxp.documento}"+ex.message
+                    if(cxp.instanceOf(FacturaDeGastos)){
+                        redirect action:'show',id:cxp.id
+                        return
+                    }else if(cxp.instanceOf(GastosDeImportacion)){
+                        redirect controller:'gastosDeImportacion',action:'show',id:cxp.id
+                        return
+                    }
+                }
             }
-            
         }
         catch(ComprobanteFiscalException e) {
             flash.message="Errores en la importación"

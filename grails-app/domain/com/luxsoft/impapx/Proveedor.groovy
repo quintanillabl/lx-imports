@@ -17,8 +17,12 @@ class Proveedor {
 	boolean vencimentoBl=false
 	//CuentaContable cuentaContable
 	String subCuentaOperativa
+
 	String paisDeOrigen
+
 	String nacionalidad
+
+	Boolean agenciaAduanal = false
 	
 	
 	Date dateCreated
@@ -41,6 +45,7 @@ class Proveedor {
 		subCuentaOperativa(nullable:true,maxSize:4)
 		paisDeOrigen(nullable:true)
 		nacionalidad(nullable:true)
+		//agenciaAduanal nullable:true
     }
 	
 	String toString(){

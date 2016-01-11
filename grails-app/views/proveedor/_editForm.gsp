@@ -21,6 +21,8 @@
 				<f:field property="lineaDeCredito" wrapper="bootstrap3" widget="numeric"/>
 				<f:field property="plazo" wrapper="bootstrap3" widget="numeric"/>
 				<f:field property="vencimentoBl" wrapper="bootstrap3" widget-class="form-control"/>
+				
+				<f:field property="agenciaAduanal" wrapper="bootstrap3" widget-class="form-control"/>
 			</div>
 		</div>
 		
@@ -29,6 +31,15 @@
 				<g:render template="/common/direccion" bean="${proveedorInstance}"/>
 			</div>
 			
+		</div>
+
+		<div class="form-group">
+		    <div class="col-lg-offset-3 col-lg-9">
+		        <button id="saveBtn" class="btn btn-primary ">
+		            <i class="fa fa-floppy-o"></i> Actualizar
+		        </button>
+		        %{-- <a href="" class="btn btn-danger " data-toggle="modal" data-target="#deleteDialog"><i class="fa fa-trash"></i> Eliminar</a>  --}%
+		    </div>
 		</div>
 		
 	</f:with>

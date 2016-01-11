@@ -229,7 +229,7 @@ class MovimientoDeCuentaCommand {
 
 	static constraints={
 	    importFrom MovimientoDeCuenta
-	    importe min:1.0
+	    importe min:0.1
 	    anticipo nullable:true
 	}
 
