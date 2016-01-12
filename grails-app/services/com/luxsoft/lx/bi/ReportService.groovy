@@ -23,6 +23,8 @@ class ReportService {
     	if (command.hasErrors()) {
     	    throw new ValidationException('Errores de validacion en ReportCommand',command.errors)
     	}
+        log.info 'Ejecutando reporte:'+command
+        log.info 'Parametros: '+params
     	def reportDef=new JasperReportDef(
     		name:command.reportName,
     		fileFormat:command.getJasperFormat(),

@@ -3,16 +3,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta name="layout" content="catalogos">
+	<meta name="layout" content="consultas_bi">
 	<title>Proveedores</title>
 </head>
 <body>
 
 <content tag="header">
-	Catálogo de Proveedores
+	Consulta rápida de proveedores
 </content>
-
-
 
 <content tag="grid">
 	<table id="grid2" class="table table-striped table-bordered table-condensed luxor-grid">
@@ -30,7 +28,7 @@
 		<g:each in="${proveedorInstanceList}" status="i" var="proveedorInstance">
 			<tr>
 				<td>
-					<g:link action="show" id="${proveedorInstance.id}">
+					<g:link action="proveedor" id="${proveedorInstance.id}">
 						${fieldValue(bean: proveedorInstance, field: "nombre")}
 					</g:link>
 				</td>

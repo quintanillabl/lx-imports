@@ -30,4 +30,12 @@ databaseChangeLog = {
 	include file: 'CfdiGastosModel_log3.groovy'
 
 	include file: 'agencia-aduanal-prov.groovy'
+
+	include file: 'agentes_aduanales.groovy'
+
+	include file: 'agente_pedimento.groovy'
+
+	include file: 'pais_de_origen.groovy'
+
+	include file: 'pedimento_pais.groovy'
 }

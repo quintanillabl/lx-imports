@@ -42,6 +42,12 @@
 						    <li role="presentation">
 						    	<a href="#productos" aria-controls="productos" data-toggle="tab">Productos</a>
 						    </li>
+						    <g:if test="${proveedorInstance.agenciaAduanal}">
+						    	<li role="agentes">
+						    		<a href="#agentes"  data-toggle="tab">Agentes</a>
+						    	</li>
+						    </g:if>
+						    
 						</ul>
 						<div class="panel-body">
 							<div class="tab-content">
@@ -50,6 +56,9 @@
 							  	</div>
 							 	<div role="tabpanel" class="tab-pane fade" id="productos">
 							  		<g:render template="productos"/>
+							  	</div>
+							  	<div role="tabpanel" class="tab-pane fade" id="agentes">
+							  		<g:render template="agentes"/>
 							  	</div>
 							</div>
 						</div>

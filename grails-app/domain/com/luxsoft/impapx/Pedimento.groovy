@@ -32,6 +32,11 @@ class Pedimento {
 	Proveedor proveedor
 	com.luxsoft.impapx.CuentaPorPagar incrementable1
 	String referenciacg
+
+	String agenteAduanal
+
+	PaisDeOrigen paisDeOrigen
+	
 	
 	Date dateCreated
 	Date lastUpdated
@@ -53,6 +58,8 @@ class Pedimento {
 		proveedor(nullable:true)
 		incrementable1(nullable:true)
 		referenciacg(nullable:true,maxSize:50)
+		agenteAduanal(nullable:true)
+		paisDeOrigen(nullable:true)
     }
 	
 	static mapping ={

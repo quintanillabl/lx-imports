@@ -12,7 +12,7 @@ import com.luxsoft.utils.Periodo
 @Secured(["hasRole('COMPRAS')"])
 class PedimentoController {
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'DELETE']
 	
 	def pedimentoService
 
@@ -112,14 +112,14 @@ class PedimentoController {
         def pedimentoInstance = Pedimento.get(params.id)
         if (!pedimentoInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'pedimento.label', default: 'Pedimento'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
 
         try {
             pedimentoInstance.delete(flush: true)
 			flash.message = message(code: 'default.deleted.message', args: [message(code: 'pedimento.label', default: 'Pedimento'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
         }
         catch (DataIntegrityViolationException e) {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'pedimento.label', default: 'Pedimento'), params.id])

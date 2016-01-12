@@ -15,6 +15,7 @@ navigation={
 			proveedores(controller:'proveedor',action:'index')
 			clientes(controller:'cliente',action:'index')
 			aduana(controller:'aduana',action:'index')
+			paises(controller:'paisDeOrigen',action:'index')
 		}
 		operaciones(){
 			compras(controller:'compra',action:'index')

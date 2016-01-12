@@ -20,7 +20,7 @@
 			<tr>
 				<th>Id</th>
 				<th>Pedimento</th>
-				<th>Agente</th>
+				<th>Agencia</th>
 				<th>Fecha</th>
 				<th>DTA</th>
 				<th>Prevalidación</th>

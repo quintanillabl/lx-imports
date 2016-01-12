@@ -30,7 +30,9 @@ class Proveedor {
 	
 	static embedded = ['direccion']
 	
-	static hasMany = [productos:ProveedorProducto]
+	static hasMany = [productos:ProveedorProducto,agentes:String]
+
+	
 	
     static constraints = {
 		nombre(blank:false,size:3..255)
@@ -55,6 +57,10 @@ class Proveedor {
 	static mapping = {
 		//productos sort: 'codigo', order: 'desc'
 		productos cascade: "all-delete-orphan"
+		// hasMany joinTable: [name: 'agentes_aduanales',
+		//                            key: 'agente_id',
+		//                            column: 'nickname',
+		//                            type: "text"]
 		
 	}
 }

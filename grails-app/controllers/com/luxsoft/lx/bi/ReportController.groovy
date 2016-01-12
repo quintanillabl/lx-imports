@@ -72,7 +72,7 @@ class ReportCommand{
 	}
 
 	String getMimeType(){
-		return JasperExportFormat.determineFileFormat(formato).mimeTyp
+		return JasperExportFormat.determineFileFormat(formato).mimeType
 	}
 
 	def getJasperFormat(){
