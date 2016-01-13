@@ -29,6 +29,7 @@ class CuentaPorPagar {
 	
 	BigDecimal retTasa=0
 	BigDecimal retImp=0
+	BigDecimal retensionIsr=0
 	
 	/**
 	 * Importa analizado
@@ -66,6 +67,7 @@ class CuentaPorPagar {
 		retTasa(nullable:true)
 		retImp(nullable:true)
 		comprobante nullable:true
+		retensionIsr(nullable:true)
 		
     }
 	

@@ -19,6 +19,7 @@
 			<f:display property="impuestos"/>
 			<f:display property="retTasa"/>
 			<f:display property="retImp"/>
+			<f:display property="retensionIsr" label="Ret(ISR)"/>
 			<f:display property="total"/>
 			<f:field property="comentario"widget-class="form-control" />
 		</f:with>
@@ -63,9 +64,9 @@
                 	
                 </g:if>
                 <g:if test="${gastosDeImportacionInstance.comprobante}">
-                	<g:link class="btn btn-default btn-outline" 
+                	<g:link class="btn btn-default btn-outline" controller="comprobanteFiscal"
                 		action="mostrarCfdi" id="${gastosDeImportacionInstance.comprobante.id}">CFDI</g:link>
-                	<g:link  action="descargarAcuse" 
+                	<g:link  action="descargarCfdi"  controller="comprobanteFiscal"
                 		id="${gastosDeImportacionInstance.comprobante.id}"
                 		class="btn btn-default btn-outline" >
                 		<i class="fa fa-download"></i>  CFDI

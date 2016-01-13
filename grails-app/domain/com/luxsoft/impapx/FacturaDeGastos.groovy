@@ -7,7 +7,7 @@ import com.luxsoft.impapx.cxp.CuentaDeGastosGenerica;
 
 class FacturaDeGastos extends CuentaPorPagar{
 	
-	BigDecimal retensionIsr=0
+	//BigDecimal retensionIsr=0
 	BigDecimal descuento=0
 	BigDecimal rembolso=0
 	BigDecimal otros=0
@@ -19,7 +19,7 @@ class FacturaDeGastos extends CuentaPorPagar{
 	//static belongsTo=[cuentaGenerica:CuentaDeGastosGenerica]
 
     static constraints = {
-		retensionIsr(nullable:true)
+		//retensionIsr(nullable:true)
 		cuentaGenerica(nullable:true)
 		otros nullable:true
 		
