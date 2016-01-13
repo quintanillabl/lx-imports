@@ -137,14 +137,19 @@ class FacturaDeImportacionController {
     	if(StringUtils.isNotBlank(params.proveedor)){
     		p=Proveedor.get(params.long('proveedor'))
     		
-    		facturas=FacturaDeImportacion
-                .findAllByProveedorAndVencimientoBetween(p,periodo.fechaInicial,periodo.fechaFinal,params)
+    		facturas=FacturaDeImportacion.findAll(
+                "from FacturaDeImportacion f where f.proveedor=? and f.total-f.pagosAplicados>0 and date(f.vencimiento) between ? and ? order by f.vencimiento asc",
+                [p,periodo.fechaInicial,periodo.fechaFinal])
+                //.findAllByProveedorAndVencimientoBetween(p,periodo.fechaInicial,periodo.fechaFinal,params)
     	}
     	else{
-    		facturas=FacturaDeImportacion.findAllByVencimientoBetween(periodo.fechaInicial,periodo.fechaFinal,params)
+    		//facturas=FacturaDeImportacion.findAllByVencimientoBetween(periodo.fechaInicial,periodo.fechaFinal,params)
+            facturas=FacturaDeImportacion.findAll(
+                "from FacturaDeImportacion f where f.total-f.pagosAplicados>0 and date(f.vencimiento) between ? and ? order by f.proveedor.nombre,f.vencimiento asc",
+                [periodo.fechaInicial,periodo.fechaFinal])
     	}
-        facturas = facturas.findAll {it.saldo}
-        facturas = facturas.sort {a,b-> a.proveedor.nombre <=> b.proveedor.nombre ?: a.vencimiento <=> b.vencimiento}
+        //facturas = facturas.findAll {it.saldo>0.0}
+        //facturas = facturas.sort {a,b-> a.proveedor.nombre <=> b.proveedor.nombre ?: a.vencimiento <=> b.vencimiento}
     	flash.message='Facturas: '+facturas.size()
     	[facturaDeImportacionInstanceList: facturas,proveedor:p]
     }

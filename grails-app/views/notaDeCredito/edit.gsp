@@ -29,7 +29,11 @@
 			<div class="ibox float-e-margins">
 				
 				<div class="ibox-title">
-					Nota ${notaDeCreditoInstance.id}  <strong>Disponible:${notaDeCreditoInstance.disponible}</strong>
+					Nota ${notaDeCreditoInstance.id}  
+					<strong> Total: ${formatNumber(number:notaDeCreditoInstance.total,type:'currency')} / Disponible:
+						<span id="disponibleField"> ${formatNumber(number:notaDeCreditoInstance.disponible,type:'currency')}</span>
+					
+					</strong>
 				</div>
 			    <div class="ibox-content">
 			 		<ul class="nav nav-tabs" id="editTab">
