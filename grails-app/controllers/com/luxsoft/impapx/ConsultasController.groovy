@@ -22,16 +22,7 @@ class ConsultasController {
 		[rows:res]
 	}
 
-	def embarques(Integer max){
-		params.max = Math.min(max ?: 40, 100)
-		params.sort=params.sort?:'lastUpdated'
-		params.order='desc'
-		def periodo=session.periodoEmbarques
-		def list=Embarque.findAll(
-		    "from Embarque e  where date(e.dateCreated) between ? and ? order by e.lastUpdated desc",
-		    [periodo.fechaInicial,periodo.fechaFinal])
-		[embarqueInstanceList:list]
-	}
+	
 
 	def proveedores(){
 		params.max = 1000

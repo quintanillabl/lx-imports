@@ -31,6 +31,7 @@
                         <h5>${pageProperty(name:'page.gridTitle')?:'Registros'} </h5>
                         <div class="ibox-tools">
                             
+                            <a data-target="#searchDialog" data-toggle="modal"><i class="fa fa-search"></i></a>
                             <a class="collapse-link">
                                 <i class="fa fa-chevron-up"></i>
                             </a>
@@ -41,7 +42,7 @@
                     </div>
                     <div class="ibox-content">
                         
-                        <div class="row toolbar-panel">
+                        %{-- <div class="row toolbar-panel">
                             
                             <div class="col-md-3">
 
@@ -91,7 +92,7 @@
                                     <g:pageProperty name="page.reportes"/>
                                 </ul>
                             </div>
-                        </div>
+                        </div> --}%
                        
                        <g:pageProperty name="page.grid"/>
 
@@ -108,7 +109,8 @@
                     "language": {
                         "url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
                     },
-                    "dom": 'T<"clear">lfrtip',
+                    "dom": '<f>trp',
+                    //"dom": 'flipt'
                     "tableTools": {
                         "sSwfPath": "${assetPath(src: 'plugins/dataTables/swf/copy_csv_xls_pdf.swf')}"
                     },
@@ -122,18 +124,7 @@
                     ).draw();
                 });
 
-                <g:if test="${pageProperty(name:'page.searchService')}">
-                    $("#searchField").autocomplete({
-                        source:'<g:createLink action="search"/>',
-                        minLength:1,
-                        select:function(e,ui){
-                            $("#searchField").val(ui.item.id);
-                            $("#searchId").val(ui.item.id);
-                            var button=$("#buscarBtn");
-                            button.removeAttr('disabled');
-                        }
-                    });
-                </g:if>   
+                
 
             });
         </script>  
