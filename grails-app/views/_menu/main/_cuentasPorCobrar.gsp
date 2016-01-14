@@ -7,9 +7,15 @@
     </a>
     <ul class="nav nav-second-level collapse">
         <sec:ifAnyGranted roles="COMPRAS,VENTAS">
+            
+            <li class="${webRequest.controllerName=='CXCPago'?'active':''}" >
+                <g:link controller="CXCPago">Pagos</g:link>
+            </li>
+            
             <li class="${webRequest.controllerName=='CXCNota'?'active':''}" >
                 <g:link controller="CXCNota">Nota de Crédito</g:link>
             </li>
+            
             
         </sec:ifAnyGranted>
     </ul>

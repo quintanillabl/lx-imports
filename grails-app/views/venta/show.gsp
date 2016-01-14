@@ -1,208 +1,145 @@
-
 <%@ page import="com.luxsoft.impapx.Venta" %>
 <!doctype html>
 <html>
-	<head>
-		<meta name="layout" content="luxor">
-		<g:set var="entityName" value="${message(code: 'venta.label', default: 'Venta')}" />
-		<title><g:message code="default.show.label" args="[entityName]" /></title>
-	</head>
-	<body>
-		<div class="row-fluid">
-			<div class="span3">
-				<div class="well">
-					<ul class="nav nav-list">
-						<li class="nav-header">${entityName}</li>
-						<li>
-							<g:link class="list" action="list">
-								<i class="icon-list"></i>
-								<g:message code="default.list.label" args="[entityName]" />
-							</g:link>
-						</li>
-						<li>
-							<g:link class="create" action="create">
-								<i class="icon-plus"></i>
-								<g:message code="default.create.label" args="[entityName]" />
-							</g:link>
-						</li>
-					</ul>
+<head>
+	<meta name="layout" content="luxor">
+	<title>Ventas</title>
+	<asset:javascript src="forms/forms.js"/>
+</head>
+
+<content tag="header"> 
+	Venta ${ventaInstance.clase?.toUpperCase()}: ${ventaInstance.id} ( ${ventaInstance.cliente})
+</content>
+<content tag="subHeader">
+	<ol class="breadcrumb">
+    	<li><g:link action="index">Ventas</g:link></li>
+    	<li class="active"><strong>Edición</strong></li>
+	</ol>
+</content>
+
+<content tag="document">
+	<div class="ibox float-e-margins">
+		<lx:iboxTitle title="Cuenta de gastos"/>
+	    <div class="ibox-content">
+
+			<ul class="nav nav-tabs" id="myTab">
+				<li class="active"><a href="#partidas" data-toggle="tab"><i class="fa fa-th-list"></i>  Partidas</a></li>
+				<li class=""><a href="#venta" data-toggle="tab"><i class="fa fa-pencil"></i>  Propiedades</a></li>
+			</ul>
+
+	  		<div class="tab-content"> <!-- Tab Content -->
+	  			<div class="tab-pane active" id="partidas">
+	  				<br>
+	  				<table id="grid" class=" table table-striped table-bordered table-condensed">
+	  						<thead>
+	  							<tr>
+	  								<th>Clave</th>
+	  								<th>Descripcion</th>
+	  								<th>Contenedor</th>
+	  								<th>BL</th>
+	  								<th>Kg </th>
+	  								<th>Cantidad </th>
+	  								<th>Precio </th>
+	  								<th>Importe</th>
+	  								<th>Desc</th>
+	  								<th>SubTotal</th>
+	  							</tr>
+	  						</thead>
+	  						<tbody>
+	  							<g:each in="${ventaInstance.partidas}" var="row">
+	  								<tr id="${row.id }" >
+	  									
+	  									<td>
+	  										${fieldValue(bean:row, field:"producto.clave")}
+	  									</td>
+	  									
+	  									<td>${fieldValue(bean:row, field:"producto.descripcion")}</td>
+	  									<td>${fieldValue(bean:row, field:"contenedor")}</td>
+	  									<td>
+	  										${fieldValue(bean:row, field:"embarque.embarque.bl")}
+	  									</td>
+	  									<td><g:formatNumber number="${row.kilos}" format="###,###,###.###"/></td>
+	  									<td><g:formatNumber number="${row.cantidad}" format="###,###,###.###"/></td>
+	  									<td><lx:moneyFormat number="${row.precio}"/> </td>
+	  									<td><lx:moneyFormat number="${row?.importe}"/> </td>
+	  									<td><lx:moneyFormat number="${row.descuentos}"/> </td>
+	  									<td><lx:moneyFormat number="${row.subtotal}"/> </td>
+	  								</tr>
+	  							</g:each>
+	  						</tbody>
+	  						<tfoot>
+	  							<tr>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th>Importe</th>
+	  								<th><lx:moneyFormat number="${ventaInstance?.importe }"/> </th>
+	  							</tr>
+	  							<tr>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th>Impuesto</th>
+	  								<th><lx:moneyFormat number="${ventaInstance.impuestos }"/> </th>
+	  							</tr>
+	  							<tr>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th></th>
+	  								<th>Total</th>
+	  								<th><lx:moneyFormat number="${ventaInstance.total }"/> </th>
+	  							</tr>
+	  						</tfoot>
+	  					</table>
+	  			</div>			
+				<div class="tab-pane " id="venta">
+					<br>
+					<g:render template="showForm" bean="${ventaInstance}"/>
 				</div>
-			</div>
-			
-			<div class="span9">
+				
+	  		</div>	<!-- End Tab Content -->
+	    </div>
+	</div>
+	<script type="text/javascript">
+		$(function(){
+			//$('.chosen-select').chosen();
+			$(".numeric").autoNumeric('init',{vMin:'0'},{vMax:'9999'});
+			$(".money").autoNumeric('init',{wEmpty:'zero',mRound:'B',aSign: '$'});
+			$(".tc").autoNumeric('init',{vMin:'0.0000'});
+			$('#grid').dataTable({
+			    responsive: true,
+			    aLengthMenu: [[20, 40, 60, 100, -1], [20, 40,60, 100, "Todos"]],
+			    "language": {
+			        "url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
+			    },
+			    "dom": 'T<"clear">lfrtip',
+			    "tableTools": {
+			        "sSwfPath": "${assetPath(src: 'plugins/dataTables/swf/copy_csv_xls_pdf.swf')}"
+			    },
+			    "order": []
+			});
+		});
+	</script>
+</content>
 
-				<div class="page-header">
-					<h3><g:message code="default.show.label" args="[entityName]" /></h3>
-				</div>
-
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
-
-				<dl>
-				
-					<g:if test="${ventaInstance?.cliente}">
-						<dt><g:message code="venta.cliente.label" default="Cliente" /></dt>
-						
-							<dd><g:link controller="cliente" action="show" id="${ventaInstance?.cliente?.id}">${ventaInstance?.cliente?.encodeAsHTML()}</g:link></dd>
-						
-					</g:if>
-				
-					<g:if test="${ventaInstance?.fecha}">
-						<dt><g:message code="venta.fecha.label" default="Fecha" /></dt>
-						
-							<dd><g:formatDate date="${ventaInstance?.fecha}" /></dd>
-						
-					</g:if>
-				
-					<g:if test="${ventaInstance?.importe}">
-						<dt><g:message code="venta.importe.label" default="Importe" /></dt>
-						
-							<dd><g:fieldValue bean="${ventaInstance}" field="importe"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${ventaInstance?.descuentos}">
-						<dt><g:message code="venta.descuentos.label" default="Descuentos" /></dt>
-						
-							<dd><g:fieldValue bean="${ventaInstance}" field="descuentos"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${ventaInstance?.subtotal}">
-						<dt><g:message code="venta.subtotal.label" default="Subtotal" /></dt>
-						
-							<dd><g:fieldValue bean="${ventaInstance}" field="subtotal"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${ventaInstance?.impuestos}">
-						<dt><g:message code="venta.impuestos.label" default="Impuestos" /></dt>
-						
-							<dd><g:fieldValue bean="${ventaInstance}" field="impuestos"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${ventaInstance?.total}">
-						<dt><g:message code="venta.total.label" default="Total" /></dt>
-						
-							<dd><g:fieldValue bean="${ventaInstance}" field="total"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${ventaInstance?.moneda}">
-						<dt><g:message code="venta.moneda.label" default="Moneda" /></dt>
-						
-							<dd><g:fieldValue bean="${ventaInstance}" field="moneda"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${ventaInstance?.tc}">
-						<dt><g:message code="venta.tc.label" default="Tc" /></dt>
-						
-							<dd><g:fieldValue bean="${ventaInstance}" field="tc"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${ventaInstance?.plazo}">
-						<dt><g:message code="venta.plazo.label" default="Plazo" /></dt>
-						
-							<dd><g:fieldValue bean="${ventaInstance}" field="plazo"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${ventaInstance?.vencimiento}">
-						<dt><g:message code="venta.vencimiento.label" default="Vencimiento" /></dt>
-						
-							<dd><g:formatDate date="${ventaInstance?.vencimiento}" /></dd>
-						
-					</g:if>
-				
-					<g:if test="${ventaInstance?.formaDePago}">
-						<dt><g:message code="venta.formaDePago.label" default="Forma De Pago" /></dt>
-						
-							<dd><g:fieldValue bean="${ventaInstance}" field="formaDePago"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${ventaInstance?.cuentaDePago}">
-						<dt><g:message code="venta.cuentaDePago.label" default="Cuenta De Pago" /></dt>
-						
-							<dd><g:fieldValue bean="${ventaInstance}" field="cuentaDePago"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${ventaInstance?.kilos}">
-						<dt><g:message code="venta.kilos.label" default="Kilos" /></dt>
-						
-							<dd><g:fieldValue bean="${ventaInstance}" field="kilos"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${ventaInstance?.comentario}">
-						<dt><g:message code="venta.comentario.label" default="Comentario" /></dt>
-						
-							<dd><g:fieldValue bean="${ventaInstance}" field="comentario"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${ventaInstance?.dateCreated}">
-						<dt><g:message code="venta.dateCreated.label" default="Date Created" /></dt>
-						
-							<dd><g:formatDate date="${ventaInstance?.dateCreated}" /></dd>
-						
-					</g:if>
-				
-					<g:if test="${ventaInstance?.lastUpdated}">
-						<dt><g:message code="venta.lastUpdated.label" default="Last Updated" /></dt>
-						
-							<dd><g:formatDate date="${ventaInstance?.lastUpdated}" /></dd>
-						
-					</g:if>
-				
-					<g:if test="${ventaInstance?.partidas}">
-						<dt><g:message code="venta.partidas.label" default="Partidas" /></dt>
-						
-							<g:each in="${ventaInstance.partidas}" var="p">
-							<dd><g:link controller="ventaDet" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></dd>
-							</g:each>
-						
-					</g:if>
-				
-				</dl>
-
-				<g:form>
-					<g:hiddenField name="id" value="${ventaInstance?.id}" />
-					<div class="form-actions">
-						<g:if test="${!ventaInstance?.cfd}">
-							<g:link class="btn" action="edit" id="${ventaInstance?.id}">
-							<i class="icon-pencil"></i>
-							<g:message code="default.button.edit.label" default="Edit" />
-						</g:link>
-						<button class="btn btn-danger" type="submit" name="_action_delete">
-							<i class="icon-trash icon-white"></i>
-							<g:message code="default.button.delete.label" default="Delete" />
-						</button>
-						</g:if>
-						
-						
-					</div>
-				</g:form>
-
-			</div>
-			<g:if test="${ventaInstance?.cfd}">
-				<g:jasperReport
-							controller="venta"
-							action="imprimirCfd"
-							jasper="ComprobanteCFD" 
-							format="PDF,HTML" 
-							name="Imprimir CFD" 
-							
-							>
-							<g:hiddenField name="ID" value="${ventaInstance.id}"/>
-						</g:jasperReport>
-			</g:if>
-
-		</div>
-	</body>
+	
 </html>
+
+
+
+

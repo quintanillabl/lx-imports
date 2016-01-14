@@ -34,6 +34,7 @@
 				<li ><a href="#facturasPanel" data-toggle="tab">Propiedades</a></li>
 				<li ><a href="#cfdiPanel" data-toggle="tab">CFDI</a></li>
 				<li><a href="#cuentaPanel" data-toggle="tab">CxP</a></li>
+				<li><a href="#pagosAplicadosPanel" data-toggle="tab">Abonos</a></li>
 			</ul>
 			
 			<div class="tab-content">
@@ -135,6 +136,59 @@
 								</a>
 							</div>
 						</g:else>
+					</div>
+
+					<div class="tab-pane" id="pagosAplicadosPanel">
+						<table id="grid"
+							class="simpleGrid table table-striped table-hover table-bordered table-condensed">
+							<thead>
+								<tr>
+									<th>Pago</th>
+									<th>Aplicacion</th>			
+									<th>Fecha</th>
+									<th>Pagado</th>
+									<th>Docto</th>
+									<th>Concepto</th>
+									<th>Comentario</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								<g:each in="${facturaDeGastosInstance.aplicaciones}" var="row">
+									<tr id="${fieldValue(bean:row, field:"id")}">
+										<td>
+											<lx:idFormat id="${row.abono.id}"/>
+										</td>				
+										<td>
+											<lx:idFormat id="${row.id}"/>
+										</td>				
+										<td><lx:shortDate date="${row.fecha}" /></td>
+										<td><lx:moneyFormat number="${row.total }" /></td>
+										<g:if test="${row.abono.instanceOf(com.luxsoft.impapx.cxp.NotaDeCredito)}">
+											<td>${fieldValue(bean: row, field: "abono.documento")}</td>				
+											<td>${fieldValue(bean: row, field: "abono.concepto")}</td>				
+										</g:if>
+										<g:else>
+											<td></td>
+											<td></td>
+										</g:else>
+										
+										<td>${fieldValue(bean: row, field: "comentario")}</td>				
+									</tr>
+								</g:each>
+							</tbody>
+							<tfoot>
+								<tr>
+									
+									<td></td>
+									<td></td>
+									
+									<td><label class="pull-right" >Total: </label></td>
+									<td><lx:moneyFormat number="${facturaDeGastosInstance.pagosAplicados}" /></td>
+									<td></td>
+								</tr>
+							</tfoot>
+						</table>
 					</div>
 				</div>		
 

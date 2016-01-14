@@ -256,5 +256,23 @@ class VentaController {
 				break
 			}
 	}
+
+	def search(){
+		def term=params.term.trim()
+
+		log.info 'Buscando venta por: '+term
+	    
+	    def query=Venta.where{
+	        id==term 
+	    }
+	    def ventas=query.list(max:30, sort:"id",order:'desc')
+
+	    def ventasList=ventas.collect { venta ->
+	        def label="Id: ${venta.id}  ${venta.cliente.nombre} ${venta.fecha.text()} ${venta.total}"
+	        
+	        [id:venta.id,label:label,value:label]
+	    }
+	    render ventasList as JSON
+	}
 	
 }

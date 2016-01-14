@@ -1,5 +1,7 @@
 package com.luxsoft.impapx
 
+import util.Rounding
+
 class PedimentoService {
 
     def agregarEmbarquesPorContenedor(long pedimentoId,String contenedor) {
@@ -38,6 +40,38 @@ class PedimentoService {
     	pedimento.save flush:true
 
     }
+
+    def actualizarCostos(def pedimento){
+        def importe=pedimento.getTotal()
+        def kilosTotales=pedimento.embarques.sum {it.kilosNetos}
+
+        pdeimento.embarques.each {
+
+            def gasto=it.kilosNetos*importe/kilosTotales
+            gasto=gasto.setScale(2, BigDecimal.ROUND_HALF_UP);
+        
+            it.gastosPorPedimento=gasto
+        }
+    }
+
+    def actualizarImpuestos(def pedimento){
+        def impuesto=0
+        
+        impuesto=pedimento.embarques.sum (0.0,{
+            it.importe*tipoDeCambio*(this.impuestoTasa/100)
+            }
+        )
+        impuesto=impuesto.setScale(2, BigDecimal.ROUND_HALF_UP);
+        
+        def iva=0
+        def ivaPrev=Rounding.round(this.prevalidacion*(1+this.impuestoTasa/100),0)
+        iva=(this.dta+arancel)*(1+this.impuestoTasa/100)
+        impuesto=Rounding.round(impuesto+iva,0)+ivaPrev
+        pedimento.impuesto=impuesto
+    }
+    
+    
+    
 }
 
 class PedimentoException extends RuntimeException{

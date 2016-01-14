@@ -21,7 +21,7 @@ class PedimentoController {
         params.order='desc'
         def periodo=session.periodo
         def list=Pedimento.findAll("from Pedimento p where date(p.fecha) between ? and ? order by p.id desc ",[periodo.fechaInicial,periodo.fechaFinal])
-        println 'Pedimentos: '+list.size()+' Periodo: '+periodo.fechaInicial
+        
        	[pedimentoInstanceList: list]
     }
 

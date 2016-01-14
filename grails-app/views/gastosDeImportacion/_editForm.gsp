@@ -22,6 +22,8 @@
 			<f:display property="retensionIsr" label="Ret(ISR)"/>
 			<f:display property="total"/>
 			<f:field property="comentario"widget-class="form-control" />
+			<f:display property="pagosAplicados"   label="Abonos"/>
+			<f:display property="saldoActual"   label="Saldo"/>
 		</f:with>
 		<div class="form-group">
 			<div class="col-lg-offset-3 col-lg-9">

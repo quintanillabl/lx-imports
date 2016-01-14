@@ -37,12 +37,13 @@
 			<g:each in="${ventaInstanceList}" var="row">
 				<tr class="${row.cfdi?'':'warning'}">
 					<td>
-						<g:if test="${row.cfdi}">
+						<g:link action="show" id="${row.id}">${fieldValue(bean: row, field: "id")}</g:link>
+						%{-- <g:if test="${row.cfdi}">
 							<g:link controller="cfdi" action="show" id="${row.cfdi}">${fieldValue(bean: row, field: "id")}</g:link>
 						</g:if>
 						<g:else>
 							<g:link action="edit" id="${row.id}">${fieldValue(bean: row, field: "id")}</g:link>
-						</g:else>
+						</g:else> --}%
 						
 					</td>
 					<td>${fieldValue(bean: row, field: "cliente")}</td>
