@@ -22,30 +22,20 @@ class CuentaDeGastosService {
 			def incrementable=0.0
 			cuenta.facturas.each{
 				if(it.incrementable)
-					incrementable+=it.importe*it.tc
+					incrementable+=it.importe
 				else
 					importe+=it.importe*it.tc
 			}
-			/*
-			cuenta.facturas.sum(0.0,{
-				println 'Fac: '+it.incrementable
-				//if(!it.incrementable)
-				if(!it.incrementable)
-					it.importe*it.tc
-				})*/
 			
-			println 'Gasto a prorratear: '+importe
 			def kilosTotales=embarque.partidas.sum {it.kilosNetos}
 			embarque.partidas.each {
 				def gasto=it.kilosNetos*importe/kilosTotales
 				it.gastosHonorarios=gasto
 			}
-			
-			
-			println 'Incrementable a prorratear: '+incrementable
+
 			embarque.partidas.each {
 				def res=it.kilosNetos*incrementable/kilosTotales
-				it.incrementables=res
+				it.incrementablesUsd=res
 			}
 			embarque.save flush:true
 		}
@@ -88,6 +78,46 @@ class CuentaDeGastosService {
 		
 		return cuenta
 		
+	}
+
+	def actualizarCostosDeImportacion(CuentaDeGastos cuenta){
+
+		def embarque = cuenta.embarque
+
+		def gastos=0.0
+
+		def incrementable=0.0
+
+		cuenta.facturas.each{
+		    if(it.incrementable){
+		        //println 'INCREMENTABLE Fac: '+it.id + ' Importe: '+it.importe+ ' T.C:'+it.tc
+				incrementable+=it.importe
+		    }
+		    else{
+		        //println 'GASTO Fac: '+it.id + ' Importe: '+it.importe+ ' T.C:'+it.tc
+		        gastos+=it.importe*it.tc
+		    }
+		}
+
+		def kilosTotales=embarque.partidas.sum {it.kilosNetos}
+		
+		embarque.partidas.each {
+			def gasto=it.kilosNetos*gastos/kilosTotales
+			it.gastosHonorarios=gasto
+		}
+
+		embarque.partidas.each {
+			def res=it.kilosNetos*incrementable/kilosTotales
+			it.incrementablesUsd=res
+			if(it.pedimento){
+				it.tc= it.pedimento.tipoDeCambio
+				it.incrementables = it.incrementablesUsd*it.pedimento.tipoDeCambio
+			}
+		}
+
+		embarque.save flush:true
+
+
 	}
 	
 } 

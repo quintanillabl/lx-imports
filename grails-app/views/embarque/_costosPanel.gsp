@@ -2,7 +2,8 @@
 
 <div class="toolbar-panel">
 	<div class="btn-group">
-		<g:if test="${embarqueInstance.facturado<=0}">
+		%{-- <g:if test="${embarqueInstance.facturado<=0}"> --}%
+		<g:if test="${embarqueInstance}">
 			
 			<a href="" data-target="#actualizarPreciosDialog" data-toggle="modal" class="btn btn-primary btn-outilie">
 				<i class="fa fa-cog"></i> Actualizar precios

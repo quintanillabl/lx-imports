@@ -9,9 +9,12 @@
 		<i class="icon-trash icon-white"></i>
 		<g:message code="default.button.delete.label" default="Delete" />
 	</button>
-	
-	
-	<button class="btn btn-default" id="refreshBtn">
+
+	<button class="btn btn-success"  data-toggle="modal" data-target="#actualizarCostosDialog">
+		<i class="fa fa-pencil-square-o"></i> Actualizar costos
+	</button>
+
+	<button class="btn btn-default" id="refreshBtn" >
 		<i class="fa fa-refresh"></i> Refrescar
 	</button>
 </div>
@@ -69,6 +72,32 @@
 </div>
 <%-- Fin de forma para la asignacion de factura --%>
 
+<div class="modal fade" id="actualizarCostosDialog" tabindex="-1">
+	<div class="modal-dialog ">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">Actualizar costos</h4>
+			</div>
+			<g:form action="actualizarCostos" class="form-horizontal" id="${cuentaDeGastosInstance.id}">
+
+				<div class="modal-body">
+					<p><strong>Actualizar en embarques</strong></p>
+				</div>
+				
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+					<g:submitButton class="btn btn-info" name="aceptar"
+							value="Actualizar" />
+				</div>
+			</g:form>
+
+		</div>
+		<!-- moda-content -->
+	</div>
+	<!-- modal-di -->
+</div>	
 
 
 <script>

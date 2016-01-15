@@ -169,9 +169,11 @@ class CuentaDeGastosController {
 	}
 
 	def search(){
+
 	    def term='%'+params.term.trim()+'%'
+
 	    def query=CuentaDeGastos.where{
-	        (id.toString()=~term || proveedor.nombre=~term || comentario=~term || embarque.bl=~term) 
+	        ( proveedor.nombre=~term || comentario=~term || embarque.bl=~term || id.toString()=~term ) 
 	    }
 	    def cuentas=query.list(max:30, sort:"id",order:'desc')
 
@@ -180,5 +182,10 @@ class CuentaDeGastosController {
 	        [id:cuenta.id,label:label,value:label]
 	    }
 	    render cuentasList as JSON
+	}
+
+	def actualizarCostos(CuentaDeGastos cuentaDeGastosInstance){
+		flash.message = "Costos de importacion actualizados en embarques"
+		redirect action:'edit',id:cuentaDeGastosInstance.id
 	}
 }
