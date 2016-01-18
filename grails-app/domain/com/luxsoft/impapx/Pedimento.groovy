@@ -36,6 +36,7 @@ class Pedimento {
 	String agenteAduanal
 
 	PaisDeOrigen paisDeOrigen
+	BigDecimal contraPrestacion = 0.0
 	
 	
 	Date dateCreated
@@ -86,7 +87,7 @@ class Pedimento {
 	}
 	
 	BigDecimal getIvaAcreditable(){
-		def iva=dta+arancel
+		def iva=dta+arancel+incrementables
 		iva=iva*(this.impuestoTasa/100)
 		return Rounding.round(iva+getImpuestoMateriaPrima(),0) 
 	}

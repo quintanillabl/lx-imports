@@ -49,10 +49,8 @@
 			    "language": {
 			        "url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
 			    },
-			    "dom": '<"clear">t',
-			    "tableTools": {
-			        "sSwfPath": "${assetPath(src: 'plugins/dataTables/swf/copy_csv_xls_pdf.swf')}"
-			    },
+			    //"dom": '<"clear">t',
+			    "dom": 'flrtip',
 			    "order": []
 			});
 			$("#filtro").on('keyup',function(e){

@@ -129,7 +129,8 @@ class CfdiConverters {
 			c.setNoIdentificacion(det.producto.clave)
 			String desc = det.producto.descripcion
 			if(StringUtils.isNotBlank(det.getComentario()))
-				desc = (new StringBuilder(String.valueOf(desc))).append(StringUtils.stripToEmpty(det.comentario)).toString()
+				//desc = (new StringBuilder(String.valueOf(desc))).append(StringUtils.stripToEmpty(det.comentario)).toString()
+				desc +=' '+det.comentario
 			desc = StringUtils.abbreviate(desc, 250)
 			c.setDescripcion(desc)
 			c.setValorUnitario(det.precio)

@@ -50,7 +50,7 @@
 				<f:display property="incrementables" widget="money" wrapper="bootstrap3"/>
 				<f:display property="ivaAcreditable" widget="money" wrapper="bootstrap3"/>
 				<f:field property="prevalidacion" widget-class="form-control" widget-type="text" wrapper="bootstrap3"/>
-				<f:display property="impuestoPrevalidacion" widget="money" wrapper="bootstrap3" label="Contraprestacion"/>
+				<f:display property="impuestoPrevalidacion" widget="money" wrapper="bootstrap3" />
 				<f:display property="impuesto" widget="money" wrapper="bootstrap3"/>
 			</f:with>
 		</div>

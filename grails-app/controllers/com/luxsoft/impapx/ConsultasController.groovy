@@ -50,6 +50,20 @@ class ConsultasController {
             contentType: 'application/pdf',
             fileName:file)
     }
+
+    def show(CuentaPorPagar cxp){
+    	if(cxp.instanceOf(FacturaDeImportacion)){
+    		redirect action:'show',controller:'facturaDeImportacion',id:cxp.id
+    		return
+    	}else if(cxp.instanceOf(FacturaDeGastos)){
+    		redirect action:'show',controller:'facturaDeGastos',id:cxp.id
+    		return
+    	}else if(cxp.instanceOf(GastosDeImportacion)){
+    		redirect action:'show',controller:'gastosDeImportacion',id:cxp.id
+    		return
+    	}
+    	redirect action:'proveedor',id:cxp.id
+    }
 }
 
 class EstadoDeCuentaProveedor extends ReportCommand{

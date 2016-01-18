@@ -27,7 +27,7 @@
 				<div class="ibox float-e-margins">
 					<div class="ibox-title">
 						<div class="btn-group">
-						    <lx:backButton/>
+						    <lx:backButton action="proveedores"/>
 						    <lx:editButton id="${proveedorInstance?.id}"/>
 						    <lx:printButton/>
 						</div>
@@ -100,7 +100,7 @@
 							  						<td>Id</td>
 							  						<th>Dcto</th>
 							  						<th>Fecha</th>
-							  						<th>BL</th>
+							  						%{-- <th>BL</th> --}%
 							  						<th>Vto</th>
 							  						<th>Moneda</th>
 							  						<th>T.C.</th>
@@ -120,7 +120,7 @@
 							  							</td>
 							  							<td>${fieldValue(bean: row, field: "documento")}</td>
 							  							<td><lx:shortDate date="${row.fecha }"/></td>
-							  							<td><lx:shortDate date="${row.fechaBL }"/></td>
+							  							%{-- <td><lx:shortDate date="${row.fechaBL }"/></td> --}%
 							  							<td><lx:shortDate date="${row.vencimiento }"/></td>
 							  							<td>
 							  								${fieldValue(bean: row, field: "moneda")}
@@ -157,7 +157,7 @@
 		</div>
 	</div>
 	<div>
-		<g:render template="estadoDeCuentadialog"/>
+		<g:render template="estadoDeCuentaDialog"/>
 	</div>
 	<script type="text/javascript">
 		$(function(){
