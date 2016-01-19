@@ -18,7 +18,7 @@
 			<f:with bean="${pedimentoInstance}" >
 				<f:display property="id" input-disabled="true" wrapper="bootstrap3"/>
 				<f:field property="fecha" wrapper="bootstrap3"/>
-				%{-- <f:display property="proveedor" input-required="true" label="Agencia" wrapper="bootstrap3"/> --}%
+				
 				<f:field property="proveedor" wrapper="bootstrap3"  label="Agencia">
 					<g:select class="form-control chosen-select"  
 						name="${property}" 
@@ -47,7 +47,8 @@
 			<f:with bean="${pedimentoInstance}" >
 				
 				<f:display property="impuestoMateriaPrima" widget="money" wrapper="bootstrap3"/>
-				<f:display property="incrementables" widget="money" wrapper="bootstrap3"/>
+				<f:field property="incrementables" widget-class="form-control numeric" widget-type="text" wrapper="bootstrap3"/>
+				<f:field property="contraPrestacion" widget-class="form-control numeric" widget-type="text" wrapper="bootstrap3"/>
 				<f:display property="ivaAcreditable" widget="money" wrapper="bootstrap3"/>
 				<f:field property="prevalidacion" widget-class="form-control" widget-type="text" wrapper="bootstrap3"/>
 				<f:display property="impuestoPrevalidacion" widget="money" wrapper="bootstrap3" />

@@ -6,6 +6,7 @@ import java.math.RoundingMode;
 import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 
+import com.luxsoft.lx.utils.*
 import util.Rounding;
 
 /**
@@ -65,7 +66,7 @@ class Pedimento {
 	
 	static mapping ={
 		//embarques fetch:'join'
-		incrementables formula:'(select ifnull(sum(x.incrementables),0) from embarque_det x where x.pedimento_id=id)'
+		//incrementables formula:'(select ifnull(sum(x.incrementables),0) from embarque_det x where x.pedimento_id=id)'
 	}
 	
 	/**
@@ -105,9 +106,46 @@ class Pedimento {
 	
 	def actualizarImpuestos(){
 		//Actualizar los impuestos
-		impuesto=calcularImpuestoDinamico()
+		//impuesto=calcularImpuestoDinamico()
+		def pedimento =this
+		def tc= pedimento.tipoDeCambio
+		def factorIva = pedimento.impuestoTasa/100
+
+
+		def ivaMateriaPrima = pedimento.embarques.sum 0.0,{
+    		it.importe*tc*factorIva
+		}
+		def ivaIncrementables = pedimento.incrementables * factorIva
+
+		def ivaPrevalidacion = pedimento.prevalidacion * factorIva
+
+		def ivaDta = pedimento.dta*factorIva
+
+		def ivaArancel = pedimento.arancel*factorIva
+
+		def ivaContraPrestacion = pedimento.contraPrestacion*factorIva
+/*
+println " Iva M.P. : "+ivaMateriaPrima
+println " Iva Incrementables: "+ivaIncrementables
+
+println " Iva DTA: "+ivaDta
+println " Iva Arancel: "+ivaArancel
+println " Iva Prevalidacion: "+ivaPrevalidacion
+println " Iva Contra prestacion: "+ivaContraPrestacion
+*/
+		def iva1 = ivaMateriaPrima + ivaIncrementables + ivaDta + ivaArancel
+		def totalCP = MonedaUtils.round(ivaPrevalidacion + ivaContraPrestacion + pedimento.contraPrestacion,0)
+
+//println "Iva 1 "+ iva1
+//println "Total cp: "+totalCP
+
+		this.impuesto = iva1 + pedimento.dta + pedimento.arancel + pedimento.prevalidacion + totalCP
+		this.impuesto = MonedaUtils.round(this.impuesto,0)
+//println " Valor del pedimento "+impuesto
+
 	}
 	
+	/*
 	def BigDecimal calcularImpuestoDinamico(){
 		def impuesto=0
 		impuesto=embarques.sum (0.0,{
@@ -121,20 +159,17 @@ class Pedimento {
 		impuesto=Rounding.round(impuesto+iva,0)+ivaPrev
 		return impuesto
 	}
+	*/
 	
 	def actualizarCostos(){
 	
 		def importe=getTotal()
 		def kilosTotales=embarques.sum {it.kilosNetos}
 
-
 		embarques.each {
-
 
 			def gasto=it.kilosNetos*importe/kilosTotales
 			gasto=gasto.setScale(2, BigDecimal.ROUND_HALF_UP);
-
-	
 			it.gastosPorPedimento=gasto
 			
 		}

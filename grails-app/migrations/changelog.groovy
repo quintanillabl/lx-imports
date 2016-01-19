@@ -40,4 +40,6 @@ databaseChangeLog = {
 	include file: 'pedimento_pais.groovy'
 
 	include file: 'incrementables_usd.groovy'
+
+	include file: 'incrementables.groovy'
 }

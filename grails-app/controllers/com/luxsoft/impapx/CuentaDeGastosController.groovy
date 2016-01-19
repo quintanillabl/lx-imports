@@ -105,6 +105,7 @@ class CuentaDeGastosController {
 			dataToRender.aaData <<[
 				row.id
 				,row.documento
+				,row.incrementable
 				,lx.shortDate(date:row.fecha)
 				,row.proveedor.nombre
 				,lx.moneyFormat(number:row.importe*row.tc)
@@ -186,6 +187,7 @@ class CuentaDeGastosController {
 
 	def actualizarCostos(CuentaDeGastos cuentaDeGastosInstance){
 		flash.message = "Costos de importacion actualizados en embarques"
+		cuentaDeGastosService.actualizarCostosDeImportacion cuentaDeGastosInstance
 		redirect action:'edit',id:cuentaDeGastosInstance.id
 	}
 }

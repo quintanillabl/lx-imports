@@ -91,7 +91,7 @@ class CuentaDeGastosService {
 		cuenta.facturas.each{
 		    if(it.incrementable){
 		        //println 'INCREMENTABLE Fac: '+it.id + ' Importe: '+it.importe+ ' T.C:'+it.tc
-				incrementable+=it.importe
+				incrementable+=it.importe*it.tc
 		    }
 		    else{
 		        //println 'GASTO Fac: '+it.id + ' Importe: '+it.importe+ ' T.C:'+it.tc
@@ -106,13 +106,22 @@ class CuentaDeGastosService {
 			it.gastosHonorarios=gasto
 		}
 
+		println "Actualizando y pro rrateando incrementables de $incrementable"
+
 		embarque.partidas.each {
+			
 			def res=it.kilosNetos*incrementable/kilosTotales
-			it.incrementablesUsd=res
+			
+			//it.incrementablesUsd=res
+
+			it.incrementables = res
+			
+			/*
 			if(it.pedimento){
 				it.tc= it.pedimento.tipoDeCambio
 				it.incrementables = it.incrementablesUsd*it.pedimento.tipoDeCambio
 			}
+			*/
 		}
 
 		embarque.save flush:true

@@ -25,6 +25,7 @@
 			<tr>
 				<th>Id</th>
 				<th>Documento</th>
+				<th>Inceremtable</th>
 				<th>Fecha</th>
 				<th>Proveedor</th>
 				<th>Importe</th>
@@ -34,6 +35,7 @@
 		</tbody>
 		<tfoot>
 			<tr>
+				<th></th>
 				<th></th>
 				<th></th>
 				<th></th>
@@ -187,6 +189,7 @@
 			"aoColumns":[
 				{"sName": "id", "sTitle": "Folio", "sWidth": "10%", "bSortable": "false"}
 				,{"sName": "documento", "sTitle": "Documento", "sWidth": "10%", "bSortable": "false"}
+				,{"sName": "incrementable", "sTitle": "Incrementable", "sWidth": "10%", "bSortable": "false"}
 				,{"sName": "fecha", "sTitle": "Fecha", "sWidth": "10%", "bSortable": "true"}
 				,{"sName": "proveedor", "sTitle": "Proveedor",  "bSortable": "false"}
 				,{"sName": "importeMN", "sTitle": "Importe",  "bSortable": "true"}
