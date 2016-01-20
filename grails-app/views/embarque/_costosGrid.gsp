@@ -48,12 +48,10 @@
 					<td name="gastosPorPedimento">
 						<g:if test="${row.pedimento}">
 							<g:link action="edit" controller="pedimento" id="${row.pedimento.id}" target="_blank">
-								<lx:moneyFormat number="${row.gastosPorPedimento}"/></td>
+								<lx:moneyFormat number="${row.gastosPorPedimento}"/>
 							</g:link>
 						</g:if>
-						%{-- <g:else>
-							<lx:moneyFormat number="${row.gastosPorPedimento}"/></td>
-						</g:else> --}%
+					</td>
 					<td name="gastosPorPedimento">
 						<g:formatNumber number="${row.getCostoDeImportacion()}" format='% ##.##'/>
 					</td>

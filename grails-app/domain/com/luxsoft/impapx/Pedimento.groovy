@@ -106,7 +106,7 @@ class Pedimento {
 	
 	def actualizarImpuestos(){
 		//Actualizar los impuestos
-		//impuesto=calcularImpuestoDinamico()
+		
 		def pedimento =this
 		def tc= pedimento.tipoDeCambio
 		def factorIva = pedimento.impuestoTasa/100
@@ -124,24 +124,13 @@ class Pedimento {
 		def ivaArancel = pedimento.arancel*factorIva
 
 		def ivaContraPrestacion = pedimento.contraPrestacion*factorIva
-/*
-println " Iva M.P. : "+ivaMateriaPrima
-println " Iva Incrementables: "+ivaIncrementables
 
-println " Iva DTA: "+ivaDta
-println " Iva Arancel: "+ivaArancel
-println " Iva Prevalidacion: "+ivaPrevalidacion
-println " Iva Contra prestacion: "+ivaContraPrestacion
-*/
 		def iva1 = ivaMateriaPrima + ivaIncrementables + ivaDta + ivaArancel
 		def totalCP = MonedaUtils.round(ivaPrevalidacion + ivaContraPrestacion + pedimento.contraPrestacion,0)
 
-//println "Iva 1 "+ iva1
-//println "Total cp: "+totalCP
-
 		this.impuesto = iva1 + pedimento.dta + pedimento.arancel + pedimento.prevalidacion + totalCP
 		this.impuesto = MonedaUtils.round(this.impuesto,0)
-//println " Valor del pedimento "+impuesto
+
 
 	}
 	
