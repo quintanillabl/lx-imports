@@ -16,7 +16,7 @@
   		<asset:javascript src="application.js"/>	
 		<g:layoutHead/>
 	</head>
-	<body>
+	<body class="${session.empresa.rfc=='IMP921016J16'?'skin-3':''}">
 		<div id="wrapper">
 			<nav class="navbar-default navbar-static-side" role="navigation">
 				<div class="sidebar-collapse">
@@ -31,11 +31,11 @@
 							<a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#">
 								<i class="fa fa-bars"></i> 
 							</a>
-				            <form role="search" class="navbar-form-custom" action="search_results.html">
+				            %{-- <form role="search" class="navbar-form-custom" action="search_results.html">
 				                <div class="form-group">
 				                    <input type="text" placeholder="Buscar..." class="form-control" name="top-search" id="top-search">
 				                </div>
-				            </form>
+				            </form> --}%
 						</div>
 						<g:render template="/_menu/main/navbar-right"/>
 					</nav>

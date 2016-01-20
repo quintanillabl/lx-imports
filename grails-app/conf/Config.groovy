@@ -249,9 +249,10 @@ beans {
   }
 }
 
-
-grails.plugin.databasemigration.updateOnStart = true
+grails.plugin.databasemigration.updateOnStart = false
 grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
+
+
 grails.databinding.dateFormats = ['dd/MM/yyyy', 'dd-MM-yyyy HH:mm:ss.S', "dd-MM-yyyy'T'hh:mm:ss'Z'"]
 
 

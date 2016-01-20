@@ -1,7 +1,7 @@
 <ul class="nav navbar-top-links navbar-right">
     <li>
         <g:link controller="home">
-            <span class="m-r-sm text-muted welcome-message">Lx-IMPORTS
+            <span class="m-r-sm text-muted welcome-message">Lx-IMPORTS ${session.empresa.nombre}
         </span>
         </g:link>
         
