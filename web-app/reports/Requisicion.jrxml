@@ -1053,9 +1053,9 @@ $P{MONEDA}.equals( "MXN" ) ? $F{TOTAL}.multiply( new BigDecimal($F{TC}.doubleVal
 				<staticText>
 					<reportElement
 						mode="Transparent"
-						x="203"
+						x="381"
 						y="12"
-						width="107"
+						width="65"
 						height="13"
 						forecolor="#000000"
 						backcolor="#999999"
@@ -1066,13 +1066,13 @@ $P{MONEDA}.equals( "MXN" ) ? $F{TOTAL}.multiply( new BigDecimal($F{TC}.doubleVal
 					<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None">
 						<font pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
 					</textElement>
-				<text><![CDATA[TOTAL :]]></text>
+				<text><![CDATA[TOTAL :  ]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="412"
+						x="502"
 						y="12"
-						width="85"
+						width="75"
 						height="13"
 						forecolor="#333333"
 						key="textField"/>
@@ -1085,9 +1085,9 @@ $P{MONEDA}.equals( "MXN" ) ? $V{SUMAPAGAR}.multiply( new BigDecimal($F{TC}.doubl
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="339"
+						x="446"
 						y="12"
-						width="60"
+						width="56"
 						height="13"
 						key="textField"/>
 					<box></box>
@@ -1111,9 +1111,9 @@ $P{MONEDA}.equals( "MXN" ) ? $V{SUMAFAC}.multiply( new BigDecimal($F{TC}.doubleV
 				</line>
 				<line direction="TopDown">
 					<reportElement
-						x="412"
+						x="512"
 						y="9"
-						width="119"
+						width="65"
 						height="0"
 						forecolor="#999999"
 						key="line-11"/>
