@@ -76,7 +76,7 @@ class Pedimento {
 	 */
 	BigDecimal getTotal(){
 		
-		return dta+prevalidacion+arancel
+		return dta+prevalidacion+arancel+contraPrestacion
 	}
 	
 	BigDecimal getImpuestoMateriaPrima(){

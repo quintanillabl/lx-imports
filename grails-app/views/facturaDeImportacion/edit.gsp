@@ -19,6 +19,9 @@
 			<li><g:link action="show" id="${facturaDeImportacionInstance.id}">Consulta</g:link></li>
 		</g:if>
 		<li class="active"><strong>Edición</strong></li>
+		<g:if test="${facturaDeImportacionInstance.requisitado>0.0}">
+			<li><g:link  controller="requisicion" action="buscarRequisicion" id="${facturaDeImportacionInstance.id}" >Requisición</g:link></li>
+		</g:if>
 	</ol>
 </content>
 
@@ -83,7 +86,7 @@
 						class="simpleGrid table table-striped table-hover table-bordered table-condensed">
 						<thead>
 							<tr>
-								<th class="header">Aplicacion</th>			
+								<th class="header">Abono</th>			
 								<th class="header">Fecha</th>
 								
 								<th class="header">Pagado</th>
@@ -95,8 +98,8 @@
 						</thead>
 						<tbody>
 							<g:each in="${facturaDeImportacionInstance.aplicaciones}" var="row">
-								<tr id="${fieldValue(bean:row, field:"id")}">
-									<td>${fieldValue(bean: row, field: "id")}</td>				
+								<tr id="${fieldValue(bean:row, field:"abono.id")}">
+									<td>${fieldValue(bean: row, field: "abono.id")}</td>				
 									<td><lx:shortDate date="${row.fecha}" /></td>
 									<td><lx:moneyFormat number="${row.total }" /></td>
 									<g:if test="${row.abono.instanceOf(com.luxsoft.impapx.cxp.NotaDeCredito)}">

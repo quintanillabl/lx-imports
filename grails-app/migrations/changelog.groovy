@@ -27,8 +27,9 @@ databaseChangeLog = {
 
 	include file: 'incrementables.groovy'
 	*/
-
+	
+	/* IMPLEMENTACION DE IMPAP
 	include file: 'impapx_ini.groovy'
-
 	include file: 'impapx_ini_002.groovy'
+	*/
 }
