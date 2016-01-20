@@ -294,7 +294,9 @@ class EmbarqueController {
             it.actualizarPrecioDeVenta()
             it.save flush:true 
         }
-        render (template:'costosGrid' ,model: [partidas: list,embarqueInstance:embarque])
+        //render (template:'costosGrid' ,model: [partidas: list,embarqueInstance:embarque])
+        flash.message = " Precios de venta actualizados"
+        redirect action:'edit',id:id
     }
 
     def contenedoresDeEmbarque(Long id){

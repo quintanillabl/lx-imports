@@ -23,6 +23,7 @@
     	<li><g:link action="index">Embarques</g:link></li>
     	<li class="active"><strong>Edición</strong></li>
 	</ol>
+	
 </content>
 
 <content tag="document">
