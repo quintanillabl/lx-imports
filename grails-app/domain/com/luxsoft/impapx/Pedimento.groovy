@@ -28,7 +28,7 @@ class Pedimento {
 	BigDecimal arancel=0
 	BigDecimal impuestoTasa=16
 	BigDecimal impuesto=0
-	BigDecimal incrementables
+	BigDecimal incrementables=0.0
 	String comentario
 	Proveedor proveedor
 	com.luxsoft.impapx.CuentaPorPagar incrementable1
@@ -193,4 +193,10 @@ println " Iva Contra prestacion: "+ivaContraPrestacion
 		hcb.append(pedimento)
 		return hcb.toHashCode()
 	}*/
+
+	def getPaisDeVenta(){
+		if(embarques)
+			return embarques.embarque.first().proveedor.direccion.pais
+		return 'NO DISPONILBE'
+	}
 }

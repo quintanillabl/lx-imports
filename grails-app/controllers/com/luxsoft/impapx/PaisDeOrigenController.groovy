@@ -7,7 +7,7 @@ import grails.transaction.Transactional
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
-@Secured(["hasRole('ADMIN')"])
+@Secured(["hasRole('COMPRAS')"])
 @Transactional(readOnly = true)
 class PaisDeOrigenController {
 

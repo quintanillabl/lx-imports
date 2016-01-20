@@ -41,6 +41,7 @@
 				<f:field property="arancel" widget-class="form-control" widget-type="text" wrapper="bootstrap3"/>
 				<f:field property="comentario" widget-class="form-control" wrapper="bootstrap3"/>
 				<f:field property="paisDeOrigen" widget-class="form-control" wrapper="bootstrap3"/>
+				<f:display property="paisDeVenta" wrapper="bootstrap3" label="Pais de venta"/>
 			</f:with>
 		</div>
 		<div class="col-md-6">

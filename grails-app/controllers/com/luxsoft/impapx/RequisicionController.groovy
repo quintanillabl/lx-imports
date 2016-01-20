@@ -195,6 +195,22 @@ class RequisicionController {
             contentType: 'application/pdf',
             fileName:file)
     }
+
+    def buscarRequisicion(CuentaPorPagar cxp){
+        def req = Requisicion.where {
+                    partidas { factura == cxp }   
+            }.find()
+        if(!req){
+            flash.message ="No existe requisicion para la cuenta por pagar: "+cxp.id
+            redirect action:'index'
+            return
+        }
+        else{
+
+            redirect action: 'edit', id: req.id
+
+        }
+    }
 }
 
 import org.grails.databinding.BindingFormat

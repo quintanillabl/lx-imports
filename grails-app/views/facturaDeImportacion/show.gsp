@@ -18,6 +18,9 @@
 		<g:if test="${facturaDeImportacionInstance.requisitado<=0.0}">
 			<li><g:link action="edit" id="${facturaDeImportacionInstance.id}">Edición</g:link></li>
 		</g:if>
+		<g:if test="${facturaDeImportacionInstance.requisitado>0.0}">
+			<li><g:link  controller="requisicion" action="buscarRequisicion" id="${facturaDeImportacionInstance.id}" >Requisición</g:link></li>
+		</g:if>
 	</ol>
 </content>
 
