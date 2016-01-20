@@ -42,18 +42,22 @@ class PedimentoService {
                 embarqueDet.save flush:true
     		}
     	}
-    	pedimento.actualizarImpuestos()
-    	pedimento.save flush:true
-        actualizarCostos(pedimento)
+    	//pedimento.actualizarImpuestos()
+    	//pedimento.save flush:true
+        //actualizarCostos(pedimento)
+        save pedimento
         
 
     }
 
     def actualizarCostos(def pedimento){
 
+        def embarques = pedimento.embarques
+
         def importe=pedimento.getTotal()
         
-        def kilosTotales=pedimento.embarques.sum {it.kilosNetos}
+        def kilosTotales=embarques.sum {it.kilosNetos}
+
 
         embarques.each {
 
