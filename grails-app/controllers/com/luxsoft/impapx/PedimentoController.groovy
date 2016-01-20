@@ -103,7 +103,9 @@ class PedimentoController {
     		render view:'edit',model:[pedimentoInstance:pedimentoInstance]
     		return
     	}
-    	pedimentoInstance.save failOnError:true,flush:true
+    	//pedimentoInstance.actualizarCostos()
+    	//pedimentoInstance.save failOnError:true,flush:true
+    	pedimentoInstance = pedimentoService.save(pedimento)
     	flash.message="Pedimento ${pedimentoInstance.id} actualizado "
     	redirect action:'edit',id:pedimentoInstance.id
     }

@@ -4,6 +4,13 @@ import util.Rounding
 
 class PedimentoService {
 
+
+    def save(Pedimento pedimento){
+        pedimento = pedimento.save failOnError:true,flush:true
+        actualizarCostos(pedimento)
+        return pedimento
+    }
+
     def agregarEmbarquesPorContenedor(long pedimentoId,String contenedor) {
 		def pedimento=Pedimento.findById(pedimentoId,[fetch:[embarques:'eager']])
 		def embarqueDetList=EmbarqueDet.findAll("from EmbarqueDet d where d.contenedor=? and pedimento is null",[contenedor])
@@ -14,9 +21,10 @@ class PedimentoService {
 			
 		embarqueDetList.each {
 			pedimento.addToEmbarques(it)
-            pedimento.actualizarCostos()
+            //pedimento.actualizarCostos()
 		} 
-		pedimento.save(failOnError:true)
+		//pedimento.save(failOnError:true)
+        save(pedimento)
     }
 
 
@@ -31,27 +39,31 @@ class PedimentoService {
     			pedimento.removeFromEmbarques(embarqueDet)
     			embarqueDet.pedimento=null
     			embarqueDet.gastosPorPedimento=0
-
-    			embarqueDet.save flush:true
+                embarqueDet.save flush:true
     		}
     	}
-    	pedimento.actualizarCostos()
     	pedimento.actualizarImpuestos()
     	pedimento.save flush:true
+        actualizarCostos(pedimento)
+        
 
     }
 
     def actualizarCostos(def pedimento){
+
         def importe=pedimento.getTotal()
+        
         def kilosTotales=pedimento.embarques.sum {it.kilosNetos}
 
-        pdeimento.embarques.each {
+        embarques.each {
 
             def gasto=it.kilosNetos*importe/kilosTotales
             gasto=gasto.setScale(2, BigDecimal.ROUND_HALF_UP);
-        
             it.gastosPorPedimento=gasto
+            it.save flush:true
+            
         }
+        
     }
 
     def actualizarImpuestos(def pedimento){

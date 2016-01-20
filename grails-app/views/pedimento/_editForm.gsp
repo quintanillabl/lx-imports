@@ -32,7 +32,7 @@
 				<f:field property="agenteAduanal" label="Agente" wrapper="bootstrap3">
 					<g:select class="form-control"  
 						name="agenteAduanal" 
-						from="${pedimentoInstance.proveedor.agentes}"
+						from="${pedimentoInstance?.proveedor?.agentes}"
 						/>
 				</f:field>
 				<f:field property="tipoDeCambio" widget-class="form-control tc" widget-type="text" wrapper="bootstrap3"/>

@@ -101,7 +101,7 @@ class Pedimento {
 	
 	def beforeUpdate() {
 		actualizarImpuestos()
-		actualizarCostos()
+		//actualizarCostos()
 	}
 	
 	def actualizarImpuestos(){
@@ -145,22 +145,8 @@ println " Iva Contra prestacion: "+ivaContraPrestacion
 
 	}
 	
-	/*
-	def BigDecimal calcularImpuestoDinamico(){
-		def impuesto=0
-		impuesto=embarques.sum (0.0,{
-			it.importe*tipoDeCambio*(this.impuestoTasa/100)
-			}
-		)
-		impuesto=impuesto.setScale(2, BigDecimal.ROUND_HALF_UP);
-			def iva=0
-		def ivaPrev=Rounding.round(this.prevalidacion*(1+this.impuestoTasa/100),0)
-		iva=(this.dta+arancel)*(1+this.impuestoTasa/100)
-		impuesto=Rounding.round(impuesto+iva,0)+ivaPrev
-		return impuesto
-	}
-	*/
 	
+	/*
 	def actualizarCostos(){
 	
 		def importe=getTotal()
@@ -171,29 +157,13 @@ println " Iva Contra prestacion: "+ivaContraPrestacion
 			def gasto=it.kilosNetos*importe/kilosTotales
 			gasto=gasto.setScale(2, BigDecimal.ROUND_HALF_UP);
 			it.gastosPorPedimento=gasto
+			it.save flush:true
 			
 		}
 	}
+	*/
 	
-	/*
-	@Override
-	public boolean equals(Object obj) {
-		if(! (obj.instanceOf(Pedimento)) )
-			return false
-		if(this.is(obj))
-			return true
-		def eb=new EqualsBuilder()
-		eb.append(pedimento, obj.pedimento)
-		return eb.isEquals()
-	}
 	
-	@Override
-	public int hashCode() {
-		def hcb=new HashCodeBuilder(17,35)
-		hcb.append(pedimento)
-		return hcb.toHashCode()
-	}*/
-
 	def getPaisDeVenta(){
 		if(embarques)
 			return embarques.embarque.first().proveedor.direccion.pais
