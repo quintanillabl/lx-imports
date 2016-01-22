@@ -13,7 +13,7 @@
 </div> 
 	
 <div class="row">
-	<g:form class="form-horizontal" name="updateForm" action="edit" id="${pedimentoInstance.id }">
+	<g:form class="form-horizontal" name="updateForm" action="update" id="${pedimentoInstance.id }" method="PUT">
 		<div class="col-md-6">
 			<f:with bean="${pedimentoInstance}" >
 				<f:display property="id" input-disabled="true" wrapper="bootstrap3"/>

@@ -12,7 +12,7 @@ import com.luxsoft.utils.Periodo
 @Secured(["hasRole('COMPRAS')"])
 class PedimentoController {
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'DELETE']
+    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'DELETE',update:'PUT']
 	
 	def pedimentoService
 
@@ -54,48 +54,10 @@ class PedimentoController {
         [pedimentoInstance: pedimentoInstance]
     }
 
-    def edit() {
-		switch (request.method) {
-		case 'GET':
-	        def pedimentoInstance = Pedimento.get(params.id)
-	        if (!pedimentoInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'pedimento.label', default: 'Pedimento'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-			def incrementables=pedimentoInstance.embarques.sum(0.0,{it.incrementables})
-	        [pedimentoInstance: pedimentoInstance,incrementables:incrementables]
-			break
-		case 'POST':
-	        def pedimentoInstance = Pedimento.get(params.id)
-	        if (!pedimentoInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'pedimento.label', default: 'Pedimento'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (pedimentoInstance.version > version) {
-	                pedimentoInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'pedimento.label', default: 'Pedimento')] as Object[],
-	                          "Another user has updated this Pedimento while you were editing")
-	                render view: 'edit', model: [pedimentoInstance: pedimentoInstance]
-	                return
-	            }
-	        }
-
-	        pedimentoInstance.properties = params
-
-	        if (!pedimentoInstance.save(flush: true)) {
-	            render view: 'edit', model: [pedimentoInstance: pedimentoInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'pedimento.label', default: 'Pedimento'), pedimentoInstance.id])
-	        redirect action: 'edit', id: pedimentoInstance.id
-			break
-		}
+    def edit(Pedimento pedimentoInstance) {
+		//def incrementables=pedimentoInstance.embarques.sum(0.0,{it.incrementables})
+	    //[pedimentoInstance: pedimentoInstance,incrementables:incrementables]
+	    respond pedimentoInstance
     }
 
     def update(Pedimento pedimentoInstance){
@@ -103,9 +65,7 @@ class PedimentoController {
     		render view:'edit',model:[pedimentoInstance:pedimentoInstance]
     		return
     	}
-    	//pedimentoInstance.actualizarCostos()
-    	//pedimentoInstance.save failOnError:true,flush:true
-    	pedimentoInstance = pedimentoService.save(pedimento)
+    	pedimentoInstance = pedimentoService.save(pedimentoInstance)
     	flash.message="Pedimento ${pedimentoInstance.id} actualizado "
     	redirect action:'edit',id:pedimentoInstance.id
     }

@@ -25,7 +25,7 @@
 	        		 	<i class="fa fa-calendar"></i> 
 	        		</button>
 	        		<lx:refreshButton/>
-	        		<lx:printButton/>
+	        		
 	        		<lx:createButton/>
 	        	    <div class="ibox-tools">
 	        	        <a class="collapse-link">

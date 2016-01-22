@@ -6,8 +6,9 @@ class PedimentoService {
 
 
     def save(Pedimento pedimento){
-        pedimento = pedimento.save failOnError:true,flush:true
+        //log.info 'Actualizndo pedimento: '+pedimento.id
         actualizarCostos(pedimento)
+        pedimento = pedimento.save failOnError:true,flush:true
         return pedimento
     }
 
@@ -64,9 +65,11 @@ class PedimentoService {
             def gasto=it.kilosNetos*importe/kilosTotales
             gasto=gasto.setScale(2, BigDecimal.ROUND_HALF_UP);
             it.gastosPorPedimento=gasto
+            it.actualizarCostos()
             it.save flush:true
             
         }
+
         
     }
 
