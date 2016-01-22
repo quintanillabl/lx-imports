@@ -38,7 +38,7 @@ class ConsultasController {
 	}
 
 	def estadoDeCuentaProveedor(EstadoDeCuentaProveedor command){
-        
+        println 'Empresa: '+session.empresa
         command.empresa=session.empresa
         def stream=reportService.build(command,[
             PROVEEDOR:command.proveedor.id as String,

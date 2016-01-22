@@ -69,10 +69,12 @@ class ReportCommand{
 	static constraints={
 		reportName nullable:false
 		formato inList:['PDF','XLS','CSV']
+		empresa nullable:true
 	}
 
 	String getMimeType(){
-		return JasperExportFormat.determineFileFormat(formato).mimeType
+		//return JasperExportFormat.determineFileFormat(formato).mimeType
+		return JasperExportFormat.determineFileFormat(formato).mimeTyp
 	}
 
 	def getJasperFormat(){
