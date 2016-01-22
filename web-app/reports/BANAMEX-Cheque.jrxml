@@ -27,6 +27,9 @@
 	<parameter name="IMPLETRA" isForPrompting="true" class="java.lang.String">
 		<defaultValueExpression ><![CDATA["DOS CIENTOS OCHENTA Y DOS MIL NOVECIENTOS CUARENTA Y DOS 40/100 PESOS"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="IMPORTE" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["282942.46"]]></defaultValueExpression>
+	</parameter>
 	<queryString><![CDATA[SELECT ch.ID,M.FECHA,p.nombre AS AFAVOR,-m.importe as IMPORTE
 FROM cheque ch 
 join movimiento_de_cuenta m on(m.id=ch.egreso_id) 
@@ -97,7 +100,7 @@ where ch.id=$P{ID}]]></queryString>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[new String("(").concat($P{IMPLETRA}).concat(")")]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" pattern="¤ #,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="692"
 						y="61"
@@ -108,7 +111,7 @@ where ch.id=$P{ID}]]></queryString>
 					<textElement>
 						<font pdfFontName="Helvetica-Bold" size="9" isBold="true"/>
 					</textElement>
-				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{IMPORTE}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{IMPORTE}.toString()]]></textFieldExpression>
 				</textField>
 			</band>
 		</detail>

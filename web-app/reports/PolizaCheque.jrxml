@@ -25,6 +25,12 @@
 
 	<parameter name="IMPLETRA" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="ID" isForPrompting="true" class="java.lang.String"/>
+	<parameter name="IMPORTE" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["282942.46"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMPORTE_1" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["282942.46"]]></defaultValueExpression>
+	</parameter>
 	<queryString><![CDATA[SELECT ch.ID,M.FECHA,p.nombre AS AFAVOR,-m.importe as IMPORTE,CH.FOLIO,c.nombre as BANCO,R.COMENTARIO
 FROM cheque ch 
 join movimiento_de_cuenta m on(m.id=ch.egreso_id) 
@@ -309,7 +315,7 @@ where ch.id=$P{ID}]]></queryString>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
 					</textElement>
-				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{IMPORTE}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{IMPORTE}.toString()]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement

@@ -51,12 +51,16 @@
 				    			<g:jasperReport jasper="${chequeInstance.cuenta.nombre}-Cheque" format="PDF" name="Cheque">
 				    					<g:hiddenField name="ID" value="${chequeInstance.id}"/>
 				    					<g:hiddenField name="IMPLETRA" value="${importeALetra}"/>
+				    					<g:hiddenField name="IMPORTE" 
+				    					value="${new java.text.DecimalFormat('##,###.##').format(chequeInstance.egreso.importe.abs())}"/>
 				    			</g:jasperReport>
 				    		</div>
 				    		<div class="">
 				    			<g:jasperReport jasper="PolizaCheque" format="PDF" name=" Póliza">
 				    					<g:hiddenField name="ID" value="${chequeInstance.id}"/>
 				    					<g:hiddenField name="IMPLETRA" value="${importeALetra}"/>
+				    					<g:hiddenField name="IMPORTE" 
+				    					value="${new java.text.DecimalFormat('##,###.##').format(chequeInstance.egreso.importe.abs())}"/>
 				    			</g:jasperReport>
 				    			
 				    		</div>
