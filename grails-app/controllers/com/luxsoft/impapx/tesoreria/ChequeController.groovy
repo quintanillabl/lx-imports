@@ -19,7 +19,7 @@ class ChequeController {
 
 	def chequeService
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [create: 'GET',save:'POST', edit: 'GET', cancelar: 'POST']
 
     def beforeInterceptor = {
     	if(!session.periodoTesoreria){
@@ -34,74 +34,38 @@ class ChequeController {
 	}
 
     def index(Integer max) {
-		params.sort="fecha"
+		params.sort="id"
 		params.order="desc"
 		def periodo=session.periodoTesoreria
-		def list=Cheque.findAll("from Cheque c where date(c.fechaImpresion) between ? and ? order by c.fechaImpresion desc",
-			[periodo.inicioDeMes(),periodo.finDeMes()],
-			params)
+		// def list=Cheque.findAll("from Cheque c where date(c.fechaImpresion) between ? and ? order by c.fechaImpresion desc",
+		// 	[periodo.inicioDeMes(),periodo.finDeMes()],
+		// 	params)
+		def list = Cheque.list(params)
         [chequeInstanceList:list]
     }
 
     def save(MovimientoDeCuenta egreso){
     	log.info 'Generando cheque para egreso: '+egreso
-        def chequeInstance = new Cheque(params)
-		chequeInstance.fechaImpresion=new Date()
-		chequeInstance.egreso=pago
-		chequeInstance.cuenta=pago.cuenta
-		pago.referenciaBancaria=chequeInstance.folio?.toString()
-        if (!chequeInstance.save(flush: true)) {
-            render view: 'create', model: [chequeInstance: chequeInstance]
-            return
-        }
-		flash.message = 'Cheque impreso: '+chequeInstance.id
-		def importeALetra=ImporteALetra.aLetra(chequeInstance.egreso.importe.abs())
+        def chequeInstance = chequeService.generarCheque(egreso)
+		flash.message = 'Cheque generado: '+chequeInstance.folio
 		redirect action:'show',id:chequeInstance.id
-		//render view:'impresionDeCheque',model: [chequeInstance: chequeInstance,importeALetra:importeALetra]
     }
 	
 
     def create() {
-		switch (request.method) {
-		case 'GET':
-        	[chequeInstance: new Cheque(params)]
-			break
-		case 'POST':
-			log.info 'Salvando cheque: '+params
-			def pago=MovimientoDeCuenta.get(params.egreso.id)
-	        def chequeInstance = new Cheque(params)
-			chequeInstance.fechaImpresion=new Date()
-			chequeInstance.egreso=pago
-			chequeInstance.cuenta=pago.cuenta
-			pago.referenciaBancaria=chequeInstance.folio?.toString()
-	        if (!chequeInstance.save(flush: true)) {
-	            render view: 'create', model: [chequeInstance: chequeInstance]
-	            return
-	        }
-			flash.message = 'Cheque impreso: '+chequeInstance.id
-			def importeALetra=ImporteALetra.aLetra(chequeInstance.egreso.importe.abs())
-			render view:'impresionDeCheque',model: [chequeInstance: chequeInstance,importeALetra:importeALetra]
-			
-		}
+    	respond new Cheque(fechaImpresion: new Date())
     }
 	
-	def delete(){
-		def chequeInstance = Cheque.get(params.id)
+	def cancelar(Cheque  chequeInstance){
 		if (!chequeInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'cheque.label', default: 'Cheque'), params.id])
-			redirect action: 'list'
+			redirect action: 'index'
 			return
 		}
-		try {
-			chequeInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'cheque.label', default: 'Cheque '), params.id])
-			redirect action: 'list'
-		}
-		catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'cheque.label', default: 'Cheque'), params.id])
-			redirect action: 'show', id: params.id
-		}
-	
+		def comentario = params.comentario?:''
+		chequeInstance = chequeService.cancelarCheque(chequeInstance,comentario)
+		flash.message = "Cheque ${chequeInstance.folio} cancelado"
+		redirect action:'index'
 	}
 
     def show(Cheque chequeInstance) {
@@ -114,21 +78,7 @@ class ChequeController {
 		def pago=PagoProveedor.findByEgreso(chequeInstance.egreso)
         [chequeInstance: chequeInstance,importeALetra:importeALetra,pago:pago]
     }
-
     
-
-    def cancelar(CancelacionCommand c) {
-		switch (request.method) {
-			case 'GET':
-			[cancelacionCommand:new CancelacionCommand(id:params.long('id'))]
-			break
-			case 'POST':
-			c.fecha=new Date()
-			chequeService.cancelarCheque(c)
-			redirect action:'show', params:params
-		}
-		
-    }
 	
 	def pagosDisponiblesJSONList(){
 		def pagos=MovimientoDeCuenta.findAll("from MovimientoDeCuenta p where p.tipo='CHEQUE' and p not in(select x.egreso from Cheque x)")
@@ -145,7 +95,7 @@ class ChequeController {
 
 @ToString
 class CancelacionCommand{
-	long id
+	Cheque cheque
 	Date fecha=new Date()
 	String comentario
 }

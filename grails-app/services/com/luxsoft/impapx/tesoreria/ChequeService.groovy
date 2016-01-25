@@ -2,24 +2,29 @@ package com.luxsoft.impapx.tesoreria
 
 class ChequeService {
 
-    def cancelarCheque(CancelacionCommand c) {
-		def cheque= Cheque.get(c.id)
+	def generarCheque(MovimientoDeCuenta egreso) {
+		
+		def cuenta=egreso.cuenta
+		def folio=cuenta.folio++
+		def cheque=new Cheque(cuenta:cuenta,egreso:egreso,folio:folio)
+		cheque.fechaImpresion = new Date()
+		cuenta.save(flush:true)
+		cheque.save failOnError:true
+		return cheque
+		
+	}
+
+    def cancelarCheque(Cheque cheque,String comentario) {
+    	log.info "Cancelando cheque ${cheque.folio}: $comentario"
 		def egreso=cheque.egreso
 		def pago=PagoProveedor.findByEgreso(egreso)
 		def requisicion=pago?.requisicion
 		
 		cheque.cancelacion=new Date()//c.fecha
-		cheque.comentarioCancelacion=c.comentario
-		//cheque.egreso=null
-		//cheque.save()
+		cheque.comentarioCancelacion=comentario
+		cheque.egreso=null
+		cheque.save(flush:true)
+		return cheque
 		
-		egreso.importe=0
-		egreso.comentario="CANCELADO"
-		egreso.concepto="CARGO CHEQUE CANCELADO"
-		pago.egreso=null
-		pago.delete()
-		
-		//cheque.save(failOnError:true)
-
     }
 }

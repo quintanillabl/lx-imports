@@ -20,12 +20,12 @@
 		<div class="row">
 			<div class="col-lg-8">
 				<div class="ibox float-e-margins">
-					<lx:iboxTitle title="Comisión bancaria"/>
+					<lx:iboxTitle title="Registrar cheque"/>
 				    <div class="ibox-content">
 				    	<lx:errorsHeader bean="${chequeInstance}"/>
-				    	<g:form name="createForm" action="create" class="form-horizontal" method="POST">	
+				    	<g:form name="createForm" action="save" class="form-horizontal" >	
 				    		<f:with bean="chequeInstance">
-				    			<f:field property="egreso" label="Pago" wrapper="bootstrap3" >
+				    			<f:field property="egreso" label="Egreso" wrapper="bootstrap3" >
 									<g:select class="form-control chosen-select"  
 										name="egreso.id" 
 										value="${value}"
@@ -34,7 +34,7 @@
 										noSelection="[null:'Seleccione el egreso']"
 										/>
 				    			</f:field>
-								<f:field property="folio" widget="numeric" wrapper="bootstrap3" />
+								%{-- <f:field property="folio" widget="numeric" wrapper="bootstrap3" /> --}%
 				    		</f:with>
 				    		<div class="form-group">
 				    			<div class="col-lg-offset-3 col-lg-10">

@@ -32,4 +32,6 @@ databaseChangeLog = {
 	include file: 'impapx_ini.groovy'
 	include file: 'impapx_ini_002.groovy'
 	*/
+
+	include file: 'cheque-fix-001.groovy'
 }

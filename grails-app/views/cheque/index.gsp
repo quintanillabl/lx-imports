@@ -54,7 +54,7 @@
 	            		<tbody>
 	            			<g:each in="${chequeInstanceList}"
 	            				var="row">
-	            				<tr>
+	            				<tr class="${row.cancelacion?'danger':''}">
 	            					<td>
 	            						<g:link action="show"
 	            							id="${row.id}" >
@@ -65,18 +65,12 @@
 	            						${fieldValue(bean: row, field: "cuenta.numero")}
 	            					</td>
 	            					<td>${fieldValue(bean: row, field: "cuenta.nombre")}</td>
-	            					<td>${fieldValue(bean: row, field: "egreso.id")}</td>
-	            					<td><lx:shortDate date="${row.egreso.fecha }"/></td>
+	            					<td>${row.egreso?.id}</td>
+	            					<td><lx:shortDate date="${row?.egreso?.fecha }"/></td>
 	            					<td><g:formatNumber number="${row.folio}" format="####"/></td>
-	            					<td><lx:moneyFormat number="${row.egreso.importe.abs()}"/></td>
+	            					<td><lx:moneyFormat number="${row?.egreso?.importe?.abs()}"/></td>
 	            					<td><lx:shortDate date="${row.fechaImpresion}"/></td>
-	            					<td><g:if test="${!row.cancelacion }">
-	            							<g:link action="cancelar" id="${row.id}" ><i class="icon-remove-sign"></i> Cancelar</g:link>
-	            						</g:if>
-	            						<g:else>
-	            							<lx:shortDate date="${row.cancelacion}"/>	
-	            						</g:else>
-	            					</td>				
+	            					<td><lx:shortDate date="${row.cancelacion}"/>	</td>				
 	            					
 	            					
 	            					
