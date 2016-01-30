@@ -34,7 +34,7 @@ class ConceptoDeGasto {
 
     static constraints = {
 		concepto(nullable:false)
-		descripcion(blank:false,maxSize:300)
+		descripcion(blank:false,maxSize:500)
 		egreso(nullable:true)
 		tipo(nullable:true,inList:['GASTOS'
 			,'ACTIVO FIJO'

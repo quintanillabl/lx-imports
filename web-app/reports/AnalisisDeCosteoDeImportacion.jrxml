@@ -30,12 +30,12 @@
 		<defaultValueExpression ><![CDATA["ORDEN DE COMPRA No. "]]></defaultValueExpression>
 	</parameter>
 	<parameter name="ID" isForPrompting="true" class="java.lang.String"/>
-	<queryString><![CDATA[SELECT E.id AS EMB_ID,I.FACTURA_ID,e.NOMBRE,E.BL,X.FACTOR_DE_UTILIDAD 
-,M.PEDIMENTO,X.NOMBRE AS NOM_PROV,M.DTA,M.PREVALIDACION,M.ARANCEL,M.TIPO_DE_CAMBIO AS TC
+	<queryString><![CDATA[SELECT E.id AS EMB_ID,I.FACTURA_ID,e.NOMBRE,E.BL,E.FECHA_EMBARQUE,X.FACTOR_DE_UTILIDAD 
+,M.PEDIMENTO,M.FECHA,X.NOMBRE AS NOM_PROV,M.DTA,M.PREVALIDACION,M.ARANCEL,M.TIPO_DE_CAMBIO AS TC
 ,P.CLAVE ,P.DESCRIPCION,I.CONTENEDOR,I.tarimas AS PALLETS,I.CANTIDAD/U.factor/I.tarimas AS MLLXPALLET,I.CANTIDAD/U.factor AS CANTIDAD,I.kilos_netos/1000 AS TONELADAS_NETA
 ,I.COSTO_UNITARIO_NETO,I.PRECIO_DE_VENTA,I.precio_de_venta*(I.CANTIDAD/U.factor) AS IMP_A_FAC
 ,(SELECT X.DOCUMENTO FROM CUENTA_POR_PAGAR X WHERE X.ID=I.FACTURA_ID) AS FACTURA
-,I.importe AS IMP_USD,I.costo_bruto AS IMP_MN,I.gastos_honorarios AS GASTOS,I.gastos_por_pedimento AS IMP_PEDIMENTO
+,I.importe AS IMP_USD,I.costo_bruto AS IMP_MN,I.gastos_honorarios+I.incrementables AS GASTOS,I.gastos_por_pedimento AS IMP_PEDIMENTO
 ,ROUND(((I.gastos_honorarios+I.gastos_por_pedimento+i.incrementables)*100/I.costo_bruto),2) AS PORC_GASTO
 FROM embarque e 
 join embarque_det i on(i.embarque_id=e.ID) 
@@ -48,8 +48,10 @@ JOIN producto P ON(P.ID=I.PRODUCTO_ID) JOIN unidad U ON(U.id=P.unidad_id)
 	<field name="FACTURA_ID" class="java.lang.Long"/>
 	<field name="NOMBRE" class="java.lang.String"/>
 	<field name="BL" class="java.lang.String"/>
+	<field name="FECHA_EMBARQUE" class="java.sql.Timestamp"/>
 	<field name="FACTOR_DE_UTILIDAD" class="java.math.BigDecimal"/>
 	<field name="PEDIMENTO" class="java.lang.String"/>
+	<field name="FECHA" class="java.sql.Timestamp"/>
 	<field name="NOM_PROV" class="java.lang.String"/>
 	<field name="DTA" class="java.math.BigDecimal"/>
 	<field name="PREVALIDACION" class="java.math.BigDecimal"/>
@@ -127,7 +129,7 @@ JOIN producto P ON(P.ID=I.PRODUCTO_ID) JOIN unidad U ON(U.id=P.unidad_id)
 				<staticText>
 					<reportElement
 						mode="Opaque"
-						x="577"
+						x="506"
 						y="4"
 						width="58"
 						height="11"
@@ -139,14 +141,14 @@ JOIN producto P ON(P.ID=I.PRODUCTO_ID) JOIN unidad U ON(U.id=P.unidad_id)
 					<bottomPen lineWidth="0.0" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 </box>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[PEDIMENTO :]]></text>
+				<text><![CDATA[PEDIMENTO :  ]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="635"
+						x="564"
 						y="4"
 						width="116"
 						height="11"
@@ -587,6 +589,39 @@ JOIN producto P ON(P.ID=I.PRODUCTO_ID) JOIN unidad U ON(U.id=P.unidad_id)
 					</textElement>
 				<text><![CDATA[GST %]]></text>
 				</staticText>
+				<textField isStretchWithOverflow="false" pattern="dd-MMM-yyyy" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="564"
+						y="16"
+						width="76"
+						height="11"
+						key="textField-64"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font pdfFontName="Helvetica-Bold" size="8" isBold="true" isUnderline="true"/>
+					</textElement>
+				<textFieldExpression   class="java.util.Date"><![CDATA[$F{FECHA}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="506"
+						y="16"
+						width="58"
+						height="11"
+						forecolor="#000000"
+						key="staticText-69"
+						isPrintInFirstWholeBand="true"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[FECHA :  ]]></text>
+				</staticText>
 			</band>
 			</groupHeader>
 			<groupFooter>
@@ -976,6 +1011,39 @@ JOIN producto P ON(P.ID=I.PRODUCTO_ID) JOIN unidad U ON(U.id=P.unidad_id)
 					</textElement>
 				<textFieldExpression   class="java.lang.Long"><![CDATA[$F{EMB_ID}]]></textFieldExpression>
 				</textField>
+				<textField isStretchWithOverflow="false" pattern="dd-MMM-yyyy" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="333"
+						y="40"
+						width="60"
+						height="11"
+						key="textField-63"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font pdfFontName="Helvetica-Bold" size="8" isBold="true" isUnderline="true"/>
+					</textElement>
+				<textFieldExpression   class="java.util.Date"><![CDATA[$F{FECHA_EMBARQUE}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="280"
+						y="40"
+						width="53"
+						height="11"
+						forecolor="#000000"
+						key="staticText-68"
+						isPrintInFirstWholeBand="true"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[FECHA (BL) :]]></text>
+				</staticText>
 			</band>
 		</pageHeader>
 		<columnHeader>
