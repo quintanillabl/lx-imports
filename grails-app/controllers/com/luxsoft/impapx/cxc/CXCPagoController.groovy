@@ -97,6 +97,7 @@ class CXCPagoController {
 
     def show(CXCPago CXCPagoInstance) {
         [CXCPagoInstance: CXCPagoInstance]
+        respond CXCPagoInstance,action:'edit'
     }
 
     def edit(CXCPago CXCPagoInstance ) {
