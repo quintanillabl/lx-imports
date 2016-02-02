@@ -85,7 +85,7 @@ class CXCPagoController {
 		try {
 			def res=cobranzaService.registrarPago(CXCPagoInstance)
 			flash.message = "Cobro registrado ${res.id}"
-			redirect action: 'show', id:res.id
+			redirect action: 'edit', id:res.id
 			return
 		} catch (CobranzaEnPagoException e) {
 			flash.error=e.message
@@ -99,68 +99,14 @@ class CXCPagoController {
         [CXCPagoInstance: CXCPagoInstance]
     }
 
-    def edit() {
-		switch (request.method) {
-		case 'GET':
-	        def CXCPagoInstance = CXCPago.get(params.id)
-	        if (!CXCPagoInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'CXCPago.label', default: 'CXCPago'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        [CXCPagoInstance: CXCPagoInstance]
-			break
-		case 'POST':
-			
-	        def CXCPagoInstance = CXCPago.get(params.id)
-	        if (!CXCPagoInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'CXCPago.label', default: 'CXCPago'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (CXCPagoInstance.version > version) {
-	                CXCPagoInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'CXCPago.label', default: 'CXCPago')] as Object[],
-	                          "Another user has updated this CXCPago while you were editing")
-	                render view: 'edit', model: [CXCPagoInstance: CXCPagoInstance]
-	                return
-	            }
-	        }
-
-	        CXCPagoInstance.properties = params
-
-	        if (!CXCPagoInstance.save(flush: true)) {
-	            render view: 'edit', model: [CXCPagoInstance: CXCPagoInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'CXCPago.label', default: 'CXCPago'), CXCPagoInstance.id])
-	        redirect action: 'show', id: CXCPagoInstance.id
-			break
-		}
+    def edit(CXCPago CXCPagoInstance ) {
+		[CXCPagoInstance: CXCPagoInstance]
     }
 
-    def delete() {
-        def CXCPagoInstance = CXCPago.get(params.id)
-        if (!CXCPagoInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'CXCPago.label', default: 'CXCPago'), params.id])
-            redirect action: 'list'
-            return
-        }
-
-        try {
-            CXCPagoInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'CXCPago.label', default: 'CXCPago'), params.id])
-            redirect action: 'list'
-        }
-        catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'CXCPago.label', default: 'CXCPago'), params.id])
-            redirect action: 'show', id: params.id
-        }
+    def delete(CXCPago CXCPagoInstance) {
+        CXCPagoInstance.delete(flush: true)
+		flash.message = message(code: 'default.deleted.message', args: [message(code: 'CXCPago.label', default: 'CXCPago'), params.id])
+        redirect action: 'index'
     }
 	
 	def pagosAsJSON(){

@@ -74,18 +74,22 @@ class CobranzaService {
 	def asignarFacturas(CXCAbono abono,def facturas) {
 		
 		def disponible=abono.getDisponibleMN()
+
 		
 		facturas.each {
 			def fac=Venta.get(it.toLong())
 			
-			def saldo=fac.saldoActual
+			def saldo=fac.saldoActual*fac.tc
+
 			def importe=0
 			if(disponible>=saldo)
 				importe=saldo
 			else
 				importe=disponible
 			disponible-=importe
+			
 			println "Aplicando $importe Saldo: $saldo Disponible:$disponible"
+			
 			def ap=new CXCAplicacion(
 				fecha:new Date()
 				,total:importe
@@ -111,7 +115,7 @@ class CobranzaService {
 			if(found){
 				
 				boolean ok=abono.removeFromAplicaciones(found)
-				println 'Eliminando: '+found+ 'Res: '+ok
+				//println 'Eliminando: '+found+ 'Res: '+ok
 			}
 		}
 		def res=abono.save(failOnError:true)

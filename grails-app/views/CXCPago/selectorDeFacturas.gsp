@@ -21,12 +21,18 @@
 				<div class="ibox float-e-margins">
 					
 					<div class="ibox-title">
+					
 						<lx:backButton label="Cobro ${pago.id}" action="edit" id="${pago.id}"/>
 					    <a id="asignar" class="btn btn-outline btn-success">Aplicar</a>
+					    <div class="">
+					    	<input type='text' id="filtro" placeholder="Filtrar" class="form-control" autofocus="on">
+					    </div>
+					    
+					    
 					</div>
 					
 				    <div class="ibox-content">
-						<table class=" grid table  table-hover table-bordered table-condensed">
+						<table id="grid" class=" grid table  table-hover table-bordered table-condensed">
 							<thead>
 								<tr>
 									<th>Folio</th>
@@ -67,13 +73,32 @@
 			$(".grid tbody tr").click(function(){
 				$(this).toggleClass("success selected");
 			});
- 			$('#grid').dataTable({
-                responsive: true,
-                "language": {
-					"url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
-	    		},
-	    		"order": []
-            });
+
+			$('#grid').dataTable({
+                    responsive: true,
+                    aLengthMenu: [[20, 40, 60, 100, -1], [20, 40,60, 100, "Todos"]],
+                    "language": {
+                        "url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
+                    },
+                    "dom": 't',
+                    "order": []
+             });
+
+			$("#filtro").on('keyup',function(e){
+			    var term=$(this).val();
+			    $('#grid').DataTable().search(
+			        $(this).val()
+			            
+			    ).draw();
+			});
+
+ 			// $('#grid').dataTable({
+    //             responsive: true,
+    //             "language": {
+				// 	"url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
+	   //  		},
+	   //  		"order": []
+    //         });
 			var selectRows=function(){
 				var res=[];
 				var data=$(".grid .selected").each(function(){

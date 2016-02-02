@@ -55,11 +55,11 @@ class CXCAbono {
 	}
 
 	BigDecimal getAplicadoMN(){
-		return Rounding.round(aplicado*tc,2)
+		return Rounding.round(getAplicadoCalculado()*tc,2)
 	}
 	
 	public BigDecimal getDisponibleMN(){
-		return getTotalMN()-aplicado
+		return getTotalMN()-getAplicadoMN()
 	}
 
 	BigDecimal getDisponible(){
@@ -77,14 +77,14 @@ class CXCAbono {
 
 	def BigDecimal getAplicadoCalculado(){
 		if(aplicaciones){
-			return aplicaciones.sum(0,{it.total})
+			return aplicaciones.sum(0,{it.total/tc})
 		}else
 			return 0.0
 	}
 	
 	def actualizarAplicado(){
 		if(aplicaciones){
-			aplicado=aplicaciones.sum(0,{it.total})
+			aplicado=getAplicadoCalculado()
 		}else
 			aplicado=0.0
 	}
