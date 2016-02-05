@@ -13,6 +13,10 @@
 	<ol class="breadcrumb">
     	<li><g:link action="index">Cuentas</g:link></li>
     	<li class="active"><strong>Consulta</strong></li>
+    	<g:if test="${cuentaContableInstance.padre}">
+    		<li class="active"> <i class="fa fa-step-backward"></i> 
+    		<g:link action="show" id="${cuentaContableInstance.padre.id}">${cuentaContableInstance.padre.clave}</g:link></li>
+    	</g:if>
     	<li><g:link action="edit" id="${cuentaContableInstance.id}">Edición</g:link></li>
 	</ol>
 </content>

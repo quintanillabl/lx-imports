@@ -39,7 +39,7 @@
 	</f:with>
 	<script type="text/javascript">
 		$(function(){
-			$('#clave').mask('00000');
+			$('#clave').mask('000');
 		});
 	</script>
 	

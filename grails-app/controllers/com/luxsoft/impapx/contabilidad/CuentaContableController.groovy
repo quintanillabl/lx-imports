@@ -40,6 +40,7 @@ class CuentaContableController extends ContabilidadController{
             respond cuentaContableInstance.errors, view:'create'
             return
         }
+        cuentaContableInstance.clave+='-0000'
         cuentaContableInstance.save flush:true
         flash.message = "Cuenta ${cuentaContableInstance.clave} registrada"
         redirect action:'edit',id:cuentaContableInstance.id
@@ -106,7 +107,8 @@ class CuentaContableController extends ContabilidadController{
         
         def subCuenta = new CuentaContable(clave:clave,descripcion:descripcion,detalle:detalle)
         subCuenta.padre= cuenta
-        subCuenta.clave=cuenta.clave+'-'+subCuenta.clave.padLeft(4,'0')
+        //subCuenta.clave=cuenta.clave+'-'+subCuenta.clave.padLeft(4,'0')
+        subCuenta.clave=cuenta.clave.split('-')[0]+'-'+subCuenta.clave.padLeft(4,'0')
         subCuenta.tipo=cuenta.tipo
         subCuenta.subTipo=cuenta.subTipo
         subCuenta.naturaleza=cuenta.naturaleza

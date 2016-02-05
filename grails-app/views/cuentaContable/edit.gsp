@@ -11,12 +11,12 @@
 <content tag="header">Cuenta: ${cuentaContableInstance}</content>
 <content tag="subHeader">
 	<ol class="breadcrumb">
-    	<li><g:link action="index">Cuentas</g:link></li>
-    	<li><g:link action="create">Alta</g:link></li>
-    	<li><g:link action="show" id="${cuentaContableInstance.id}">Consulta</g:link></li>
-    	<li class="active">
-    		<strong><g:link action="edit" id="${cuentaContableInstance.id}">Edición</g:link></strong>
-    	</li>
+    	<li><g:link action="index">Catálogo</g:link></li>
+    	<g:if test="${cuentaContableInstance.padre}">
+    		<li class="active"> <i class="fa fa-step-backward"></i> <g:link action="edit" id="${cuentaContableInstance.padre.id}">${cuentaContableInstance.padre.clave}</g:link></li>
+    	</g:if>
+    	
+    	
 	</ol>
 </content>
 	
@@ -31,7 +31,7 @@
 						<g:hiddenField name="id" value="${cuentaContableInstance.id}"/>
 						<g:hiddenField name="version" value="${cuentaContableInstance.version}"/>
 						<f:with bean="cuentaContableInstance">
-							<f:field property="clave" wrapper="bootstrap3" widget-class="form-control"/>
+							<f:display property="clave" wrapper="bootstrap3" widget-class="form-control"/>
 							<f:field property="descripcion" wrapper="bootstrap3" widget-class="form-control"/>
 							<f:field property="tipo" wrapper="bootstrap3" widget-class="form-control chosen-select"/>
 							<f:field property="subTipo" wrapper="bootstrap3" widget-class="form-control"/>
