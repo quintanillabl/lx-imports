@@ -55,6 +55,11 @@
 								<button id="saveBtn" class="btn btn-primary ">
 									<i class="fa fa-floppy-o"></i> Salvar
 								</button>
+								<a href="" class="btn btn-danger " data-toggle="modal" 
+									data-target="#deleteDialog">
+									<i class="fa fa-trash"></i> Eliminar
+								</a> 
+
 							</div>
 						</div>
 					</g:form>
@@ -74,11 +79,11 @@
 						<tbody>
 							<g:each in="${cuentaContableInstance.subCuentas}" var="row">
 								<tr>
-									<td><g:link action="show" id="${row.id}">
+									<td><g:link action="edit" id="${row.id}">
 										${fieldValue(bean: row, field: "clave")}
 										</g:link>
 									</td>
-									<td><g:link action="show" id="${row.id}">
+									<td><g:link action="edit" id="${row.id}">
 										${fieldValue(bean: row, field: "descripcion")}
 										</g:link>
 									</td>
@@ -100,12 +105,14 @@
 						<h4 class="modal-title" id="myModalLabel">Agregar sub cuenta</h4>
 					</div>
 					<g:form action="agregarSubCuenta" class="form-horizontal" >
-						<g:hiddenField name="id" value="${cuentaContableInstance.id}"/>
+						
+						<g:hiddenField name="padre" value="${cuentaContableInstance.id}"/>
+						
 						<div class="modal-body">
 							<div class="form-group">
 								<label for="clave" class="control-label col-sm-3">Clave</label>
 								<div class="col-sm-9">
-									<input name="clave" class="form-control" value="">
+									<input id="subCuentaClave" name="clave" class="form-control" value="">
 								</div>
 							</div>
 							<div class="form-group">
@@ -117,7 +124,7 @@
 							<div class="form-group">
 								<label for="detalle" class="control-label col-sm-3">De detalle</label>
 								<div class="col-sm-9">
-									<input name="detalle" class="form-control" value="" type="checkbox" checked>
+									<input name="detalle" class="form-control" value="true" type="checkbox" checked>
 								</div>
 							</div>
 
@@ -135,10 +142,39 @@
 			</div>
 			<!-- modal-di -->
 		</div>
+
+		<div class="modal fade" id="deleteDialog" tabindex="-1">
+			<div class="modal-dialog ">
+				<div class="modal-content">
+					<g:form action="delete" class="form-horizontal" method="DELETE">
+						<g:hiddenField name="id" value="${cuentaContableInstance.id}"/>
+
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"
+								aria-hidden="true">&times;</button>
+							<h4 class="modal-title" id="myModalLabel">Eliminar cuenta contable ${cuentaContableInstance.clave}</h4>
+						</div>
+						<div class="modal-body">
+							<p><small>${cuentaContableInstance}</small></p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+							<g:submitButton class="btn btn-danger" name="aceptar" value="Eliminar" />
+						</div>
+					</g:form>
+				</div><!-- moda-content -->
+				
+			</div><!-- modal-di -->
+			
+		</div>
+
+
 	</div>
 	<script type="text/javascript">
 		$(function(){
 			$('.chosen-select').chosen();
+
+			$('#subCuentaClave').mask('00000');
 
 			$('form[name=updateForm]').submit(function(e){
 				$("#saveBtn")
