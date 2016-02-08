@@ -19,24 +19,38 @@ class PolizaDeComprasController {
 	
 	def polizaService
 
-    def beforeInterceptor = {
-    	if(!session.periodoContable){
-    		session.periodoContable=new Date()
-    	}
-	}
+ //    def beforeInterceptor = {
+ //    	if(!session.periodoContable){
+ //    		session.periodoContable=new Date()
+ //    	}
+	// }
 
-	def cambiarPeriodo(){
-		def fecha=params.date('fecha', 'dd/MM/yyyy')
-		session.periodoContable=fecha
-		redirect(uri: request.getHeader('referer') )
-	}	
+	// def cambiarPeriodo(){
+	// 	def fecha=params.date('fecha', 'dd/MM/yyyy')
+	// 	session.periodoContable=fecha
+	// 	redirect(uri: request.getHeader('referer') )
+	// }	
 	
 	def index() {
 		def sort=params.sort?:'fecha'
 		def order=params.order?:'desc'
-		def periodo=session.periodoContable
-		def polizas=Poliza.findAllByTipoAndFechaBetween('COMPRAS',periodo.inicioDeMes(),periodo.finDeMes(),[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+		def periodo=session.periodoContable.toPeriodo()
+
+		def subTipo=params.subTipo?:'COMPRAS'
+		def ejercicio=session.periodoContable.ejercicio
+		def mes=session.periodoContable.mes
+		
+		def polizas=Poliza.where{
+		    ejercicio==ejercicio &&
+		    mes==mes &&
+		    subTipo==subTipo
+		}
+		
+		def list=polizas.list(sort:'folio',order:'asc')
+
+		//def polizas=Poliza.findAllByTipoAndFechaBetween('COMPRAS',periodo.inicioDeMes(),periodo.finDeMes(),[sort:sort,order:order])
+		//[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+		[polizaInstanceList: list, polizaInstanceTotal: polizas.count()]
 	}
 	 
 	def mostrarPoliza(long id){
@@ -44,19 +58,19 @@ class PolizaDeComprasController {
 		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
 	}
 	 
-	def list() {
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
-		def sort=params.sort?:'fecha'
-		def order=params.order?:'desc'
+	// def list() {
+	// 	if(!session.periodoContable){
+	// 		PeriodoContable periodo=new PeriodoContable()
+	// 		periodo.actualizarConFecha()
+	// 		session.periodoContable=periodo
+	// 	}
+	// 	PeriodoContable periodo=session.periodoContable
+	// 	def sort=params.sort?:'fecha'
+	// 	def order=params.order?:'desc'
 		
-		def polizas=Poliza.findAllByTipoAndFechaBetween('COMPRAS',periodo.inicio,periodo.fin,[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-	}
+	// 	def polizas=Poliza.findAllByTipoAndFechaBetween('COMPRAS',periodo.inicio,periodo.fin,[sort:sort,order:order])
+	// 	[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+	// }
 	
 	def generarPoliza(String fecha){
 		Date dia=Date.parse("dd/MM/yyyy",fecha)
@@ -66,6 +80,9 @@ class PolizaDeComprasController {
 		
 		//Prepara la poliza
 		Poliza poliza=new Poliza(tipo:'COMPRAS',folio:1, fecha:dia,descripcion:'Poliza '+dia.text(),partidas:[])
+		poliza.ejercicio = session.periodoContable.ejercicio
+		poliza.mes = session.periodoContable.mes
+		poliza.subTipo= 'COMRAS'
 		
 		//Collecciones usadas mas de una vez
 		
@@ -83,7 +100,8 @@ class PolizaDeComprasController {
 		poliza=polizaService.salvarPoliza(poliza)
 		
 		//println 'Poliza generada:'+ poliza
-		redirect action: 'mostrarPoliza', params: [id:poliza.id]
+		//redirect action: 'mostrarPoliza', params: [id:poliza.id]
+		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
 		
 		//render (view:'poliza' ,model:[poliza:poliza,partidas:poliza.partidas])
 	}

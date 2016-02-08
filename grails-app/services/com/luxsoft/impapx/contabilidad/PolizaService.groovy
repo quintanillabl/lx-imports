@@ -78,16 +78,16 @@ class PolizaService implements ApplicationListener<PolizaUpdateEvent>{
 		}
     }
 	
-	def agregarPartida(long polizaId, def params){
+	def agregarPartida(Poliza poliza, def params){
 		
 		//println 'Agregando partida: '+params+ 'A poliza: '+polizaId
 		//def poliza=Poliza.findById(polizaId,[fetch:[partidas:'eager']])
-		def poliza=Poliza.get(polizaId)
+		//def poliza=Poliza.get(polizaId)
 		params.id=null
 		
 		def det=new PolizaDet(params)
-		det.fecha=poliza.fecha
-		det.tipo=poliza.tipo
+		//det.fecha=poliza.fecha
+		//det.tipo=poliza.tipo
 		det.debe?:0.0
 		det.haber?:0.0
 		
@@ -96,10 +96,8 @@ class PolizaService implements ApplicationListener<PolizaUpdateEvent>{
 					haber:det.haber,
 					asiento:det.asiento,
 					descripcion:det.descripcion,
-					referencia:det.referencia
-					,fecha:poliza.fecha
-					,tipo:poliza.tipo)
-		poliza.cuadrar()
+					referencia:det.referencia)
+		//poliza.cuadrar()
 		//poliza.save(failOnError:true)
 		/*
 		try {
@@ -110,7 +108,13 @@ class PolizaService implements ApplicationListener<PolizaUpdateEvent>{
 			return poliza
 		}*/
 	}
-	
+
+	def eliminarPartida(def det) {
+		Poliza poliza = det.poliza
+		poliza.removeFromPartidas(det)
+		poliza=poliza.save(failOnError:true)
+	}
+
 	def eliminarPartidas(Poliza poliza,def partidas) {
 		partidas.each {
 			def det=PolizaDet.get(it.toLong())

@@ -7,27 +7,25 @@ class PolizaDeCierreAnualController {
 
     def polizaService
 
-   	def beforeInterceptor = {
-      	if(!session.periodoContable){
-      		session.periodoContable=new Date()
-      	}
-  	}
+   // 	def beforeInterceptor = {
+   //    	if(!session.periodoContable){
+   //    		session.periodoContable=new Date()
+   //    	}
+  	// }
 
-  	def cambiarPeriodo(){
-  		def fecha=params.date('fecha', 'dd/MM/yyyy')
-  		session.periodoContable=fecha
-  		redirect(uri: request.getHeader('referer') )
-  	}	
+  	// def cambiarPeriodo(){
+  	// 	def fecha=params.date('fecha', 'dd/MM/yyyy')
+  	// 	session.periodoContable=fecha
+  	// 	redirect(uri: request.getHeader('referer') )
+  	// }	
   	
   	def index() {
   		def sort=params.sort?:'fecha'
   		def order=params.order?:'desc'
   		def periodo=session.periodoContable
-  		def polizas=Poliza.findAllByTipoAndDescripcionIlikeAndFechaBetween(
+  		def polizas=Poliza.findAllByTipoAndDescripcionIlike(
 			'COMPRAS',
-			'CIERRE ANUAL %'+periodo.toYear(),
-			periodo.inicioDeMes(),
-			periodo.finDeMes(),
+			'CIERRE ANUAL %'+periodo.ejercicio,
 			[sort:sort,order:order]
 			)
   		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]

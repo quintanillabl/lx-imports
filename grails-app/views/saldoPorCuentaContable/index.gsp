@@ -8,7 +8,7 @@
 <body>
 
 <content tag="header">
-	Saldo de cuentas contables Periodo: ${session.periodoContable.asPeriodoText()}
+	Saldo de cuentas contables Periodo: ${session.periodoContable}
 </content>
 	
 <content tag="subHeader">
@@ -38,8 +38,8 @@
     		    	     			format="PDF,HTML" 
     		    	     			name="Balanza"
     		    	     			buttonPosition="top">
-    		    	    						<g:hiddenField name="YEAR" value="${session.periodoContable.toYear()}"/>
-    		    	    						<g:hiddenField name="MES" value="${session.periodoContable.toMonth()}"/>
+    		    	    						<g:hiddenField name="YEAR" value="${session.periodoContable.ejercicio}"/>
+    		    	    						<g:hiddenField name="MES" value="${session.periodoContable.mes}"/>
     		    	    		</g:jasperReport>
 	        		    	</li>
 	        		    </ul>
@@ -106,8 +106,10 @@
 	        </div>
 	    </div>
 	</div>
+
+	<g:render template="/common/selectorDePeriodoContable" bean="${session.periodoContable}"/>
 	
-	<div class="modal fade" id="periodoDialog" tabindex="-1">
+	%{-- <div class="modal fade" id="periodoDialog" tabindex="-1">
 		<div class="modal-dialog ">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -138,7 +140,7 @@
 			<!-- moda-content -->
 		</div>
 		<!-- modal-di -->
-	</div>
+	</div> --}%
 	
 	
 	<script type="text/javascript">
@@ -156,15 +158,15 @@
 	    		"order": []
             });
 
-            $('#data_4 .input-group.date').bootstrapDP({
-                minViewMode: 1,
-                format: 'dd/mm/yyyy',
-                keyboardNavigation: false,
-                forceParse: false,
-                autoclose: true,
-                todayHighlight: true,
+            // $('#data_4 .input-group.date').bootstrapDP({
+            //     minViewMode: 1,
+            //     format: 'dd/mm/yyyy',
+            //     keyboardNavigation: false,
+            //     forceParse: false,
+            //     autoclose: true,
+            //     todayHighlight: true,
 
-            });
+            // });
 
 		});
 	</script>

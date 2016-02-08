@@ -38,7 +38,9 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a data-toggle="modal" data-target="#generarDialog"><i class="icon-plus "></i>Generar</a>
+                                    <g:link action="create" params="[subTipo:subTipo]">
+                                        <i class="icon-plus "></i>Nuevo</a>
+                                    </g:link>
                                 </li>
                                 
                             </ul>
@@ -68,6 +70,8 @@
                             class="table table-striped table-hover table-bordered table-condensed">
                             <thead>
                                 <tr>
+                                    <th>Tipo</th>
+                                    <th>Sub Tipo</th>
                                     <th>Folio</th>
                                     <th>Fecha</th>
                                     <th>Descripción</th>
@@ -80,10 +84,17 @@
                             <tbody>
                                 <g:each in="${polizaInstanceList}" var="row">
                                     <tr>
-                                        <td><g:link controller="poliza" action="edit" id="${row.id}">
-                                            ${fieldValue(bean: row, field: "folio")}
+                                        <td >
+                                            <g:link  action="edit" id="${row.id}">
+                                                ${fieldValue(bean:row,field:"tipo")}
                                             </g:link>
                                         </td>
+                                        <td >
+                                            <g:link  action="edit" id="${row.id}">
+                                                ${fieldValue(bean:row,field:"subTipo")}
+                                            </g:link>
+                                        </td>
+                                        <td>${formatNumber(number:row.folio,format:'####')}</td>
                                         <td><lx:shortDate date="${row.fecha }"/></td>
                                         <td><g:link action="edit" id="${row.id}">
                                             ${fieldValue(bean: row, field: "descripcion")}</g:link>
@@ -101,8 +112,8 @@
             </div>
         </div>
     </div>
-    <g:render template="/poliza/generarPoliza"/>
-    <g:render template="/poliza/cambiarPeriodo"/>
+    %{-- <g:render template="/poliza/generarPoliza"/> --}%
+    <g:render template="/common/selectorDePeriodoContable" bean="${session.periodoContable}"/>
     <script type="text/javascript">
         $(function(){
             $('#grid').dataTable({

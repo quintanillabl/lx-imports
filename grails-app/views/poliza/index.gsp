@@ -1,13 +1,13 @@
 <!doctype html>
 <html>
 <head>
-	<title>Pólizas genéricas </title>
-	<meta name="layout" content="poliza">
+	<title>Pólizas ${subTipo} </title>
+	<meta name="layout" content="poliza2">
 </head>
 <body>
 
 <content tag="header">
-	Polizas genéricas  (${session.periodoContable.asPeriodoText()})
+	Polizas ${subTipo}  (${session.periodoContable})
 </content>
 	
 <content tag="subHeader">

@@ -1,9 +1,9 @@
 
 <g:set var="contabilidadControllers" 
-    value="${['cuentaContable','saldoPorCuentaContable','polizaDeCompras','polizaDeEgresos','polizaDeDiario','polizaDeDiarioFlete','polizaDeDiarioIvaIsr','polizaDeDiarioAplicacionAnticipo','polizaDeIngresos','polizaDeImpuestos','poliza','polizaDeProvisionAnual','polizaDeCierreAnual','diot','cuentaSat']}" />
+    value="${['cuentaContable','saldoPorCuentaContable','polizaDeCompras','polizaDeEgresos','polizaDeDiario','polizaDeDiarioFlete','polizaDeDiarioIvaIsr','polizaDeDiarioAplicacionAnticipo','polizaDeIngresos','polizaDeImpuestos','poliza','polizaDeProvisionAnual','polizaDeCierreAnual','diot','cuentaSat','procesadorDePoliza']}" />
 
 <g:set var="polizaControllers" 
-    value="${['polizaDeCompras','polizaDeEgresos','polizaDeDiario','polizaDeDiarioFlete','polizaDeDiarioIvaIsr','polizaDeDiarioAplicacionAnticipo','polizaDeIngresos','polizaDeImpuestos','poliza','polizaDeProvisionAnual','polizaDeCierreAnual']}" />
+    value="${['poliza','procesadorDePoliza','polizaDeCompras','polizaDeEgresos','polizaDeDiario','polizaDeDiarioFlete','polizaDeDiarioIvaIsr','polizaDeDiarioAplicacionAnticipo','polizaDeIngresos','polizaDeImpuestos','poliza','polizaDeProvisionAnual','polizaDeCierreAnual']}" />
 
 <g:set var="satControllers" 
     value="${['cuentaSat']}" />
@@ -14,9 +14,15 @@
     </a>
     <ul class="nav nav-second-level collapse">
         <sec:ifAnyGranted roles="CONTABILIDAD,ADMIN">
+            
             <li class="${webRequest.controllerName=='cuentaContable'?'active':''}" >
                 <g:link controller="cuentaContable">Cuentas</g:link>
             </li>
+
+            <li class="${webRequest.controllerName=='procesadorDePoliza'?'active':''}" >
+                <g:link controller="procesadorDePoliza">Procesadores</g:link>
+            </li>
+
             <li class="${webRequest.controllerName=='saldoPorCuentaContable'?'active':''}" >
                 <g:link controller="saldoPorCuentaContable">Saldos</g:link>
             </li>
@@ -26,9 +32,27 @@
             <li class="${polizaControllers.contains(webRequest.controllerName)?'active':''}">
                 <a href="#">Pólizas <span class="fa arrow"></span></a>
                 <ul class="nav nav-third-level">
+
+                    <li class="${subTipo=='TODAS'?'active':''}">
+                        <g:link controller="poliza">Todas</g:link>
+                    </li>
+                    <g:each in="${com.luxsoft.lx.contabilidad.ProcesadorDePoliza.list()}" status="i" var="row">
+                        <li class="${subTipo==row.subTipo?'active':''}">
+                            <g:link action="index" params="[subTipo:row.subTipo]">${row.label}</g:link>
+                        </li>
+                    </g:each>
+                    
+                    
+
+                </ul>
+            </li>
+
+            <li >  
+                <a href="#">Pólizas (OLD)<span class="fa arrow"></span></a>
+                <ul class="nav nav-third-level">
                     
                     <li class="${webRequest.controllerName=='polizaDeCompras'?'active':''}">
-                        <g:link controller="polizaDeCompras">Compras</g:link>
+                        <g:link controller="polizaDeCompras" >Compras</g:link>
                     </li>
 
                     <li class="${webRequest.controllerName=='polizaDeEgresos'?'active':''}">
@@ -56,7 +80,7 @@
                         <g:link controller="polizaDeImpuestos">Impuestos</g:link></li>
                     
                     <li class="${webRequest.controllerName=='poliza'?'active':''}">
-                        <g:link controller="poliza">Genérica</g:link></li>
+                        <g:link controller="poliza" params="[subTipo:'GENERICAS']">Genérica</g:link></li>
                     
                     <li class="${webRequest.controllerName=='polizaDeProvisionAnual'?'active':''}">
                         <g:link controller="polizaDeProvisionAnual">Prov Anual (Compras)</g:link></li>

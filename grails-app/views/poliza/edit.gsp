@@ -1,24 +1,26 @@
 <%@ page import="com.luxsoft.impapx.contabilidad.Poliza" %>
 <%@ page import="com.luxsoft.impapx.contabilidad.PolizaDet" %>
+<%@ page import="com.luxsoft.impapx.contabilidad.CuentaContable" %>
 <!doctype html>
 <html>
 <head>
 	<title>Mantenimiento de póliza</title>
 	<meta name="layout" content="luxor">
-	<g:set var="periodo" value="${session.periodoContable}"/>
 	<asset:javascript src="forms/forms.js"/>
 </head>
 <body>
 
 <content tag="header">
-	Poliza ${poliza.tipo } : ${poliza.folio}   Fecha:${poliza.fecha.text()}  Descripción:${poliza.descripcion} 
+	Poliza ${polizaInstance.subTipo } : ${polizaInstance.folio}     Concepto:${polizaInstance.descripcion} (${polizaInstance.fecha.text()})
 	 						
 </content>
 	
 <content tag="subHeader">
-	Debe:  <lx:moneyFormat number="${poliza.debe}"/> 
-	Haber :  <lx:moneyFormat number="${poliza.haber}"/>
-	Cuadre :  <lx:moneyFormat number="${poliza.cuadre}"/>
+	Ejercicio : ${polizaInstance.ejercicio}
+	Mes : ${polizaInstance.mes}
+	Debe:  <lx:moneyFormat number="${polizaInstance.debe}"/> 
+	Haber :  <lx:moneyFormat number="${polizaInstance.haber}"/>
+	Cuadre :  <lx:moneyFormat number="${polizaInstance.cuadre}"/>
 </content>
 
 <content tag="document">
@@ -29,42 +31,48 @@
 	        <div class="ibox float-e-margins">
 	        	
 	        	<div class="ibox-title">
-	        		 <button data-target="#periodoDialog" data-toggle="modal" class="btn btn-outline btn-success  dim">
-	        		 	<i class="fa fa-calendar"></i> 
-	        		</button>
-	        		<lx:refreshButton/>
+	        		
 	        		<div class="btn-group">
-	        		    <button type="button" name="reportes"
-	        		            class="btn btn-info dropdown-toggle" data-toggle="dropdown"
-	        		            role="menu">
-	        		            Reportes <span class="caret"></span>
-	        		    </button>
-	        		    <ul class="dropdown-menu">
-	        		    	<li>
-	     		 				<g:jasperReport
-	     		 						jasper="PolizaContable" 
-	     		 						format="PDF,HTML" 
-	     		 						name="Imprimir">
-	     								<g:hiddenField name="ID" value="${poliza.id}"/>
-	     						</g:jasperReport>
-	        		    	</li>
-	        		    </ul>
+
+	        			<g:link  action="${action}" class="btn btn-default btn-outline" 
+	        				params="[subTipo:polizaInstance.subTipo]" >
+	        			    <i class="fa fa-step-backward"></i> Polizas
+	        			</g:link> 
+	        		    
+						<g:link class="btn btn-default btn-outline" action="print" id="${polizaInstance.id}">
+							<span class="fa fa-print"> Imprimir</span>
+						</g:link>
+
+	     				%{-- <g:jasperReport
+	     						class="btn btn-info "
+	     						jasper="PolizaContable" 
+	     						format="PDF,HTML" 
+	     						name="Imprimir">
+	    						<g:hiddenField name="ID" value="${polizaInstance.id}"/>
+	    				</g:jasperReport> --}%
+	    				<g:if test="${polizaInstance.manual}">
+	    					<a href="#createDialog" data-toggle="modal"
+	    						class="btn btn-primary btn-outline">
+	    						<i class="fa fa-plus "></i> Agregar partida
+	    					</a>
+	    				</g:if>
+	    				<g:else>
+	    					
+	    					<a href="#recalcularDialog" data-toggle="modal"
+	    						class="btn btn-primary btn-outline">
+	    						<i class="fa fa-cogs "></i> Recalcular
+	    					</a>
+	    				</g:else>
+
+	    				<a href="#modificarDialog" data-toggle="modal"
+	    					class="btn btn-default btn-outline">
+	    					<i class="fa fa-pencil-square-o"></i> Modificar
+	    				</a>
+	        		    <g:if test="${!polizaInstance.cierre}">
+	        		    	<lx:deleteButton bean="${polizaInstance}"></lx:deleteButton>
+	        		    </g:if>
 	        		</div>
-	        		<div class="btn-group">
-	        		    <button type="button" name="operaciones"
-	        		            class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-	        		            role="menu">
-	        		            Operaciones <span class="caret"></span>
-	        		    </button>
-	        		    <ul class="dropdown-menu">
-	    	 		 		<li>
-	    	 		 			<a href="#createDialog" data-toggle="modal"><i class="icon-plus "></i>Agregar</a>
-	    	 				</li>
-	    	 		 		<li>
-	    	 		 			<a id="eliminarBtn" href="#createDialog" ><i class="icon-trash "></i>Elimiar</a>
-	    	 				</li>
-	        		    </ul>
-	        		</div>
+	        		
 	        	    <div class="ibox-tools">
 	        	        <a class="collapse-link">
 	        	            <i class="fa fa-chevron-up"></i>
@@ -102,12 +110,13 @@
 	            				<th>Asiento</th>
 	            				<th>Entidad</th>
 	            				<th>Origen</th>
+	            				<th>E</th>
 	            				
 	            				
 	            			</tr>
 	            		</thead>
 	            		<tbody>
-	            			<g:each in="${partidas}" var="row">
+	            			<g:each in="${polizaInstance.partidas}" var="row">
 	            				<tr id="${row.id}">
 	            					<td>
 	            						<g:link action="editPartida" id="${row.id}">
@@ -122,22 +131,32 @@
 	            					<td>${fieldValue(bean: row, field: "asiento")}</td>
 	            					<td>${fieldValue(bean: row, field: "entidad")}</td>
 	            					<td><g:formatNumber number="${row.origen}" format="########"/></td>
+	            					<td>
+	            						<g:if test="${polizaInstance.manual}">
+	            							<g:link action="eliminarPartida" id="${row.id}"
+	            								onclick="return confirm('Eliminar partida?');">
+	            								<i class="fa fa-trash"></i>
+	            							</g:link>
+	            							
+	            						</g:if>
+	            					</td>
 	            				</tr>
 	            			</g:each>
 	            		</tbody>
-	            		<tfoot>
+	            		%{-- <tfoot>
 	            			<tr>
-	            				<th>Cuenta</th>
-	            				<th>Concepto</th>
+	            				<th></th>
+	            				<th></th>
 	            				<th>Debe</th>
 	            				<th>Haber</th>
-	            				<th>Descripcion</th>
-	            				<th>Referencia</th>
-	            				<th>Asiento</th>
-	            				<th>Entidad</th>
-	            				<th>Origen</th>
+	            				<th></th>
+	            				<th></th>
+	            				<th></th>
+	            				<th></th>
+	            				<th></th>
+	            				<th></th>
 	            			</tr>
-	            		</tfoot>
+	            		</tfoot> --}%
 	            	</table>
 	            </div>
 	        </div>
@@ -152,23 +171,28 @@
 						aria-hidden="true">&times;</button>
 					<h4 class="modal-title" id="myModalLabel">Detalle de póliza</h4>
 				</div>
-				<g:form action="agregarPartida" class="form-horizontal" >
-					<div class="modal-body">
+				<g:form action="agregarPartida" class="form-horizontal" id="${polizaInstance.id}">
+					<div id="createPanel" class="modal-body">
 						<f:with bean="${new PolizaDet() }">
-							<f:field property="cuenta" input-required="true"/>
-							<f:field property="debe" input-required="true"/>
-							<f:field property="haber" input-required="true"/>
-							<f:field property="asiento" input-required="true"/>
-							<f:field property="descripcion" input-required="true"/>
-							<f:field property="referencia" input-required="true"/>
+							<f:field property="cuenta"  >
+								<g:hiddenField id="cuentaId" name="cuenta.id" />
+								<input type="text" id="cuentaField" class="form-control" >
+							</f:field>
+							
+							<f:field property="debe"  widget="money"/>
+							<f:field property="haber"  widget="money"/>
+							<f:field property="asiento" widget-class="form-control"/>
+							<f:field property="descripcion" widget-class="form-control"/>
+							<f:field property="referencia" widget-class="form-control"/>
 						</f:with>
 						
 					</div>
 					
 					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						
 						<g:submitButton class="btn btn-info" name="aceptar"
-								value="Buscar" />
+								value="Aceptar" />
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
 					</div>
 				</g:form>
 	
@@ -178,16 +202,83 @@
 		<!-- modal-di -->
 	</div>
 	
+
+	<div class="modal fade" id="modificarDialog" >
+		<div class="modal-dialog ">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">Modificar poliza ${polizaInstance.folio}</h4>
+				</div>
+				<g:form action="update" class="form-horizontal" id="${polizaInstance.id}" method="PUT">
+					<div id="createPanel" class="modal-body">
+
+						<f:with bean="${polizaInstance}">
+							<f:field property="descripcion" widget-class="form-control" label="Concepto"/>
+							<f:field property="manual" widget-class="form-control"/>
+						</f:with>
+						
+					</div>
+					
+					<div class="modal-footer">
+						
+						<g:submitButton class="btn btn-info" name="aceptar"
+								value="Aceptar" />
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+					</div>
+				</g:form>
+	
+			</div>
+			<!-- moda-content -->
+		</div>
+		<!-- modal-di -->
+	</div>
+
+	<div class="modal fade" id="recalcularDialog" >
+		<div class="modal-dialog ">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">Modificar poliza ${polizaInstance.folio}</h4>
+				</div>
+				<g:form action="update" class="form-horizontal" id="${polizaInstance.id}" method="PUT">
+					<div id="createPanel" class="modal-body">
+							<p>Recalcular poliza</p>
+					</div>
+					
+					<div class="modal-footer">
+						
+						<g:submitButton class="btn btn-info" name="aceptar"
+								value="Aceptar" />
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+					</div>
+				</g:form>
+	
+			</div>
+			<!-- moda-content -->
+		</div>
+		<!-- modal-di -->
+	</div>
 	<script type="text/javascript">
 		$(function(){
 			$(".money").autoNumeric({vMin:'-999999999.00',wEmpty:'zero',mRound:'B'});
+			$("#cuentaField").autocomplete({
+				appendTo: "#createPanel",
+				source:'<g:createLink controller="cuentaContable" action="getCuentasDeDetalleJSON"/>',
+				minLength:1,
+				select:function(e,ui){
+					$("#cuentaId").val(ui.item.id);
+				}
+			});
  			$('#grid').dataTable({
                 responsive: true,
-                aLengthMenu: [[100, 150, 200, 250, -1], [100, 150, 200, 250, "Todos"]],
+                //aLengthMenu: [[100, 150, 200, 250, -1], [100, 150, 200, 250, "Todos"]],
                 "language": {
 					"url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
 	    		},
-	    		"dom": 'T<"clear">lfrtip',
+	    		"dom": 'ft',
 	    		"tableTools": {
 	    		    "sSwfPath": "${assetPath(src: 'plugins/dataTables/swf/copy_csv_xls_pdf.swf')}"
 	    		},
@@ -240,7 +331,7 @@
 				$.ajax({
 					url:"${createLink(action:'eliminarPartidas')}",
 					data:{
-						polizaId:${poliza.id},partidas:JSON.stringify(res)
+						polizaId:${polizaInstance.id},partidas:JSON.stringify(res)
 					},
 					success:function(response){
 						

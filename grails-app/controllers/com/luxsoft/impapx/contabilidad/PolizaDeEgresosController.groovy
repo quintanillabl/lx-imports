@@ -17,17 +17,17 @@ class PolizaDeEgresosController {
 	
 	def polizaService
 
-    def beforeInterceptor = {
-    	if(!session.periodoContable){
-    		session.periodoContable=new Date()
-    	}
-	}
+ //    def beforeInterceptor = {
+ //    	if(!session.periodoContable){
+ //    		session.periodoContable=new Date()
+ //    	}
+	// }
 
-	def cambiarPeriodo(){
-		def fecha=params.date('fecha', 'dd/MM/yyyy')
-		session.periodoContable=fecha
-		redirect(uri: request.getHeader('referer') )
-	}	
+	// def cambiarPeriodo(){
+	// 	def fecha=params.date('fecha', 'dd/MM/yyyy')
+	// 	session.periodoContable=fecha
+	// 	redirect(uri: request.getHeader('referer') )
+	// }	
 	
 	def index() {
 		def sort=params.sort?:'fecha'

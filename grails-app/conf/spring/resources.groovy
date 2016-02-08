@@ -6,6 +6,7 @@ import com.luxsoft.cfdi.CfdiSellador
 import com.luxsoft.cfdi.CfdiTimbrador
 import com.luxsoft.lx.MarshallerRegistrar
 
+
 // Place your Spring DSL code here
 beans = {
 	
@@ -63,6 +64,8 @@ beans = {
 	}
 
 	lxRegistar(MarshallerRegistrar){}
+
+	
 	
 	
 }

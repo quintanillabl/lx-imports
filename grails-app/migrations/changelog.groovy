@@ -34,4 +34,16 @@ databaseChangeLog = {
 	*/
 
 	include file: 'cheque-fix-001.groovy'
+
+	
+
+	include file: 'ajuste-polizas-001.groovy'
+
+	include file: 'ajuste-polizas-002.groovy'
+
+	include file: 'ajuste-polizas-003.groovy'
+
+	
+
+	include file: 'poliza-det-fix.groovy'
 }

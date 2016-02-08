@@ -37,10 +37,10 @@ class ChequeController {
 		params.sort="id"
 		params.order="desc"
 		def periodo=session.periodoTesoreria
-		// def list=Cheque.findAll("from Cheque c where date(c.fechaImpresion) between ? and ? order by c.fechaImpresion desc",
-		// 	[periodo.inicioDeMes(),periodo.finDeMes()],
-		// 	params)
-		def list = Cheque.list(params)
+		def list=Cheque.findAll("from Cheque c where date(c.fechaImpresion) between ? and ? order by c.fechaImpresion desc",
+			[periodo.inicioDeMes(),periodo.finDeMes()],
+			params)
+		//def list = Cheque.list(params)
         [chequeInstanceList:list]
     }
 

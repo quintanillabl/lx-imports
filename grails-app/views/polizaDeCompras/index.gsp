@@ -7,7 +7,7 @@
 <body>
 
 <content tag="header">
-	Polizas de compras (${session.periodoContable.asPeriodoText()})
+	Polizas de compras (${session.periodoContable})
 </content>
 	
 <content tag="subHeader">
@@ -37,8 +37,8 @@
     		    	     			format="PDF,HTML" 
     		    	     			name="Balanza"
     		    	     			buttonPosition="top">
-    		    	    						<g:hiddenField name="YEAR" value="${session.periodoContable.toYear()}"/>
-    		    	    						<g:hiddenField name="MES" value="${session.periodoContable.toMonth()}"/>
+    		    	    						<g:hiddenField name="YEAR" value="${session.periodoContable.ejercicio}"/>
+    		    	    						<g:hiddenField name="MES" value="${session.periodoContable.mes}"/>
     		    	    		</g:jasperReport>
 	        		    	</li>
 	        		    </ul>
@@ -105,7 +105,8 @@
 
 	<g:render template="/poliza/generarPoliza"/>
 	
-	<g:render template="/poliza/cambiarPeriodo"/>
+	%{-- <g:render template="/poliza/cambiarPeriodo"/> --}%
+	<g:render template="/common/selectorDePeriodoContable" bean="${session.periodoContable}"/>
 	
 	
 	<script type="text/javascript">

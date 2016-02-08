@@ -18,23 +18,23 @@ class SaldoPorCuentaContableController {
 	
 	def saldoPorCuentaContableService
 
-    def beforeInterceptor = {
-    	if(!session.periodoContable){
-    		session.periodoContable=new Date()
-    	}
-	}
+ //    def beforeInterceptor = {
+ //    	if(!session.periodoContable){
+ //    		session.periodoContable=new Date()
+ //    	}
+	// }
 
-	def cambiarPeriodo(){
-		def fecha=params.date('fecha', 'dd/MM/yyyy')
-		session.periodoContable=fecha
-		redirect(uri: request.getHeader('referer') )
-	}	
+	// def cambiarPeriodo(){
+	// 	def fecha=params.date('fecha', 'dd/MM/yyyy')
+	// 	session.periodoContable=fecha
+	// 	redirect(uri: request.getHeader('referer') )
+	// }	
 	
 	def index() {
 		def periodo=session.periodoContable
 		def saldos=SaldoPorCuentaContable
 			.findAll("from SaldoPorCuentaContable c where c.cuenta.detalle=? and c.year=? and c.mes=? order by c.cuenta.clave"
-			,[false,periodo.toYear(),periodo.toMonth()])
+			,[false,periodo.ejercicio,periodo.mes])
 		[saldoPorCuentaContableInstanceList: saldos, saldoPorCuentaContableInstanceTotal: saldos.size()]
 	}
 

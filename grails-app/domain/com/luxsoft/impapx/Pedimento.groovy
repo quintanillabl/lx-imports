@@ -133,6 +133,25 @@ class Pedimento {
 
 
 	}
+
+	/**
+	 * Este metodo se ocupa en la poliza de compra
+	 * 
+	 * @return [description]
+	 */
+	def BigDecimal calcularImpuestoDinamico(){
+		def impuesto=0
+		impuesto=embarques.sum (0.0,{
+			it.importe*tipoDeCambio*(this.impuestoTasa/100)
+			}
+		)
+		impuesto=impuesto.setScale(2, BigDecimal.ROUND_HALF_UP);
+			def iva=0
+		def ivaPrev=Rounding.round(this.prevalidacion*(1+this.impuestoTasa/100),0)
+		iva=(this.dta+arancel)*(1+this.impuestoTasa/100)
+		impuesto=Rounding.round(impuesto+iva,0)+ivaPrev
+		return impuesto
+	}
 	
 	
 	/*
