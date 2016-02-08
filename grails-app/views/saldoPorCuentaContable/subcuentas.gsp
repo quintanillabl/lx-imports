@@ -42,8 +42,8 @@
 	        		    	 			format="PDF" 
 	        		    	 			name="Balanza de comprobación"
 	        		    	 			buttonPosition="top">
-	        		    							<g:hiddenField name="YEAR" value="${session.periodoContable.toYear()}"/>
-	        		    							<g:hiddenField name="MES" value="${session.periodoContable.toMonth()}"/>
+	        		    							<g:hiddenField name="YEAR" value="${session.periodoContable.ejercicio}"/>
+	        		    							<g:hiddenField name="MES" value="${session.periodoContable.mes}"/>
 	        		    				</g:jasperReport>
 	        		    	 		</li>
 	        		    	 		
@@ -53,8 +53,8 @@
 	        		    	 			format="PDF" 
 	        		    	 			name="Balance general"
 	        		    	 			buttonPosition="top">
-	        		    							<g:hiddenField name="YEAR" value="${session.periodoContable.toYear()}"/>
-	        		    							<g:hiddenField name="MES" value="${session.periodoContable.toMonth()}"/>
+	        		    							<g:hiddenField name="YEAR" value="${session.periodoContable.ejercicio}"/>
+	        		    							<g:hiddenField name="MES" value="${session.periodoContable.mes}"/>
 	        		    				</g:jasperReport>
 	        		    	 		</li>
 	        		    	 		
@@ -64,8 +64,8 @@
 	        		    	 			format="PDF" 
 	        		    	 			name="Estado de resultados"
 	        		    	 			buttonPosition="top">
-	        		    							<g:hiddenField name="YEAR" value="${session.periodoContable.toYear()}"/>
-	        		    							<g:hiddenField name="MES" value="${session.periodoContable.toMonth()}"/>
+	        		    							<g:hiddenField name="YEAR" value="${session.periodoContable.ejercicio}"/>
+	        		    							<g:hiddenField name="MES" value="${session.periodoContable.mes}"/>
 	        		    				</g:jasperReport>
 	        		    	 		</li>
 	        		    	 		
@@ -75,8 +75,8 @@
 	        		    	 			format="PDF" 
 	        		    	 			name="Auxiliar "
 	        		    	 			buttonPosition="top">
-	        		    							<g:hiddenField name="YEAR" value="${session.periodoContable.toYear()}"/>
-	        		    							<g:hiddenField name="MES" value="${session.periodoContable.toMonth()}"/>
+	        		    							<g:hiddenField name="YEAR" value="${session.periodoContable.ejercicio}"/>
+	        		    							<g:hiddenField name="MES" value="${session.periodoContable.mes}"/>
 	        		    				</g:jasperReport>
 	        		    	 		</li>
 	        		    </ul>
@@ -142,7 +142,7 @@
 	    </div>
 	</div>
 	
-	<div class="modal fade" id="periodoDialog" tabindex="-1">
+	%{-- <div class="modal fade" id="periodoDialog" tabindex="-1">
 		<div class="modal-dialog ">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -173,12 +173,12 @@
 			<!-- moda-content -->
 		</div>
 		<!-- modal-di -->
-	</div>
+	</div> --}%
 	
 	
 	<script type="text/javascript">
 		$(function(){
- 			$('#grid').dataTable({
+ 			$('#grid2').dataTable({
                 responsive: true,
                 aLengthMenu: [[100, 150, 200, 250, -1], [100, 150, 200, 250, "Todos"]],
                 "language": {

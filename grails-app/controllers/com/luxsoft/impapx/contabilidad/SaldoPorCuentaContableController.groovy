@@ -164,35 +164,26 @@ class SaldoPorCuentaContableController {
 	
 	def cierreAnual(){
 		
-		if(!session.periodoCierre){
-		   session.periodoCierre=new Date()
-	   }
-		if(params.year){
-			
-			session.periodoCierre=params.year
-			
-		}
-		def periodoCierre=session.periodoCierre
-		println 'Presentando cierre del periodo:'+periodoCierre.toYear()
+		def periodo = session.periodoContable
+		
+		println 'Presentando cierre del periodo:'+periodo.ejercicio
 		
 		def sort=params.sort?:'fecha'
 		def order=params.order?:'desc'
 		
-		def saldos=SaldoPorCuentaContable.findAll("from SaldoPorCuentaContable c where c.cuenta.detalle=? and c.year=? and c.mes=? order by c.cuenta.clave"
-			,[false,periodoCierre.toYear(),13])
-		//println 'Saldos existentes:'+saldos.size()
+		def saldos=SaldoPorCuentaContable.findAll(
+			"from SaldoPorCuentaContable c where c.cuenta.detalle=? and c.year=? and c.mes=? order by c.cuenta.clave"
+			,[false,periodo.ejercicio,13])
 		[saldoPorCuentaContableInstanceList: saldos
 			, saldoPorCuentaContableInstanceTotal: saldos.size()
 			,periodoCierre:periodoCierre]
 	}
 	
 	def generarCierreAnual(){
-		println 'Generando cierre anual: '+session.periodoCierre
-		
-		saldoPorCuentaContableService.cierreAnual(session.periodoCierre)
-		
-		
-		redirect action:'cierreAnual'
+		log.info 'Generando cierre anual: '+session.periodoContable
+		saldoPorCuentaContableService.cierreAnual(session.periodoContable)
+		flash.message = "Saldos para el cierre anual generados"
+		redirect action:'index'
 		
 	}
 	

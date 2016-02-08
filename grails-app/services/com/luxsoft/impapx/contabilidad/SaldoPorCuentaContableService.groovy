@@ -127,72 +127,56 @@ class SaldoPorCuentaContableService {
 		}
 	}
 	
-	def cierreAnual(year){
+	def cierreAnual(def periodoContable){
+		def fecha = periodoContable.toPeriodo().fechaFinal
+		def ejercicio = periodoContable.ejercicio
+
 		def cuentas=CuentaContable.findAllByDetalle('false')
-		println 'Generando cierre para : '+year
+		log.info 'Generando cierre para : '+ejercicio
 		cuentas.each{ c->
 			c.subCuentas.each{
-				//println 'Procesando cuenta: '+it.clave
-				cierre(year,year.toYear(),it)
+				//log.info ("Generando cierre para $c.clave $ejercicio ${fecha}")
+				cierre(fecha,ejercicio,it)
 			}
-			//println 'Actualizando saldo para la cuenta de mayor: '+c.clave
-			cierre(year,year.toYear(),c)
+			cierre(fecha,ejercicio,c)
 			
 		}
 	}
 	
 	def cierre(Date fecha,int year, def cuenta){
 		
-		//def fecha=calendar.getTime().inicioDeMes()
-		//def fecha=new Date(2013,8,1)
-		
-		//def fecha=new SimpleDateFormat("yyyy").parse(year.to)
-		println 'Cerrando cuenta'+cuenta+' Per:'+year
+		log.info 'Cerrando cuenta'+cuenta+' Per:'+year
 		if(cuenta.detalle){
 			
-			//println 'Actualizando saldo para cuenta: '+cuenta
+			
 			def saldoInicial=SaldoPorCuentaContable.findByCuentaAndYearAndMes(cuenta,year,12)
 			assert saldoInicial ,'No existe el saldo inicial para la cuenta: '+cuenta+' año: '+year+ ' mes '+12
-				//.executeQuery("select sum(d.debe-d.haber) from PolizaDet d where d.cuenta=? and year(d.poliza.fecha)<?",[cuenta,year])
 			
-			/*
-			def row=PolizaDet.executeQuery(
-				"select sum(d.debe),sum(d.haber) from PolizaDet d where d.cuenta=? and year(d.poliza.fecha)=? "
-				,[cuenta,year])
-			*/
-			
-			//def debe=row.get(0)[0]?:0.0
 			def debe=0.0
 			def haber=0.0
-			//def haber=row.get(0)[1]?:0.0
+			
 			def saldo=SaldoPorCuentaContable.findOrCreateWhere([cuenta:cuenta,year:year,mes:13])
 			saldo.fecha=fecha
 			saldo.cierre=fecha
 			saldo.saldoInicial=saldoInicial.saldoFinal
-			//saldo.saldoInicial=saldoInicial.get(0)?:0.0
+			
 			saldo.debe=debe
 			saldo.haber=haber
 			saldo.saldoFinal=saldo.saldoInicial+debe-haber
 			def res=saldo.save(failOnError:true)
-			println res
+			log.info "Regisrando saldo de cuenta de detalle ${saldo.cuenta.clave} id:${saldo.id}"
 		}else{
-			//println 'Actualizando saldo para cuenta de mayor: '+cuenta
-			//def saldoInicial=PolizaDet.executeQuery("select sum(d.debe-d.haber) from PolizaDet d where d.cuenta.padre=? and year(d.poliza.fecha)<?",[cuenta,year])
 			
-		def saldoInicial=SaldoPorCuentaContable.findByCuentaAndYearAndMes(cuenta,year,12)
-		assert saldoInicial ,'No existe el saldo inicial para la cuenta: '+cuenta+' año: '+year+ ' mes '+12
-		println 'Saldo inicial localizado: '+saldoInicial.id
-		
-			//println 'Saldo inicial: '+saldoInicial.get(0)
-			//def debe=row.get(0)[0]?:0.0
+			def saldoInicial=SaldoPorCuentaContable.findByCuentaAndYearAndMes(cuenta,year,12)
+			assert saldoInicial ,'No existe el saldo inicial para la cuenta: '+cuenta+' año: '+year+ ' mes '+12
+			
 			def debe=0.0
-			//def haber=row.get(0)[1]?:0.0
 			def haber=0.0
 			def saldo=SaldoPorCuentaContable.findOrCreateWhere([cuenta:cuenta,year:year,mes:13])
 			
 			saldo.fecha=fecha
 			saldo.cierre=fecha
-			//saldo.saldoInicial=saldoInicial.get(0)?:0.0
+			
 			saldo.saldoInicial=saldoInicial.saldoFinal
 			saldo.debe=debe
 			saldo.haber=haber
