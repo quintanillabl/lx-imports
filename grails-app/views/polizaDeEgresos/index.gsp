@@ -7,7 +7,7 @@
 <body>
 
 <content tag="header">
-	Polizas de egresos (${session.periodoContable.asPeriodoText()})
+	Polizas de egresos (${session.periodoContable})
 </content>
 	
 <content tag="subHeader">

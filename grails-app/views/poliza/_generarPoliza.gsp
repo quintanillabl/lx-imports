@@ -16,7 +16,7 @@
 							<div class="input-group date">
 							    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
 							    <input id="fecha" type="text" name="fecha" class="form-control" 
-							    	value="${new Date().format('dd/MM/yyyy')}"/>
+							    	value=""/>
 							</div>
 						</div>
 					</div>

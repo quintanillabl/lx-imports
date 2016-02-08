@@ -105,6 +105,7 @@
     <g:render template="/poliza/generarPoliza"/>
 
     %{-- <g:render template="/poliza/cambiarPeriodo"/> --}%
+    <g:render template="/common/selectorDePeriodoContable" bean="${session.periodoContable}"/>
     
     <script type="text/javascript">
         $(function(){
@@ -121,22 +122,15 @@
                 "order": []
             });
 
-            $('#data_4 .input-group.date').bootstrapDP({
-                minViewMode: 1,
+            $("#fecha").bootstrapDP({
+                changeMonth: false,
                 format: 'dd/mm/yyyy',
                 keyboardNavigation: false,
                 forceParse: false,
                 autoclose: true,
                 todayHighlight: true,
-
-            });
-            $('#data_5 .input-group.date').bootstrapDP({
-                format: 'dd/mm/yyyy',
-                keyboardNavigation: false,
-                forceParse: false,
-                autoclose: true,
-                todayHighlight: true,
-
+                startDate:"${formatDate(date:session.periodoContable.toPeriodo().fechaInicial,format:'dd/MM/yyyy')}",
+                endDate:"${formatDate(date:session.periodoContable.toPeriodo().fechaFinal,format:'dd/MM/yyyy')}"
             });
 
         });

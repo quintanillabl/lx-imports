@@ -17,24 +17,19 @@ class PolizaDeEgresosController {
 	
 	def polizaService
 
- //    def beforeInterceptor = {
- //    	if(!session.periodoContable){
- //    		session.periodoContable=new Date()
- //    	}
-	// }
-
-	// def cambiarPeriodo(){
-	// 	def fecha=params.date('fecha', 'dd/MM/yyyy')
-	// 	session.periodoContable=fecha
-	// 	redirect(uri: request.getHeader('referer') )
-	// }	
+ 
 	
 	def index() {
 		def sort=params.sort?:'fecha'
 		def order=params.order?:'desc'
 		def periodo=session.periodoContable
-		def polizas=Poliza.findAllByTipoAndFechaBetween('EGRESO',periodo.inicioDeMes(),periodo.finDeMes(),[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+		//def polizas=Poliza.findAllByTipoAndFechaBetween('EGRESO',periodo.inicioDeMes(),periodo.finDeMes(),[sort:sort,order:order])
+		def q = Poliza.where{
+			subTipo == 'EGRESO' && 
+			ejercicio == periodo.ejercicio && 
+			mes==periodo.mes}
+		//[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+		respond q.list(params)
 	}
 	 
 	def mostrarPoliza(long id){
@@ -59,6 +54,9 @@ class PolizaDeEgresosController {
 			def req=pago.requisicion
 			def descripcion="$fp-$egreso.referenciaBancaria $req.proveedor (Proveedores extranjeros) id:$egreso.id"
 			Poliza poliza=new Poliza(tipo:'EGRESO',folio:1, fecha:dia,descripcion:descripcion,partidas:[])
+			poliza.ejercicio = session.periodoContable.ejercicio
+			poliza.mes = session.periodoContable.mes
+			poliza.subTipo= 'EGRESO'
 			
 			
 			def asiento='PAGO CXP'
@@ -202,7 +200,7 @@ class PolizaDeEgresosController {
 		procesarAnticiposCompra(dia)
 		procesarChequesCancelados(dia)
 		procesarPagoChoferes(dia)
-		redirect action: 'list'
+		redirect action: 'index'
 	}
 	
 	
@@ -234,6 +232,9 @@ class PolizaDeEgresosController {
 			def req=pago.requisicion
 			def descripcion="$fp-$egreso.referenciaBancaria $req.proveedor ($req.comentario) id:$egreso.id"
 			Poliza poliza=new Poliza(tipo:'EGRESO', fecha:dia,descripcion:descripcion,partidas:[])
+			poliza.ejercicio = session.periodoContable.ejercicio
+			poliza.mes = session.periodoContable.mes
+			poliza.subTipo= 'EGRESO'
 			
 			//def clave="201-$req.proveedor.subCuentaOperativa"
 			def asiento='PAGO DE GASTOS'
@@ -508,7 +509,10 @@ class PolizaDeEgresosController {
 			def req=pago.requisicion
 			def descripcion="$fp-$egreso.referenciaBancaria $req.proveedor ($req.concepto) id:$egreso.id"
 			Poliza poliza=new Poliza(tipo:'EGRESO', fecha:dia,descripcion:descripcion,partidas:[])
-			
+			poliza.ejercicio = session.periodoContable.ejercicio
+			poliza.mes = session.periodoContable.mes
+			poliza.subTipo= 'EGRESO'
+
 			def clave="201-$req.proveedor.subCuentaOperativa"
 			def asiento='ANTICIPO IMPORTACION'
 			
@@ -569,6 +573,9 @@ class PolizaDeEgresosController {
 			def req=pago.requisicion
 			def descripcion="$fp-$egreso.referenciaBancaria $req.proveedor ($req.concepto) id:$egreso.id"
 			Poliza poliza=new Poliza(tipo:'EGRESO', fecha:dia,descripcion:descripcion,partidas:[])
+			poliza.ejercicio = session.periodoContable.ejercicio
+			poliza.mes = session.periodoContable.mes
+			poliza.subTipo= 'EGRESO'
 			
 			def clave="201-$req.proveedor.subCuentaOperativa"
 			def asiento='ANTICIPO_COMPRA'
@@ -655,7 +662,10 @@ class PolizaDeEgresosController {
 			
 			def descripcion="CH-$egreso.referenciaBancaria $egreso.comentario id:$egreso.id"
 			Poliza poliza=new Poliza(tipo:'EGRESO', fecha:dia,descripcion:descripcion,partidas:[])
-			
+			poliza.ejercicio = session.periodoContable.ejercicio
+			poliza.mes = session.periodoContable.mes
+			poliza.subTipo= 'EGRESO'
+
 			poliza.debe=poliza.partidas.sum (0.0,{it.debe})
 			poliza.haber=poliza.partidas.sum(0.0,{it.haber})
 			poliza=polizaService.salvarPoliza(poliza)
@@ -675,6 +685,10 @@ class PolizaDeEgresosController {
 			def req=pago.requisicion
 			def descripcion="$fp-$egreso.referenciaBancaria $req.proveedor ($req.concepto) id:$egreso.id"
 			Poliza poliza=new Poliza(tipo:'EGRESO', fecha:dia,descripcion:descripcion,partidas:[])
+			poliza.ejercicio = session.periodoContable.ejercicio
+			poliza.mes = session.periodoContable.mes
+			poliza.subTipo= 'EGRESO'
+			
 			def asiento='PAGO_FLETE'
 			
 			//Abono a bancos
