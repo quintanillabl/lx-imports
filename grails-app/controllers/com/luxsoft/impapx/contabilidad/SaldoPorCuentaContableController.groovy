@@ -177,7 +177,7 @@ class SaldoPorCuentaContableController {
 	
 	def actualizarCierreAnual(){
 		println 'Actualizando cierre anual: '+session.periodoCierre
-		saldoPorCuentaContableService.actualizarCierreAnual(session.periodoCierre.toYear())
-		redirect action:'cierreAnual'
+		saldoPorCuentaContableService.actualizarCierreAnual(session.periodoContable.ejercicio)
+		redirect action:'index'
 	}
 }
