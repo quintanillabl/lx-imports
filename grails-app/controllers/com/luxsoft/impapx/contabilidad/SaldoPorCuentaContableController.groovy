@@ -58,7 +58,7 @@ class SaldoPorCuentaContableController {
 	
 	def actualizarSaldos(){
 		def periodo=session.periodoContable
-		saldoPorCuentaContableService.actualizarSaldos(periodo.toYear(), periodo.toMonth())
+		saldoPorCuentaContableService.actualizarSaldos(periodo.ejercicio, periodo.mes)
 		redirect action:'index'
 	}
 	
