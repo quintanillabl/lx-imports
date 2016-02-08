@@ -1,34 +1,17 @@
 package com.luxsoft.impapx.contabilidad
 
 import grails.plugin.springsecurity.annotation.Secured
+import com.luxsoft.utils.*
 
 @Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeCierreAnualController {
 
     def polizaService
 
-   // 	def beforeInterceptor = {
-   //    	if(!session.periodoContable){
-   //    		session.periodoContable=new Date()
-   //    	}
-  	// }
-
-  	// def cambiarPeriodo(){
-  	// 	def fecha=params.date('fecha', 'dd/MM/yyyy')
-  	// 	session.periodoContable=fecha
-  	// 	redirect(uri: request.getHeader('referer') )
-  	// }	
-  	
+   	
   	def index() {
-  		def sort=params.sort?:'fecha'
-  		def order=params.order?:'desc'
-  		def periodo=session.periodoContable
-  		def polizas=Poliza.findAllByTipoAndDescripcionIlike(
-			'COMPRAS',
-			'CIERRE ANUAL %'+periodo.ejercicio,
-			[sort:sort,order:order]
-			)
-  		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+  		def q = Poliza.where{subTipo == 'CIERRE_ANUAL'}
+  		[polizaInstanceList: q.list()]
   	}
 	 
 	def mostrarPoliza(long id){
@@ -42,13 +25,18 @@ class PolizaDeCierreAnualController {
 		
 	}
 	
-	def generarPoliza(String fecha){
-		Date dia=Date.parse("dd/MM/yyyy",fecha)
+	def generarPoliza(){
+
+		def ejercicio = session.periodoContable.ejercicio
 		
-		params.dia=dia
+		Date dia = Periodo.getPeriodoAnual(ejercicio).fechaFinal
 		
 		//Prepara la poliza
 		Poliza poliza=new Poliza(tipo:'GENERICA',folio:1, fecha:dia,descripcion:'CIERRE ANUAL '+dia.toYear(),partidas:[])
+		poliza.ejercicio = session.periodoContable.ejercicio
+		poliza.mes = session.periodoContable.mes
+		poliza.subTipo= 'CIERRE_ANUAL'
+
 		// Procesadores
 		generar(poliza, dia)
 		cancelacionIETU(poliza, dia)

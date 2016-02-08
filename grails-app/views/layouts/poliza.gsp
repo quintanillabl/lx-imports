@@ -101,8 +101,11 @@
             </div>
         </div>
     </div>
+    
     <g:render template="/poliza/generarPoliza"/>
-    <g:render template="/poliza/cambiarPeriodo"/>
+
+    %{-- <g:render template="/poliza/cambiarPeriodo"/> --}%
+    
     <script type="text/javascript">
         $(function(){
             $('#grid').dataTable({
