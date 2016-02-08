@@ -101,7 +101,7 @@ class PolizaDeCierreAnualController {
 		def resultado=cargos-abonos
 		
 		//CuentaContable cuenta=CuentaContable.buscarPorClave("304-0013")
-		def clave = "304-"+ejercicio.toString()
+		def clave = "304-"+poliza.ejercicio.toString()
 		CuentaContable cuenta=CuentaContable.find{clave==clave}
 		if(resultado){
 			poliza.addToPartidas(
