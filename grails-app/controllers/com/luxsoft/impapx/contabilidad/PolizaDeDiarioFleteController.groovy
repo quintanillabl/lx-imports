@@ -26,36 +26,37 @@ class PolizaDeDiarioFleteController {
 
 	def polizaService
 	
-    def beforeInterceptor = {
-    	if(!session.periodoContable){
-    		session.periodoContable=new Date()
-    	}
-	}
+	// def index() {
+	// 	def sort=params.sort?:'fecha'
+	// 	def order=params.order?:'desc'
+	// 	def periodo=session.periodoContable
+	// 	def polizas=Poliza.findAllByTipoAndDescripcionIlikeAndFechaBetween(
+	// 		'DIARIO',
+	// 		'%Flete%',
+	// 		periodo.inicioDeMes(),
+	// 		periodo.finDeMes(),
+	// 		[sort:sort,order:order]
+	// 		)
+	// 	[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+	// }
 
-	def cambiarPeriodo(){
-		def fecha=params.date('fecha', 'dd/MM/yyyy')
-		session.periodoContable=fecha
-		redirect(uri: request.getHeader('referer') )
-	}	
-	
 	def index() {
 		def sort=params.sort?:'fecha'
 		def order=params.order?:'desc'
 		def periodo=session.periodoContable
-		def polizas=Poliza.findAllByTipoAndDescripcionIlikeAndFechaBetween(
-			'DIARIO',
-			'%Flete%',
-			periodo.inicioDeMes(),
-			periodo.finDeMes(),
-			[sort:sort,order:order]
-			)
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-	}    
-	 
-	def mostrarPoliza(long id){
-		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
-		render (view:'poliza' ,model:[poliza:poliza,partidas:poliza.partidas])
+		
+		def q = Poliza.where {
+			subTipo == 'DIARIO_FLETE' && ejercicio == periodo.ejercicio && mes == periodo.mes 
+
+		}
+		respond q.list(params)
+		
 	}
+
+	def mostrarPoliza(long id){
+			def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
+			render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
+		}
 	 
 	
 	
@@ -68,7 +69,10 @@ class PolizaDeDiarioFleteController {
 		
 		//Prepara la poliza
 		Poliza poliza=new Poliza(tipo:'DIARIO',folio:1, fecha:dia,descripcion:'Poliza (Flete)'+dia.text(),partidas:[])
-		
+		poliza.ejercicio = session.periodoContable.ejercicio
+		poliza.mes = session.periodoContable.mes
+		poliza.subTipo= 'DIARIO_FLETE'
+
 		procesarGastosChoferes(poliza ,dia)
 		
 		//Salvar la poliza

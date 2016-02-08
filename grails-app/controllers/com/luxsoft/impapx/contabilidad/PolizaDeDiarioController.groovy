@@ -28,32 +28,27 @@ class PolizaDeDiarioController {
 
 	def polizaService
 	
-    def beforeInterceptor = {
-    	if(!session.periodoContable){
-    		session.periodoContable=new Date()
-    	}
-	}
-
-	def cambiarPeriodo(){
-		def fecha=params.date('fecha', 'dd/MM/yyyy')
-		session.periodoContable=fecha
-		redirect(uri: request.getHeader('referer') )
-	}	
-	
 	def index() {
 		def sort=params.sort?:'fecha'
 		def order=params.order?:'desc'
 		def periodo=session.periodoContable
-		def polizas=Poliza.findAllByTipoAndFechaBetween('DIARIO',periodo.inicioDeMes(),periodo.finDeMes(),[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+		
+		def q = Poliza.where {
+			subTipo == 'DIARIO' && ejercicio == periodo.ejercicio && mes == periodo.mes
+
+		}
+		respond q.list(params)
+		
 	}
 	 
+	
 	def mostrarPoliza(long id){
 		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
-		render (view:'poliza' ,model:[poliza:poliza,partidas:poliza.partidas])
+		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
 	}
-	
+
 	def generarPoliza(String fecha){
+		
 		Date dia=Date.parse("dd/MM/yyyy",fecha)
 		
 		params.dia=dia
@@ -62,6 +57,9 @@ class PolizaDeDiarioController {
 		
 		//Prepara la poliza
 		Poliza poliza=new Poliza(tipo:'DIARIO',folio:1, fecha:dia,descripcion:'Poliza '+dia.text(),partidas:[])
+		poliza.ejercicio = session.periodoContable.ejercicio
+		poliza.mes = session.periodoContable.mes
+		poliza.subTipo= 'DIARIO'
 		
 		//Collecciones usadas mas de una vez
 		def facturas=[]
@@ -78,14 +76,6 @@ class PolizaDeDiarioController {
 			if(venta.clase=='generica')
 				servicios.add(venta)
 		}
-		println 'Facturas de importacion: '+facturas.size()
-		println 'Facturas de servicios: '+servicios.size()
-		//def facturas=Venta.findAll("from Venta v  where date(v.fechaFactura)=? and v.tipo=? and (v.clase is null or v.clase='IMPORTACION') ",[dia,'VENTA'])
-		
-		//Collecciones usadas mas de una vez
-		
-		
-		//def servicios=Venta.findAll("from Venta v  where date(v.fechaFactura)=? and v.tipo=? and v.clase='generica' ",[dia,'VENTA'])
 		
 		
 		// Procesadores

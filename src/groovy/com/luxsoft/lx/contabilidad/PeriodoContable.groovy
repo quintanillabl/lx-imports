@@ -28,6 +28,9 @@ class PeriodoContable implements Serializable{
             return Periodo.getPeriodoEnUnMes(mes-1,ejercicio)
     }
 
+    String asPeriodoText(){
+        return toString()
+    }
 
 	
 }
