@@ -72,7 +72,7 @@ class PolizaDeIngresosController {
 			pago.aplicaciones.each{aplic->
 				
 				//Abono a clientes
-				def clave="106-"+aplic.abono.cliente.subCuentaOperativa
+				def clave="105-"+aplic.abono.cliente.subCuentaOperativa
 				poliza.addToPartidas(
 					cuenta:CuentaContable.buscarPorClave(clave),
 					debe:0.0,

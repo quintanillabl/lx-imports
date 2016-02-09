@@ -115,7 +115,7 @@ class PolizaDeDiarioController {
 		facturas.each{ fac->
 			
 			//Cargo a clientes
-			def clave="106-$fac.cliente.subCuentaOperativa"
+			def clave="105-$fac.cliente.subCuentaOperativa"
 			def cuenta=CuentaContable.findByClave(clave)
 			//println 'Cuenta localizada: '+cuenta
 			if(!cuenta) throw new RuntimeException("No existe la cuenta para el cliente: "+fac.cliente+ 'Clave: '+clave)
@@ -175,7 +175,7 @@ class PolizaDeDiarioController {
 		servicios.each{ srv->
 			
 			//Cargo a clientes
-			def clave="106-$srv.cliente.subCuentaOperativa"
+			def clave="105-$srv.cliente.subCuentaOperativa"
 			def cuenta=CuentaContable.findByClave(clave)
 			//println 'Cuenta localizada: '+cuenta
 			if(!cuenta) throw new RuntimeException("No existe la cuenta para el cliente: "+srv.cliente+ 'Clave: '+clave)
@@ -236,7 +236,7 @@ class PolizaDeDiarioController {
 			
 			//Abono al inventario
 			poliza.addToPartidas(
-				cuenta:CuentaContable.findByClave('119-0001'),
+				cuenta:CuentaContable.findByClave('115-0001'),
 				debe:0.0,
 				haber:costoNeto,
 				asiento:asiento,
@@ -682,7 +682,7 @@ class PolizaDeDiarioController {
 			
 			//Abono a cliente
 			//def importe=nota.total
-			def clave="106-$nota.cliente.subCuentaOperativa"
+			def clave="105-$nota.cliente.subCuentaOperativa"
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave(clave),
 				debe:0.0,
@@ -890,7 +890,7 @@ class PolizaDeDiarioController {
 			
 			//Cargo a cliente
 			
-			def clave="106-$nota.cliente.subCuentaOperativa"
+			def clave="105-$nota.cliente.subCuentaOperativa"
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave(clave),
 				debe:nota.total,

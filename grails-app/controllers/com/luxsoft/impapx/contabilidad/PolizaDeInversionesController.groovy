@@ -57,7 +57,7 @@ class PolizaDeInversionesController {
 		facturas.each{ fac->
 			
 			//Cargo a clientes
-			def clave="106-$fac.cliente.subCuentaOperativa"
+			def clave="105-$fac.cliente.subCuentaOperativa"
 			def cuenta=CuentaContable.findByClave(clave)
 			println 'Cuenta localizada: '+cuenta
 			if(!cuenta) throw new RuntimeException("No existe la cuenta para el cliente: "+fac.cliente+ 'Clave: '+clave)

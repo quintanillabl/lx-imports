@@ -72,7 +72,7 @@ class PolizaDeProvisionAnualController {
 			def fechaF=factura.fecha.text()
 			
 			// 1. Cargo al inventario
-			def cuenta=CuentaContable.buscarPorClave('119-0003')
+			def cuenta=CuentaContable.buscarPorClave('115-0003')
 			def fechaTc=factura.fecha-1
 			def tipoDeCambioInstance=TipoDeCambio.find("from TipoDeCambio t where date(t.fecha)=? and t.monedaFuente=?",[fechaTc,factura.moneda])
 			def valor=factura.importe*tipoDeCambioInstance.factor

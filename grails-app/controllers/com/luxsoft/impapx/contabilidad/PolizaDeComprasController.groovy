@@ -137,7 +137,7 @@ class PolizaDeComprasController {
 				
 				//Cancelar provision
 				// 1. Abono al inventario
-				def cuenta=CuentaContable.buscarPorClave('119-0003')
+				def cuenta=CuentaContable.buscarPorClave('115-0003')
 				def fechaTc=factura.fecha-1
 				def tipoDeCambioInstance=TipoDeCambio.find("from TipoDeCambio t where date(t.fecha)=? and t.monedaFuente=?",[fechaTc,factura.moneda])
 				assert tipoDeCambioInstance,"Debe existir tipo de cambio para el :"+fechaTc.text()
@@ -204,9 +204,9 @@ class PolizaDeComprasController {
 			asiento="Cuenta por pagar"
 			
 			// 1. Cargo al inventario
-			def cuenta=CuentaContable.findByClave('119-0001')
+			def cuenta=CuentaContable.findByClave('115-0001')
 			if(cuenta==null){
-				throw new RuntimeException("No existe la cuenta 119-0001")
+				throw new RuntimeException("No existe la cuenta 115-0001")
 			}
 			poliza.addToPartidas(
 				cuenta:cuenta,
