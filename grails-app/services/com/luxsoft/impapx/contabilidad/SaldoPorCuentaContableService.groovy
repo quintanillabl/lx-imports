@@ -42,7 +42,8 @@ class SaldoPorCuentaContableService {
 			if(mes==1){
 				def cierreAnual=SaldoPorCuentaContable.findByCuentaAndYearAndMes(cuenta,year-1,13)
 				log.info 'SaldoInicial obtenido: '+cierreAnual
-				saldoInicial=cierreAnual.saldoFinal
+				//assert cierreAnual,"No existe saldo 13 para la cuenta ${cuenta.clave}"
+				saldoInicial=cierreAnual?.saldoFinal?:0.0
 			}else{
 				saldoInicial=SaldoPorCuentaContable.findByCuentaAndYearAndMes(cuenta,year,mes-1)?.saldoFinal?:0.0
 				//saldoInicial=saldoInicial?:0.0
