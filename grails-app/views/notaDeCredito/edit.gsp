@@ -54,6 +54,35 @@
 			</div>
 		</div>
 	</div>
+
+	<script type="text/javascript">
+		$(function(){
+			//$('.chosen-select').chosen();
+			$(".numeric").autoNumeric('init',{vMin:'0'},{vMax:'9999'});
+			$(".money").autoNumeric('init',{wEmpty:'zero',mRound:'B',aSign: '$'});
+			$(".tc").autoNumeric('init',{vMin:'0.0000'});
+			$(".porcentaje").autoNumeric('init',{altDec: '%', vMax: '99.99'});
+
+			$('form[name=updateForm]').submit(function(e){
+			    console.log("Desablidatndo submit button....");
+
+			    var button=$("#saveBtn");
+			    button.attr('disabled','disabled')
+			    .html('Procesando...');
+
+			    $(".money,.porcentaje,.numeric,.tc",this).each(function(index,element){
+			      var val=$(element).val();
+			      var name=$(this).attr('name');
+			      var newVal=$(this).autoNumeric('get');
+			      $(this).val(newVal);
+			    });
+			    //e.preventDefault(); 
+			    return true;
+			});
+
+			
+		});
+	</script>
 </content>
  	
  	

@@ -42,51 +42,7 @@
 </div>
 <%--
 
-<fieldset>
-	<g:form class="form-horizontal" action="edit" id="${notaDeCreditoInstance?.id}">
-		<fieldset>
-			<f:with bean="notaDeCreditoInstance">
-				<g:hiddenField name="version" value="${notaDeCreditoInstance.version}"/>
-				
-				
-				<f:field property="concepto" input-disabled="disabled" value="${ notaDeCreditoInstance.concepto}"/>
-				<f:field property="moneda" input-readOnly="true">
-					<g:field type="text" value="${notaDeCreditoInstance.moneda}" name="moneda" readOnly="true"/>
-				</f:field>
-				<f:field property="tc" value="${notaDeCreditoInstance.tc }"/>
-				<f:field property="documento" value="${notaDeCreditoInstance.documento}"/>
-				<f:field property="fecha"/>
-				<g:if test="notaDeCreditoInstance.aplicado">
-					<f:field property="importe" input-class="autoCalculate moneyField" />
-					<f:field property="impuestoTasa" input-class="autoCalculate"/>
-					<f:field property="impuestos" input-class="autoCalculate moneyField"/>
-					<f:field property="total" input-class="autoCalculate moneyField"/>
-				</g:if>
-				
-				<f:field property="aplicado"  value="${notaDeCreditoInstance.aplicado?:0.0}" input-readOnly="true"/>
-				<f:field property="disponible" value="${notaDeCreditoInstance.disponible}" input-readOnly="true"/>
-				<f:field property="comentario" input-class="input-xxlarge"/>
-			</f:with>
-					
-			<div class="form-actions">
-				<button type="submit" class="btn btn-primary">
-					<i class="icon-ok icon-white"></i>
-					<g:message code="default.button.update.label" default="Update" />
-				</button>
-				
-				
-				
-				<g:actionSubmit value="Eliminar" action="delete" class="btn btn-danger" onclick="return myConfirm2(this,'Eliminar nota de credito?','Eliminar nota?')">
-					<i class="icon-trash icon-white"></i>
-					<g:message code="default.button.delete.label" default="Delete" />
-				</g:actionSubmit>
-				
-				
-				
-			</div>
-		</fieldset>
-	</g:form>
-</fieldset>
+
 
 $(function(){
 	
