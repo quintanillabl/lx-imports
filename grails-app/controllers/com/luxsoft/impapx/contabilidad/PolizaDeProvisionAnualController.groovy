@@ -20,38 +20,25 @@ class PolizaDeProvisionAnualController {
 	
 	def polizaService
 
-    def beforeInterceptor = {
-       	if(!session.periodoContable){
-       		session.periodoContable=new Date()
-       	}
-   	}
+    def index() {
+    	def sort=params.sort?:'fecha'
+    	def order=params.order?:'desc'
+    	def periodo=session.periodoContable
+    	
+    	def q = Poliza.where {
+    		subTipo == 'PROVISION_ANUAL_COMPRAS' && ejercicio == periodo.ejercicio && mes == periodo.mes 
 
-   	def cambiarPeriodo(){
-   		def fecha=params.date('fecha', 'dd/MM/yyyy')
-   		session.periodoContable=fecha
-   		redirect(uri: request.getHeader('referer') )
-   	}	
+    	}
+    	respond q.list(params)
+    	
+    }
+     
+    def mostrarPoliza(long id){
+    	def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
+    	render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
+    }
+
    	
-   	def index() {
-   		def sort=params.sort?:'fecha'
-   		def order=params.order?:'desc'
-   		def periodo=session.periodoContable
-   		def polizas=Poliza.findAllByTipoAndDescripcionIlikeAndFechaBetween(
-			'COMPRAS',
-			'PROVISION ANUAL %',
-			periodo.inicioDeMes(),
-			periodo.finDeMes(),
-			[sort:sort,order:order]
-			)
-   		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-   	}
-
-	def mostrarPoliza(long id){
-		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
-		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
-	}
-	 
-	
 	
 	def generarPoliza(String fecha){
 		Date dia=Date.parse("dd/MM/yyyy",fecha)
@@ -60,6 +47,9 @@ class PolizaDeProvisionAnualController {
 		
 		//Prepara la poliza
 		Poliza poliza=new Poliza(tipo:'COMPRAS',folio:1, fecha:dia,descripcion:'PROVISION ANUAL '+dia.toYear(),partidas:[])
+		poliza.ejercicio = session.periodoContable.ejercicio
+		poliza.mes = session.periodoContable.mes
+		poliza.subTipo= 'PROVISION_ANUAL_COMPRAS'
 		// Procesadores
 		procearCuentaPorPagarMateriaPrima(poliza, dia)
 		//Salvar la poliza

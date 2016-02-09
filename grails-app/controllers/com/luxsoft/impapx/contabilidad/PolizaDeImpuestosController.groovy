@@ -31,40 +31,33 @@ class PolizaDeImpuestosController {
 
 	def polizaService
 	
-    def beforeInterceptor = {
-    	if(!session.periodoContable){
-    		session.periodoContable=new Date()
-    	}
-	}
+    def index() {
+    	def sort=params.sort?:'fecha'
+    	def order=params.order?:'desc'
+    	def periodo=session.periodoContable
+    	
+    	def q = Poliza.where {
+    		subTipo == 'IMPUESTOS' && ejercicio == periodo.ejercicio && mes == periodo.mes 
 
-	def cambiarPeriodo(){
-		def fecha=params.date('fecha', 'dd/MM/yyyy')
-		session.periodoContable=fecha
-		redirect(uri: request.getHeader('referer') )
-	}	
-	
-	def index() {
-		def sort=params.sort?:'fecha'
-		def order=params.order?:'desc'
-		def periodo=session.periodoContable
-		def polizas=Poliza.findAllByTipoAndFechaBetween('DIARIO',periodo.inicioDeMes(),periodo.finDeMes(),[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-	}
-	 
-	def mostrarPoliza(long id){
-		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
-		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
-	}
-	 
-	
+    	}
+    	respond q.list(params)
+    	
+    }
+     
+    def mostrarPoliza(long id){
+    	def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
+    	render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
+    }
 	
 	def generarPoliza(String fecha){
 		Date dia=Date.parse("dd/MM/yyyy",fecha)
 		params.dia=dia
 		//Prepara la poliza
 		Poliza poliza=new Poliza(tipo:'DIARIO',folio:1, fecha:dia,descripcion:'Poliza de Impuestos '+dia.asPeriodoText(),partidas:[])
+		poliza.ejercicio = session.periodoContable.ejercicio
+		poliza.mes = session.periodoContable.mes
+		poliza.subTipo= 'INGRESO'
 		// Procesadores
-		
 		
 		
 		//Salvar la poliza

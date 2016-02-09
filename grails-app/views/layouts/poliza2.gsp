@@ -37,11 +37,21 @@
                                     Operaciones <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li>
-                                    <g:link action="create" params="[subTipo:subTipo]">
-                                        <i class="icon-plus "></i>Nuevo</a>
-                                    </g:link>
-                                </li>
+                                <g:if test="${procesador}">
+                                    <li>
+                                        <a href="#generarDialog" data-toggle="modal">
+                                            <i class="fa fa-cogs"></i> Generar</a>
+                                        </a>
+                                    </li>
+                                </g:if>
+                                <g:else>
+                                    <li>
+                                        <g:link action="create" params="[subTipo:subTipo]">
+                                            <i class="fa fa-plus-circle"></i> Nuevo</a>
+                                        </g:link>
+                                    </li>
+                                </g:else>
+                                
                                 
                             </ul>
                         </div>
@@ -112,8 +122,49 @@
             </div>
         </div>
     </div>
+    
     %{-- <g:render template="/poliza/generarPoliza"/> --}%
+
     <g:render template="/common/selectorDePeriodoContable" bean="${session.periodoContable}"/>
+
+    <div class="modal fade" id="generarDialog" tabindex="-1">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        Generar póliza de ${procesador?.subTipo} (${procesador?.tipo})
+                    </h4>
+                </div>
+                <g:form action="generarPoliza" class="form-horizontal" >
+                    <g:hiddenField name="procesador?.id" value="${procesador?.id}"/>
+                    <div class="modal-body">
+                        <div class="form-group" id="data_5">
+                            <label for="fecha" class="control-label col-sm-2">Fecha</label>
+                            <div class="col-sm-10 ">
+                                <div class="input-group date">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    <input id="fecha" type="text" name="fecha" class="form-control" 
+                                        value=""/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                        <g:submitButton class="btn btn-info" name="aceptar"
+                                value="Generar" />
+                    </div>
+                </g:form>
+
+            </div>
+            <!-- moda-content -->
+        </div>
+        <!-- modal-di -->
+    </div>  
+    
     <script type="text/javascript">
         $(function(){
             $('#grid').dataTable({
@@ -129,23 +180,17 @@
                 "order": []
             });
 
-            $('#data_4 .input-group.date').bootstrapDP({
-                minViewMode: 1,
+            $("#fecha").bootstrapDP({
+                changeMonth: false,
                 format: 'dd/mm/yyyy',
                 keyboardNavigation: false,
                 forceParse: false,
                 autoclose: true,
                 todayHighlight: true,
-
+                startDate:"${formatDate(date:session.periodoContable.toPeriodo().fechaInicial,format:'dd/MM/yyyy')}",
+                endDate:"${formatDate(date:session.periodoContable.toPeriodo().fechaFinal,format:'dd/MM/yyyy')}"
             });
-            $('#data_5 .input-group.date').bootstrapDP({
-                format: 'dd/mm/yyyy',
-                keyboardNavigation: false,
-                forceParse: false,
-                autoclose: true,
-                todayHighlight: true,
-
-            });
+                
 
         });
     </script>

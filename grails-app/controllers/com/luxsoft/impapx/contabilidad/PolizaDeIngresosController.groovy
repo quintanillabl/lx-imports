@@ -12,30 +12,25 @@ class PolizaDeIngresosController {
 
     def polizaService
 
-    def beforeInterceptor = {
-    	if(!session.periodoContable){
-    		session.periodoContable=new Date()
-    	}
-	}
+    def index() {
+    	def sort=params.sort?:'fecha'
+    	def order=params.order?:'desc'
+    	def periodo=session.periodoContable
+    	
+    	def q = Poliza.where {
+    		subTipo == 'INGRESO' && ejercicio == periodo.ejercicio && mes == periodo.mes 
 
-	def cambiarPeriodo(){
-		def fecha=params.date('fecha', 'dd/MM/yyyy')
-		session.periodoContable=fecha
-		redirect(uri: request.getHeader('referer') )
-	}	
+    	}
+    	respond q.list(params)
+    	
+    }
+     
+    def mostrarPoliza(long id){
+    	def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
+    	render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
+    }
 	
-	def index() {
-		def sort=params.sort?:'fecha'
-		def order=params.order?:'desc'
-		def periodo=session.periodoContable
-		def polizas=Poliza.findAllByTipoAndFechaBetween('INGRESO',periodo.inicioDeMes(),periodo.finDeMes(),[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-	}
-	 
-	def mostrarPoliza(long id){
-		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
-		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
-	}
+	
 	 
 	
 	
@@ -44,12 +39,13 @@ class PolizaDeIngresosController {
 		
 		params.dia=dia
 		
-		println 'Generando poliza: '+params
-		
 		
 		def asiento='CXC COBRO'
 		def descripcion="Registro de cobro de factura"
 		Poliza poliza=new Poliza(tipo:'INGRESO',fecha:dia,descripcion:descripcion,partidas:[])
+		poliza.ejercicio = session.periodoContable.ejercicio
+		poliza.mes = session.periodoContable.mes
+		poliza.subTipo= 'INGRESO'
 		
 		def pagos=CXCPago.findAll("from CXCPago p where date(p.fecha)=? ",[dia])
 		

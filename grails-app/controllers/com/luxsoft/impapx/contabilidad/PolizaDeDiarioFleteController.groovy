@@ -54,9 +54,9 @@ class PolizaDeDiarioFleteController {
 	}
 
 	def mostrarPoliza(long id){
-			def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
-			render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
-		}
+		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
+		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
+	}
 	 
 	
 	

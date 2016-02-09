@@ -38,7 +38,7 @@
                     </li>
                     <g:each in="${com.luxsoft.lx.contabilidad.ProcesadorDePoliza.list()}" status="i" var="row">
                         <li class="${subTipo==row.subTipo?'active':''}">
-                            <g:link action="index" params="[subTipo:row.subTipo]">${row.label}</g:link>
+                            <g:link controller="poliza" action="index" params="[subTipo:row.subTipo]">${row.label}</g:link>
                         </li>
                     </g:each>
                     

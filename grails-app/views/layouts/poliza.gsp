@@ -85,7 +85,7 @@
                                             </g:link>
                                         </td>
                                         <td><lx:shortDate date="${row.fecha }"/></td>
-                                        <td><g:link action="edit" id="${row.id}">
+                                        <td><g:link controller="poliza" action="edit" id="${row.id}">
                                             ${fieldValue(bean: row, field: "descripcion")}</g:link>
                                         </td>
                                         <td><lx:moneyFormat number="${row.debe}"/></td>

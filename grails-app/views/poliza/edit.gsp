@@ -43,13 +43,7 @@
 							<span class="fa fa-print"> Imprimir</span>
 						</g:link>
 
-	     				%{-- <g:jasperReport
-	     						class="btn btn-info "
-	     						jasper="PolizaContable" 
-	     						format="PDF,HTML" 
-	     						name="Imprimir">
-	    						<g:hiddenField name="ID" value="${polizaInstance.id}"/>
-	    				</g:jasperReport> --}%
+	     				
 	    				<g:if test="${polizaInstance.manual}">
 	    					<a href="#createDialog" data-toggle="modal"
 	    						class="btn btn-primary btn-outline">
@@ -69,7 +63,10 @@
 	    					<i class="fa fa-pencil-square-o"></i> Modificar
 	    				</a>
 	        		    <g:if test="${!polizaInstance.cierre}">
-	        		    	<lx:deleteButton bean="${polizaInstance}"></lx:deleteButton>
+
+	        		    	<a class="btn btn-danger " data-toggle="modal" data-target="#deleteDialog">
+	        		    		<i class="fa fa-trash"></i> Eliminar
+	        		    	</a> 
 	        		    </g:if>
 	        		</div>
 	        		
@@ -261,6 +258,10 @@
 		</div>
 		<!-- modal-di -->
 	</div>
+
+	<g:render template="/common/deleteDialog" bean="${polizaInstance}"/>
+	
+
 	<script type="text/javascript">
 		$(function(){
 			$(".money").autoNumeric({vMin:'-999999999.00',wEmpty:'zero',mRound:'B'});

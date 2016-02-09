@@ -12,6 +12,7 @@ import org.codehaus.groovy.grails.web.json.JSONArray
 import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.annotation.Secured
 import com.luxsoft.lx.contabilidad.PeriodoContable
+import com.luxsoft.lx.contabilidad.ProcesadorDePoliza
 
 @Secured(["hasRole('CONTABILIDAD')"])
 class PolizaController {
@@ -22,7 +23,6 @@ class PolizaController {
 	def polizaService
 
 	def reportService
-
  
 
 	def cambiarPeriodo(PeriodoContable periodoContable){
@@ -64,18 +64,19 @@ class PolizaController {
 		    procesador = ProcesadorDePoliza.findByNombre(subTipo)
 		}
 		*/
+		def procesador = ProcesadorDePoliza.where{subTipo==subTipo && service!=null}.find()
 
 		def list=polizas.list(sort:'tipo',order:'asc')
 		
 		//respond list,model:[subTipo:subTipo,procesador:procesador]
-		respond list,model:[subTipo:subTipo]
+		respond list,model:[subTipo:subTipo,procesador:procesador]
 	}
 
     
 
     def create() {
 
-    	respond new Poliza(tipo:params.tipo,subTipo:params.subTipo,manual:false)
+    	respond new Poliza(tipo:params.tipo,subTipo:params.subTipo,manual:true)
 		
     }
 
@@ -95,6 +96,30 @@ class PolizaController {
 
         flash.message = "Poliza ${polizaInstance.folio} generada"
         redirect action:'edit',id:polizaInstance.id
+    }
+
+    def generar(GenerarCommand command){
+    	if(command == null){
+    		redirect action:'index'
+    		return
+    	}
+
+    	if(command.hasErrors()){
+    		flash.message = command.errors
+    		redirect action:'index'
+    		return
+    	}
+
+    	def service = grailsApplication.mainContext.getBean(command.procesador.service)
+    	def res = service.generar(command.procesador,command.fecha,session.periodoContable)
+    	if(res.instanceOf(Poliza)){
+    		flash.message = "Poliza ${res.folio} generada"
+    		redirect action:'edit',id:res.id
+    		return
+    	}else{
+    		redirect action:'index'
+
+    	}
     }
 
     def edit(Poliza polizaInstance) {
@@ -129,7 +154,8 @@ class PolizaController {
     	    notFound()
     	    return
     	}
-    	//polizaInstance = polizaService.delete polizaInstance
+
+    	polizaInstance.delete flush:true
     	flash.message="Poliza  ${polizaInstance.id} eliminada "
     	redirect action:'index',params:[subTipo:polizaInstance.subTipo]
     }
@@ -167,8 +193,14 @@ class PolizaController {
 	}
 	
 	
-	
-	
+}
+
+class GenerarCommand {
+
+	ProcesadorDePoliza procesador
+
+	Date fecha
+
 }
 
 

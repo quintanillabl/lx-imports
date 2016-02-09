@@ -149,4 +149,9 @@ class PolizaService implements ApplicationListener<PolizaUpdateEvent>{
 			
 		}
 	}
+
+	def delete( Poliza poliza){
+		poliza.delete flush:true
+		
+	}
 }
