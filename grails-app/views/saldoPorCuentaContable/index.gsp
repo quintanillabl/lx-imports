@@ -67,8 +67,14 @@
     		    						</li>
     		    						<li>
     		    				 			<g:link action="actualizarCierreAnual" 
-    		    				 				onclick="return confirm('Genera cierre anual?');">
+    		    				 				onclick="return confirm('Actualizar cierre anual?');">
     		    				 				Actualizar cierre anual
+    		    				 			</g:link>
+    		    						</li>
+    		    						<li>
+    		    				 			<g:link action="eliminarCierreAnual" 
+    		    				 				onclick="return confirm('Eliminar cierre anual '+${session.periodoContable.ejercicio})+ '?';">
+    		    				 				Eliminar cierre anual
     		    				 			</g:link>
     		    						</li>
     		    			</g:elseif>

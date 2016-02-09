@@ -179,4 +179,10 @@ class SaldoPorCuentaContableController {
 		saldoPorCuentaContableService.actualizarCierreAnual(session.periodoContable.ejercicio)
 		redirect action:'index'
 	}
+
+	def eliminarCierreAnual(){
+		saldoPorCuentaContableService.eliminarCierreAnual(session.periodoContable.ejercicio)
+		flash.message ="Saldos para el cierre anual ${session.periodoContable} eliminados "
+		redirect action:'index'	
+	}
 }
