@@ -187,7 +187,7 @@ class SaldoPorCuentaContableService {
 	}
 	
 	def actualizarCierreAnual(int year){
-		println 'Actualizando cierre anual Year: '+year
+		log.info 'Actualizando cierre anual Year: '+year
 		
 		def saldos=SaldoPorCuentaContable.findAllByYearAndMes(year,13)
 		for(SaldoPorCuentaContable saldo:saldos){

@@ -51,26 +51,28 @@
 	        		            Operaciones <span class="caret"></span>
 	        		    </button>
 	        		    <ul class="dropdown-menu">
-    		    	 		<li>
-    		    	 			<g:link action="actualizarSaldos" onclick="return confirm('Actualiar saldos?');">
-    		    	 				Actualizar saldos
-    		    	 			</g:link>
-    		    			</li>
+	        		    	<g:if test="${session.periodoContable.mes!=13}">
+    		    		 		<li>
+    		    		 			<g:link action="actualizarSaldos" onclick="return confirm('Actualiar saldos?');">
+    		    		 				Actualizar saldos
+    		    		 			</g:link>
+    		    				</li>
+	        		    	</g:if>
+    		    			<g:elseif test="${session.periodoContable.mes==13}">
+    		    				 		<li>
+    		    				 			<g:link action="generarCierreAnual" 
+    		    				 				onclick="return confirm('Generar cierre anual?');">
+    		    				 				Generar cierre
+    		    				 			</g:link>
+    		    						</li>
+    		    						<li>
+    		    				 			<g:link action="actualizarCierreAnual" 
+    		    				 				onclick="return confirm('Genera cierre anual?');">
+    		    				 				Actualizar cierre anual
+    		    				 			</g:link>
+    		    						</li>
+    		    			</g:elseif>
     		    			
-    		    			<g:if test="${session.periodoContable.mes==13}">
-	    				 		<li>
-	    				 			<g:link action="generarCierreAnual" 
-	    				 				onclick="return confirm('Generar cierre anual?');">
-	    				 				Generar cierre
-	    				 			</g:link>
-	    						</li>
-	    						<li>
-	    				 			<g:link action="actualizarCierreAnual" 
-	    				 				onclick="return confirm('Genera cierre anual?');">
-	    				 				Actualizar cierre anual
-	    				 			</g:link>
-	    						</li>
-    		    			</g:if>
 	        		    </ul>
 	        		</div>
 	        	    <div class="ibox-tools">
