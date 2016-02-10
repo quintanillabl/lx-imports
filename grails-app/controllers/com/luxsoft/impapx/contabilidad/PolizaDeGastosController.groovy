@@ -91,7 +91,7 @@ class PolizaDeGastosController {
 			
 			//Abono a iva por trasladar
 			poliza.addToPartidas(
-				cuenta:CuentaContable.findByClave('206-0002'),
+				cuenta:CuentaContable.findByClave('209-0001'),
 				debe:0.0,
 				haber:fac.impuestos,
 				asiento:asiento,

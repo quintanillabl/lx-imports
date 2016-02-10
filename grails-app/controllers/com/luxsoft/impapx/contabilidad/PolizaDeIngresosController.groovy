@@ -78,7 +78,7 @@ class PolizaDeIngresosController {
 					debe:0.0,
 					haber:aplic.total,
 					asiento:asiento,
-					descripcion:"Cobro Fac: ${aplic?.factura?.cfd?.folio} ${pago.tc>1?'T.C'+pago.tc:''} ",
+					descripcion:"Cobro Fac: ${aplic?.factura?.facturaFolio} ${pago.tc>1?'T.C'+pago.tc:''} ",
 					referencia:"$pago.referenciaBancaria"
 					,fecha:poliza.fecha
 					,tipo:poliza.tipo
@@ -91,7 +91,7 @@ class PolizaDeIngresosController {
 			
 			//Abono al IVA por trasladar
 			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave("206-0001"),
+				cuenta:CuentaContable.buscarPorClave("208-0001"),
 				debe:0.0,
 				haber:pago.impuesto.abs()*pago.tc,
 				asiento:asiento,
@@ -109,11 +109,11 @@ class PolizaDeIngresosController {
 				def impuesto=Rounding.round(MonedaUtils.calcularImpuesto(importe),2)
 				
 				poliza.addToPartidas(
-					cuenta:CuentaContable.buscarPorClave("206-0002"),
+					cuenta:CuentaContable.buscarPorClave("209-0001"),
 					debe:impuesto,
 					haber:0.0,
 					asiento:asiento,
-					descripcion:"Cobro Fac: ${aplic?.factura?.cfd?.folio} ${pago.tc>1?'T.C'+pago.tc:''} ",
+					descripcion:"Cobro Fac: ${aplic?.factura?.facturaFolio} ${pago.tc>1?'T.C'+pago.tc:''} ",
 					referencia:"$pago.referenciaBancaria"
 					,fecha:poliza.fecha
 					,tipo:poliza.tipo

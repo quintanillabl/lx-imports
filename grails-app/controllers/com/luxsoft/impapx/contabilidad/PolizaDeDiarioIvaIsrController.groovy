@@ -136,7 +136,7 @@ class PolizaDeDiarioIvaIsrController {
 			,tipo:poliza.tipo
 			,entidad:'SalodPorCuentaContable')
 		poliza.addToPartidas(
-			cuenta:CuentaContable.buscarPorClave("205-0001"),
+			cuenta:CuentaContable.buscarPorClave("213-0001"),
 			debe:0.0,
 			haber:importe,
 			asiento:asiento,
@@ -253,7 +253,7 @@ class PolizaDeDiarioIvaIsrController {
 			def ptotal=debe61+debe62+debe63
 			//Abono a
 			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave("206-0001"),
+				cuenta:CuentaContable.buscarPorClave("208-0001"),
 				debe:ptotal,
 				haber:0.0,
 				asiento:asiento,

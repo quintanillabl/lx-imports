@@ -119,7 +119,7 @@ class PolizaDeDiarioAplicacionAnticipoController {
 						//Abono a anticipos
 						def importeTcPago=Rounding.round(det.total*egreso.tc,2)
 						poliza.addToPartidas(
-							cuenta:CuentaContable.buscarPorClave("111-$req.proveedor.subCuentaOperativa"),
+							cuenta:CuentaContable.buscarPorClave("120-$req.proveedor.subCuentaOperativa"),
 							debe:0.0,
 							haber:importeTcPago,
 							asiento:asiento,
@@ -136,7 +136,7 @@ class PolizaDeDiarioAplicacionAnticipoController {
 			}
 			//Diferencia cambiaria
 			if(difAcu.abs()>0){
-				def clave=difAcu<0?'701-0002':'705-0002'
+				def clave=difAcu<0?'703-002':'701-0002'
 				poliza.addToPartidas(
 					cuenta:CuentaContable.buscarPorClave(clave),
 					debe:difAcu>0?difAcu.abs():0.0,

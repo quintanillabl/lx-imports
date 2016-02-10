@@ -275,11 +275,11 @@
 			});
  			$('#grid').dataTable({
                 responsive: true,
-                //aLengthMenu: [[100, 150, 200, 250, -1], [100, 150, 200, 250, "Todos"]],
+                aLengthMenu: [[200, 250, -1], [ 200, 250, "Todos"]],
                 "language": {
 					"url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
 	    		},
-	    		"dom": 'ft',
+	    		"dom": 'T<"clear">lfrtip',
 	    		"tableTools": {
 	    		    "sSwfPath": "${assetPath(src: 'plugins/dataTables/swf/copy_csv_xls_pdf.swf')}"
 	    		},

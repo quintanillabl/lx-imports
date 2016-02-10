@@ -121,7 +121,7 @@ class PolizaDeDiarioFleteController {
 				
 				if(c.descuento>0){
 					poliza.addToPartidas(
-						cuenta:CuentaContable.buscarPorClave("203-P004"),
+						cuenta:CuentaContable.buscarPorClave("205-P004"),
 						debe:0.0,
 						haber:c.descuento,
 						asiento:asiento,
@@ -135,7 +135,7 @@ class PolizaDeDiarioFleteController {
 				
 				if(c.rembolso>0){
 					poliza.addToPartidas(
-						cuenta:CuentaContable.buscarPorClave("203-P004"),
+						cuenta:CuentaContable.buscarPorClave("205-P004"),
 						debe:0.0,
 						haber:c.rembolso,
 						asiento:asiento,
@@ -149,7 +149,7 @@ class PolizaDeDiarioFleteController {
 				
 				if(c.otros>0){
 					poliza.addToPartidas(
-						cuenta:CuentaContable.buscarPorClave("203-P004"),
+						cuenta:CuentaContable.buscarPorClave("205-P004"),
 						debe:0.0,
 						haber:c.otros,
 						asiento:asiento,
@@ -165,7 +165,7 @@ class PolizaDeDiarioFleteController {
 			}
 			//Cargo a IVA Gasto
 			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave("117-0001"),
+				cuenta:CuentaContable.buscarPorClave("118-0001"),
 				debe:fac.impuestos-fac.retImp,
 				haber:0.0,
 				asiento:asiento,
@@ -178,7 +178,7 @@ class PolizaDeDiarioFleteController {
 			
 			//Cargo a Retencion Flete
 			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave("117-0009"),
+				cuenta:CuentaContable.buscarPorClave("119-0003"),
 				debe:fac.retImp,
 				haber:0.0,
 				asiento:asiento,
@@ -191,7 +191,7 @@ class PolizaDeDiarioFleteController {
 			
 			//Abono a Retencion Flete
 			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave("205-0002"),
+				cuenta:CuentaContable.buscarPorClave("216-0001"),
 				debe:0.0,
 				haber:fac.retImp,
 				asiento:asiento,
@@ -204,7 +204,7 @@ class PolizaDeDiarioFleteController {
 			
 			//Abono a Acredores
 			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave("203-F001"),
+				cuenta:CuentaContable.buscarPorClave("205-F001"),
 				debe:0.0,
 				haber:fac.total-(fac.descuento?:0.0)-(fac.rembolso?:0.0)-(fac.otros?:0.0),
 				asiento:asiento,
@@ -217,30 +217,7 @@ class PolizaDeDiarioFleteController {
 			
 			 
 			 
-			//IETUs
-			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave("900-0003"),
-				debe:fac.importe,
-				haber:0.0,
-				asiento:asiento,
-				descripcion:"$fac.documento "+fac.fecha.text(),
-				referencia:"$fac.documento"
-				,fecha:poliza.fecha
-				,tipo:poliza.tipo
-				,entidad:'FacturaDeGasto'
-				,origen:fac.id)
 			
-			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave("901-0003"),
-				debe:0.0,
-				haber:fac.importe,
-				asiento:asiento,
-				descripcion:"$fac.documento "+fac.fecha.text(),
-				referencia:"$fac.documento"
-				,fecha:poliza.fecha
-				,tipo:poliza.tipo
-				,entidad:'FacturaDeGasto'
-				,origen:fac.id)
 		}
 	}
 	

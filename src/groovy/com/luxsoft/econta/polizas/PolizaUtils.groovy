@@ -31,7 +31,7 @@ class PolizaUtils {
 	}
 
 	public static IvaPendienteDeAcreditar(def empresa){
-		return CuentaContable.findByEmpresaAndClave(empresa,'119-0001')
+		return CuentaContable.findByEmpresaAndClave(empresa,'115-0001')
 	}
 	
 
@@ -64,7 +64,7 @@ class PolizaUtils {
 
 	// Cargo
 	public static IvaRetenidoPendient(def empresa){ 
-		return CuentaContable.findByEmpresaAndClave(empresa,'119-0002')	
+		return CuentaContable.findByEmpresaAndClave(empresa,'115-0002')	
 	}
 
 	// Abono
@@ -77,11 +77,11 @@ class PolizaUtils {
 	}
 
 	public static ComisionesBancarias(def empresa){
-		return CuentaContable.findByEmpresaAndClave(empresa,'701-0002')	
+		return CuentaContable.findByEmpresaAndClave(empresa,'703-002')	
 	}
 
 	public static InteresesBancarios(def empresa){
-		return CuentaContable.findByEmpresaAndClave(empresa,'702-0001')		
+		return CuentaContable.findByEmpresaAndClave(empresa,'703-0001')		
 	}
 
 	public static IsrBancario(def empresa){

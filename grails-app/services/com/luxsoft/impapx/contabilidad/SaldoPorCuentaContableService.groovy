@@ -78,7 +78,7 @@ class SaldoPorCuentaContableService {
 			def saldoInicial=0
 			if(mes==1){
 				def cierreAnual=SaldoPorCuentaContable.findByCuentaAndYearAndMes(cuenta,year-1,13)
-				saldoInicial=cierreAnual.saldoFinal
+				saldoInicial=cierreAnual?.saldoFinal?:0.0
 			}else{
 				saldoInicial=SaldoPorCuentaContable.findByCuentaAndYearAndMes(cuenta,year,mes-1)?.saldoFinal?:0.0
 				/*PolizaDet

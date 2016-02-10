@@ -172,7 +172,7 @@ class PolizaDeComprasController {
 					,entidad:'CuentaPorPagar'
 					,origen:factura.id)
 				if(variacionCambiaria>0){
-					cuenta=CuentaContable.buscarPorClave("705-0002")
+					cuenta=CuentaContable.buscarPorClave("701-0002")
 					poliza.addToPartidas(
 						cuenta:cuenta,
 						debe:variacionCambiaria,
@@ -186,7 +186,7 @@ class PolizaDeComprasController {
 						,origen:factura.id)
 				}
 				if(variacionCambiaria<0){
-					cuenta=CuentaContable.buscarPorClave("701-0002")
+					cuenta=CuentaContable.buscarPorClave("703-002")
 					poliza.addToPartidas(
 						cuenta:cuenta,
 						debe:0.0,
@@ -309,7 +309,7 @@ class PolizaDeComprasController {
 			def provImp=provImportacion.join(',')
 			
 			//2 Cargo a Prevalidacion
-			def clave="117-0003"
+			def clave="118-0003"
 			def cuenta=CuentaContable.findByClave(clave)
 			if(cuenta==null){
 				throw new RuntimeException("No existe la sub cuenta operativa para el proveedor $cuenta")
@@ -333,7 +333,7 @@ class PolizaDeComprasController {
 				,entidad:'Pedimento'
 				,origen:pedimento.id)
 			/*
-			clave="117-0002"
+			clave="118-0002"
 			cuenta=CuentaContable.findByClave(clave)
 			if(cuenta==null){
 				throw new RuntimeException("No existe la sub cuenta operativa para el proveedor $cuenta")
@@ -418,7 +418,7 @@ class PolizaDeComprasController {
 			*/
 			
 			
-			clave="109-"+pedimento.proveedor.subCuentaOperativa
+			clave="107-"+pedimento.proveedor.subCuentaOperativa
 			cuenta=CuentaContable.findByClave(clave)
 			if(cuenta==null){
 				throw new RuntimeException("No existe la sub cuenta  $clave")
@@ -437,6 +437,7 @@ class PolizaDeComprasController {
 			
 		}
 		
+		/*
 		pedimentos.each{pedimento->
 			def ietu=pedimento.dta+pedimento.arancel+(pedimento.prevalidacion*(1+(pedimento.impuestoTasa/100)))
 			ietu=Rounding.round(ietu, 0)
@@ -480,6 +481,7 @@ class PolizaDeComprasController {
 				,origen:pedimento.id)
 			
 		}
+		*/
 		
 	}
 	
@@ -534,7 +536,7 @@ class PolizaDeComprasController {
 			def impuesto11=cg.facturas.sum(0.0,{it.tasaDeImpuesto==11.0?it.impuestos*it.tc:0.0})
 			impuesto11=Rounding.round(impuesto11, 2)
 			if(impuesto11>0){
-				clave="117-0002"
+				clave="118-0002"
 				cuenta=CuentaContable.findByClave(clave)
 				if(cuenta==null)
 					throw new RuntimeException("No existe  la cuenta con clave: $clave")
@@ -555,7 +557,7 @@ class PolizaDeComprasController {
 			def impuesto16=cg.facturas.sum(0.0,{it.tasaDeImpuesto==16.0?it.impuestos*it.tc:0.0})
 			impuesto16=Rounding.round(impuesto16, 2)
 			if(impuesto16>0){
-				clave="117-0001"
+				clave="118-0001"
 				cuenta=CuentaContable.findByClave(clave)
 				if(cuenta==null)
 					throw new RuntimeException("No existe  la cuenta con clave: $clave")
@@ -573,7 +575,7 @@ class PolizaDeComprasController {
 			}
 			
 			//3 Abono a Deudores
-			clave="109-$cg.proveedor.subCuentaOperativa"
+			clave="107-$cg.proveedor.subCuentaOperativa"
 			cuenta=CuentaContable.findByClave(clave)
 			if(cuenta==null)
 				throw new RuntimeException("No existe  la cuenta  con clave: $clave para el proveedor: $cg.proveedor.nombre")
@@ -592,6 +594,7 @@ class PolizaDeComprasController {
 				def ietuCg=cg.facturas.sum(0.0,{
 					it.incrementable?0.0:it.importe*it.tc}
 				)
+				/*
 				ietuCg=Rounding.round(ietuCg, 2)
 				clave="900-0004"
 				cuenta=CuentaContable.findByClave(clave)
@@ -628,6 +631,7 @@ class PolizaDeComprasController {
 				def ietuIncre=cg.facturas.sum(0.0,{
 					it.incrementable?it.importe*it.tc:0.0}
 				)
+				
 				ietuIncre=Rounding.round(ietuIncre, 2)
 				if(ietuIncre>0){
 					clave="900-0002"
@@ -662,6 +666,7 @@ class PolizaDeComprasController {
 								,entidad:'CuentaDeGastos'
 								,origen:cg.id)
 				}
+				*/
 		}
 	}
 	

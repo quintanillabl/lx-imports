@@ -34,16 +34,21 @@ class PolizaService implements ApplicationListener<PolizaUpdateEvent>{
 		// if(poliza.tipo=='DIARIO'){
 		// 	throw new RuntimeException("Poliza de diario no se puede salvar por este metodo")
 		// }
-		def found=Poliza.findByTipoAndFecha(poliza.tipo,poliza.fecha)
+		//def found=Poliza.findByTipoAndFecha(poliza.tipo,poliza.fecha)
+		def found = Poliza.where {
+			subTipo == poliza.subTipo &&
+			ejercicio == poliza.ejercicio &&
+			mes == poliza.mes &&
+			descripcion == poliza.descripcion &&
+			fecha == poliza.fecha
+			}.find()
+
 		if(poliza.tipo=='EGRESO'){
 			found=Poliza.findByTipoAndDescripcionAndFecha(poliza.tipo,poliza.descripcion,poliza.fecha)
 		}
-		if(found){
-			poliza.folio=found.folio
-			found.delete(flush:true)
-		}else{
-			poliza.folio=nextFolio(poliza)
-		}
+
+		
+		poliza.folio=nextFolio(poliza)
 		poliza.cuadrar()
 		poliza.save(failOnError:true)
 		return poliza

@@ -150,7 +150,7 @@ class PolizaDeDiarioController {
 			
 			//Abono a iva por trasladar
 			poliza.addToPartidas(
-				cuenta:CuentaContable.findByClave('206-0002'),
+				cuenta:CuentaContable.findByClave('209-0001'),
 				debe:0.0,
 				haber:fac.impuestos,
 				asiento:asiento,
@@ -209,7 +209,7 @@ class PolizaDeDiarioController {
 			
 			//Abono a iva por trasladar
 			poliza.addToPartidas(
-				cuenta:CuentaContable.findByClave('206-0002'),
+				cuenta:CuentaContable.findByClave('209-0001'),
 				debe:0.0,
 				haber:srv.impuestos,
 				asiento:asientos,
@@ -375,9 +375,9 @@ class PolizaDeDiarioController {
 				,origen:comision.id)
 			
 			// 2. Cargo a IVA acreditable
-			cuenta=CuentaContable.findByClave('117-0001')
+			cuenta=CuentaContable.findByClave('118-0001')
 			if(cuenta==null)
-				throw new RuntimeException("No existe la cuenta contable 117-0001")
+				throw new RuntimeException("No existe la cuenta contable 118-0001")
 			poliza.addToPartidas(
 				cuenta:cuenta,
 				debe:comision.impuesto.abs()*comision.tc,
@@ -420,7 +420,7 @@ class PolizaDeDiarioController {
 				,entidad:'Comision'
 				,origen:comision.id)
 			
-			// 5. Cargo al IETU Deducible
+			/* 5. Cargo al IETU Deducible
 			cuenta=CuentaContable.findByClave('900-0003')
 			if(cuenta==null)
 				throw new RuntimeException("No existe la cuenta contable 900-0003")
@@ -451,7 +451,7 @@ class PolizaDeDiarioController {
 				,tipo:poliza.tipo
 				,entidad:'Comision'
 				,origen:comision.id)
-		
+			*/
 		}
 		
 		
@@ -619,7 +619,7 @@ class PolizaDeDiarioController {
 			//Abono a Intereses bancarios
 			def res=inversion.importeIsr+inversion.rendimientoReal
 			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave('701-0001'),
+				cuenta:CuentaContable.buscarPorClave('702-0001'),
 				debe:0.0,
 				haber:res,
 				asiento:asiento,
@@ -643,7 +643,7 @@ class PolizaDeDiarioController {
 			
 			
 			def importe=nota.total*nota.tc
-			def clave="701-$nota.proveedor.subCuentaOperativa"
+			def clave="702-$nota.proveedor.subCuentaOperativa"
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave(clave),
 				debe:0.0,
@@ -695,7 +695,7 @@ class PolizaDeDiarioController {
 				,entidad:'CXCNota'
 				,origen:nota.id)
 			//Cargo a descuentos y rebajas
-			clave="406-$nota.cliente.subCuentaOperativa"
+			clave="402-$nota.cliente.subCuentaOperativa"
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave(clave),
 				debe:nota.importe,
@@ -708,7 +708,7 @@ class PolizaDeDiarioController {
 				,entidad:'NotaDeCredito'
 				,origen:nota.id)
 			//Cargo a IVA Pendiente por trasladar (descuentos y rebajas)
-			clave="206-0002"
+			clave="209-0001"
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave(clave),
 				debe:nota.impuesto,
@@ -777,7 +777,7 @@ class PolizaDeDiarioController {
 				,entidad:'NA'
 				,origen:0)
 			
-			def clave=diferencia>0?"701-0002":"705-0002"
+			def clave=diferencia>0?"703-002":"701-0002"
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave(clave),
 				debe:diferencia<0?diferencia.abs():0.0,
@@ -863,7 +863,7 @@ class PolizaDeDiarioController {
 					,entidad:'NA'
 					,origen:0)
 				
-				def clave=diferencia>0?"701-0002":"705-0002"
+				def clave=diferencia>0?"703-002":"701-0002"
 				poliza.addToPartidas(
 					cuenta:CuentaContable.buscarPorClave(clave),
 					debe:diferencia<0?diferencia.abs():0.0,
@@ -904,7 +904,7 @@ class PolizaDeDiarioController {
 				,origen:nota.id)
 			
 			//Abono a productos financieros
-			clave="701-0003"
+			clave="702-0003"
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave(clave),
 				debe:0.0,
@@ -918,7 +918,7 @@ class PolizaDeDiarioController {
 				,origen:nota.id)
 			
 			//Abono a IVA Pendiente por trasladar (productos financieros)
-			clave="206-0002"
+			clave="209-0001"
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave(clave),
 				debe:0.0,
@@ -978,7 +978,7 @@ class PolizaDeDiarioController {
 				
 				//Cargo al iva de gasto
 				poliza.addToPartidas(
-					cuenta:CuentaContable.buscarPorClave("117-0004"),
+					cuenta:CuentaContable.buscarPorClave("118-0004"),
 					debe:c.impuesto,
 					haber:0.0,
 					asiento:asiento,
@@ -989,9 +989,9 @@ class PolizaDeDiarioController {
 					,entidad:'FacturaDeGasto'
 					,origen:fac.id)
 				//Abono a acredores diversos
-				def cuenta=CuentaContable.buscarPorClave("203-V001")
+				def cuenta=CuentaContable.buscarPorClave("205-V001")
 				if(c.tipo=='SEGUROS Y FIANZAS'){
-					cuenta=CuentaContable.buscarPorClave("203-$fac.proveedor.subCuentaOperativa")
+					cuenta=CuentaContable.buscarPorClave("205-$fac.proveedor.subCuentaOperativa")
 				}
 				poliza.addToPartidas(
 					cuenta:cuenta,
@@ -1007,7 +1007,7 @@ class PolizaDeDiarioController {
 				
 				if(c.retension>0){
 					poliza.addToPartidas(
-						cuenta:CuentaContable.buscarPorClave("117-0008"),
+						cuenta:CuentaContable.buscarPorClave("118-0008"),
 						debe:c.retension,
 						haber:0.0,
 						asiento:asiento,
@@ -1021,7 +1021,7 @@ class PolizaDeDiarioController {
 				
 				if(c.retensionIsr){
 					poliza.addToPartidas(
-						cuenta:CuentaContable.buscarPorClave("205-0006"),
+						cuenta:CuentaContable.buscarPorClave("213-0007"),
 						debe:c.retensionIsr,
 						haber:0.0,
 						asiento:asiento,
@@ -1046,7 +1046,7 @@ class PolizaDeDiarioController {
 		
 		egresos.each{ egreso ->
 			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave("205-0001"),
+				cuenta:CuentaContable.buscarPorClave("213-0001"),
 				debe:egreso.importe.abs(),
 				haber:0.0,
 				asiento:asiento,

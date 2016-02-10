@@ -98,11 +98,11 @@ class Poliza {
 			//Otros productos/gastos
 			if(dif>0.0){
 				
-				def cta=CuentaContable.findByClave("702-0003")
-				println 'Generando PRODUCTO en poliza: '+dif+' Cta: '+cta
+				def cta=CuentaContable.findByClave("704-0006")
+				log.info 'Generando PRODUCTO en poliza: '+dif+' Cta: '+cta
 				//Producto
 				addToPartidas(
-					cuenta:CuentaContable.findByClave("702-0003"),
+					cuenta:cta,
 					debe:0.0, 
 					haber:dif.abs(),
 					asiento:"OTROS INGRESOS "+tipo,
@@ -113,10 +113,10 @@ class Poliza {
 				)
 			}else{
 				//Gasto
-				def cta=CuentaContable.findByClave("704-0002")
-				println 'Cuenta localizada: '+cta
+				def cta=CuentaContable.findByClave("703-0003")
+				log.info 'Cuenta localizada: '+cta
 				addToPartidas(
-					cuenta:CuentaContable.findByClave("704-0002"),
+					cuenta:cta,
 					debe:dif.abs(),
 					haber:0.0,
 					asiento:"OTROS GASTOS "+tipo,
@@ -129,7 +129,7 @@ class Poliza {
 			}
 		}else{
 			//Cuadre por verificar
-			println 'Registrando diferencia: '+dif
+			log.info 'Registrando diferencia: '+dif
 			addToPartidas(
 			cuenta:CuentaContable.findByClave("800-0001"),
 			debe:dif<0.0?dif.abs():0.0,

@@ -101,10 +101,10 @@ class PolizaDeEgresosController {
 				def clave="201-$req.proveedor.subCuentaOperativa"
 				if(pedimento ){
 					if(egreso.fecha<pedimento.fecha || pedimento.fecha.toMonth()== egreso.fecha.toMonth() ){
-						clave="111-$req.proveedor.subCuentaOperativa"
+						clave="120-$req.proveedor.subCuentaOperativa"
 					}
 				}else{
-					clave="111-$req.proveedor.subCuentaOperativa"
+					clave="120-$req.proveedor.subCuentaOperativa"
 				}
 				
 				
@@ -148,7 +148,7 @@ class PolizaDeEgresosController {
 			def dif=(egreso.importe.abs()*egreso.tc)-pagoAcu
 			
 			if(dif.abs()>0){
-				def clave=dif<0?'701-0002':'705-0002'
+				def clave=dif<0?'703-002':'701-0002'
 				poliza.addToPartidas(
 					cuenta:CuentaContable.buscarPorClave(clave),
 					debe:dif>0?dif.abs():0.0,
@@ -162,7 +162,7 @@ class PolizaDeEgresosController {
 					,origen:egreso.id)
 			}
 			
-			//IETU
+			/*IETU
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave("900-0002"),
 				debe:egreso.importe.abs()*egreso.tc,
@@ -186,7 +186,7 @@ class PolizaDeEgresosController {
 				,tipo:poliza.tipo
 				,entidad:'MovimientoDeCuenta'
 				,origen:egreso.id)
-			
+			*/
 			//Salvar la poliza
 			poliza.debe=poliza.partidas.sum (0.0,{it.debe})
 			poliza.haber=poliza.partidas.sum(0.0,{it.haber})
@@ -268,7 +268,7 @@ class PolizaDeEgresosController {
 							,origen:fac.id)
 						//Abono al ISR de Honorarios al Consejo
 						poliza.addToPartidas(
-							cuenta:CuentaContable.buscarPorClave("205-0006"),
+							cuenta:CuentaContable.buscarPorClave("213-0007"),
 							debe:0.0,
 							haber:c.retensionIsr,
 							asiento:asiento,
@@ -296,7 +296,7 @@ class PolizaDeEgresosController {
 							,origen:fac.id)
 						//Cargo al iva de gasto
 						poliza.addToPartidas(
-							cuenta:CuentaContable.buscarPorClave("117-0001"),
+							cuenta:CuentaContable.buscarPorClave("118-0001"),
 							debe:c.impuesto,
 							haber:0.0,
 							asiento:asiento,
@@ -309,7 +309,7 @@ class PolizaDeEgresosController {
 						
 						if(c.retension>0){
 							poliza.addToPartidas(
-								cuenta:CuentaContable.buscarPorClave("117-0008"),
+								cuenta:CuentaContable.buscarPorClave("118-0008"),
 								debe:c.retension,
 								haber:0.0,
 								asiento:asiento,
@@ -323,7 +323,7 @@ class PolizaDeEgresosController {
 						
 						if(c.retensionIsr){
 							poliza.addToPartidas(
-								cuenta:CuentaContable.buscarPorClave("205-0006"),
+								cuenta:CuentaContable.buscarPorClave("213-0007"),
 								debe:c.retensionIsr,
 								haber:0.0,
 								asiento:asiento,
@@ -341,9 +341,9 @@ class PolizaDeEgresosController {
 						//Cargo a agredores diversos o cancelar la provision
 					    def iva=c.impuesto
 						def monto=c.total
-						def cuenta=CuentaContable.buscarPorClave("203-V001")
+						def cuenta=CuentaContable.buscarPorClave("205-V001")
 						if(c.tipo=='SEGUROS Y FIANZAS'){
-							cuenta=CuentaContable.buscarPorClave("203-$fac.proveedor.subCuentaOperativa")
+							cuenta=CuentaContable.buscarPorClave("205-$fac.proveedor.subCuentaOperativa")
 						 monto=det.total
 						 ietu=det.ietu
 						 iva=det.impuestos
@@ -364,7 +364,7 @@ class PolizaDeEgresosController {
 						,origen:fac.id)
 						//Cargo al iva de gasto
 						poliza.addToPartidas(						
-							cuenta:CuentaContable.buscarPorClave("117-0001"),
+							cuenta:CuentaContable.buscarPorClave("118-0001"),
 							debe:iva,
 							haber:0.0,
 							asiento:asiento,
@@ -376,7 +376,7 @@ class PolizaDeEgresosController {
 							,origen:fac.id)
 						//Abono al iva pendiente  de gasto
 						poliza.addToPartidas(
-							cuenta:CuentaContable.buscarPorClave("117-0005"),
+							cuenta:CuentaContable.buscarPorClave("118-0005"),
 							debe:0.0,
 							haber:iva,
 							asiento:asiento,
@@ -429,7 +429,7 @@ class PolizaDeEgresosController {
 		   }
 			
 			if(c!=null && c.tipo!='HONORARIOS AL CONSEJO ADMON'){
-				//IETU
+				/*IETU
 				poliza.addToPartidas(
 					cuenta:cuentaCargo,
 					debe:ietu,
@@ -453,6 +453,7 @@ class PolizaDeEgresosController {
 					,tipo:poliza.tipo
 					,entidad:'MovimientoDeCuenta'
 					,origen:egreso.id)
+				*/
 			}
 			
 			
@@ -534,7 +535,7 @@ class PolizaDeEgresosController {
 			
 			//Cargo a proveedor
 			def proveedor=pago.requisicion.proveedor
-			clave="109-$proveedor.subCuentaOperativa"
+			clave="107-$proveedor.subCuentaOperativa"
 			def cuenta=CuentaContable.findByClave(clave)
 			if(!cuenta) throw new RuntimeException("No existe la cuenta para el proveedor: "+proveedor.nombre+ 'Clave: '+clave)
 			def requisicion=pago.requisicion
@@ -598,7 +599,7 @@ class PolizaDeEgresosController {
 			
 			//Cargo a proveedor
 			def proveedor=pago.requisicion.proveedor
-			clave="111-$proveedor.subCuentaOperativa"
+			clave="120-$proveedor.subCuentaOperativa"
 			def cuenta=CuentaContable.findByClave(clave)
 			if(!cuenta) throw new RuntimeException("No existe la cuenta para el proveedor: "+proveedor.nombre+ 'Clave: '+clave)
 			def requisicion=pago.requisicion
@@ -615,7 +616,7 @@ class PolizaDeEgresosController {
 					,entidad:'PagoProveedor'
 					,origen:pago.id)				
 
-				//IETU
+				/*IETU
 				poliza.addToPartidas(
 					cuenta:CuentaContable.buscarPorClave("900-0002"),
 					debe:egreso.importe.abs()*egreso.tc,
@@ -639,6 +640,7 @@ class PolizaDeEgresosController {
 					,tipo:poliza.tipo
 					,entidad:'MovimientoDeCuenta'
 					,origen:egreso.id)
+				*/
 		
 			}
 			
@@ -710,7 +712,7 @@ class PolizaDeEgresosController {
 			//Cargo a proveedor
 			def proveedor=pago.requisicion.proveedor
 			
-			def clave="203-$proveedor.subCuentaOperativa"
+			def clave="205-$proveedor.subCuentaOperativa"
 			println 'Localizando cuenta operativa contable para Proveedor: '+proveedor
 			def cuenta=CuentaContable.buscarPorClave(clave)
 			def requisicion=pago.requisicion
