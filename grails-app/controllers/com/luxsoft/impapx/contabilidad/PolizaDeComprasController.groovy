@@ -82,7 +82,7 @@ class PolizaDeComprasController {
 		Poliza poliza=new Poliza(tipo:'COMPRAS',folio:1, fecha:dia,descripcion:'Poliza '+dia.text(),partidas:[])
 		poliza.ejercicio = session.periodoContable.ejercicio
 		poliza.mes = session.periodoContable.mes
-		poliza.subTipo= 'COMRAS'
+		poliza.subTipo= 'COMPRAS'
 		
 		//Collecciones usadas mas de una vez
 		
