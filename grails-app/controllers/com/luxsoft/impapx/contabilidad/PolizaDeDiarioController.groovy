@@ -40,12 +40,33 @@ class PolizaDeDiarioController {
 		respond q.list(params)
 		
 	}
+
+	def update(Poliza polizaInstance){
+		if (polizaInstance == null) {
+		    notFound()
+		    return
+		}
+		log.info 'Actualizando propiedades de la poliza: '+polizaInstance
+		
+		if (polizaInstance.hasErrors()) {
+		    respond polizaInstance.errors, view:'create'
+		    return
+		}
+		if(polizaInstance.cierre){
+			flash.message = "Periodo contable cerrado no se puede modificar esta poliza"
+			redirect controller:'poliza',action:'edit',id:polizaInstance.id
+			return
+		}
+		//polizaInstance = polizaService.salvarPoliza polizaInstance 
+		flash.message = "Poliza ${polizaInstance.folio} generada"
+		redirect controller:'poliza',action:'edit',id:polizaInstance.id
+	}
 	 
 	
-	def mostrarPoliza(long id){
-		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
-		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
-	}
+	// def mostrarPoliza(long id){
+	// 	def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
+	// 	render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
+	// }
 
 	def generarPoliza(String fecha){
 		
@@ -104,9 +125,8 @@ class PolizaDeDiarioController {
 		poliza.debe=poliza.partidas.sum (0.0,{it.debe})
 		poliza.haber=poliza.partidas.sum(0.0,{it.haber})
 		poliza=polizaService.salvarPolizaDiario(poliza)
-		//poliza.folio=polizaService.nextFolio(poliza)
-		//poliza.save(failOnError:true)
-		redirect action: 'mostrarPoliza', params: [id:poliza.id]
+		
+		redirect controller:'poliza',action: 'edit', id:poliza.id
 	}
 	
 	private procesarFacturacion(def poliza,def dia,def facturas){

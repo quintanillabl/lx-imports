@@ -136,9 +136,26 @@ class PolizaController {
     	    respond polizaInstance, view:'edit'
     	    return
     	}
-    	polizaInstance = polizaService.save polizaInstance
+    	polizaInstance = polizaInstance.save(failOnError:true,flush:true)
     	flash.message="Poliza  ${polizaInstance.id} actualizada "
     	redirect action:'edit',id:polizaInstance.id
+    }
+
+    def editPartida(PolizaDet polizaDetInstance){
+    	[poliza:polizaDetInstance.poliza,polizaDetInstance:polizaDetInstance]
+    }
+
+    def updatePartida(PolizaDet polizaDetInstance){
+    	if(polizaDetInstance == null){
+    		notFound()
+    		return
+    	}
+    	if(polizaDetInstance.hasErrors()){
+    		render view:editPartida,model:[poliza:polizaDet.poliza,polizaDet:polizaDetInstance]
+    		return
+    	}
+    	polizaDetInstance = polizaDetInstance.save flush:true
+    	redirect action:'edit',id:polizaDetInstance.poliza.id
     }
 	
 	

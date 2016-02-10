@@ -116,9 +116,15 @@
 	            			<g:each in="${polizaInstance.partidas}" var="row">
 	            				<tr id="${row.id}">
 	            					<td>
-	            						<g:link action="editPartida" id="${row.id}">
+	            						<g:if test="${polizaInstance.manual}">
+	            							<g:link controller="poliza" action="editPartida" id="${row.id}">
+	            								${fieldValue(bean: row, field: "cuenta.clave")}
+	            							</g:link>
+	            						</g:if>
+	            						<g:else>
 	            							${fieldValue(bean: row, field: "cuenta.clave")}
-	            						</g:link>
+	            						</g:else>
+	            						
 	            					</td>
 	            					<td>${fieldValue(bean: row, field: "cuenta.descripcion")}</td>
 	            					<td><g:formatNumber number="${row.debe}" format="########.##"/></td>
@@ -209,8 +215,9 @@
 					<h4 class="modal-title" id="myModalLabel">Modificar poliza ${polizaInstance.folio}</h4>
 				</div>
 				<g:form action="update" class="form-horizontal" id="${polizaInstance.id}" method="PUT">
-					<div id="createPanel" class="modal-body">
+					<g:hiddenField name="version" value="${polizaInstance.version}"/>
 
+					<div id="createPanel" class="modal-body">
 						<f:with bean="${polizaInstance}">
 							<f:field property="descripcion" widget-class="form-control" label="Concepto"/>
 							<f:field property="manual" widget-class="form-control"/>

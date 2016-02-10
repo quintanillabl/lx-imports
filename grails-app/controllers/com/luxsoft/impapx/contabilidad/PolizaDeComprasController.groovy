@@ -95,15 +95,12 @@ class PolizaDeComprasController {
 		//Salvar la poliza
 		poliza.debe=poliza.partidas.sum (0.0,{it.debe})
 		poliza.haber=poliza.partidas.sum(0.0,{it.haber})
-		//poliza.cuadrar()
-		//poliza.save(flush:true)
 		poliza=polizaService.salvarPoliza(poliza)
 		
-		//println 'Poliza generada:'+ poliza
-		//redirect action: 'mostrarPoliza', params: [id:poliza.id]
-		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
+		redirect controller:'poliza',action:'edit',id:poliza.id
+		//render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
 		
-		//render (view:'poliza' ,model:[poliza:poliza,partidas:poliza.partidas])
+		
 	}
 	
 	private procearCuentaPorPagarMateriaPrima(def poliza , def dia){

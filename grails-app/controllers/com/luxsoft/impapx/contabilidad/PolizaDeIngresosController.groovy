@@ -121,7 +121,7 @@ class PolizaDeIngresosController {
 					,origen:aplic.id)
 			}
 			
-			//IETU
+			/*IETU
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave("902-0001"),
 				debe:pago.importe.abs()*pago.tc,
@@ -145,7 +145,7 @@ class PolizaDeIngresosController {
 				,tipo:poliza.tipo
 				,entidad:'CXCPago'
 				,origen:pago.id)
-			
+			*/
 			
 		}
 		
