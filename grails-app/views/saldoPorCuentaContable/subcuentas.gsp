@@ -71,7 +71,7 @@
 	        		    	 		
 	        		    	 		<li>
 	        		    	 			<g:jasperReport
-	        		    	 			jasper="AuxiliarContablePorPeriodo" 
+	        		    	 			jasper="AuxiliarContable" 
 	        		    	 			format="PDF" 
 	        		    	 			name="Auxiliar "
 	        		    	 			buttonPosition="top">

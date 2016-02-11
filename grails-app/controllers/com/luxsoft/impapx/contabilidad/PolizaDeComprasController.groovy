@@ -183,7 +183,7 @@ class PolizaDeComprasController {
 						,origen:factura.id)
 				}
 				if(variacionCambiaria<0){
-					cuenta=CuentaContable.buscarPorClave("703-002")
+					cuenta=CuentaContable.buscarPorClave("703-0003")
 					poliza.addToPartidas(
 						cuenta:cuenta,
 						debe:0.0,
