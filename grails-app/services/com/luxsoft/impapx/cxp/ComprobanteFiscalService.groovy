@@ -236,7 +236,7 @@ class ComprobanteFiscalService {
 
     def registrarConceptos(def cxp,def xml){
         if(cxp.instanceOf(FacturaDeGastos)){
-            def concepto=CuentaContable.buscarPorClave('600')
+            def concepto=CuentaContable.buscarPorClave('600-0000')
             def conceptos=xml.breadthFirst().find { it.name() == 'Conceptos'}
             conceptos.children().each{
                 def model=it.attributes()
