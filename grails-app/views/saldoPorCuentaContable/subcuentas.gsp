@@ -69,7 +69,7 @@
 	        		    				</g:jasperReport>
 	        		    	 		</li>
 	        		    	 		
-	        		    	 		<li>
+	        		    	 		%{-- <li>
 	        		    	 			<g:jasperReport
 	        		    	 			jasper="AuxiliarContable" 
 	        		    	 			format="PDF" 
@@ -78,7 +78,8 @@
 	        		    							<g:hiddenField name="YEAR" value="${session.periodoContable.ejercicio}"/>
 	        		    							<g:hiddenField name="MES" value="${session.periodoContable.mes}"/>
 	        		    				</g:jasperReport>
-	        		    	 		</li>
+	        		    				
+	        		    	 		</li> --}%
 	        		    </ul>
 	        		</div>
 	        		<div class="btn-group">

@@ -76,25 +76,30 @@ class SaldoPorCuentaContableController {
 			, saldoPorCuentaContableInstanceTotal: saldos.size(),]
 	}
 	
-	def auxiliar(long id,int year,int month){
-		println 'Auxiliar contable: '+params
-		def saldo=SaldoPorCuentaContable.get(id)
-		def dets=PolizaDet.findAll("from PolizaDet d where d.cuenta=? and date(d.fecha) between ? and ?"
-			,[saldo.cuenta,saldo.fecha.inicioDeMes(),saldo.fecha.finDeMes()])
+	def auxiliar(SaldoPorCuentaContable saldo,int year,int month){
+		log.info 'Auxilar para: '+saldo
+		log.info 'Auxiliar contable: '+params
+		//def saldo=SaldoPorCuentaContable.get(id)
+		def dets=PolizaDet.findAll(
+			"from PolizaDet d where d.cuenta=? and d.poliza.ejercicio=? and d.poliza.mes=?"
+			,[saldo.cuenta,year,month]
+			)
+
 		def saldoPadre=SaldoPorCuentaContable.get(params.saldoPadre)
 		[saldo:saldo,partidas:dets,saldoPadre:saldoPadre]
 	}
 	
 	def imprimirAuxiliarContable(){
-		println 'Imprimiento auxiliar'+params
+		log.info 'Imprimiento auxiliar'+params
 		
 		def saldo=SaldoPorCuentaContable.get(params.long('id'))
 		
 		if(!saldo)
 			throw new RuntimeException("No existe saldo : "+id)
 			
-		def dets=PolizaDet.findAll("from PolizaDet d where d.cuenta=? and date(d.fecha) between ? and ? order by d.fecha"
-			,[saldo.cuenta,saldo.fecha.inicioDeMes(),saldo.fecha.finDeMes()])
+		def dets=PolizaDet.findAll(
+			"from PolizaDet d where d.cuenta=? and d.poliza.ejercicio=? and d.poliza.mes=? order by d.poliza.fecha"
+			,[saldo.cuenta,saldo.year,saldo.mes])
 		
 		def saldoPadre=SaldoPorCuentaContable.get(saldo.cuenta.padre.id)
 		
