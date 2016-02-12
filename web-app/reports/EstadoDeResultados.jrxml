@@ -39,19 +39,19 @@ FROM cuenta_contable C
 JOIN saldo_por_cuenta_contable S ON(S.CUENTA_ID=C.ID)
 WHERE S.year=$P{YEAR} AND S.mes=$P{MES} AND C.PADRE_ID IN(32) AND (S.saldo_final<>0 OR (S.DEBE-S.HABER)<>0)
 	UNION
-SELECT 'COSTOS' AS GRUPO,C.ID,YEAR(D.FECHA) AS YEAR,MONTH(D.FECHA) AS MES,C.TIPO,C.SUB_TIPO,C.de_resultado,C.CLAVE,'GASTOS DE COMPRA DE IMPORTACION' AS DESCRIPCION,SUM(D.DEBE-D.HABER) AS MOV_MES
-,(SELECT SUM(IFNULL(D.DEBE,0)-IFNULL(D.HABER,0)) FROM poliza_det d JOIN cuenta_contable C ON(C.ID=D.cuenta_id)where  year(d.fecha)=$P{YEAR} AND month(d.fecha)<=$P{MES}  AND C.id=189 AND D.asiento='CUENTA DE GASTOS' ) AS SALDO_FINAL
+SELECT 'COSTOS' AS GRUPO,C.ID,YEAR(p.fecha) AS YEAR,MONTH(p.fecha) AS MES,C.TIPO,C.SUB_TIPO,C.de_resultado,C.CLAVE,'GASTOS DE COMPRA DE IMPORTACION' AS DESCRIPCION,SUM(D.DEBE-D.HABER) AS MOV_MES
+,(SELECT SUM(IFNULL(D.DEBE,0)-IFNULL(D.HABER,0)) FROM poliza_det d JOIN poliza P ON(P.id=D.poliza_id)  JOIN cuenta_contable C ON(C.ID=D.cuenta_id)where  year(p.fecha)=$P{YEAR} AND month(p.fecha)<=$P{MES}  AND C.id=189 AND D.asiento='CUENTA DE GASTOS' ) AS SALDO_FINAL
 ,'UTILIDAD BRUTA' AS GRUPO2,0 as VTAS_MES,0 as VTAS_ACU
-FROM poliza_det d JOIN poliza P ON(P.id=D.poliza_id) JOIN cuenta_contable C ON(C.ID=D.cuenta_id) where D.asiento='CUENTA DE GASTOS' AND  year(d.fecha)=$P{YEAR} AND month(d.fecha)=$P{MES}  AND C.id=189
+FROM poliza_det d JOIN poliza P ON(P.id=D.poliza_id) JOIN cuenta_contable C ON(C.ID=D.cuenta_id) where D.asiento='CUENTA DE GASTOS' AND  year(p.fecha)=$P{YEAR} AND month(p.fecha)=$P{MES}  AND C.id=189
 	UNION
 SELECT 'GASTOS DE OPERACION' AS GRUPO,c.id,S.YEAR,S.MES,C.TIPO,C.SUB_TIPO,C.de_resultado,C.CLAVE,C.DESCRIPCION,(S.DEBE-S.HABER) AS MOV_MES,S.SALDO_FINAL,'UTILIDAD ANTES DE OTROS INGRESOS,GASTOS' AS GRUPO2,0 as VTAS_MES,0 as VTAS_ACU
 FROM cuenta_contable C
 JOIN saldo_por_cuenta_contable S ON(S.CUENTA_ID=C.ID)
 WHERE S.year=$P{YEAR} AND S.mes=$P{MES} AND C.PADRE_ID IN(34) AND (S.saldo_final<>0 OR (S.DEBE-S.HABER)<>0) AND C.ID NOT IN(189)
 	UNION
-SELECT 'GASTOS DE OPERACION' AS GRUPO,C.ID,YEAR(D.FECHA) AS YEAR,MONTH(D.FECHA) AS MES,C.TIPO,C.SUB_TIPO,C.de_resultado,C.CLAVE,C.DESCRIPCION,IFNULL(SUM(D.DEBE-D.HABER),0) AS MOV_MES
-,(SELECT IFNULL(SUM(D.DEBE-D.HABER),0) FROM poliza_det d JOIN cuenta_contable C ON(C.ID=D.cuenta_id)where  D.asiento<>'CUENTA DE GASTOS' AND  D.asiento NOT LIKE 'CIERRE ANUAL%' AND  year(d.fecha)=$P{YEAR} AND month(d.fecha)<=$P{MES}  AND C.id=189 ) AS SALDO_FINAL,'UTILIDAD ANTES DE OTROS INGRESOS,GASTOS' AS GRUPO2,0 as VTAS_MES,0 as VTAS_ACU
-FROM poliza_det d JOIN poliza P ON(P.id=D.poliza_id) JOIN cuenta_contable C ON(C.ID=D.cuenta_id) where  D.asiento<>'CUENTA DE GASTOS' AND  D.asiento NOT LIKE 'CIERRE ANUAL%' AND  year(d.fecha)=$P{YEAR} AND month(d.fecha)=$P{MES}  AND C.id=189
+SELECT 'GASTOS DE OPERACION' AS GRUPO,C.ID,YEAR(p.fecha) AS YEAR,MONTH(p.fecha) AS MES,C.TIPO,C.SUB_TIPO,C.de_resultado,C.CLAVE,C.DESCRIPCION,IFNULL(SUM(D.DEBE-D.HABER),0) AS MOV_MES
+,(SELECT IFNULL(SUM(D.DEBE-D.HABER),0) FROM poliza_det d JOIN poliza P ON(P.id=D.poliza_id)  JOIN cuenta_contable C ON(C.ID=D.cuenta_id)where  D.asiento<>'CUENTA DE GASTOS' AND  D.asiento NOT LIKE 'CIERRE ANUAL%' AND  year(p.fecha)=$P{YEAR} AND month(p.fecha)<=$P{MES}  AND C.id=189 ) AS SALDO_FINAL,'UTILIDAD ANTES DE OTROS INGRESOS,GASTOS' AS GRUPO2,0 as VTAS_MES,0 as VTAS_ACU
+FROM poliza_det d JOIN poliza P ON(P.id=D.poliza_id) JOIN cuenta_contable C ON(C.ID=D.cuenta_id) where  D.asiento<>'CUENTA DE GASTOS' AND  D.asiento NOT LIKE 'CIERRE ANUAL%' AND  year(p.fecha)=$P{YEAR} AND month(p.fecha)=$P{MES}  AND C.id=189
 	UNION
 SELECT 'OTROS INGRESOS Y GASTOS' AS GRUPO,c.id,S.YEAR,S.MES,C.TIPO,C.SUB_TIPO,C.de_resultado,C.CLAVE,C.DESCRIPCION,(S.DEBE-S.HABER) AS MOV_MES,S.SALDO_FINAL,'UTILIDAD NETA' AS GRUPO2,0 as VTAS_MES,0 as VTAS_ACU
 FROM cuenta_contable C
