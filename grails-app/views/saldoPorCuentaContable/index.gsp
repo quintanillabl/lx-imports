@@ -38,10 +38,31 @@
     		    	     			format="PDF,HTML" 
     		    	     			name="Balanza"
     		    	     			buttonPosition="top">
-    		    	    						<g:hiddenField name="YEAR" value="${session.periodoContable.ejercicio}"/>
-    		    	    						<g:hiddenField name="MES" value="${session.periodoContable.mes}"/>
+	    	    						<g:hiddenField name="YEAR" value="${session.periodoContable.ejercicio}"/>
+	    	    						<g:hiddenField name="MES" value="${session.periodoContable.mes}"/>
     		    	    		</g:jasperReport>
 	        		    	</li>
+    		    	 		<li>
+    		    	 			<g:jasperReport
+    		    	 			jasper="BalanceGeneral" 
+    		    	 			format="PDF" 
+    		    	 			name="Balance general"
+    		    	 			buttonPosition="top">
+	    							<g:hiddenField name="YEAR" value="${session.periodoContable.ejercicio}"/>
+	    							<g:hiddenField name="MES" value="${session.periodoContable.mes}"/>
+    		    				</g:jasperReport>
+    		    	 		</li>
+	        		    	 		
+    		    	 		<li>
+    		    	 			<g:jasperReport
+    		    	 			jasper="EstadoDeResultados" 
+    		    	 			format="PDF" 
+    		    	 			name="Estado de resultados"
+    		    	 			buttonPosition="top">
+	    							<g:hiddenField name="YEAR" value="${session.periodoContable.ejercicio}"/>
+	    							<g:hiddenField name="MES" value="${session.periodoContable.mes}"/>
+    		    				</g:jasperReport>
+    		    	 		</li>
 	        		    </ul>
 	        		</div>
 	        		<div class="btn-group">

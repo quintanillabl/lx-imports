@@ -36,7 +36,7 @@
 	        		            Reportes <span class="caret"></span>
 	        		    </button>
 	        		    <ul class="dropdown-menu">
-	        		    	 		<li>
+	        		    	 		%{-- <li>
 	        		    	 			<g:jasperReport
 	        		    	 			jasper="BalanzaDeComprobacion" 
 	        		    	 			format="PDF" 
@@ -45,29 +45,9 @@
 	        		    							<g:hiddenField name="YEAR" value="${session.periodoContable.ejercicio}"/>
 	        		    							<g:hiddenField name="MES" value="${session.periodoContable.mes}"/>
 	        		    				</g:jasperReport>
-	        		    	 		</li>
+	        		    	 		</li> --}%
 	        		    	 		
-	        		    	 		<li>
-	        		    	 			<g:jasperReport
-	        		    	 			jasper="BalanceGeneral" 
-	        		    	 			format="PDF" 
-	        		    	 			name="Balance general"
-	        		    	 			buttonPosition="top">
-	        		    							<g:hiddenField name="YEAR" value="${session.periodoContable.ejercicio}"/>
-	        		    							<g:hiddenField name="MES" value="${session.periodoContable.mes}"/>
-	        		    				</g:jasperReport>
-	        		    	 		</li>
 	        		    	 		
-	        		    	 		<li>
-	        		    	 			<g:jasperReport
-	        		    	 			jasper="EstadoDeResultados" 
-	        		    	 			format="PDF" 
-	        		    	 			name="Estado de resultados"
-	        		    	 			buttonPosition="top">
-	        		    							<g:hiddenField name="YEAR" value="${session.periodoContable.ejercicio}"/>
-	        		    							<g:hiddenField name="MES" value="${session.periodoContable.mes}"/>
-	        		    				</g:jasperReport>
-	        		    	 		</li>
 	        		    	 		
 	        		    	 		%{-- <li>
 	        		    	 			<g:jasperReport
