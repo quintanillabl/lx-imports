@@ -8,7 +8,7 @@ import groovy.sql.Sql;
 import groovy.transform.EqualsAndHashCode;
 import groovy.transform.ToString;
 
-import com.luxsoft.impapx.contabilidad.PeriodoContable;
+import com.luxsoft.lx.contabilidad.PeriodoContable
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(["hasRole('CONTABILIDAD')"])

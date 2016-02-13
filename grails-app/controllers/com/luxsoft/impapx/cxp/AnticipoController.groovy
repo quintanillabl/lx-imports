@@ -1,7 +1,7 @@
 package com.luxsoft.impapx.cxp
 
-import com.luxsoft.impapx.contabilidad.PeriodoContable
-import com.luxsoft.impapx.tesoreria.MovimientoDeCuenta;
+import com.luxsoft.lx.contabilidad.PeriodoContable
+import com.luxsoft.impapx.tesoreria.MovimientoDeCuenta
 
 import grails.converters.JSON
 import org.springframework.dao.DataIntegrityViolationException

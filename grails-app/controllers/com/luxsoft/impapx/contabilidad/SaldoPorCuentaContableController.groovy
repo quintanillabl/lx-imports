@@ -1,4 +1,4 @@
-	package com.luxsoft.impapx.contabilidad
+package com.luxsoft.impapx.contabilidad
 
 import grails.converters.JSON
 
@@ -8,6 +8,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.springframework.dao.DataIntegrityViolationException
+import com.luxsoft.lx.contabilidad.PeriodoContable
 
 import grails.plugin.springsecurity.annotation.Secured
 

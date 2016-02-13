@@ -2,6 +2,8 @@ package com.luxsoft.impapx.contabilidad
 
 import grails.plugin.springsecurity.annotation.Secured
 
+import com.luxsoft.lx.contabilidad.PeriodoContable
+
 @Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeInversionesController {
 

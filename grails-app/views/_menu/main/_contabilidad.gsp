@@ -1,9 +1,9 @@
 
 <g:set var="contabilidadControllers" 
-    value="${['cuentaContable','saldoPorCuentaContable','polizaDeCompras','polizaDeEgresos','polizaDeDiario','polizaDeDiarioFlete','polizaDeDiarioIvaIsr','polizaDeDiarioAplicacionAnticipo','polizaDeIngresos','polizaDeImpuestos','poliza','polizaDeProvisionAnual','polizaDeCierreAnual','diot','cuentaSat','procesadorDePoliza']}" />
+    value="${['cuentaContable','saldoPorCuentaContable','polizaDeCompras','polizaDeEgresos','polizaDeDiario','polizaDeDiarioFlete','polizaDeDiarioIvaIsr','polizaDeDiarioAplicacionAnticipo','polizaDeIngresos','polizaDeImpuestos','poliza','polizaDeProvisionAnual','polizaDeCierreAnual','diot','cuentaSat','procesadorDePoliza','balanza']}" />
 
 <g:set var="polizaControllers" 
-    value="${['poliza','procesadorDePoliza','polizaDeCompras','polizaDeEgresos','polizaDeDiario','polizaDeDiarioFlete','polizaDeDiarioIvaIsr','polizaDeDiarioAplicacionAnticipo','polizaDeIngresos','polizaDeImpuestos','poliza','polizaDeProvisionAnual','polizaDeCierreAnual']}" />
+    value="${['poliza','procesadorDePoliza','polizaDeCompras','polizaDeEgresos','polizaDeDiario','polizaDeDiarioFlete','polizaDeDiarioIvaIsr','polizaDeDiarioAplicacionAnticipo','polizaDeIngresos','polizaDeImpuestos','poliza','polizaDeProvisionAnual','polizaDeCierreAnual','balanza']}" />
 
 <g:set var="satControllers" 
     value="${['cuentaSat']}" />
@@ -26,6 +26,11 @@
             <li class="${webRequest.controllerName=='saldoPorCuentaContable'?'active':''}" >
                 <g:link controller="saldoPorCuentaContable">Saldos</g:link>
             </li>
+
+            <li class="${webRequest.controllerName=='balanza'?'active':''}" >
+                <g:link controller="balanza">Balanza</g:link>
+            </li>
+
             <li class="${webRequest.controllerName=='diot'?'active':''}" >
                 <g:link controller="diot">DIOT</g:link>
             </li>
