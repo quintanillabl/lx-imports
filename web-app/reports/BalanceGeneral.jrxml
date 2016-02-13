@@ -39,12 +39,11 @@ FROM cuenta_contable C
 JOIN saldo_por_cuenta_contable S ON(S.CUENTA_ID=C.ID)
 WHERE S.YEAR=$P{YEAR} AND S.mes=$P{MES} AND C.TIPO<>'ORDEN' AND C.PADRE_ID IN(15,16)
 UNION
-SELECT C.id,YEAR(P.FECHA) AS YEAR,MONTH(P.FECHA) AS MES,'ENERO' AS MES_NOMBRE,C.TIPO,C.SUB_TIPO,C.de_resultado,'RESULTADO DEL EJERCICIO' AS DESCRIPCION,(CASE WHEN C.TIPO='ACTIVO' THEN '1' ELSE '2'  END) AS GRUPO ,IFNULL((D.DEBE-D.HABER),0) AS SALDO
+SELECT C.id,YEAR(P.FECHA) AS YEAR,MONTH(P.FECHA) AS MES,'ENERO' AS MES_NOMBRE,C.TIPO,C.SUB_TIPO,C.de_resultado,'RESULTADO DEL EJERCICIO' AS DESCRIPCION,(CASE WHEN C.TIPO='ACTIVO' THEN '1' ELSE '2'  END) AS GRUPO ,IFNULL(SUM(D.DEBE-D.HABER),0) AS SALDO
 FROM poliza_det d JOIN poliza P ON(P.id=D.poliza_id) JOIN cuenta_contable C ON(C.ID=D.cuenta_id) 
-where   YEAR(P.FECHA)=$P{YEAR} AND MONTH(P.FECHA)<=$P{MES}
+where   YEAR(P.FECHA)=$P{YEAR} AND MONTH(P.FECHA)<=$P{MES}  AND P.TIPO<>'CIERRE_ANUAL'
  AND C.TIPO<>'ORDEN' 
- AND C.de_resultado is true]]>
-	</queryString>
+ AND C.de_resultado is true]]></queryString>
 
 	<field name="id" class="java.lang.Long"/>
 	<field name="YEAR" class="java.lang.Long"/>
