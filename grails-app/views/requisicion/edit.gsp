@@ -46,11 +46,11 @@
 							<div class="col-lg-6">
 								<f:field property="concepto" 
 									widget-class="form-control" widget-class="form-control chosen-select" wrapper="bootstrap3"/>
-								<f:display property="fecha" 
+								<f:field property="fecha" 
 									wrapper="bootstrap3"/>
 								<f:field property="fechaDelPago" label="Pago" wrapper="bootstrap3"/>
 								<f:field property="formaDePago" widget-class="form-control chosen-select" wrapper="bootstrap3" label="F. de Pago"/>
-								<f:display property="moneda" wrapper="bootstrap3"/>
+								<f:field property="moneda" wrapper="bootstrap3"/>
 								<f:field property="tc" widget="tc" label="T.C." wrapper="bootstrap3"/>
 								<f:field property="descuentoFinanciero" widget="porcentaje" label="D.F." wrapper="bootstrap3"/>
 								<f:field property="comentario" widget-class="form-control" wrapper="bootstrap3"/>

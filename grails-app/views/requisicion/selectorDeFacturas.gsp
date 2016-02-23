@@ -42,6 +42,7 @@
 	            				<th>Total</th>
 	            				<th>Saldo</th>
 	            				<th>Requisitado</th>
+	            				<th>Pendiente</th>
 	            			</tr>
 	            		</thead>
 	            		<tbody>
@@ -55,6 +56,7 @@
 	            				<td><lx:moneyFormat number="${row.total }"/></td>
 	            				<td><lx:moneyFormat number="${row.saldoActual }"/></td>
 	            				<td><lx:moneyFormat number="${row.requisitado }"/></td>
+	            				<td><lx:moneyFormat number="${row.pendienteRequisitar }"/></td>
 	            			</tr>
 	            			</g:each> 
 	            		</tbody>
@@ -74,6 +76,7 @@
 			});
  			$('#grid').dataTable({
                 responsive: true,
+                aLengthMenu: [[100,200, -1], [100,200, "Todos"]],
                 "language": {
 					"url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
 	    		},

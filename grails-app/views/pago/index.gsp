@@ -56,6 +56,8 @@
  				<td>Id</td>
  				<td>Proveedor</td>
  				<td>Fecha</td>
+ 				
+ 				<td>Requisición</td>
  				<td>Mon</td>
  				<td>Total</td>
  				<td>Aplicado</td>
@@ -65,12 +67,18 @@
  		<tbody>
  			<g:each in="${pagoInstanceList}" var="row">
  				<tr>
- 					<td><g:link action="edit" id="${row.id}">
- 						${fieldValue(bean: row, field: "id")}
+ 					<td>
+ 						<g:link action="edit" id="${row.id}">
+ 							${fieldValue(bean: row, field: "id")}
  						</g:link>
  					</td>
  					<td>${fieldValue(bean: row, field: "proveedor.nombre")}</td>
  					<td><lx:shortDate date="${row.fecha }"/></td>
+ 					<td>
+ 						<g:link controller="requisicion" action="show" id="${row.id}">
+ 							${row.pagoProveedor?.requisicion?.id}
+ 						</g:link>
+ 					</td>
  					<td>${fieldValue(bean: row, field: "moneda")}</td>
  					<td><lx:moneyFormat number="${row.total }"/></td>
  					<td><lx:moneyFormat number="${row.aplicado }"/></td>

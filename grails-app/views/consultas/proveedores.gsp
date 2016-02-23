@@ -45,7 +45,7 @@
 		$(function(){
 			$('#grid2').dataTable({
 			    responsive: true,
-			    aLengthMenu: [[20, 40, 60, 100, -1], [20, 40,60, 100, "Todos"]],
+			    aLengthMenu: [[ 100,200, -1], [100,200, "Todos"]],
 			    "language": {
 			        "url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
 			    },

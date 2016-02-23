@@ -32,8 +32,10 @@ class ConsultasController {
 	}
 	def proveedor(Proveedor proveedorInstance){
 		//def pendientes = CuentaPorPagar.where {proveedor==proveedorInstance && (total-pagosAplicados)>0}.list()
+
+		def inicio = Date.parse('dd/MM/yyyy','30/09/2015')
 		def pendientes = CuentaPorPagar
-			.findAll("from CuentaPorPagar c where c.proveedor=? and (c.total-c.pagosAplicados)>0",[proveedorInstance])
+			.findAll("from CuentaPorPagar c where c.proveedor=? and (c.total-c.pagosAplicados)>0 and date(c.fecha)>? order by c.vencimiento ",[proveedorInstance,inicio])
 		respond proveedorInstance,model:[pendientes:pendientes]
 	}
 
@@ -44,7 +46,7 @@ class ConsultasController {
             PROVEEDOR:command.proveedor.id as String,
             FECHA:command.fechaCorte,
             COMPANY:session.empresa.nombre])
-        def file="EstadoDeCuentaCXP_${command.proveedor.nombre}_"+new Date().format('mmss')+'.'+command.formato.toLowerCase()
+        def file='EstadoDeCuentaCXP_'+command.proveedor.id+'_'+new Date().format('mmss')+'.'+command.formato.toLowerCase()
         render(
             file: stream.toByteArray(), 
             contentType: 'application/pdf',

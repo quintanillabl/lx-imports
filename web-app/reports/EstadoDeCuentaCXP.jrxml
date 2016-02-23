@@ -40,11 +40,10 @@
 ,CASE WHEN (TO_DAYS($P{FECHA})-TO_DAYS(P.VENCIMIENTO))<=0 THEN 0 ELSE (TO_DAYS($P{FECHA})-TO_DAYS(P.VENCIMIENTO)) END AS ATR
  FROM cuenta_por_pagar P
 JOIN proveedor X ON(X.ID=P.proveedor_id)
-WHERE P.FECHA>'2015/07/31' AND  P.proveedor_id = $P{PROVEEDOR}
+WHERE P.FECHA>'2015/09/30' AND  P.proveedor_id = $P{PROVEEDOR}
 AND P.MONEDA='USD' AND P.CLASS='com.luxsoft.impapx.FacturaDeImportacion' AND
 P.TOTAL-IFNULL((SELECT SUM(B.TOTAL) FROM aplicacion B WHERE B.FACTURA_ID=P.ID AND B.fecha<=$P{FECHA}),0)>1
-AND (case when (SELECT MAX(E.fecha_embarque) FROM embarque_det D JOIN embarque E ON(E.ID=D.embarque_id) WHERE (D.factura_id=P.ID)) is null then P.FECHA else 
-	(SELECT MAX(E.fecha_embarque) FROM embarque_det D JOIN embarque E ON(E.ID=D.embarque_id) WHERE (D.factura_id=P.ID)) end) <= $P{FECHA}
+AND P.FECHA <= $P{FECHA}
 ORDER BY P.vencimiento ASC]]></queryString>
 
 	<field name="ID" class="java.lang.Long"/>
