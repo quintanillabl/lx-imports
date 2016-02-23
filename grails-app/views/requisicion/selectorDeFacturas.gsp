@@ -42,7 +42,7 @@
 	            				<th>Total</th>
 	            				<th>Saldo</th>
 	            				<th>Requisitado</th>
-	            				<th>Pendiente</th>
+	            				%{-- <th>Pendiente</th> --}%
 	            			</tr>
 	            		</thead>
 	            		<tbody>
@@ -56,7 +56,7 @@
 	            				<td><lx:moneyFormat number="${row.total }"/></td>
 	            				<td><lx:moneyFormat number="${row.saldoActual }"/></td>
 	            				<td><lx:moneyFormat number="${row.requisitado }"/></td>
-	            				<td><lx:moneyFormat number="${row.pendienteRequisitar }"/></td>
+	            				%{-- <td><lx:moneyFormat number="${row.pendienteRequisitar }"/></td> --}%
 	            			</tr>
 	            			</g:each> 
 	            		</tbody>

@@ -32,10 +32,12 @@
 				<td><g:link controller="aplicacion" action="edit" id="${row.id}">
 					${fieldValue(bean: row, field: "id")}</g:link>
 				</td>
-				<td><lx:shortDate date="${row.factura.fecha}" /></td>
-				<td><lx:shortDate date="${row.factura.vencimiento}" /></td>
 				<td><lx:shortDate date="${row.fecha}" /></td>
 				<td>${fieldValue(bean: row, field: "factura.documento")}</td>
+				<td><lx:shortDate date="${row.factura.fecha}" /></td>
+				<td><lx:shortDate date="${row.factura.vencimiento}" /></td>
+				
+				
 				<td><lx:moneyFormat number="${row.total }" /></td>
 				
 			</tr>

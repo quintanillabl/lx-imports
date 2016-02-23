@@ -13,7 +13,7 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(["hasRole('COMPRAS')"])
 class PagoController {
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'DELETE']
 
 	def pagoService
 		
@@ -100,14 +100,14 @@ class PagoController {
         def pagoInstance = Pago.get(params.id)
         if (!pagoInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'pago.label', default: 'Pago'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
 
         try {
             pagoInstance.delete(flush: true)
 			flash.message = message(code: 'default.deleted.message', args: [message(code: 'pago.label', default: 'Pago'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
         }
         catch (DataIntegrityViolationException e) {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'pago.label', default: 'Pago'), params.id])
