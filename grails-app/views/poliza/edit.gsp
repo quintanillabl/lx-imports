@@ -51,7 +51,6 @@
 	    					</a>
 	    				</g:if>
 	    				<g:else>
-	    					
 	    					<a href="#recalcularDialog" data-toggle="modal"
 	    						class="btn btn-primary btn-outline">
 	    						<i class="fa fa-cogs "></i> Recalcular

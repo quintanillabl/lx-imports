@@ -101,19 +101,24 @@ class PolizaDeDiarioController {
 		
 		// Procesadores
 		
-		procesarFacturacion(poliza, dia, facturas)
-		procesarFacturasServicios(poliza, dia, servicios)
-		procesarCostoDeVentas(poliza, dia, facturas)		
+		//procesarFacturacion(poliza, dia, facturas) /** Se migro a service 22-02-2016*/
+		//procesarFacturasServicios(poliza, dia, servicios) /** Se migro a service 22-02-2016*/
+		//procesarCostoDeVentas(poliza, dia, facturas)	/** Se migro a service 22-02-2016*/	
+		
 		//procesarAltaDeAnticipos(poliza, dia)
+		
 		procesarCobroSaldoDeudor(poliza, dia)
 		procesarCompraDeMonedaExtranjera(poliza, dia)
-		procesarComisionesBancarias(poliza, dia)
 		
-		procesarTraspasosBancarios(poliza, dia)
+		//procesarComisionesBancarias(poliza, dia) /** Se migro a service 22-02-2016*/
+		
+		//procesarTraspasosBancarios(poliza, dia) /** Se migro a service 22-02-2016*/
+		
 		//procesarInversionesAlta(poliza, dia)
 		//procesarInversionesRetorno(poliza, dia)
-		procesarVariacionCambiariaBancos(poliza, dia)
-		procesarVariacionCambiariaProveedores(poliza, dia)
+		
+		//procesarVariacionCambiariaBancos(poliza, dia) /** Se migro a service 23-02-2016*/
+		//procesarVariacionCambiariaProveedores(poliza, dia) /** Se migro a service 23-02-2016*/
 		
 		procesarDescuentosCxP(poliza, dia)
 		procesarNotasDeCreditoCxC(poliza, dia)

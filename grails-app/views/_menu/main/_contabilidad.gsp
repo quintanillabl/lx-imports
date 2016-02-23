@@ -41,7 +41,14 @@
                     <li class="${subTipo=='TODAS'?'active':''}">
                         <g:link controller="poliza">Todas</g:link>
                     </li>
-                    <g:each in="${com.luxsoft.lx.contabilidad.ProcesadorDePoliza.list()}" status="i" var="row">
+                    <li class="${subTipo=='COBRANZA'?'active':''}">
+                        <g:link controller="poliza" params="[subTipo:'COBRANZA']">Cobranza</g:link>
+                    </li>
+                    <li class="${subTipo=='EGRESOS'?'active':''}">
+                        <g:link controller="poliza" params="[subTipo:'EGRESOS']">Egresos</g:link>
+                    </li>
+
+                    <g:each in="${com.luxsoft.lx.contabilidad.ProcesadorDePoliza.where{tipo=='DIARIO'}}" status="i" var="row">
                         <li class="${subTipo==row.subTipo?'active':''}">
                             <g:link controller="poliza" action="index" params="[subTipo:row.subTipo]">${row.label}</g:link>
                         </li>

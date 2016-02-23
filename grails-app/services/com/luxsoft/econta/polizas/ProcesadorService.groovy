@@ -11,43 +11,55 @@ import org.apache.commons.lang.StringUtils
 
 @Transactional
 class ProcesadorService {
-    
-	def polizaService
 
 	def generar(def fecha,def procesador){
         return generar(procesador.tipo,procesador.subTipo,fecha)
     }
 
     def generar(String tipo,String subTipo,Date fecha){
-        log.info "Generando poliza  $tipo $subTipo $fecha"
 
-    	def found = Poliza.where {
-    		tipo == tipo && subTipo==subTipo && fecha == fecha
-    	}.find()
+        log.info "Generando poliza   $subTipo ${fecha.text()}"
 
-    	if (found) {
-            if(!found.manual){
-                found.partidas.clear()
-                log.info "Actualizando poliza ${subTipo }"+fecha.format('dd/MM/yyyy');
-                procesar(found)
-                cuadrar(found)
-                depurar(found)
-                return polizaService.update(found)
-            }
+        def poliza = Poliza.where {
+            subTipo==subTipo && fecha == fecha
+        }.find()
 
-    	} else {
-    		log.info "GENERANDO poliza ${subTipo } "+fecha.format('dd/MM/yyyy');
-    		def poliza=build(empresa,fecha,tipo,subTipo)
-    		//poliza = procesar(poliza)
-            procesar(poliza)
-            cuadrar(poliza)
-            depurar(poliza)
-    		
-    	}
+        if(!poliza){
+
+            poliza=build(fecha,tipo,subTipo)
+
+        }else{
+
+            poliza.partidas.clear()
+            log.info "Actualizando poliza ${subTipo } "+fecha.format('dd/MM/yyyy');
+        }
+
+        procesar(poliza)
+        cuadrar(poliza)
+        depurar(poliza)
+    	save poliza
     }
 
     def procesar(Poliza poliza){
         log.info 'PENDIENTE DE IMPLEMENTAR EL PROCESAMIENTO DE ESTE TIPO DE POLIZAS: '
+    }
+
+    def save(Poliza poliza){
+        if(!poliza.folio || poliza.folio==0){
+            poliza.folio=nextFolio(poliza)
+        }
+        poliza.save(failOnError:true,flush:true)
+        return poliza
+    }
+
+    def nextFolio(Poliza poliza){
+        def year=poliza.fecha.toYear()
+        def mes=poliza.fecha.toMonth()
+        def max=Poliza.executeQuery(
+            "select max(p.folio) from Poliza p where p.subTipo=? and year(p.fecha)=? and month(p.fecha)=?"
+            ,[poliza.subTipo,year,mes])
+        def folio=max[0]?:0
+        folio+=1
     }
 
     /// Metodos comunes

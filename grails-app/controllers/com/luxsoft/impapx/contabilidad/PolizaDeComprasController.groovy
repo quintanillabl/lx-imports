@@ -19,17 +19,7 @@ class PolizaDeComprasController {
 	
 	def polizaService
 
- //    def beforeInterceptor = {
- //    	if(!session.periodoContable){
- //    		session.periodoContable=new Date()
- //    	}
-	// }
-
-	// def cambiarPeriodo(){
-	// 	def fecha=params.date('fecha', 'dd/MM/yyyy')
-	// 	session.periodoContable=fecha
-	// 	redirect(uri: request.getHeader('referer') )
-	// }	
+ 	
 	
 	def index() {
 		def sort=params.sort?:'fecha'
@@ -58,19 +48,7 @@ class PolizaDeComprasController {
 		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
 	}
 	 
-	// def list() {
-	// 	if(!session.periodoContable){
-	// 		PeriodoContable periodo=new PeriodoContable()
-	// 		periodo.actualizarConFecha()
-	// 		session.periodoContable=periodo
-	// 	}
-	// 	PeriodoContable periodo=session.periodoContable
-	// 	def sort=params.sort?:'fecha'
-	// 	def order=params.order?:'desc'
-		
-	// 	def polizas=Poliza.findAllByTipoAndFechaBetween('COMPRAS',periodo.inicio,periodo.fin,[sort:sort,order:order])
-	// 	[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-	// }
+	
 	
 	def generarPoliza(String fecha){
 		Date dia=Date.parse("dd/MM/yyyy",fecha)

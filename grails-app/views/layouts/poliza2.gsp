@@ -136,9 +136,11 @@
                     <h4 class="modal-title" id="myModalLabel">
                         Generar póliza de ${procesador?.subTipo} (${procesador?.tipo})
                     </h4>
+                    <p>(${procesador?.service})</p>
                 </div>
                 <g:form action="generarPoliza" class="form-horizontal" >
-                    <g:hiddenField name="procesador?.id" value="${procesador?.id}"/>
+                    <g:hiddenField name="procesador.id" value="${procesador?.id}"/>
+                    <g:hiddenField name="subTipo" value="${procesador?.subTipo}"/>
                     <div class="modal-body">
                         <div class="form-group" id="data_5">
                             <label for="fecha" class="control-label col-sm-2">Fecha</label>

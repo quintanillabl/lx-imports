@@ -6,17 +6,7 @@ import com.luxsoft.lx.contabilidad.*
 class PolizaUtils {
 	
 	
-	public static void buildProcesadores(){
-		ProcesadorDePoliza.findOrSaveWhere(
-			tipo:'DIARIO',
-			subTipo:'COMPRAS',
-			descripcion:'Poliza de compras',
-			label:'Compras',
-			service:'polizaDeComprasService')
-
-		
-		
-	}
+	
 
 
 	public static IvaTrasladadoPendiente(def empresa){
@@ -90,6 +80,99 @@ class PolizaUtils {
 
 	public static Servicios(def empresa){
 		return CuentaContable.findByEmpresaAndClave(empresa,'403-0001')	
+	}
+
+	public static void buildProcesadores(){
+		
+		if(!ProcesadorDePoliza.find{subTipo== 'COMPRAS'}){
+		    new ProcesadorDePoliza(
+		        tipo:'DIARIO',
+		        subTipo:'COMPRAS',
+		        descripcion:'Poliza de compras',
+		        label:'Compras',
+		        service:'polizaDeComprasService'
+			).save failOnError:true,flush:true
+		}
+		if(!ProcesadorDePoliza.find{subTipo== 'TRASPASOS'}){
+		    new ProcesadorDePoliza(
+		        tipo:'DIARIO',
+		        subTipo:'TRASPASOS',
+		        descripcion:'Poliza de traspasos e inversiones',
+		        label:'Traspasos/Inversiones',
+		        service:'polizaDeTraspasosService'
+			).save failOnError:true,flush:true
+		}
+		if(!ProcesadorDePoliza.find{subTipo== 'COMISIONES'}){
+		    new ProcesadorDePoliza(
+		        tipo:'DIARIO',
+		        subTipo:'COMISIONES',
+		        descripcion:'Poliza de comisiones bancarias',
+		        label:'Comisiones',
+		        service:'polizaDeComisionesBancariasService'
+			).save failOnError:true,flush:true
+		}
+
+		if(!ProcesadorDePoliza.find{subTipo== 'COSTO_DE_VENTAS'}){
+		    new ProcesadorDePoliza(
+		        tipo:'DIARIO',
+		        subTipo:'COSTO_DE_VENTAS',
+		        descripcion:'Poliza de costo de ventas',
+		        label:'Costo de Ventas',
+		        service:'polizaDeCostoDeVentasService'
+			).save failOnError:true,flush:true
+		}
+
+		if(!ProcesadorDePoliza.find{subTipo== 'FACTURACION'}){
+		    new ProcesadorDePoliza(
+		        tipo:'DIARIO',
+		        subTipo:'FACTURACION',
+		        descripcion:'Poliza de costo de facturación',
+		        label:'Facturación',
+		        service:'polizaDeFacturacionService'
+			).save failOnError:true,flush:true
+		}
+
+		if(!ProcesadorDePoliza.find{subTipo== 'EGRESOS'}){
+		    new ProcesadorDePoliza(
+		        tipo:'EGRESO',
+		        subTipo:'EGRESOS',
+		        descripcion:'Póliza de egresos',
+		        label:'Egresos',
+		        service:'polizaDeEgresosService'
+			).save failOnError:true,flush:true
+		}
+
+		if(!ProcesadorDePoliza.find{subTipo== 'COBRANZA'}){
+		    new ProcesadorDePoliza(
+		        tipo:'INGRESO',
+		        subTipo:'COBRANZA',
+		        descripcion:'Póliza de cobranza',
+		        label:'Cobranza',
+		        service:'polizaDeCobranzaService'
+			).save failOnError:true,flush:true
+		}
+
+		if(!ProcesadorDePoliza.find{subTipo== 'FLETE'}){
+		    new ProcesadorDePoliza(
+		        tipo:'DIARIO',
+		        subTipo:'FLETE',
+		        descripcion:'Póliza de fletes',
+		        label:'Fletes',
+		        service:'polizaDeFleteService'
+			).save failOnError:true,flush:true
+		}
+
+		if(!ProcesadorDePoliza.find{subTipo== 'VARIACION_CAMBIARIA'}){
+		    new ProcesadorDePoliza(
+		        tipo:'DIARIO',
+		        subTipo:'VARIACION_CAMBIARIA',
+		        descripcion:'Póliza de vaciación cambiaria',
+		        label:'Variación cambiaria',
+		        service:'polizaDeVariacionCambiariaService'
+			).save failOnError:true,flush:true
+		}
+
+		
 	}
 
 

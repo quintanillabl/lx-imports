@@ -25,20 +25,6 @@ import grails.plugin.springsecurity.annotation.Secured
 class PolizaDeDiarioFleteController {
 
 	def polizaService
-	
-	// def index() {
-	// 	def sort=params.sort?:'fecha'
-	// 	def order=params.order?:'desc'
-	// 	def periodo=session.periodoContable
-	// 	def polizas=Poliza.findAllByTipoAndDescripcionIlikeAndFechaBetween(
-	// 		'DIARIO',
-	// 		'%Flete%',
-	// 		periodo.inicioDeMes(),
-	// 		periodo.finDeMes(),
-	// 		[sort:sort,order:order]
-	// 		)
-	// 	[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-	// }
 
 	def index() {
 		def sort=params.sort?:'fecha'

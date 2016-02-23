@@ -1,10 +1,10 @@
 package com.luxsoft.impapx.contabilidad
 
-import util.MonedaUtils;
-import util.Rounding;
+import util.MonedaUtils
+import util.Rounding
 
-import com.luxsoft.impapx.cxc.CXCAplicacion;
-import com.luxsoft.impapx.cxc.CXCPago;
+import com.luxsoft.impapx.cxc.CXCAplicacion
+import com.luxsoft.impapx.cxc.CXCPago
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(["hasRole('CONTABILIDAD')"])

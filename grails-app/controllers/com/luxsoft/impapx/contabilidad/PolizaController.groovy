@@ -42,11 +42,7 @@ class PolizaController {
 	}	
 	
 	def index() {
-		// def sort=params.sort?:'fecha'
-		// def order=params.order?:'desc'
-		// def periodo=session.periodoContable
-		// def polizas=Poliza.findAllByTipoAndFechaBetween('GENERICA',periodo.inicioDeMes(),periodo.finDeMes(),[sort:sort,order:order])
-		// [polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+		
 		def subTipo=params.subTipo?:'TODAS'
 		def ejercicio=session.periodoContable.ejercicio
 		def mes=session.periodoContable.mes
@@ -57,18 +53,11 @@ class PolizaController {
 		}
 		if(subTipo!='TODAS')
 			polizas=polizas.where {subTipo==subTipo}
-		/*
-		def procesador = null
-		if(subTipo!='TODAS'){
-		    polizas=polizas.where {subTipo==subTipo}
-		    procesador = ProcesadorDePoliza.findByNombre(subTipo)
-		}
-		*/
+		
 		def procesador = ProcesadorDePoliza.where{subTipo==subTipo && service!=null}.find()
 
 		def list=polizas.list(sort:'tipo',order:'asc')
 		
-		//respond list,model:[subTipo:subTipo,procesador:procesador]
 		respond list,model:[subTipo:subTipo,procesador:procesador]
 	}
 
@@ -98,29 +87,7 @@ class PolizaController {
         redirect action:'edit',id:polizaInstance.id
     }
 
-    def generar(GenerarCommand command){
-    	if(command == null){
-    		redirect action:'index'
-    		return
-    	}
-
-    	if(command.hasErrors()){
-    		flash.message = command.errors
-    		redirect action:'index'
-    		return
-    	}
-
-    	def service = grailsApplication.mainContext.getBean(command.procesador.service)
-    	def res = service.generar(command.procesador,command.fecha,session.periodoContable)
-    	if(res.instanceOf(Poliza)){
-    		flash.message = "Poliza ${res.folio} generada"
-    		redirect action:'edit',id:res.id
-    		return
-    	}else{
-    		redirect action:'index'
-
-    	}
-    }
+    
 
     def edit(Poliza polizaInstance) {
     	
@@ -136,9 +103,36 @@ class PolizaController {
     	    respond polizaInstance, view:'edit'
     	    return
     	}
-    	polizaInstance = polizaInstance.save(failOnError:true,flush:true)
-    	flash.message="Poliza  ${polizaInstance.id} actualizada "
-    	redirect action:'edit',id:polizaInstance.id
+    	def procesador = ProcesadorDePoliza.find{
+    		subTipo == polizaInstance.subTipo
+    	}
+    	if(procesador){
+
+    		def service = grailsApplication.mainContext.getBean(procesador.service)
+    		if(!service){
+    			flash.message = "Procesador ${procesador} no registrado en Spring context"
+    			redirect action:'index',params:[subTipo:polizaInstance.subTipo]
+    			return
+    		}
+    		
+    		def res = service.generar(polizaInstance.fecha,procesador)
+    		if(res.instanceOf(Poliza)){
+    			flash.message = "Poliza ${res.subTipo} - ${res.folio} re procesada"
+    			redirect action:'edit',id:res.id
+    			return
+    		}else{
+    			redirect action:'index',params:[subTipo:command.subTipo]
+    			return
+
+    		}
+
+    	}else{
+    		polizaInstance = polizaInstance.save(failOnError:true,flush:true)
+    		flash.message="Poliza  ${polizaInstance.id} actualizada "
+    		redirect action:'edit',id:polizaInstance.id
+    		return
+    	}
+    	
     }
 
     def editPartida(PolizaDet polizaDetInstance){
@@ -208,6 +202,62 @@ class PolizaController {
 	        contentType: 'application/pdf',
 	        fileName:file)
 	}
+
+	def generarPoliza(GenerarCommand command){
+
+
+		if(command == null){
+			redirect action:'index'
+			return
+		}
+
+		if(command.hasErrors()){
+			flash.message = command.errors
+			redirect action:'index'
+			return
+		}
+
+		log.info 'Generando poliza :'+command
+
+		
+		def service = grailsApplication.mainContext.getBean(command.procesador.service)
+		if(!service){
+			flash.message = "Procesador ${command.procesador} no registrado en Spring context"
+			redirect action:'index',params:[subTipo:command.subTipo]
+			return
+		}
+		
+		def res = service.generar(command.fecha,command.procesador)
+		if(res instanceof Poliza) {
+			flash.message = "Poliza ${res.folio} generada"
+			redirect action:'edit',id:res.id
+			return
+		}else{
+			flash.message = res
+			redirect action:'index',params:[subTipo:command.subTipo]
+			return
+
+		}
+	}
+
+	private procesarPoliza(def poliza, def procesador){
+		def service = grailsApplication.mainContext.getBean(procesador.service)
+		if(!service){
+			flash.message = "Procesador ${command.procesador} no registrado en Spring context"
+			redirect action:'index',params:[subTipo:command.subTipo]
+			return
+		}
+		def res = service.generar(poliza.fecha,command.procesador)
+		if(res.instanceOf(Poliza)){
+			flash.message = "Poliza ${res.folio} generada"
+			redirect action:'edit',id:res.id
+			return
+		}else{
+			redirect action:'index',params:[subTipo:command.subTipo]
+			return
+
+		}
+	}
 	
 	
 }
@@ -215,6 +265,8 @@ class PolizaController {
 class GenerarCommand {
 
 	ProcesadorDePoliza procesador
+
+	String subTipo 
 
 	Date fecha
 
