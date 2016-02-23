@@ -55,7 +55,7 @@
 				    					<g:hiddenField name="ID" value="${chequeInstance.id}"/>
 				    					<g:hiddenField name="IMPLETRA" value="${importeALetra}"/>
 				    					<g:hiddenField name="IMPORTE" 
-				    					value="${new java.text.DecimalFormat('##,###.##').format(chequeInstance.egreso.importe.abs())}"/>
+				    					value="${new java.text.DecimalFormat('##,###.00').format(chequeInstance.egreso.importe.abs())}"/>
 				    			</g:jasperReport>
 				    		</div>
 				    		<div class="">
@@ -63,7 +63,7 @@
 				    					<g:hiddenField name="ID" value="${chequeInstance.id}"/>
 				    					<g:hiddenField name="IMPLETRA" value="${importeALetra}"/>
 				    					<g:hiddenField name="IMPORTE" 
-				    					value="${new java.text.DecimalFormat('##,###.##').format(chequeInstance.egreso.importe.abs())}"/>
+				    					value="${new java.text.DecimalFormat('##,###.00').format(chequeInstance.egreso.importe.abs())}"/>
 				    			</g:jasperReport>
 				    			
 				    		</div>
