@@ -63,7 +63,7 @@ where ch.id=$P{ID}]]></queryString>
 			<band height="140"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="361"
+						x="370"
 						y="38"
 						width="304"
 						height="26"
@@ -76,9 +76,9 @@ where ch.id=$P{ID}]]></queryString>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="dd-MMMMM-yyyy" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="639"
+						x="657"
 						y="11"
-						width="128"
+						width="124"
 						height="15"
 						key="textField"/>
 					<box></box>
@@ -89,10 +89,10 @@ where ch.id=$P{ID}]]></queryString>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="362"
-						y="64"
-						width="303"
-						height="24"
+						x="371"
+						y="66"
+						width="400"
+						height="22"
 						key="textField-1"/>
 					<box></box>
 					<textElement verticalAlignment="Bottom">
@@ -102,8 +102,8 @@ where ch.id=$P{ID}]]></queryString>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="¤ #,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="692"
-						y="61"
+						x="701"
+						y="52"
 						width="77"
 						height="12"
 						key="textField"/>
