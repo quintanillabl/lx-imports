@@ -63,9 +63,9 @@ where ch.id=$P{ID}]]></queryString>
 			<band height="140"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="370"
+						x="373"
 						y="38"
-						width="304"
+						width="301"
 						height="26"
 						key="textField"/>
 					<box></box>
@@ -89,9 +89,9 @@ where ch.id=$P{ID}]]></queryString>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="371"
+						x="374"
 						y="66"
-						width="400"
+						width="397"
 						height="22"
 						key="textField-1"/>
 					<box></box>
