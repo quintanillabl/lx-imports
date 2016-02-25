@@ -634,4 +634,8 @@ class PolizaDeEgresosService extends ProcesadorService{
 			save poliza
     	}
     }
+
+    String toString(){
+        return "Procesador de polizas de egreso"
+    }
 }

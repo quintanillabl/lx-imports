@@ -217,17 +217,22 @@ class PolizaController {
 			return
 		}
 
-		log.info 'Generando poliza :'+command
-
 		
 		def service = grailsApplication.mainContext.getBean(command.procesador.service)
+		def procesador = command.procesador
+		def subTipo = command.subTipo
+
 		if(!service){
 			flash.message = "Procesador ${command.procesador} no registrado en Spring context"
 			redirect action:'index',params:[subTipo:command.subTipo]
 			return
 		}
+		log.info "Service: "+service
+		log.info "Generando poliza $procesador $subTipo ${command.fecha.text()}"
 		
 		def res = service.generar(command.fecha,command.procesador)
+		log.info res
+		
 		if(res instanceof Poliza) {
 			flash.message = "Poliza ${res.folio} generada"
 			redirect action:'edit',id:res.id
@@ -262,6 +267,9 @@ class PolizaController {
 	
 }
 
+import groovy.transform.ToString
+
+@ToString(includeNames=true,includePackage=false)
 class GenerarCommand {
 
 	ProcesadorDePoliza procesador

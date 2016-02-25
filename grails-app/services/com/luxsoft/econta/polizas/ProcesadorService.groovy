@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils
 class ProcesadorService {
 
 	def generar(def fecha,def procesador){
+        //log.info "Generando poliza con $procesador para ${fecha.text()} "
         return generar(procesador.tipo,procesador.subTipo,fecha)
     }
 
