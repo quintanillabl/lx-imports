@@ -511,8 +511,8 @@ class PolizaDeEgresosService extends ProcesadorService{
     		def req=pago.requisicion
     		def descripcion="$fp-${egreso.referenciaBancaria?:''} $req.proveedor ($req.concepto) id:$egreso.id"
     		Poliza poliza=build(dia,descripcion)
-    		poliza.ejercicio = session.periodoContable.ejercicio
-    		poliza.mes = session.periodoContable.mes
+    		poliza.ejercicio = dia.toYear()
+    		poliza.mes = dia.toMonth()
     		poliza.subTipo= 'EGRESO'
     		
     		def clave="201-$req.proveedor.subCuentaOperativa"

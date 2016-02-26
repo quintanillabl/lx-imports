@@ -21,7 +21,7 @@
 	        		 	<i class="fa fa-calendar"></i> 
 	        		</button>
 	        		<lx:refreshButton/>
-	        		<lx:createButton/>
+	        		%{-- <lx:createButton/> --}%
 	        	    <div class="ibox-tools">
 	        	        <a class="collapse-link">
 	        	            <i class="fa fa-chevron-up"></i>

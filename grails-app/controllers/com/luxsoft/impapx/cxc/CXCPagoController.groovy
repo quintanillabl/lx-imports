@@ -9,7 +9,7 @@ import util.MonedaUtils
 
 import grails.plugin.springsecurity.annotation.Secured
 
-@Secured(["hasRole('TESORERIA')"])
+@Secured(["hasRole('VENTAS')"])
 class CXCPagoController {
     
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
