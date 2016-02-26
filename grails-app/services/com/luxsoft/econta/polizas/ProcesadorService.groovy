@@ -9,7 +9,7 @@ import com.luxsoft.utils.Periodo
 import static com.luxsoft.econta.polizas.PolizaUtils.*
 import org.apache.commons.lang.StringUtils
 
-@Transactional
+//@Transactional
 class ProcesadorService {
 
 	def generar(def fecha,def procesador){
