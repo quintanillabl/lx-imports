@@ -63,7 +63,7 @@ class BootStrap {
 			UsuarioRole.create(admin,contaRol,true)	
 
 		
-		
+		com.luxsoft.econta.polizas.PolizaUtils.buildProcesadores()
 		
 		
 

@@ -103,6 +103,18 @@ class PolizaController {
     	    respond polizaInstance, view:'edit'
     	    return
     	}
+    	polizaInstance = polizaInstance.save(failOnError:true,flush:true)
+    	flash.message="Poliza  ${polizaInstance.id} actualizada "
+    	redirect action:'edit',id:polizaInstance.id
+    	return
+    }
+
+    def recalcular(Poliza polizaInstance){
+    	if (polizaInstance == null) {
+    	    notFound()
+    	    return
+    	}
+    	
     	def procesador = ProcesadorDePoliza.find{
     		subTipo == polizaInstance.subTipo
     	}
@@ -127,8 +139,7 @@ class PolizaController {
     		}
 
     	}else{
-    		polizaInstance = polizaInstance.save(failOnError:true,flush:true)
-    		flash.message="Poliza  ${polizaInstance.id} actualizada "
+    		flash.message="No existe procesador declarado para la poliza ${polizaInstance.id} "
     		redirect action:'edit',id:polizaInstance.id
     		return
     	}

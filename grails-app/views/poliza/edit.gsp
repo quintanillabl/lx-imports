@@ -246,7 +246,7 @@
 						aria-hidden="true">&times;</button>
 					<h4 class="modal-title" id="myModalLabel">Modificar poliza ${polizaInstance.folio}</h4>
 				</div>
-				<g:form action="update" class="form-horizontal" id="${polizaInstance.id}" method="PUT">
+				<g:form action="recalcular" class="form-horizontal" id="${polizaInstance.id}" method="PUT">
 					<div id="createPanel" class="modal-body">
 							<p>Recalcular poliza</p>
 					</div>

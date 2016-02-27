@@ -172,6 +172,16 @@ class PolizaUtils {
 			).save failOnError:true,flush:true
 		}
 
+		if(!ProcesadorDePoliza.find{subTipo== 'DESCUENTOS_COMPRAS'}){
+		    new ProcesadorDePoliza(
+		        tipo:'DIARIO',
+		        subTipo:'DESCUENTOS_COMPRAS',
+		        descripcion:'Póliza de descuentos sobre compras',
+		        label:'Descuentos',
+		        service:'polizaDeDescuentosSobreComprasService'
+			).save failOnError:true,flush:true
+		}
+
 		
 	}
 
