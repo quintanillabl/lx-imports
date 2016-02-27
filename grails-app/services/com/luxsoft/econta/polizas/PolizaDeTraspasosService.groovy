@@ -34,7 +34,7 @@ class PolizaDeTraspasosService extends ProcesadorService{
     				throw new RuntimeException("Cuenta de banco sin cuenta contable asignada: $cuentaDeBanco")
     			
     			poliza.addToPartidas(
-    				cuenta:cuentaDeBanco.cuentaContable,
+    				cuenta:traspaso.cuentaDestino.cuentaContable,
     				debe:traspaso.importe.abs(),
     				haber:0.0,
     				asiento:asiento,
@@ -51,7 +51,7 @@ class PolizaDeTraspasosService extends ProcesadorService{
     				throw new RuntimeException("Cuenta de banco sin cuenta contable asignada: $cuentaDeBanco")
     			
     			poliza.addToPartidas(
-    				cuenta:cuentaDeBanco.cuentaContable,
+    				cuenta:traspaso.cuentaOrigen.cuentaContable,
     				debe:0.0,
     				haber:traspaso.importe.abs(),
     				asiento:asiento,
@@ -66,4 +66,6 @@ class PolizaDeTraspasosService extends ProcesadorService{
     		
     	}
     }
+
+    
 }

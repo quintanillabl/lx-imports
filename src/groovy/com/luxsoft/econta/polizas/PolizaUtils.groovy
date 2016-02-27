@@ -192,6 +192,16 @@ class PolizaUtils {
 			).save failOnError:true,flush:true
 		}
 
+		if(!ProcesadorDePoliza.find{subTipo== 'COMPRA_DOLARES'}){
+		    new ProcesadorDePoliza(
+		        tipo:'DIARIO',
+		        subTipo:'COMPRA_DOLARES',
+		        descripcion:'Póliza de compra de dolares',
+		        label:'Compra dolares',
+		        service:'polizaDeCompraDolaresService'
+			).save failOnError:true,flush:true
+		}
+
 		
 	}
 
