@@ -105,38 +105,39 @@ class ProcesadorService {
 	}
 
     def cuadrar(def poliza){
-        def dif=poliza.debe.abs()-poliza.haber.abs()
-        if(dif.abs()<=1.0){
-            log.info "Cuadrando diferencia de $dif"
-            if(dif<0.0){
-                def cuenta=PolizaUtils.OtrosGastosNoFiscales(poliza.empresa)
-                poliza.addToPartidas(
-                    cuenta:cuenta,
-                    concepto:cuenta.descripcion,
-                    debe:dif.abs(),
-                    haber:0.0,
-                    descripcion:'CUADRE AUTOMATICO',
-                    asiento:'CUADRE',
-                    referencia:'CUADRE',
-                    origen:'NO APLICA',
-                    entidad:'NO APLICA'
-                )
+        poliza.cuadrar()
+        // def dif=poliza.debe.abs()-poliza.haber.abs()
+        // if(dif.abs()<=1.0){
+        //     log.info "Cuadrando diferencia de $dif"
+        //     if(dif<0.0){
+        //         def cuenta=PolizaUtils.OtrosGastosNoFiscales(poliza.empresa)
+        //         poliza.addToPartidas(
+        //             cuenta:cuenta,
+        //             concepto:cuenta.descripcion,
+        //             debe:dif.abs(),
+        //             haber:0.0,
+        //             descripcion:'CUADRE AUTOMATICO',
+        //             asiento:'CUADRE',
+        //             referencia:'CUADRE',
+        //             origen:'NO APLICA',
+        //             entidad:'NO APLICA'
+        //         )
 
-            }else if( dif > 0.0 ){
-                def cuenta=PolizaUtils.ContablesNoFiscales(poliza.empresa)
-                poliza.addToPartidas(
-                    cuenta:cuenta,
-                    concepto:cuenta.descripcion,
-                    debe:0.0,
-                    haber:dif.abs(),
-                    descripcion:'CUADRE AUTOMATICO',
-                    asiento:'CUADRE',
-                    referencia:'CUADRE',
-                    origen:'NO APLICA',
-                    entidad:'NO APLICA'
-                )
-            }
-        }
+        //     }else if( dif > 0.0 ){
+        //         def cuenta=PolizaUtils.ContablesNoFiscales(poliza.empresa)
+        //         poliza.addToPartidas(
+        //             cuenta:cuenta,
+        //             concepto:cuenta.descripcion,
+        //             debe:0.0,
+        //             haber:dif.abs(),
+        //             descripcion:'CUADRE AUTOMATICO',
+        //             asiento:'CUADRE',
+        //             referencia:'CUADRE',
+        //             origen:'NO APLICA',
+        //             entidad:'NO APLICA'
+        //         )
+        //     }
+        // }
     }
 
     def depurar(def poliza){

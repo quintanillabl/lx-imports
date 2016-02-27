@@ -21,7 +21,7 @@ class PolizaDeComprasService extends ProcesadorService{
 	
 
 	def procesar(Poliza poliza){
-        poliza.descripcion = 'Poliza de compras'
+        poliza.descripcion = "Poliza de compras ${poliza.fecha.text()}"
         log.info "Generando poliza de $poliza.subTipo para el ${poliza.fecha.text()}"
         def dia = poliza.fecha
         

@@ -26,7 +26,7 @@ import com.luxsoft.impapx.contabilidad.Poliza
 class PolizaDeVariacionCambiariaService extends ProcesadorService{
 
     def procesar(Poliza poliza){
-        poliza.descripcion = "Poliza de variación cambiaria ${poliza.fecha.text()}"
+        poliza.descripcion = "Poliza de variación cambiaria "
 
         def dia = poliza.fecha
 

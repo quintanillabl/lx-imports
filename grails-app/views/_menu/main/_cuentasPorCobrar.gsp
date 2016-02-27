@@ -9,7 +9,7 @@
         <sec:ifAnyGranted roles="COMPRAS,VENTAS">
             
             <li class="${webRequest.controllerName=='CXCPago'?'active':''}" >
-                <g:link controller="CXCPago">Pagos</g:link>
+                <g:link controller="CXCPago">Cobros</g:link>
             </li>
             
             <li class="${webRequest.controllerName=='CXCNota'?'active':''}" >

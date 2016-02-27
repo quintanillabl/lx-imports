@@ -15,7 +15,7 @@ import util.Rounding
 class PolizaDeCobranzaService extends ProcesadorService{
 
     def procesar(Poliza poliza){
-        poliza.descripcion = "Registro de cobro de factura"
+        poliza.descripcion = "Poliza de cobranza ${poliza.fecha.text()}"
         def dia = poliza.fecha
 
         def asiento='CXC COBRO'
