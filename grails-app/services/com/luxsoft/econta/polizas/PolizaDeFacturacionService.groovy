@@ -12,7 +12,7 @@ import com.luxsoft.cfdi.*
 class PolizaDeFacturacionService extends ProcesadorService{
 
     def procesar(Poliza poliza){
-        poliza.descripcion = "Poliza de facturación ${poliza.fecha.text()}"
+        poliza.descripcion = "Poliza de facturación "
 
         def dia = poliza.fecha
 

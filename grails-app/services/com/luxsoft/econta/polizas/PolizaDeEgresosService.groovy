@@ -20,7 +20,7 @@ class PolizaDeEgresosService extends ProcesadorService{
 
 	def generar(String tipo,String subTipo,Date fecha){
 
-	    log.info "Generando polizas de egreso para ${fecha.text()}"
+	    log.info "Generando polizas de egreso "
 	    def existentes = Poliza.where{subTipo=='EGRESOS' && fecha == fecha}
 	    log.info "Eliminando polizas existentes ${existentes.size()}"
 	    existentes.findAll().each{
@@ -43,7 +43,7 @@ class PolizaDeEgresosService extends ProcesadorService{
 		def poliza= new Poliza(
 			fecha:fecha,
 			tipo:'EGRESO',
-			subTipo:'EGRESOS',
+			subTipo:'PAGO',
 			ejercicio:ejercicio,
 			mes:mes,
 			descripcion:descripcion)
@@ -78,7 +78,7 @@ class PolizaDeEgresosService extends ProcesadorService{
 				
 				def embarqueDet=EmbarqueDet.find("from EmbarqueDet x where x.factura=?",[fac])
 				if(embarqueDet==null) 
-					throw new RuntimeException("La factura ${fac} (${fac.proveedor.nombre}) no esta relacionada en algun embarque por lo tanto no se puede acceder al pedimento ")
+					throw new RuntimeException("La factura ${fac} (${fac?.proveedor?.nombre}) no esta relacionada en algun embarque por lo tanto no se puede acceder al pedimento ")
 				def pedimento=embarqueDet.pedimento
 				
 					

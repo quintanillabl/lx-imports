@@ -12,7 +12,7 @@ import com.luxsoft.cfdi.*
 class PolizaDeDescuentosSobreComprasService extends ProcesadorService{
 
     def procesar(Poliza poliza){
-        poliza.descripcion = "Poliza de descuentos sobre compras ${poliza.fecha.text()}"
+        poliza.descripcion = "Poliza de descuentos sobre compras "
 
         def dia = poliza.fecha
         procesarDescuentosCxP poliza,dia

@@ -27,7 +27,7 @@ import com.luxsoft.impapx.tesoreria.Traspaso
 class PolizaDeFleteService extends ProcesadorService{
 
     def procesar(Poliza poliza){
-        poliza.descripcion = "Poliza de flete ${poliza.fecha.text()}"
+        poliza.descripcion = "Poliza de flete "
 
         def dia = poliza.fecha
 

@@ -9,7 +9,7 @@ import com.luxsoft.impapx.tesoreria.*
 class PolizaDeComisionesBancariasService extends ProcesadorService {
 
     def procesar(Poliza poliza){
-        poliza.descripcion = "Poliza de comsiones bancarias ${poliza.fecha.text()}"
+        poliza.descripcion = "Poliza de comsiones bancarias "
 
         def dia = poliza.fecha
         

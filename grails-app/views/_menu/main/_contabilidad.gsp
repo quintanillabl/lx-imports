@@ -59,7 +59,7 @@
                 </ul>
             </li>
 
-            <li >  
+            %{-- <li >  
                 <a href="#">Pólizas (OLD)<span class="fa arrow"></span></a>
                 <ul class="nav nav-third-level">
                     
@@ -101,7 +101,7 @@
                         <g:link controller="polizaDeCierreAnual">Cierre anual</g:link></li>
 
                 </ul>
-            </li>
+            </li> --}%
 
             <li class="${satControllers.contains(webRequest.controllerName)?'active':''}">
                 <a href="#">Contabilidad SAT <span class="fa arrow"></span></a>

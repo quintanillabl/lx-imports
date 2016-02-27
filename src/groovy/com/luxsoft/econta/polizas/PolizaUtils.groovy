@@ -182,6 +182,16 @@ class PolizaUtils {
 			).save failOnError:true,flush:true
 		}
 
+		if(!ProcesadorDePoliza.find{subTipo== 'NOTAS_CREDITO'}){
+		    new ProcesadorDePoliza(
+		        tipo:'DIARIO',
+		        subTipo:'NOTAS_CREDITO',
+		        descripcion:'Póliza de notas de credito',
+		        label:'Notas de crédito',
+		        service:'polizaDeNotaDeCreditoService'
+			).save failOnError:true,flush:true
+		}
+
 		
 	}
 
