@@ -135,7 +135,7 @@ class PolizaUtils {
 		if(!ProcesadorDePoliza.find{subTipo== 'EGRESOS'}){
 		    new ProcesadorDePoliza(
 		        tipo:'EGRESO',
-		        subTipo:'EGRESOS',
+		        subTipo:'PAGO',
 		        descripcion:'Póliza de egresos',
 		        label:'Egresos',
 		        service:'polizaDeEgresosService'
