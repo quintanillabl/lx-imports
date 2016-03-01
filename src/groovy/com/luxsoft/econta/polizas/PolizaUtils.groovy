@@ -132,7 +132,7 @@ class PolizaUtils {
 			).save failOnError:true,flush:true
 		}
 
-		if(!ProcesadorDePoliza.find{subTipo== 'EGRESOS'}){
+		if(!ProcesadorDePoliza.find{subTipo== 'PAGO'}){
 		    new ProcesadorDePoliza(
 		        tipo:'EGRESO',
 		        subTipo:'PAGO',
