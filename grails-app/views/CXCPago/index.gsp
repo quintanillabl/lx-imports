@@ -21,7 +21,9 @@
 	        		 	<i class="fa fa-calendar"></i> 
 	        		</button>
 	        		<lx:refreshButton/>
-	        		%{-- <lx:createButton/> --}%
+	        		 <sec:ifAnyGranted roles="TESORERIA">
+	        			<lx:createButton/> 
+	        		 </sec:ifAnyGranted>
 	        	    <div class="ibox-tools">
 	        	        <a class="collapse-link">
 	        	            <i class="fa fa-chevron-up"></i>

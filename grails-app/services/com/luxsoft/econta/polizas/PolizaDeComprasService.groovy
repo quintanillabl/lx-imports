@@ -12,7 +12,7 @@ import com.luxsoft.impapx.Pedimento
 import com.luxsoft.impapx.TipoDeCambio
 import com.luxsoft.impapx.contabilidad.*
 import grails.transaction.Transactional
-import util.MonedaUtils
+import com.luxsoft.lx.utils.MonedaUtils
 import util.Rounding
 
 @Transactional
@@ -201,6 +201,30 @@ class PolizaDeComprasService extends ProcesadorService{
                 ,tipo:poliza.tipo
                 ,entidad:'Pedimento'
                 ,origen:pedimento.id)
+
+            
+            def contraPrestacion=pedimento.contraPrestacion 
+            
+            def contraPrestacionImp=MonedaUtils.round(pedimento.contraPrestacion*(pedimento.impuestoTasa/100) ,0)
+            
+            contraPrestacion+=contraPrestacionImp
+
+            def prevalidacionImp=MonedaUtils.round(pedimento.prevalidacion*(pedimento.impuestoTasa/100),0)
+
+            contraPrestacion+=prevalidacionImp
+            
+            poliza.addToPartidas(
+                cuenta:CuentaContable.buscarPorClave('501-0008'),
+                debe:contraPrestacion,
+                haber:0.0,
+                asiento:asiento,
+                descripcion:"Ped:$pedimento.pedimento $pedimento.fecha Ref:$pedimento.referenciacg Prov:$provImp",
+                referencia:"$pedimento.pedimento",
+                ,fecha:poliza.fecha
+                ,tipo:poliza.tipo
+                ,entidad:'Pedimento'
+                ,origen:pedimento.id)
+                
             
         }
         
@@ -215,7 +239,7 @@ class PolizaDeComprasService extends ProcesadorService{
             if(cuenta==null){
                 throw new RuntimeException("No existe la sub cuenta operativa para el proveedor $cuenta")
             }
-            def imp=pedimento.prevalidacion*(1+(pedimento.impuestoTasa/100))
+            def imp=pedimento.prevalidacion //*(1+(pedimento.impuestoTasa/100))
             imp=Rounding.round(imp, 0)
             poliza.addToPartidas(
                 cuenta:cuenta,
@@ -243,11 +267,10 @@ class PolizaDeComprasService extends ProcesadorService{
                 throw new RuntimeException("No existe la sub cuenta operativa para el proveedor $cuenta")
             }
             def incrementableImp=pedimento.incrementables
-            //incrementableImp=incrementableImp*pedimento.tipoDeCambio//*(pedimento.impuestoTasa/100)*pedimento.tipoDeCambio
-            //pedimento.tipoDeCambio
             
-            def imp2=pedimento.impuestoMateriaPrima+((pedimento.dta+pedimento.arancel+incrementableImp)*(pedimento.impuestoTasa/100))
-            //def imp2=((pedimento.impuestoMateriaPrima))
+            def imp2=pedimento.impuestoMateriaPrima+
+                MonedaUtils.round( ((pedimento.dta+pedimento.arancel+incrementableImp)*(pedimento.impuestoTasa/100)),0 )
+            
             imp2=Rounding.round(imp2, 0)            
             poliza.addToPartidas(
                 cuenta:cuenta,
@@ -309,23 +332,28 @@ class PolizaDeComprasService extends ProcesadorService{
             
             //Abono deudores diversos
     
-            def impuesto=pedimento.calcularImpuestoDinamico()
+            def impuesto=MonedaUtils.round(pedimento.calcularImpuestoDinamico(),0)
             def incrementableImp=pedimento.incrementables
             //def imp2=pedimento.impuestoMateriaPrima+((pedimento.dta+pedimento.arancel+incrementableImp)*(pedimento.impuestoTasa/100))
-            def imp2=((incrementableImp)*(pedimento.impuestoTasa/100))
-            imp2=Rounding.round(imp2, 0)
+            def imp2=MonedaUtils.round( ((incrementableImp)*(pedimento.impuestoTasa/100)) ,0 )
             
             
             
             clave="107-"+pedimento.proveedor.subCuentaOperativa
+
             cuenta=CuentaContable.findByClave(clave)
             if(cuenta==null){
                 throw new RuntimeException("No existe la sub cuenta  $clave")
             }
+            
+            def cpIva = MonedaUtils.round(pedimento.contraPrestacion*(pedimento.impuestoTasa/100),0)
+            def haber = impuesto+imp2+pedimento.contraPrestacion+cpIva
+
+            log.info "Impuesto: $impuesto Imp2: $imp2 Contra pres:$pedimento.contraPrestacion contra pre iva:$cpIva"
             poliza.addToPartidas(
                 cuenta:cuenta,
                 debe:0.0,
-                haber:impuesto+imp2,
+                haber:haber,
                 asiento:asiento,
                 descripcion:"Ped:$pedimento.pedimento $pedimento.fecha Ref:$pedimento.referenciacg Prov:$provImp",
                 referencia:"$pedimento.pedimento",

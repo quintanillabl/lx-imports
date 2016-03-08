@@ -202,6 +202,16 @@ class PolizaUtils {
 			).save failOnError:true,flush:true
 		}
 
+		if(!ProcesadorDePoliza.find{subTipo== 'PROVISION_ANUAL_COMPRA'}){
+		    new ProcesadorDePoliza(
+		        tipo:'DIARIO',
+		        subTipo:'PROVISION_ANUAL_COMPRA',
+		        descripcion:'Póliza de provision anual de compra',
+		        label:'Provisión anual',
+		        service:'polizaDeProvisionAnualService'
+			).save failOnError:true,flush:true
+		}
+
 		
 	}
 

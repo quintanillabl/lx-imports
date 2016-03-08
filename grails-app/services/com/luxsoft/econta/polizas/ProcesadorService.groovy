@@ -5,21 +5,23 @@ import grails.transaction.Transactional
 
 import com.luxsoft.impapx.contabilidad.*
 import com.luxsoft.utils.Periodo
+import com.luxsoft.lx.utils.MonedaUtils
 
-import static com.luxsoft.econta.polizas.PolizaUtils.*
+//import static com.luxsoft.econta.polizas.PolizaUtils.*
 import org.apache.commons.lang.StringUtils
+
 
 //@Transactional
 class ProcesadorService {
 
 	def generar(def fecha,def procesador){
-        //log.info "Generando poliza con $procesador para ${fecha.text()} "
+        //log.debug "Generando poliza con $procesador para ${fecha.text()} "
         return generar(procesador.tipo,procesador.subTipo,fecha)
     }
 
     def generar(String tipo,String subTipo,Date fecha){
 
-        log.info "Generando poliza   $subTipo ${fecha.text()}"
+        log.debug "Generando poliza   $subTipo ${fecha.text()}"
 
         def poliza = Poliza.where {
             subTipo==subTipo && fecha == fecha
@@ -32,7 +34,7 @@ class ProcesadorService {
         }else{
 
             poliza.partidas.clear()
-            log.info "Actualizando poliza ${subTipo } "+fecha.format('dd/MM/yyyy');
+            log.debug "Actualizando poliza ${subTipo } "+fecha.format('dd/MM/yyyy');
         }
 
         procesar(poliza)
@@ -42,7 +44,7 @@ class ProcesadorService {
     }
 
     def procesar(Poliza poliza){
-        log.info 'PENDIENTE DE IMPLEMENTAR EL PROCESAMIENTO DE ESTE TIPO DE POLIZAS: '
+        log.debug 'PENDIENTE DE IMPLEMENTAR EL PROCESAMIENTO DE ESTE TIPO DE POLIZAS: '
     }
 
     def save(Poliza poliza){
@@ -65,7 +67,7 @@ class ProcesadorService {
 
     /// Metodos comunes
 
-	def cargoA(def poliza,def cuenta,def importe,def descripcion,def asiento,def referencia,def entidad){
+	Poliza cargoA(def poliza,def cuenta,def importe,def descripcion,def asiento,def referencia,def entidad){
 		poliza.addToPartidas(
         	cuenta:cuenta,
         	concepto:cuenta.descripcion,
@@ -77,9 +79,10 @@ class ProcesadorService {
             origen:entidad.id.toString(),
             entidad:entidad.class.toString()
 		)
+        return poliza
 	}
 
-	def abonoA(def poliza,def cuenta,def importe,def descripcion,def asiento,def referencia,def entidad){
+	Poliza abonoA(def poliza,def cuenta,def importe,def descripcion,def asiento,def referencia,def entidad){
 		poliza.addToPartidas(
         	cuenta:cuenta,
         	concepto:cuenta.descripcion,
@@ -91,9 +94,8 @@ class ProcesadorService {
             origen:entidad.id.toString(),
             entidad:entidad.class.toString()
 		)
+        return poliza
 	}
-
-    
 
     def build(def fecha,def tipo,def subTipo){
 		def mes=Periodo.obtenerMes(fecha)+1
@@ -104,48 +106,61 @@ class ProcesadorService {
 		return poliza
 	}
 
-    def cuadrar(def poliza){
-        poliza.cuadrar()
-        // def dif=poliza.debe.abs()-poliza.haber.abs()
-        // if(dif.abs()<=1.0){
-        //     log.info "Cuadrando diferencia de $dif"
-        //     if(dif<0.0){
-        //         def cuenta=PolizaUtils.OtrosGastosNoFiscales(poliza.empresa)
-        //         poliza.addToPartidas(
-        //             cuenta:cuenta,
-        //             concepto:cuenta.descripcion,
-        //             debe:dif.abs(),
-        //             haber:0.0,
-        //             descripcion:'CUADRE AUTOMATICO',
-        //             asiento:'CUADRE',
-        //             referencia:'CUADRE',
-        //             origen:'NO APLICA',
-        //             entidad:'NO APLICA'
-        //         )
+    Poliza cuadrar(Poliza poliza){
+        
+        poliza.actualizar()
+        
+        
+        
+        def dif = MonedaUtils.round(poliza.getDebe())-MonedaUtils.round(poliza.getHaber())
 
-        //     }else if( dif > 0.0 ){
-        //         def cuenta=PolizaUtils.ContablesNoFiscales(poliza.empresa)
-        //         poliza.addToPartidas(
-        //             cuenta:cuenta,
-        //             concepto:cuenta.descripcion,
-        //             debe:0.0,
-        //             haber:dif.abs(),
-        //             descripcion:'CUADRE AUTOMATICO',
-        //             asiento:'CUADRE',
-        //             referencia:'CUADRE',
-        //             origen:'NO APLICA',
-        //             entidad:'NO APLICA'
-        //         )
-        //     }
-        // }
+        log.debug "Cudrando poliza Debe: $poliza.debe Haber: $poliza.haber Dif: $dif"
+        
+        if( dif.abs()>0.0 && dif.abs() <5.0){
+            //Otros productos/gastos
+                if(dif.abs()>0.0){
+                    //Producto
+                    def cta=CuentaContable.buscarPorClave("704-0006")
+                    log.debug "Cuadrando poliza en OTROS INGRESOS por dif :$dif en cta:$cta.clave"
+                    poliza.addToPartidas(
+                        cuenta:cta,
+                        debe:0.0, 
+                        haber:dif.abs(),
+                        asiento:"OTROS INGRESOS "+poliza.subTipo,
+                        descripcion:"OTROS INGRESOS",
+                        referencia:"",
+                        fecha:poliza.fecha,
+                        tipo:poliza.tipo
+                    )
+                }else{
+
+                    //Gasto
+                    def cta=CuentaContable.buscarPorClave("703-0003")
+                    log.debug "Cuadrando poliza en OTROS GASTOS por dif :$dif en cta:$cta.clave"
+                    poliza.addToPartidas(
+                        cuenta:cta,
+                        debe:dif.abs(),
+                        haber:0.0,
+                        asiento:"OTROS GASTOS "+poliza.subTipo,
+                        descripcion:"OTROS GASTOS",
+                        referencia:"",
+                        fecha:poliza.fecha,
+                        tipo:poliza.tipo
+                    )
+                }
+        }
+        
+        //poliza.cuadrar()
+        return poliza
     }
 
-    def depurar(def poliza){
+    Poliza depurar(Poliza poliza){
        def eliminar = poliza.partidas.findAll {it.debe<=0.009 && it.haber<=0.009}
       
        eliminar.each{
             poliza.removeFromPartidas(it)
        }
+       return poliza
     }
 }
 

@@ -20,19 +20,21 @@ class PolizaDeEgresosService extends ProcesadorService{
 
 	def generar(String tipo,String subTipo,Date fecha){
 
-	    log.info "Generando polizas de egreso "
-	    def existentes = Poliza.where{subTipo=='EGRESOS' && fecha == fecha}
-	    log.info "Eliminando polizas existentes ${existentes.size()}"
+	    log.debug "Generando polizas de egreso fecha: $fecha "
+	    def existentes = Poliza.where{subTipo=='PAGO' && fecha == fecha}
+	    log.debug "Eliminando ${existentes.size()} polizas existentes "
 	    existentes.findAll().each{
 	    	it.delete flush:true
 	    }
 
 	    procesarPagosEnDolares(fecha)
+       
 	    gastos(fecha)
 	    anticipos(fecha)
 	    anticiposCompra(fecha)
 	    chequesCancelados(fecha)
 	    pagoChoferes(fecha)
+        
 	    return "Polizas de egresos generadas para el dia ${fecha.text()}"
 	    
 	}
@@ -56,18 +58,20 @@ class PolizaDeEgresosService extends ProcesadorService{
 			"from PagoProveedor p where date(p.egreso.fecha)=? and p.egreso.moneda='USD' and p.egreso.origen=? and p.requisicion.concepto='PAGO'"
 			,[dia,'CXP'])
 
-		log.info "Procesando pagos en dolares ${dia.text()} pagos: ${pagos.size()} encontrados"
+		log.info "Procesando ${pagos.size()} pagos en dolares ${dia.text()} "
 
 		pagos.each{ pago->
 			
+            log.info "Generando poliza para pago: "+pago
 			//Prepara la poliza
 			def fp=pago.egreso.tipo.substring(0,2)
 			def egreso=pago.egreso
 			
 			def req=pago.requisicion
-			def descripcion="$fp-$egreso.referenciaBancaria $req.proveedor (Proveedores extranjeros) id:$egreso.id"
+			def descripcion="$fp-${egreso.referenciaBancaria?:''} $req.proveedor (Proveedores extranjeros) Pago:$egreso.id"
 			
 			Poliza poliza=build(dia,descripcion)
+            
 			
 			def asiento='PAGO CXP'
 			def pagoAcu=0
@@ -154,8 +158,8 @@ class PolizaDeEgresosService extends ProcesadorService{
 			//Diferencia cambiaria
 			def dif=(egreso.importe.abs()*egreso.tc)-pagoAcu
 			
-			if(dif.abs()>0){
-				def clave=dif<0?'703-002':'701-0002'
+			if(dif.abs()>0.0){
+				def clave=dif<0.0?'702-0002':'701-0002'
 				poliza.addToPartidas(
 					cuenta:CuentaContable.buscarPorClave(clave),
 					debe:dif>0?dif.abs():0.0,
@@ -168,10 +172,12 @@ class PolizaDeEgresosService extends ProcesadorService{
 					,entidad:'MovimientoDeCuenta'
 					,origen:egreso.id)
 			}
-			
+
+
 			cuadrar(poliza)
     	    depurar(poliza)
     		save poliza
+            
 		}
 	}
     
@@ -442,7 +448,8 @@ class PolizaDeEgresosService extends ProcesadorService{
     private anticipos(def dia){
     	//Asiento: Anticipos
     	
-    	def anticipos=PagoProveedor.findAll("from PagoProveedor p where p.requisicion.concepto=? and date(p.egreso.fecha)=?",['ANTICIPO',dia])
+    	def anticipos=PagoProveedor
+        .findAll("from PagoProveedor p where p.requisicion.concepto in (?,?) and date(p.egreso.fecha)=?",['ANTICIPO','ANTICIPO_COMPLEMENTO',dia])
     	
     	anticipos.each{ pago ->
     		
@@ -455,6 +462,10 @@ class PolizaDeEgresosService extends ProcesadorService{
 
     		def clave="201-$req.proveedor.subCuentaOperativa"
     		def asiento='ANTICIPO IMPORTACION'
+            if(req.concepto == 'ANTICIPO_COMPLEMENTO'){
+                asiento = 'ANTICIPO COMPLEMENTO'
+            }
+
     		
     		//Abono a bancos
     		def cuentaDeBanco=pago.egreso.cuenta

@@ -28,14 +28,14 @@ class PolizaDeFacturacionService extends ProcesadorService{
         	assert venta,"Debe existir la venta para el cfdi: "+cfdi
         	if(!venta.clase || venta.clase=='IMPORTACION')
         		facturas.add(venta)
-        	if(venta.clase=='generica')
+        	if(venta.clase=='generica' || venta.clase == 'GENERICA')
         		servicios.add(venta)
         }
         
         facturacion(poliza,facturas)
 
         procesarServiciosservicios(poliza,servicios)
-
+        procesarNotasDeCargoCxC poliza,poliza.fecha
         cuadrar(poliza)
 		depurar(poliza)
 		save poliza

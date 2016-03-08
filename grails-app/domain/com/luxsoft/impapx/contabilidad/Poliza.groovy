@@ -75,8 +75,8 @@ class Poliza {
 	}
 	
 	def actualizar(){
-		debe=partidas.sum (0.0,{it.debe})
-		haber=partidas.sum(0.0,{it.haber})
+		debe=MonedaUtils.round( partidas.sum (0.0,{it.debe}))
+		haber=MonedaUtils.round( partidas.sum(0.0,{it.haber}))
 	}
 
 	

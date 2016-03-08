@@ -14,6 +14,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import com.luxsoft.lx.contabilidad.PeriodoContable
 import com.luxsoft.lx.contabilidad.ProcesadorDePoliza
 
+
 @Secured(["hasRole('CONTABILIDAD')"])
 class PolizaController {
 
@@ -56,7 +57,7 @@ class PolizaController {
 		
 		def procesador = ProcesadorDePoliza.where{subTipo==subTipo && service!=null}.find()
 
-		def list=polizas.list(sort:'tipo',order:'asc')
+		def list=polizas.list(sort:'folio',order:'asc')
 		
 		respond list,model:[subTipo:subTipo,procesador:procesador]
 	}
@@ -238,11 +239,11 @@ class PolizaController {
 			redirect action:'index',params:[subTipo:command.subTipo]
 			return
 		}
-		log.info "Service: "+service
-		log.info "Generando poliza $procesador $subTipo ${command.fecha.text()}"
+		log.debug "Service: "+service
+		log.debug "Generando poliza $procesador $subTipo ${command.fecha.text()}"
 		
 		def res = service.generar(command.fecha,command.procesador)
-		log.info res
+		log.debug res
 		
 		if(res instanceof Poliza) {
 			flash.message = "Poliza ${res.folio} generada"
@@ -273,6 +274,19 @@ class PolizaController {
 			return
 
 		}
+	}
+
+	def recalcularFolios(String subTipo){
+		def periodo=session.periodoContable
+		flash.message = "Folios de $subTipo recalculados para el periodo $periodo"
+		def polizas = Poliza.findAll {subTipo==subTipo && ejercicio == periodo.ejercicio && mes == periodo.mes}
+		polizas = polizas.sort {it.fecha}
+		def folio = 1
+		polizas.each { p ->
+			p.folio = folio++
+			p.save flush:true
+		}
+		redirect action:'index',params:[subTipo:subTipo]
 	}
 	
 	

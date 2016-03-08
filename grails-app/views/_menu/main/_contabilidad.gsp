@@ -54,7 +54,9 @@
                         </li>
                     </g:each>
                     
-                    
+                    <li class="${webRequest.controllerName=='polizaDeCierreAnual'?'active':''}">
+                        <g:link controller="polizaDeCierreAnual">Cierre anual</g:link>
+                    </li>
 
                 </ul>
             </li>
