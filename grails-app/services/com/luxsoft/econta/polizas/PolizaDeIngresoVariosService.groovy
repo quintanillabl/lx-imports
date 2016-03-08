@@ -12,69 +12,69 @@ import com.luxsoft.impapx.TipoDeCambio
 import com.luxsoft.impapx.tesoreria.Cheque
 import com.luxsoft.impapx.tesoreria.MovimientoDeCuenta
 import com.luxsoft.impapx.tesoreria.PagoProveedor
+import com.luxsoft.impapx.cxp.Anticipo
 import util.Rounding
 
 @Transactional
-class PolizaDeIngresoVariosService {
+class PolizaDeIngresoVariosService extends ProcesadorService{
 
         def procesar(Poliza poliza){
             poliza.descripcion = "Poliza de ingreso varios ${poliza.fecha.text()} "
             def dia = poliza.fecha
-
-            def asiento='DEVOLUCION ANTICIPO'
             
-            def ingresos = MovimientoDeCuenta.findAll{date(fecha) == poliza.fecha && cuentaDeudora!=null}    
+            def anticipos = Anticipo.find('from Anticipo a where date(a.sobrante.fecha) = ?',[dia])
 
-            ingresos.each { egreso ->
+            def asiento='ANTICIPO DEVOLUCION'
 
-    			def fp=egreso.tipo.substring(0,2)
+            anticipos.each { anticipo ->
+
+                def ingreso = anticipo.sobrante
+                def req = anticipo.requisicion
+    			def fp=ingreso.tipo.substring(0,2)
     			
-    			def req=pago.requisicion
-    			def descripcion="$fp-${egreso.referenciaBancaria?:''} $req.proveedor ($req.concepto) id:$egreso.id"
-    			Poliza poliza=build(dia,descripcion)
-
+    			
+    			def descripcion="$fp-${ingreso.referenciaBancaria?:''} $req.proveedor ($req.concepto) id:$ingreso.id"
+    			
     			def clave="201-$req.proveedor.subCuentaOperativa"
-    			def asiento='ANTICIPO IMPORTACION'
-    	        if(req.concepto == 'ANTICIPO_COMPLEMENTO'){
-    	            asiento = 'ANTICIPO COMPLEMENTO'
-    	        }
-
     			
-    			//Abono a bancos
-    			def cuentaDeBanco=pago.egreso.cuenta
+    	       
+    			
+                //Cargo bancos
+    			def cuentaDeBanco=ingreso.cuenta
     			if(cuentaDeBanco.cuentaContable==null)
     				throw new RuntimeException("Cuenta de banco sin cuenta contable asignada: $cuentaDeBanco")
     			poliza.addToPartidas(
     				cuenta:cuentaDeBanco.cuentaContable,
-    				debe:0.0,
-    				haber:pago.egreso.importe.abs()*pago.egreso.tc,
+    				debe: ingreso.importe.abs()*ingreso.tc,
+    				haber:0.0,
     				asiento:asiento,
-    				descripcion:"$pago.egreso.cuenta ",
-    				referencia:"$pago.egreso.referenciaBancaria",
+    				descripcion:"$ingreso.cuenta ",
+    				referencia:"$ingreso.referenciaBancaria",
     				,fecha:poliza.fecha
     				,tipo:poliza.tipo
-    				,entidad:'PagoProveedor'
-    				,origen:pago.id)
+    				,entidad:'Anticipo'
+    				,origen:anticipo.id)
     			
-    			//Cargo a proveedor
-    			def proveedor=pago.requisicion.proveedor
+    			//abono a proveedor
+    			def proveedor=req.proveedor
     			clave="107-$proveedor.subCuentaOperativa"
     			def cuenta=CuentaContable.findByClave(clave)
-    			if(!cuenta) throw new RuntimeException("No existe la cuenta para el proveedor: "+proveedor.nombre+ 'Clave: '+clave)
-    			def requisicion=pago.requisicion
-    			requisicion.partidas.each{ reqDet ->
-    				poliza.addToPartidas(
-    					cuenta:cuenta,
-    					debe:reqDet.importe.abs()*pago.egreso.tc,
-    					haber:0.0,
-    					asiento:asiento,
-    					descripcion:"$pago.egreso.cuenta Ref:$reqDet.documento REq: $requisicion.id ",
-    					referencia:"$pago.egreso.referenciaBancaria"
-    					,fecha:poliza.fecha
-    					,tipo:poliza.tipo
-    					,entidad:'PagoProveedor'
-    					,origen:pago.id)
-    			}
+    			
+                if(!cuenta) throw new RuntimeException("No existe la cuenta para el proveedor: "+proveedor.nombre+ 'Clave: '+clave)
+
+                def reqDet = req.partidas.first()
+    			
+    			poliza.addToPartidas(
+                    cuenta:cuenta,
+                    debe: 0.0,
+                    haber: ingreso.importe.abs()*ingreso.tc,
+                    asiento:asiento,
+                    descripcion:"Ref: ${reqDet?.documento} Req: ${req.id} ",
+                    referencia:"$ingreso.referenciaBancaria",
+                    fecha:poliza.fecha,
+                    tipo:poliza.tipo,
+                    entidad:'Anticipo',
+                    origen:anticipo.id)
             }
             
         	cuadrar(poliza)

@@ -27,13 +27,15 @@ class PolizaDeEgresosService extends ProcesadorService{
 	    	it.delete flush:true
 	    }
 
+        /*
 	    procesarPagosEnDolares(fecha)
-       
 	    gastos(fecha)
 	    anticipos(fecha)
 	    anticiposCompra(fecha)
 	    chequesCancelados(fecha)
 	    pagoChoferes(fecha)
+        */
+        rembolsoChoferes fecha
         
 	    return "Polizas de egresos generadas para el dia ${fecha.text()}"
 	    
@@ -643,6 +645,62 @@ class PolizaDeEgresosService extends ProcesadorService{
 			save poliza
     	}
     }
+
+    private rembolsoChoferes(Date dia){
+
+        def egresos = MovimientoDeCuenta.findAll("from MovimientoDeCuenta where date(fecha)=? and concepto=?",[dia,'REEMBOLSO CHOFERES'])
+
+        egresos.each{ egreso ->
+
+            def fp=egreso.tipo.substring(0,2)
+           
+            def descripcion="$fp-${egreso.referenciaBancaria?:''} PAPEL S.A. (Reembolso choferes) "
+            
+            Poliza poliza=build(dia,descripcion)
+            
+            
+            def asiento='REEMBOLSO'
+
+            //Cargo a proveedor
+             
+            def clave="205-P004"
+            def cuenta=CuentaContable.buscarPorClave(clave)
+            
+            poliza.addToPartidas(
+                cuenta:cuenta,
+                debe:egreso.importe.abs(),
+                haber:0.0,
+                asiento:asiento,
+                descripcion:"Reembolso por vales y prestamos choferes  ",
+                referencia:"$egreso.referenciaBancaria"
+                ,fecha:poliza.fecha
+                ,tipo:poliza.tipo
+                ,entidad:'MovimientoDeCuenta'
+                ,origen:egreso.id)
+            
+            //Abono a bancos
+            def cuentaDeBanco=egreso.cuenta
+            if(cuentaDeBanco.cuentaContable==null)
+                throw new RuntimeException("Cuenta de banco sin cuenta contable asignada: $cuentaDeBanco")
+            poliza.addToPartidas(
+                cuenta:cuentaDeBanco.cuentaContable,
+                debe:0.0,
+                haber:egreso.importe.abs(),
+                asiento:asiento,
+                descripcion:"$egreso.cuenta ",
+                referencia:"$egreso.referenciaBancaria",
+                ,fecha:poliza.fecha
+                ,tipo:poliza.tipo
+                ,entidad:'MovimientoDeCuenta'
+                ,origen:egreso.id)
+            
+            
+            
+            cuadrar(poliza)
+            depurar(poliza)
+            save poliza
+        }
+     }
 
     String toString(){
         return "Procesador de polizas de egreso"
