@@ -44,6 +44,9 @@
                     <li class="${subTipo=='COBRANZA'?'active':''}">
                         <g:link controller="poliza" params="[subTipo:'COBRANZA']">Cobranza</g:link>
                     </li>
+                    <li class="${subTipo=='ING_VARIOS'?'active':''}">
+                        <g:link controller="poliza" params="[subTipo:'ING_VARIOS']">Ingreso (varios)</g:link>
+                    </li>
                     <li class="${subTipo=='PAGO'?'active':''}">
                         <g:link controller="poliza" params="[subTipo:'PAGO']">Egresos</g:link>
                     </li>

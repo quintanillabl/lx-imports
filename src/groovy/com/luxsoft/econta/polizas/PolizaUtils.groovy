@@ -212,6 +212,16 @@ class PolizaUtils {
 			).save failOnError:true,flush:true
 		}
 
+		if(!ProcesadorDePoliza.find{subTipo== 'ING_VARIOS'}){
+		    new ProcesadorDePoliza(
+		        tipo:'INGRESO',
+		        subTipo:'ING_VARIOS',
+		        descripcion:'Póliza de ',
+		        label:'Ingreso (Varios)',
+		        service:'polizaDeIngresoVariosService'
+			).save failOnError:true,flush:true
+		}
+
 		
 	}
 
