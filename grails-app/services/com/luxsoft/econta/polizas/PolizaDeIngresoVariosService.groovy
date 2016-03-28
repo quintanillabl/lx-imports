@@ -22,7 +22,7 @@ class PolizaDeIngresoVariosService extends ProcesadorService{
             poliza.descripcion = "Poliza de ingreso varios ${poliza.fecha.text()} "
             def dia = poliza.fecha
             
-            def anticipos = Anticipo.find('from Anticipo a where date(a.sobrante.fecha) = ?',[dia])
+            def anticipos = Anticipo.findAll('from Anticipo a where date(a.sobrante.fecha) = ?',[dia])
 
             def asiento='ANTICIPO DEVOLUCION'
 

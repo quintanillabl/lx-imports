@@ -27,14 +27,14 @@ class PolizaDeEgresosService extends ProcesadorService{
 	    	it.delete flush:true
 	    }
 
-        /*
+        
 	    procesarPagosEnDolares(fecha)
 	    gastos(fecha)
 	    anticipos(fecha)
 	    anticiposCompra(fecha)
 	    chequesCancelados(fecha)
 	    pagoChoferes(fecha)
-        */
+        
         rembolsoChoferes fecha
         
 	    return "Polizas de egresos generadas para el dia ${fecha.text()}"
@@ -669,7 +669,7 @@ class PolizaDeEgresosService extends ProcesadorService{
             poliza.addToPartidas(
                 cuenta:cuenta,
                 debe:egreso.importe.abs(),
-                haber:0.0,
+                haber:0.0, 
                 asiento:asiento,
                 descripcion:"Reembolso por vales y prestamos choferes  ",
                 referencia:"$egreso.referenciaBancaria"
