@@ -132,4 +132,13 @@ class CuentaPorPagar {
 		save()
 	}*/
 	
+	public BigDecimal buscarSaldoAlCorte(Date corte){
+		def found=Aplicacion.executeQuery(
+			"select sum(a.importe) from Aplicacion a where a.factura=? and date(a.fecha)<=?",[this,corte])
+    	def aplicado=found[0]?:0.0
+    	def saldo=this.total-aplicado
+    	return saldo
+	}
+	
+	
 }

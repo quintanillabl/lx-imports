@@ -138,11 +138,13 @@ class AnticipoController {
 	def disponiblesJSONList(){
 		//println 'Embarques disponibles para anticipo: '+params
 		//sleep(5000)
+		def term = params.term.toLong()
+		println 'Buscando por: '+params
 		def anticipos=Anticipo.findAll(
-			"from Anticipo a where  a.sobrante is null and a.requisicion.concepto=? and a.total-a.requisicion.total>0"
-			,['ANTICIPO'])
+			"from Anticipo a where  a.sobrante is null and a.requisicion.concepto=? and date(a.fecha)>? and a.requisicion.id >= ? "
+			,['ANTICIPO',Date.parse('dd/MM/yyyy','01/07/2015'),term])
 		def anticiposList=anticipos.collect { row ->
-			def label=" ${row.id}  Req: ${row.requisicion} Saldo: ${row.total-row.requisicion.total}"
+			def label="Req:${row.requisicion.id} ${row.requisicion.proveedor} (${row.requisicion.total})"
 			[id:row.id,label:label,value:label]
 		}
 		render anticiposList as JSON

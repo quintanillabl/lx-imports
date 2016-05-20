@@ -61,7 +61,7 @@ class MovimientoDeCuentaController {
 	def depositar(){
 		def movimientoDeCuentaInstance=new MovimientoDeCuenta(fecha:new Date(),ingreso:true,tc:1.00)
 		def anticipos=Anticipo.findAll(
-			"from Anticipo a where  a.sobrante is null and a.requisicion.concepto=? and a.total-a.requisicion.total>0"
+			"from Anticipo a where  a.sobrante is null and a.requisicion.concepto=? " //and a.total-a.requisicion.total>0"
 			,['ANTICIPO'])
 		render view:'create',model:[movimientoDeCuentaInstance: movimientoDeCuentaInstance,
 			conceptos:Conceptos.INGRESOS,
@@ -71,7 +71,7 @@ class MovimientoDeCuentaController {
 	def retirar(){
 		def movimientoDeCuentaInstance=new MovimientoDeCuenta(fecha:new Date(),ingreso:false,tc:1.00)
 		def anticipos=Anticipo.findAll(
-			"from Anticipo a where  a.sobrante is null and a.requisicion.concepto=? and a.total-a.requisicion.total>0"
+			"from Anticipo a where  a.sobrante is null and a.requisicion.concepto=? " //and a.total-a.requisicion.total>0"
 			,['ANTICIPO'])
 		render view:'create',model:[movimientoDeCuentaInstance: movimientoDeCuentaInstance,
 			conceptos:Conceptos.EGRESOS,

@@ -212,6 +212,16 @@ class PolizaUtils {
 			).save failOnError:true,flush:true
 		}
 
+		if(!ProcesadorDePoliza.find{subTipo== 'PROVISION_GASTOS'}){
+		    new ProcesadorDePoliza(
+		        tipo:'DIARIO',
+		        subTipo:'PROVISION_GASTOS',
+		        descripcion:'Póliza de provision de gastos',
+		        label:'Provisión de gastos',
+		        service:'polizaDeProvisionGastosService'
+			).save failOnError:true,flush:true
+		}
+
 		if(!ProcesadorDePoliza.find{subTipo== 'ING_VARIOS'}){
 		    new ProcesadorDePoliza(
 		        tipo:'INGRESO',

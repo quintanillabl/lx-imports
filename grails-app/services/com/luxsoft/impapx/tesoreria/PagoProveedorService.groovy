@@ -22,7 +22,7 @@ class PagoProveedorService {
 			,tipo:requisicion.formaDePago
 			,origen:'CXP'
 			//,concepto:'PAGO_PROVEEDOR'
-			,concepto:"Pago: $requisicion.proveedor.nombre"
+			,concepto:"Pago: $requisicion.proveedor.nombre  $requisicion.concepto" 
 			,comentario:'PAGO REQUISICION:'+requisicion.id)
 		
 		def cxp=new Pago(

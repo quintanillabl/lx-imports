@@ -19,7 +19,7 @@
 <content tag="document">
 	<div class="wrapper wrapper-content animated fadeInRight">
 		<div class="row">
-			<div class="col-lg-6">
+			<div class="col-lg-10">
 				<lx:iboxTitle title="Alta de movimiento (Deposito o Retiro)"/>
 				<div class="ibox-content">
 					<lx:errorsHeader bean="${movimientoDeCuentaInstance}"/>
@@ -106,7 +106,7 @@
 
 			$("#anticipoField").autocomplete({
 				source:'<g:createLink controller="anticipo" action="disponiblesJSONList"/>',
-				minLength:3,
+				minLength:2,
 				select:function(e,ui){
 					console.log('Valor seleccionado: '+ui.item.id);
 					$("#anticipoId").val(ui.item.id);

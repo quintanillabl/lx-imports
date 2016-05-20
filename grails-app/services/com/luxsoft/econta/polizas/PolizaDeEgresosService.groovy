@@ -426,7 +426,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     				,origen:egreso.id)
     		
     			poliza.addToPartidas(
-    				cuenta:CuentaContable.buscarPorClave("160-0001"),
+    				cuenta:CuentaContable.buscarPorClave("109-0001"),
     				debe:0.0,
     				haber:ietu,
     				asiento:asiento,
@@ -648,7 +648,7 @@ class PolizaDeEgresosService extends ProcesadorService{
 
     private rembolsoChoferes(Date dia){
 
-        def egresos = MovimientoDeCuenta.findAll("from MovimientoDeCuenta where date(fecha)=? and concepto=?",[dia,'REEMBOLSO CHOFERES'])
+        def egresos = MovimientoDeCuenta.findAll("from MovimientoDeCuenta where date(fecha)=? and concepto like ?",[dia,'%REEMBOLSO%CHOFERES'])
 
         egresos.each{ egreso ->
 
