@@ -25,11 +25,14 @@ class PolizaDeCobranzaService extends ProcesadorService{
     	pagos.each{ pago->
     		
     		//Cargo al banco
-    		def desc="Cobro de facturas $pago.formaDePago "
+            
+    		def desc="${pago.formaDePago.substring(0,2)}"
+
     		if(pago.moneda==MonedaUtils.DOLARES){
     			desc+="$pago.total * $pago.tc"
     		}
-    		//def desc="Cobro de facturas "
+            desc+= "-$pago.referenciaBancaria ${pago.cliente.nombre}"
+    		
     		poliza.addToPartidas(
     			cuenta:pago.cuenta.cuentaContable,
     			debe:pago.total.abs()*pago.tc,
@@ -51,7 +54,7 @@ class PolizaDeCobranzaService extends ProcesadorService{
     				debe:0.0,
     				haber:aplic.total,
     				asiento:asiento,
-    				descripcion:"Cobro Fac: ${aplic?.factura?.facturaFolio} ${pago.tc>1?'T.C'+pago.tc:''} ",
+    				descripcion:"Fac: ${aplic?.factura?.facturaFolio} ${aplic?.factura?.fecha?.text()} ${pago.tc>1?'T.C'+pago.tc:''} ",
     				referencia:"$pago.referenciaBancaria"
     				,fecha:poliza.fecha
     				,tipo:poliza.tipo
@@ -68,7 +71,8 @@ class PolizaDeCobranzaService extends ProcesadorService{
     			debe:0.0,
     			haber:pago.impuesto.abs()*pago.tc,
     			asiento:asiento,
-    			descripcion:"Cobro de facturas",
+    			//descripcion:"Cobro de facturas",
+                descripcion:desc,
     			referencia:"$pago.referenciaBancaria"
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
@@ -86,7 +90,7 @@ class PolizaDeCobranzaService extends ProcesadorService{
     				debe:impuesto,
     				haber:0.0,
     				asiento:asiento,
-    				descripcion:"Cobro Fac: ${aplic?.factura?.facturaFolio} ${pago.tc>1?'T.C'+pago.tc:''} ",
+    				descripcion:"Fac: ${aplic?.factura?.facturaFolio} ${aplic?.factura?.cliente?.nombre} ${pago.tc>1?'T.C'+pago.tc:''} ",
     				referencia:"$pago.referenciaBancaria"
     				,fecha:poliza.fecha
     				,tipo:poliza.tipo

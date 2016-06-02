@@ -20,8 +20,8 @@ class PolizaUtils {
 		return CuentaContable.findByEmpresaAndClave(empresa,'118-0001')	
 	}
 
-	public static IvaPendienteDeAcreditar(def empresa){
-		return CuentaContable.findByEmpresaAndClave(empresa,'115-0001')
+	public static IvaPendienteDeAcreditar() {
+		return CuentaContable.buscarPorClave('115-0001')
 	}
 	
 

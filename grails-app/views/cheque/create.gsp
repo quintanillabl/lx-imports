@@ -29,7 +29,7 @@
 									<g:select class="form-control chosen-select"  
 										name="egreso.id" 
 										value="${value}"
-										from="${com.luxsoft.impapx.tesoreria.MovimientoDeCuenta.findAll("from MovimientoDeCuenta p where p.tipo='CHEQUE' and p not in(select x.egreso from Cheque x)")}" 
+										from="${com.luxsoft.impapx.tesoreria.MovimientoDeCuenta.findAll("from MovimientoDeCuenta p where p.tipo='CHEQUE' and p not in(select x.egreso from Cheque x) and year(p.fecha)>=2016")}" 
 										optionKey="id" 
 										noSelection="[null:'Seleccione el egreso']"
 										/>

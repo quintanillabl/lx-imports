@@ -115,7 +115,7 @@
         					<g:each in="${partidas}" var="row">
         						<tr id="${row.id}">
         							<td>
-        							<g:link controller="poliza" action="mostrarPoliza" target="_blank" id="${row.poliza.id}">
+        							<g:link controller="poliza" action="edit" target="_blank" id="${row.poliza.id}">
         								${row.poliza.tipo }- ${row.poliza.folio  }
         							</g:link>
         							</td>

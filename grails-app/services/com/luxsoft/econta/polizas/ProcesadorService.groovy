@@ -77,7 +77,7 @@ class ProcesadorService {
             asiento:asiento,
             referencia:referencia,
             origen:entidad.id.toString(),
-            entidad:entidad.class.toString()
+            entidad:entidad.class.getSimpleName()
 		)
         return poliza
 	}
@@ -91,8 +91,8 @@ class ProcesadorService {
             descripcion:StringUtils.substring(descripcion,0,255),
             asiento:asiento,
             referencia:referencia,
-            origen:entidad.id.toString(),
-            entidad:entidad.class.toString()
+            origen:entidad?.id?.toString(),
+            entidad:entidad.class.getSimpleName()
 		)
         return poliza
 	}
@@ -118,7 +118,7 @@ class ProcesadorService {
         
         if( dif.abs()>0.0 && dif.abs() <5.0){
             //Otros productos/gastos
-                if(dif.abs()>0.0){
+                if(dif>0.0){
                     //Producto
                     def cta=CuentaContable.buscarPorClave("704-0006")
                     log.debug "Cuadrando poliza en OTROS INGRESOS por dif :$dif en cta:$cta.clave"

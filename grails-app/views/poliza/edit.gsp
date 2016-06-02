@@ -219,6 +219,7 @@
 					<div id="createPanel" class="modal-body">
 						<f:with bean="${polizaInstance}">
 							<f:field property="descripcion" widget-class="form-control" label="Concepto"/>
+							<f:field property="fecha" widget-class="form-control date" />
 							<f:field property="manual" widget-class="form-control"/>
 						</f:with>
 						
@@ -270,6 +271,13 @@
 
 	<script type="text/javascript">
 		$(function(){
+			$('.date').bootstrapDP({
+			    format: 'dd/mm/yyyy',
+			    keyboardNavigation: false,
+			    forceParse: false,
+			    autoclose: true,
+			    todayHighlight: true
+			});
 			$(".money").autoNumeric({vMin:'-999999999.00',wEmpty:'zero',mRound:'B'});
 			$("#cuentaField").autocomplete({
 				appendTo: "#createPanel",

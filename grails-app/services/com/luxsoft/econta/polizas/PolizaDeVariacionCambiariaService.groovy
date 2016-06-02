@@ -21,6 +21,7 @@ import com.luxsoft.impapx.tesoreria.PagoProveedor
 import com.luxsoft.impapx.tesoreria.SaldoDeCuenta
 import com.luxsoft.impapx.tesoreria.Traspaso
 import com.luxsoft.impapx.contabilidad.Poliza
+import com.luxsoft.impapx.contabilidad.*
 
 @Transactional
 class PolizaDeVariacionCambiariaService extends ProcesadorService{
@@ -33,7 +34,7 @@ class PolizaDeVariacionCambiariaService extends ProcesadorService{
         def finDeMes=dia.finDeMes().clearTime()
     	if(dia.clearTime()!=finDeMes)
     		return "Esta póliza sólo se puede ejcutar el fin de mes"
-
+        procesarVariacionCambiariaBancos(poliza,dia)
         cuadrar(poliza)
 		depurar(poliza)
 		save poliza
@@ -87,7 +88,7 @@ class PolizaDeVariacionCambiariaService extends ProcesadorService{
     			,entidad:'NA'
     			,origen:0)
     		
-    		def clave=diferencia>0?"703-002":"701-0002"
+    		def clave=diferencia>0?"702-0002":"701-0002"
     		poliza.addToPartidas(
     			cuenta:CuentaContable.buscarPorClave(clave),
     			debe:diferencia<0?diferencia.abs():0.0,
@@ -173,7 +174,7 @@ class PolizaDeVariacionCambiariaService extends ProcesadorService{
     				,entidad:'NA'
     				,origen:0)
     			
-    			def clave=diferencia>0?"703-002":"701-0002"
+    			def clave=diferencia>0?"702-0002":"701-0002"
     			poliza.addToPartidas(
     				cuenta:CuentaContable.buscarPorClave(clave),
     				debe:diferencia<0?diferencia.abs():0.0,

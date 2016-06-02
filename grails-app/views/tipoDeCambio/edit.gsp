@@ -41,6 +41,7 @@
 				    						<i class="fa fa-floppy-o"></i> Actualizar
 				    					</button>
 				    					<lx:backButton/>
+				    					<a href="" class="btn btn-danger " data-toggle="modal" data-target="#deleteDialog"><i class="fa fa-trash"></i> Eliminar</a> 
 				    				</div>
 				    			</div>
 

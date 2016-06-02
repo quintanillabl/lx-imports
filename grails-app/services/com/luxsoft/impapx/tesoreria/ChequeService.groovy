@@ -8,6 +8,7 @@ class ChequeService {
 		def folio=cuenta.folio++
 		def cheque=new Cheque(cuenta:cuenta,egreso:egreso,folio:folio)
 		cheque.fechaImpresion = new Date()
+		egreso.referenciaBancaria = folio.toString()
 		cuenta.save(flush:true)
 		cheque.save failOnError:true
 		return cheque
