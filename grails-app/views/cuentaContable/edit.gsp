@@ -174,7 +174,7 @@
 		$(function(){
 			$('.chosen-select').chosen();
 
-			$('#subCuentaClave').mask('00000');
+			//$('#subCuentaClave').mask('00000');
 
 			$('form[name=updateForm]').submit(function(e){
 				$("#saveBtn")

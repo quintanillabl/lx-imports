@@ -322,7 +322,11 @@ class PolizaDeEgresosService extends ProcesadorService{
     					//Cargo a agredores diversos o cancelar la provision
     				    def iva=c.impuesto
     					def monto=c.total
-    					def cuenta=CuentaContable.buscarPorClave("205-V001")
+                        def cuenta = CuentaContable.findByClave('205-'+fac.proveedor.subCuentaOperativa)
+                        if(cuenta == null){
+                            cuenta=CuentaContable.buscarPorClave("205-V001")    
+                        }
+    					//def cuenta=CuentaContable.buscarPorClave("205-V001")
     					if(c.tipo=='SEGUROS Y FIANZAS'){
     						cuenta=CuentaContable.buscarPorClave("205-$fac.proveedor.subCuentaOperativa")
     					 monto=det.total
@@ -357,7 +361,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     						,origen:fac.id)
     					//Abono al iva pendiente  de gasto
     					poliza.addToPartidas(
-    						cuenta:CuentaContable.buscarPorClave("118-0005"),
+    						cuenta:CuentaContable.buscarPorClave("119-0001"),
     						debe:0.0,
     						haber:iva,
     						asiento:asiento,

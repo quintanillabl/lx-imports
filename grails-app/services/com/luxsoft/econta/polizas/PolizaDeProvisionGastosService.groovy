@@ -33,7 +33,7 @@ class PolizaDeProvisionGastosService extends ProcesadorService{
     	gastos.each{ gasto ->
     		def flete = gasto.conceptos.find{ it.concepto.clave.startsWith('600-F')}
     		if(!flete){
-    			def desc = "Prov F:${gasto.id} (${gasto.fecha}) ${gasto.proveedor.nombre} "
+    			def desc = "Prov F:${gasto.documento} (${gasto.fecha.text()}) ${gasto.proveedor.nombre} "
     			cargoAGastos(poliza,gasto,desc)
     			cargoAIvaPendienteDeAcreditar(poliza,gasto,desc)
     			abonoAAcredoresDiversos(poliza,gasto,desc)
@@ -58,7 +58,7 @@ class PolizaDeProvisionGastosService extends ProcesadorService{
 				det.importe,
 				descripcion,
 				'PROVISION',
-				'F:'+gasto.id,
+				'F:'+gasto.documento,
 				gasto
 			)
 		}
@@ -78,8 +78,14 @@ class PolizaDeProvisionGastosService extends ProcesadorService{
 
 	def abonoAAcredoresDiversos(def poliza,def gasto,def descripcion){
 		log.info 'Abono a acredores diversos'
+		def proveedor = gasto.proveedor
+		//assert proveedor.subCuentaOperativa, 'No existe la subCuentaOperativa del proveedor:  '+proveedor
+		def cta = CuentaContable.findByClave('205-'+proveedor.subCuentaOperativa)
+		if(cta == null){
+			cta = CuentaContable.findByClave('205-V001')
+		}
 		abonoA(poliza,
-			CuentaContable.buscarPorClave('205-V001'),
+			cta,
 			gasto.total,
 			descripcion,
 			'PROVISION',
