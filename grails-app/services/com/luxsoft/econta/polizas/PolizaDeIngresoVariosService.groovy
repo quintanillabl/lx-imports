@@ -81,6 +81,7 @@ class PolizaDeIngresoVariosService extends ProcesadorService{
                 asiento='DEVOLUCION PROVEEDOR'
                 log.info 'Buscando saldos deudores'
                 def ingreso = MovimientoDeCuenta.find('from MovimientoDeCuenta m where date(m.fecha) = ? and m.concepto = ? ',[dia,'SALDO_DEUDOR'])
+                assert ingreso, "No existe un ingreso (MovimientoDeCuenta de tipo SALDO_DEUDOR para el dia: $dia"
                 //Cargo bancos
                 def cuentaDeBanco=ingreso.cuenta
                 if(cuentaDeBanco.cuentaContable==null)

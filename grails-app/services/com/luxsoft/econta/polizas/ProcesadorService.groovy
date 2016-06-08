@@ -149,7 +149,7 @@ class ProcesadorService {
                     )
                 }
         }
-        
+        poliza.actualizar()
         //poliza.cuadrar()
         return poliza
     }

@@ -12,7 +12,7 @@ import com.luxsoft.lx.utils.MonedaUtils
 
 
 @EqualsAndHashCode(includes='ejercicio,mes,tipo,folio')
-@ToString(includes='ejercicio,mes,tipo,subTipo,folio,debe,haber',includeNames=true,includePackage=false)
+@ToString(includeNames=true,includePackage=false)
 class Poliza {
 
 	static auditable = true
@@ -85,6 +85,12 @@ class Poliza {
 	}
 	
 	def beforeUpdate(){
+		actualizar()
+	}
+	def afterInsert() {
+		actualizar()
+	}
+	def afterUpdate() {
 		actualizar()
 	}
 	
