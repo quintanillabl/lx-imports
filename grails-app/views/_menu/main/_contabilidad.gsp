@@ -82,9 +82,7 @@
                 </ul>
             </li>
 
-            <li class="${webRequest.controllerName=='cfdiRetenciones'?'active':''}">
-                <g:link controller="cfdiRetenciones"><i class="fa fa-file-code-o"></i> <span class="nav-label">Retenciones</span></g:link>
-            </li>
+            
         </sec:ifAnyGranted>
     </ul>
 </li>

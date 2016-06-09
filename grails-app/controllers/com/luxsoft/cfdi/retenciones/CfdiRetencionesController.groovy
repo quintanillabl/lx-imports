@@ -13,7 +13,7 @@ import com.luxsoft.impapx.Empresa
 import com.luxsoft.impapx.*
 
 @Transactional(readOnly = true)
-@Secured(["hasRole('CONTABILIDAD')"])
+@Secured(["hasRole('TESORERIA')"])
 class CfdiRetencionesController {
 
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
@@ -163,19 +163,19 @@ class CfdiRetencionesController {
             redirect action:'show',id:cfdiRetenciones.id
             return
         }
-        /*
+        
         try {
             cfdiRetenciones=cfdiRetencionesService.timbrar(cfdiRetenciones)
             flash.message="Comprobante timbrado"
             redirect action:'edit',id:cfdiRetenciones.id
         }
         catch(Exception e) {
-            e.printStacktrace()
+            e.printStackTrace()
             log.error e
             redirect action:'edit',id:cfdiRetenciones.id
         }
-        */
-        flash.message="Por el momento no se puede timbrar desde esta aplicación solicite a SISTEMAS el timbrado"
+        
+        //flash.message="Por el momento no se puede timbrar desde esta aplicación solicite a SISTEMAS el timbrado"
         redirect action:'edit',id:cfdiRetenciones.id
         
     }
