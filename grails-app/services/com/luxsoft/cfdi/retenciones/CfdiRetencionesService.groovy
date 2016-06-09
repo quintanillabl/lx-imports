@@ -25,7 +25,7 @@ class CfdiRetencionesService {
 
     def retencionesBuilder
 
-    def retencionesTibrador
+    def retencionesTimbrador
 
     def retencionSellador
 
@@ -86,7 +86,7 @@ class CfdiRetencionesService {
 
     def timbrar(CfdiRetenciones bean){
         assert bean.xml,' No se ha generado el xml para este comprobante :'+bean
-        bean=retencionesTibrador.timbrar(bean)
+        bean=retencionesTimbrador.timbrar(bean)
         return bean
     }
 

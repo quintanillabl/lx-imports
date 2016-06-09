@@ -30,7 +30,7 @@
 	<queryString><![CDATA[SELECT P.ID AS POL_ID,D.ID AS POLIZADET_ID,D.partidas_idx AS RENGLON,P.FOLIO AS POLIZA,DATE(P.FECHA) AS FECHA,D.DESCRIPCION
 ,D.referencia AS ORIGEN,C.DESCRIPCION AS CONCEPTO
 ,P.DESCRIPCION AS CONCEPTO_POLIZA,C.CLAVE AS NoCUENTA
-,P.tipo AS TIPO_ID
+,P.tipo AS TIPO_ID,P.SUB_TIPO
 ,D.DEBE,D.HABER,P.DEBE AS DEBE_POLIZA,P.HABER AS HABER_POLIZA
 ,D.ASIENTO
 FROM POLIZA P 
@@ -49,6 +49,7 @@ WHERE P.ID=$P{ID}]]></queryString>
 	<field name="CONCEPTO_POLIZA" class="java.lang.String"/>
 	<field name="NoCUENTA" class="java.lang.String"/>
 	<field name="TIPO_ID" class="java.lang.String"/>
+	<field name="SUB_TIPO" class="java.lang.String"/>
 	<field name="DEBE" class="java.math.BigDecimal"/>
 	<field name="HABER" class="java.math.BigDecimal"/>
 	<field name="DEBE_POLIZA" class="java.math.BigDecimal"/>
@@ -179,16 +180,16 @@ WHERE P.ID=$P{ID}]]></queryString>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="340"
+						x="283"
 						y="18"
-						width="208"
+						width="265"
 						height="15"
 						key="textField-8"/>
 					<box></box>
 					<textElement textAlignment="Right">
 						<font/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{TIPO_ID}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{TIPO_ID}.concat(" - ").concat($F{SUB_TIPO})]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement
