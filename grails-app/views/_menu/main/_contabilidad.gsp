@@ -64,50 +64,7 @@
                 </ul>
             </li>
 
-            %{-- <li >  
-                <a href="#">Pólizas (OLD)<span class="fa arrow"></span></a>
-                <ul class="nav nav-third-level">
-                    
-                    <li class="${webRequest.controllerName=='polizaDeCompras'?'active':''}">
-                        <g:link controller="polizaDeCompras" >Compras</g:link>
-                    </li>
-
-                    <li class="${webRequest.controllerName=='polizaDeEgresos'?'active':''}">
-                        <g:link controller="polizaDeEgresos">Egreso</g:link>
-                    </li>
-
-                    <li class="${webRequest.controllerName=='polizaDeDiario'?'active':''}">
-                        <g:link controller="polizaDeDiario">Diario</g:link>
-                    </li>
-
-                    <li class="${webRequest.controllerName=='polizaDeDiarioFlete'?'active':''}">
-                        <g:link controller="polizaDeDiarioFlete">Diario - Flete</g:link></li>
-                    
-                    <li class="${webRequest.controllerName=='polizaDeDiarioIvaIsr'?'active':''}">
-
-                        <g:link controller="polizaDeDiarioIvaIsr">Diario - IVA/ISR</g:link></li>
-                    
-                    <li class="${webRequest.controllerName=='polizaDeDiarioAplicacionAnticipo'?'active':''}">
-                        <g:link controller="polizaDeDiarioAplicacionAnticipo">Diario - Aplic</g:link></li>
-                    
-                    <li class="${webRequest.controllerName=='polizaDeIngresos'?'active':''}">
-                        <g:link controller="polizaDeIngresos">Ingresos</g:link></li>
-                    
-                    <li class="${webRequest.controllerName=='polizaDeImpuestos'?'active':''}">
-                        <g:link controller="polizaDeImpuestos">Impuestos</g:link></li>
-                    
-                    <li class="${webRequest.controllerName=='poliza'?'active':''}">
-                        <g:link controller="poliza" params="[subTipo:'GENERICAS']">Genérica</g:link></li>
-                    
-                    <li class="${webRequest.controllerName=='polizaDeProvisionAnual'?'active':''}">
-                        <g:link controller="polizaDeProvisionAnual">Prov Anual (Compras)</g:link></li>
-                    
-                    <li class="${webRequest.controllerName=='polizaDeCierreAnual'?'active':''}">
-                        <g:link controller="polizaDeCierreAnual">Cierre anual</g:link></li>
-
-                </ul>
-            </li> --}%
-
+            
             <li class="${satControllers.contains(webRequest.controllerName)?'active':''}">
                 <a href="#">Contabilidad SAT <span class="fa arrow"></span></a>
                 <ul class="nav nav-third-level">
@@ -123,6 +80,10 @@
                         <g:link controller="polizaDeEgresos">Balnazas</g:link>
                     </li>
                 </ul>
+            </li>
+
+            <li class="${webRequest.controllerName=='cfdiRetenciones'?'active':''}">
+                <g:link controller="cfdiRetenciones"><i class="fa fa-file-code-o"></i> <span class="nav-label">Retenciones</span></g:link>
             </li>
         </sec:ifAnyGranted>
     </ul>

@@ -46,4 +46,6 @@ databaseChangeLog = {
 	
 
 	include file: 'poliza-det-fix.groovy'
+
+	include file: 'RetencionesCfdi.groovy'
 }

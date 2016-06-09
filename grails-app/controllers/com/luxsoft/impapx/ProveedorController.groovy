@@ -15,7 +15,7 @@ class ProveedorController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     def index(Integer max) {
-        params.max = Math.min(max ?: 40, 100)
+        params.max = 1000
         params.sort=params.sort?:'lastUpdated'
         params.order='desc'
         respond Proveedor.list(params), model:[proveedorInstanceCount: Proveedor.count()]

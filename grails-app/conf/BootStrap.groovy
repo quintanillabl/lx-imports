@@ -4,6 +4,8 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider
 
 class BootStrap {
 
+    def cfdiRetencionesService
+
     def init = { servletContext ->
 
     	Date.metaClass.inicioDeMes{ ->
@@ -64,6 +66,10 @@ class BootStrap {
 
 		
 		com.luxsoft.econta.polizas.PolizaUtils.buildProcesadores()
+
+        // CFDI de retenciones
+        cfdiRetencionesService.buildCatalogoDeRetenciones()
+        cfdiRetencionesService.buildCatalogoDeImpuestos()
 		
 		
 

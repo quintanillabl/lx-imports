@@ -5,7 +5,7 @@ import com.luxsoft.cfdi.CfdiCadenaBuilder
 import com.luxsoft.cfdi.CfdiSellador
 import com.luxsoft.cfdi.CfdiTimbrador
 import com.luxsoft.lx.MarshallerRegistrar
-
+import com.luxsoft.cfdi.retenciones.*
 
 // Place your Spring DSL code here
 beans = {
@@ -65,7 +65,34 @@ beans = {
 
 	lxRegistar(MarshallerRegistrar){}
 
-	
+	retencionesBuilder(RetencionesBuilder){
+		cadenaBuilder=ref('retencionesCadenaBuilder')
+		retencionSellador=ref('retencionesSellador')
+		retencionesTibrador=ref('retencionesTibrador')
+	}
+
+	retencionesCadenaBuilder(RetencionesCadenaBuilder){}
+
+	retencionesSellador(RetencionesSellador){}
+
+	switch(Environment.current){
+		
+		case Environment.PRODUCTION:
+			retencionesTibrador(RetencionesTimbrador){
+				timbradoDePrueba=false
+			}
+			break
+		case Environment.DEVELOPMENT:
+			retencionesTibrador(RetencionesTimbrador){
+				timbradoDePrueba=true
+			}
+			break
+		case Environment.TEST:
+			retencionesTibrador(RetencionesTimbrador){
+			timbradoDePrueba=true
+		}
+		
+	}
 	
 	
 }

@@ -16,6 +16,7 @@
             <li class="${webRequest.controllerName=='cfdi'?'active':''}">
                 <g:link controller="cfdi"><i class="fa fa-file-code-o"></i> <span class="nav-label">CFDIs</span></g:link>
             </li>
+            
         </ul>
     </sec:ifAnyGranted>
 </li>
