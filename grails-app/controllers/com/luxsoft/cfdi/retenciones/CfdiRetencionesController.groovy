@@ -164,18 +164,18 @@ class CfdiRetencionesController {
             return
         }
         
-        try {
-            cfdiRetenciones=cfdiRetencionesService.timbrar(cfdiRetenciones)
-            flash.message="Comprobante timbrado"
-            redirect action:'edit',id:cfdiRetenciones.id
-        }
-        catch(Exception e) {
-            e.printStackTrace()
-            log.error e
-            redirect action:'edit',id:cfdiRetenciones.id
-        }
+        // try {
+        //     cfdiRetenciones=cfdiRetencionesService.timbrar(cfdiRetenciones)
+        //     flash.message="Comprobante timbrado"
+        //     redirect action:'edit',id:cfdiRetenciones.id
+        // }
+        // catch(Exception e) {
+        //     e.printStackTrace()
+        //     log.error e
+        //     redirect action:'edit',id:cfdiRetenciones.id
+        // }
         
-        //flash.message="Por el momento no se puede timbrar desde esta aplicación solicite a SISTEMAS el timbrado"
+        flash.message="Por el momento no se puede timbrar desde esta aplicación solicite a SISTEMAS el timbrado"
         redirect action:'edit',id:cfdiRetenciones.id
         
     }

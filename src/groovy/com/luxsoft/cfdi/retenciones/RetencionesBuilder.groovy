@@ -24,9 +24,7 @@ class RetencionesBuilder implements ResourceLoaderAware{
 	def cadenaBuilder
 
 	def retencionSellador
-
 	
-	def retencionesTimbrador
 
 	public toRetenciones(CfdiRetenciones bean){
 

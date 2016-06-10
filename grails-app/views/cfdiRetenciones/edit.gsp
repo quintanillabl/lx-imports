@@ -35,9 +35,9 @@
 				    	<g:link action="generarXml" class="btn btn-default " id="${cfdiRetencionesInstance.id}">
 				    	    <i class="fa fa-qrcode"></i> Generar XML
 				    	</g:link>
-				    	%{-- <g:link action="timbrar" class="btn btn-success " id="${cfdiRetencionesInstance.id}">
+				    	<g:link action="timbrar" class="btn btn-success " id="${cfdiRetencionesInstance.id}">
 				    	    <i class="fa fa-qrcode"></i> Timbrar
-				    	</g:link> --}%
+				    	</g:link>
 				    	<buttn id="saveBtn" class="btn btn-primary">
 				    		<i class="fa fa-floppy-o"></i> Actualizar
 				    	</buttn>
