@@ -64,7 +64,7 @@
               <f:field property="ejercicio" wrapper="bootstrap3">
                 <g:select class="form-control chosen-select"  
                   name="${property}"
-                  from="${(2015..2020)}"/>
+                  from="${(1995..2020)}"/>
               </f:field>
 
               <f:field property="mesInicial" wrapper="bootstrap3">
