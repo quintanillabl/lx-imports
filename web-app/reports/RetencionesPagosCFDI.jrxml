@@ -1054,7 +1054,7 @@
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None">
 						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="48" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{EMISOR_RFC}.equals( "PIM050124GY7" ) ? "I M P A P" :
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{EMISOR_RFC}.equals( "IMP921016J16" ) ? "I M P A P" :
 $P{EMISOR_RFC}.equals( "PIM050124GY7" ) ? "P A P E R" :
 $P{EMISOR_RFC}.equals( "ICP760402388" ) ? "C E N P A" :
 $P{EMISOR_RFC}.equals( "ISA870406UF4" ) ? "S   A   N" :
