@@ -56,10 +56,14 @@
 				//clear the current content of the select
 				$select.html('');
 				console.log('Actualizando agentes'+data);
+				
+				$select.append($('<option></option>').attr("value", '').text('Seleccione un agente'));
   				$.each(data, function(key, val){
   		  			console.log('Agregando: '+key);
   		  			console.log('Val: '+val);
-  		  			$select.append('<option>' + val.nombre+ '</option>');	
+  		  			//$select.append('<option>' + val.nombre+ '</option>');	
+  		  			
+  		  			$select.append($('<option></option>').attr("value", val.nombre).text(val.nombre));
 
   				});
 

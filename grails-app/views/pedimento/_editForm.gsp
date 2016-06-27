@@ -30,8 +30,10 @@
 						/>
 				</f:field>
 				<f:field property="agenteAduanal" label="Agente" wrapper="bootstrap3">
-					<g:select class="form-control"  
-						name="agenteAduanal" 
+					<g:select class="form-control" 
+						id="agenteAduanal" 
+						name="agenteAduanal"
+						value="${pedimentoInstance.agenteAduanal}"
 						from="${pedimentoInstance?.proveedor?.agentes}"
 						/>
 				</f:field>
@@ -79,29 +81,32 @@
     		return true;
 		});
 
-				$("#proveedor").on('change',function(){
-					var proveedor=$(this).val();
-					console.log('Seleccion: '+proveedor);
+		$("#proveedor").on('change',function(){
+			var proveedor=$(this).val();
+			console.log('Seleccion: '+proveedor);
 
-					var $select = $('#agenteAduanal');
+			var $select = $('#agenteAduanal');
 
-					$.getJSON(
-						"${createLink(controller:'proveedor',action:'buscarAgentesAduanales')}",
-						{id:proveedor}
-					).done(function(data){
+			$.getJSON(
+				"${createLink(controller:'proveedor',action:'buscarAgentesAduanales')}",
+				{id:proveedor}
+			).done(function(data){
 
-						//clear the current content of the select
-						$select.html('');
-						console.log('Actualizando agentes'+data);
-		  				$.each(data, function(key, val){
-		  		  			console.log('Agregando: '+key);
-		  		  			console.log('Val: '+val);
-		  		  			$select.append('<option>' + val.nombre+ '</option>');	
+				//clear the current content of the select
+				$select.html('');
+				$select.append($('<option></option>').attr("value", '').text('Seleccione un agente'));
+				console.log('Actualizando agentes'+data);
+  				$.each(data, function(key, val){
+  		  			console.log('Agregando: '+key);
+  		  			console.log('Val: '+val);
+  		  			//$select.append('<option>' + val.nombre+ '</option>');	
+  		  			
+  		  			$select.append($('<option></option>').attr("value", val.nombre).text(val.nombre));
 
-		  				});
+  				});
 
-					});
-				});
+			});
+		});
 		//$("input[data-moneda]").autoNumeric({wEmpty:'zero',mRound:'B',aSign: '$'});
 	});
 </script>
