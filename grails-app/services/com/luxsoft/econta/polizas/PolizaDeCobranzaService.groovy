@@ -26,12 +26,12 @@ class PolizaDeCobranzaService extends ProcesadorService{
     		
     		//Cargo al banco
             
-    		def desc="${pago.formaDePago.substring(0,2)}"
+    		def desc="${pago.cliente.nombre} ${pago.formaDePago.substring(0,2)} "
 
     		if(pago.moneda==MonedaUtils.DOLARES){
-    			desc+="$pago.total * $pago.tc"
+    			desc+=" $pago.total * $pago.tc"
     		}
-            desc+= "-$pago.referenciaBancaria ${pago.cliente.nombre}"
+            //desc+= " $pago.referenciaBancaria "
     		
     		poliza.addToPartidas(
     			cuenta:pago.cuenta.cuentaContable,
@@ -54,15 +54,12 @@ class PolizaDeCobranzaService extends ProcesadorService{
     				debe:0.0,
     				haber:aplic.total,
     				asiento:asiento,
-    				descripcion:"Fac: ${aplic?.factura?.facturaFolio} ${aplic?.factura?.fecha?.text()} ${pago.tc>1?'T.C'+pago.tc:''} ",
+    				descripcion:"Fac: ${aplic?.factura?.facturaFolio} ${aplic?.factura?.fecha?.text()}  ",
     				referencia:"$pago.referenciaBancaria"
     				,fecha:poliza.fecha
     				,tipo:poliza.tipo
     				,entidad:'CXCAplicacion'
     				,origen:aplic.id)
-    			
-    			
-    			
     		}
     		
     		//Abono al IVA por trasladar
@@ -90,8 +87,9 @@ class PolizaDeCobranzaService extends ProcesadorService{
     				debe:impuesto,
     				haber:0.0,
     				asiento:asiento,
-    				descripcion:"Fac: ${aplic?.factura?.facturaFolio} ${aplic?.factura?.cliente?.nombre} ${pago.tc>1?'T.C'+pago.tc:''} ",
-    				referencia:"$pago.referenciaBancaria"
+    				//descripcion:"Fac: ${aplic?.factura?.facturaFolio} ${aplic?.factura?.cliente?.nombre} ${pago.tc>1?'T.C'+pago.tc:''} ",
+    				descripcion:"Fac: ${aplic?.factura?.facturaFolio} ${aplic?.factura?.fecha?.text()}  ",
+                    referencia:"$pago.referenciaBancaria"
     				,fecha:poliza.fecha
     				,tipo:poliza.tipo
     				,entidad:'CXCAplicacion'

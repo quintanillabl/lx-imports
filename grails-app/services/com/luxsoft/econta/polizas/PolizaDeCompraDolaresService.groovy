@@ -34,7 +34,8 @@ class PolizaDeCompraDolaresService extends ProcesadorService{
                 debe:compra.ingreso.importe.abs()*compra.tipoDeCambioCompra,
                 haber:0.0,
                 asiento:asiento,
-                descripcion:"T.C: $compra.tipoDeCambioCompra $compra.ingreso.importe ($compra.cuentaDestino.moneda )",
+                //descripcion:"T.C: $compra.tipoDeCambioCompra $compra.ingreso.importe ($compra.cuentaDestino.moneda )",
+                descripcion:"$compra.requisicion.proveedor ${compra.fecha.text()} $compra.ingreso.importe T.C.$compra.tipoDeCambioCompra ",
                 referencia:"$compra.pagoProveedor.egreso.referenciaBancaria",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -50,7 +51,7 @@ class PolizaDeCompraDolaresService extends ProcesadorService{
                 debe:0.0,
                 haber:compra.pagoProveedor.egreso.importe.abs(),
                 asiento:asiento,
-                descripcion:"T.C: $compra.tipoDeCambioCompra $compra.ingreso.importe ($compra.cuentaDestino.moneda )",
+                descripcion:"$compra.requisicion.proveedor ${compra.fecha.text()} $compra.ingreso.importe T.C.$compra.tipoDeCambioCompra ",
                 referencia:"$compra.pagoProveedor.egreso.referenciaBancaria",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo

@@ -150,7 +150,7 @@ class PolizaDeEgresosService extends ProcesadorService{
 					debe:0.0,
 					haber:egreso.importe.abs()*egreso.tc,
 					asiento:asiento,
-					descripcion:"Pago prov "+egreso.importe.abs()+" * $egreso.tc",
+					descripcion:"$fp-${egreso.referenciaBancaria?:'FALTA'} $req.proveedor"+egreso.importe.abs()+" * $egreso.tc",
 					referencia:"$egreso.referenciaBancaria"
 					,fecha:poliza.fecha
 					,tipo:poliza.tipo
@@ -269,7 +269,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     						debe:c.importe,
     						haber:0.0,
     						asiento:asiento,
-    						descripcion:"Fac:$fac.documento ($fechaFac) $c.descripcion",
+    						descripcion:"Fac:$fac.documento ($fechaFac) $fac.proveedor",
     						referencia:"$fac.documento"
     						,fecha:poliza.fecha
     						,tipo:poliza.tipo
@@ -281,7 +281,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     						debe:c.impuesto,
     						haber:0.0,
     						asiento:asiento,
-    						descripcion:"Fac:$fac.documento ($fechaFac) $c.descripcion",
+    						descripcion:"Fac:$fac.documento ($fechaFac) $fac.proveedor",
     						referencia:"$fac.documento"
     						,fecha:poliza.fecha
     						,tipo:poliza.tipo
@@ -294,7 +294,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     							debe:c.retension,
     							haber:0.0,
     							asiento:asiento,
-    							descripcion:"Fac:$fac.documento ($fechaFac) $c.descripcion",
+    							descripcion:"Fac:$fac.documento ($fechaFac) $fac.proveedor",
     							referencia:"$fac.documento"
     							,fecha:poliza.fecha
     							,tipo:poliza.tipo
@@ -308,7 +308,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     							debe:c.retensionIsr,
     							haber:0.0,
     							asiento:asiento,
-    							descripcion:"Fac:$fac.documento ($fechaFac) $c.descripcion",
+    							descripcion:"Fac:$fac.documento ($fechaFac) $fac.proveedor",
     							referencia:"$fac.documento"
     							,fecha:poliza.fecha
     							,tipo:poliza.tipo
@@ -386,7 +386,8 @@ class PolizaDeEgresosService extends ProcesadorService{
     				debe:0.0,
     				haber:egreso.importe.abs()*egreso.tc,
     				asiento:asiento,
-    				descripcion:"$fp-$egreso.referenciaBancaria $req.proveedor",
+    				//descripcion:"$fp-$egreso.referenciaBancaria $req.proveedor",
+                    descripcion:"$fp-${egreso.referenciaBancaria?:'FALTA'} $req.proveedor",
     				referencia:"$egreso.referenciaBancaria"
     				,fecha:poliza.fecha
     				,tipo:poliza.tipo
@@ -482,7 +483,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     			debe:0.0,
     			haber:pago.egreso.importe.abs()*pago.egreso.tc,
     			asiento:asiento,
-    			descripcion:"$pago.egreso.cuenta ",
+    			descripcion:"$fp-${egreso.referenciaBancaria?:'ERROR'} $req.proveedor",
     			referencia:"$pago.egreso.referenciaBancaria",
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
@@ -501,7 +502,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     				debe:reqDet.importe.abs()*pago.egreso.tc,
     				haber:0.0,
     				asiento:asiento,
-    				descripcion:"$pago.egreso.cuenta Ref:$reqDet.documento REq: $requisicion.id ",
+    				descripcion:"Ref:$reqDet.documento ",
     				referencia:"$pago.egreso.referenciaBancaria"
     				,fecha:poliza.fecha
     				,tipo:poliza.tipo
@@ -542,7 +543,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     			debe:0.0,
     			haber:pago.egreso.importe.abs()*pago.egreso.tc,
     			asiento:asiento,
-    			descripcion:"$pago.egreso.cuenta "+egreso.importe.abs()+" * $egreso.tc",
+    			descripcion:"$fp-${egreso.referenciaBancaria?:''} $req.proveedor  "+egreso.importe.abs()+" * $egreso.tc",
     			referencia:"$pago.egreso.referenciaBancaria",
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
@@ -603,7 +604,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     		def egreso=pago.egreso
     		
     		def req=pago.requisicion
-    		def descripcion="$fp-${egreso.referenciaBancaria?:''} $req.proveedor ($req.concepto) id:$egreso.id"
+    		def descripcion="$fp-${egreso.referenciaBancaria?:''} $req.proveedor ($req.concepto)"
     		Poliza poliza=build(dia,descripcion)
     		
     		
@@ -618,7 +619,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     			debe:0.0,
     			haber:pago.egreso.importe.abs(),
     			asiento:asiento,
-    			descripcion:"$pago.egreso.cuenta ",
+    			descripcion: descripcion,
     			referencia:"$pago.egreso.referenciaBancaria",
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
@@ -629,7 +630,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     		def proveedor=pago.requisicion.proveedor
     		
     		def clave="205-$proveedor.subCuentaOperativa"
-    		println 'Localizando cuenta operativa contable para Proveedor: '+proveedor
+    		//println 'Localizando cuenta operativa contable para Proveedor: '+proveedor
     		def cuenta=CuentaContable.buscarPorClave(clave)
     		def requisicion=pago.requisicion
     		poliza.addToPartidas(
@@ -637,7 +638,8 @@ class PolizaDeEgresosService extends ProcesadorService{
     			debe:pago.egreso.importe.abs(),
     			haber:0.0,
     			asiento:asiento,
-    			descripcion:"$pago.egreso.cuenta ",
+    			//descripcion:"$pago.egreso.cuenta ",
+                descripcion: descripcion,
     			referencia:"$pago.egreso.referenciaBancaria"
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
@@ -691,7 +693,7 @@ class PolizaDeEgresosService extends ProcesadorService{
                 debe:0.0,
                 haber:egreso.importe.abs(),
                 asiento:asiento,
-                descripcion:"$egreso.cuenta ",
+                descripcion:descripcion,
                 referencia:"$egreso.referenciaBancaria",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo

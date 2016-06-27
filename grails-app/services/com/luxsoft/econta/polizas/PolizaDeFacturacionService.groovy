@@ -60,7 +60,7 @@ class PolizaDeFacturacionService extends ProcesadorService{
     				debe:fac.total,
     				haber:0.0,
     				asiento:asiento,
-    				descripcion:"Fecha:$fac.fechaFactura $fac.cliente.nombre",
+    				descripcion:"$fac.facturaFolio $fac.fechaFactura ",
     				referencia:"$fac.facturaFolio"
     				,fecha:poliza.fecha
     				,tipo:poliza.tipo
@@ -76,7 +76,7 @@ class PolizaDeFacturacionService extends ProcesadorService{
     			debe:0.0,
     			haber:fac.importe,
     			asiento:asiento,
-    			descripcion:"Fecha:$fac.fechaFactura $fac.cliente.nombre",
+    			descripcion:"$fac.facturaFolio $fac.fechaFactura ",
     			referencia:"$fac.factura"
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
@@ -89,7 +89,7 @@ class PolizaDeFacturacionService extends ProcesadorService{
     			debe:0.0,
     			haber:fac.impuestos,
     			asiento:asiento,
-    			descripcion:"Fecha:$fac.fechaFactura $fac.cliente.nombre",
+    			descripcion:"$fac.facturaFolio $fac.fechaFactura ",
     			referencia:"$fac.factura"
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
@@ -116,7 +116,8 @@ class PolizaDeFacturacionService extends ProcesadorService{
     				debe:srv.total,
     				haber:0.0,
     				asiento:asientos,
-    				descripcion:"Fecha:$srv.fechaFactura $srv.cliente.nombre",
+    				//descripcion:"Fecha:$srv.fechaFactura $srv.cliente.nombre",
+                    descripcion:"$srv.facturaFolio $srv.fechaFactura ",
     				referencia:"$srv.factura"
     				,fecha:poliza.fecha
     				,tipo:poliza.tipo
@@ -132,7 +133,8 @@ class PolizaDeFacturacionService extends ProcesadorService{
     			debe:0.0,
     			haber:srv.importe,
     			asiento:asientos,
-    			descripcion:"Fecha:$srv.fechaFactura $srv.cliente.nombre",
+    			//descripcion:"Fecha:$srv.fechaFactura $srv.cliente.nombre",
+                descripcion:"$srv.facturaFolio $srv.fechaFactura ",
     			referencia:"$srv.factura"
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
@@ -145,7 +147,8 @@ class PolizaDeFacturacionService extends ProcesadorService{
     			debe:0.0,
     			haber:srv.impuestos,
     			asiento:asientos,
-    			descripcion:"Fecha:$srv.fechaFactura $srv.cliente.nombre",
+    			//descripcion:"Fecha:$srv.fechaFactura $srv.cliente.nombre",
+                descripcion:"$srv.facturaFolio $srv.fechaFactura ",
     			referencia:"$srv.factura"
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
@@ -171,7 +174,8 @@ class PolizaDeFacturacionService extends ProcesadorService{
                 debe:nota.total,
                 haber:0.0,
                 asiento:asiento,
-                descripcion:"N.Cargo:$nota.factura  $nota.cliente ",
+                //descripcion:"$nota.factura  $nota.cliente ",
+                descripcion:"$nota.facturaFolio $nota.fechaFactura ",
                 referencia:"$nota.factura",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -185,7 +189,7 @@ class PolizaDeFacturacionService extends ProcesadorService{
                 debe:0.0,
                 haber:nota.importe,
                 asiento:asiento,
-                descripcion:"N.Cargo:$nota.factura  $nota.cliente ",
+                descripcion:"$nota.facturaFolio $nota.fechaFactura ",
                 referencia:"$nota.factura",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -199,7 +203,7 @@ class PolizaDeFacturacionService extends ProcesadorService{
                 debe:0.0,
                 haber:nota.impuestos,
                 asiento:asiento,
-                descripcion:"N.Cargo:$nota.factura  $nota.cliente ",
+                descripcion:"$nota.facturaFolio $nota.fechaFactura ",
                 referencia:"$nota.factura",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo

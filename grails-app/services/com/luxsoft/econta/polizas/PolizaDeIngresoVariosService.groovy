@@ -48,7 +48,7 @@ class PolizaDeIngresoVariosService extends ProcesadorService{
     				debe: ingreso.importe.abs()*ingreso.tc,
     				haber:0.0,
     				asiento:asiento,
-    				descripcion:"$ingreso.cuenta ",
+    				descripcion:"$req.proveedor ",
     				referencia:"$ingreso.referenciaBancaria",
     				,fecha:poliza.fecha
     				,tipo:poliza.tipo

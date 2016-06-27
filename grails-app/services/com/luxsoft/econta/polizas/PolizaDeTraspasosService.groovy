@@ -38,7 +38,7 @@ class PolizaDeTraspasosService extends ProcesadorService{
     				debe:traspaso.importe.abs(),
     				haber:0.0,
     				asiento:asiento,
-    				descripcion:"$traspaso.cuentaDestino ",
+    				descripcion:traspaso.comentario,
     				referencia:traspaso.comentario,
     				,fecha:poliza.fecha
     				,tipo:poliza.tipo
@@ -55,7 +55,7 @@ class PolizaDeTraspasosService extends ProcesadorService{
     				debe:0.0,
     				haber:traspaso.importe.abs(),
     				asiento:asiento,
-    				descripcion:"$traspaso.cuentaOrigen  ",
+    				descripcion:traspaso.comentario,
     				referencia:traspaso.comentario,
     				,fecha:poliza.fecha
     				,tipo:poliza.tipo

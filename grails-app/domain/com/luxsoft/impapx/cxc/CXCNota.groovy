@@ -44,11 +44,15 @@ class CXCNota extends CXCAbono{
 	
 	
 	def getCfdi(){
-		return Cfdi.findBySerieAndOrigen('CRE',id)?.id
+		return Cfdi.findBySerieAndOrigen('CRE',id)?.folio
 	}
 	
 	def getComprobanteFiscal(){
 		return getCfdi()
 			
+	}
+
+	def getCfdiId(){
+		return Cfdi.findBySerieAndOrigen('CRE',id)?.id
 	}
 }

@@ -34,7 +34,7 @@ class PolizaDeNotaDeCreditoService extends ProcesadorService{
     			debe:0.0,
     			haber:nota.total,
     			asiento:asiento,
-    			descripcion:"NC: $nota.tipo $nota.cfdi  ",
+    			descripcion:"CRE-$nota.cfdi  ${nota.fecha.text()} ",
     			referencia:"$nota.comprobanteFiscal",
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
@@ -47,7 +47,7 @@ class PolizaDeNotaDeCreditoService extends ProcesadorService{
     			debe:nota.importe,
     			haber:0.0,
     			asiento:asiento,
-    			descripcion:"NC: $nota.tipo $nota.cfdi  ",
+    			descripcion:"CRE-$nota.cfdi  ${nota.fecha.text()} ",
     			referencia:"$nota.comprobanteFiscal",
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
@@ -60,7 +60,7 @@ class PolizaDeNotaDeCreditoService extends ProcesadorService{
     			debe:nota.impuesto,
     			haber:0.0,
     			asiento:asiento,
-    			descripcion:"NC: $nota.tipo $nota.cfdi  ",
+    			descripcion:"CRE-$nota.cfdi  ${nota.fecha.text()} ",
     			referencia:"$nota.comprobanteFiscal",
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
