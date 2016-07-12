@@ -77,6 +77,9 @@ class PolizaDeIngresoVariosService extends ProcesadorService{
                     origen:anticipo.id)
             }
 
+            procesarDevoucionesVarias(poliza)
+
+            /*
             if(!anticipos){
                 asiento='DEVOLUCION PROVEEDOR'
                 log.info 'Buscando saldos deudores'
@@ -117,10 +120,55 @@ class PolizaDeIngresoVariosService extends ProcesadorService{
                     entidad:'MovimientoDeCuenta',
                     origen:ingreso.id)
             }
+            */
             
         	cuadrar(poliza)
     		depurar(poliza)
     		save poliza
             
+        }
+
+        def procesarDevoucionesVarias(def poliza){
+            //if(!anticipos){
+                def asiento='DEVOLUCION PROVEEDOR'
+                def dia = poliza.fecha
+                log.info 'Buscando saldos deudores'
+                def ingreso = MovimientoDeCuenta.find('from MovimientoDeCuenta m where date(m.fecha) = ? and m.concepto = ? ',[dia,'SALDO_DEUDOR'])
+                assert ingreso, "No existe un ingreso (MovimientoDeCuenta de tipo SALDO_DEUDOR para el dia: $dia"
+                //Cargo bancos
+                def cuentaDeBanco=ingreso.cuenta
+                if(cuentaDeBanco.cuentaContable==null)
+                    throw new RuntimeException("Cuenta de banco sin cuenta contable asignada: $cuentaDeBanco")
+                poliza.addToPartidas(
+                    cuenta:cuentaDeBanco.cuentaContable,
+                    debe: ingreso.importe.abs()*ingreso.tc,
+                    haber:0.0,
+                    asiento:asiento,
+                    descripcion:"$ingreso.cuenta TC: ${ingreso.tc}",
+                    referencia:"$ingreso.referenciaBancaria",
+                    ,fecha:poliza.fecha
+                    ,tipo:poliza.tipo
+                    ,entidad:'MovimientoDeCuenta'
+                    ,origen:ingreso.id)
+                
+                //abono a proveedor
+                def clave=ingreso.comentario
+                def cuenta=CuentaContable.findByClave(clave)
+                
+                if(!cuenta) 
+                    throw new RuntimeException("No existe la cuenta: "+clave)
+                
+                poliza.addToPartidas(
+                    cuenta:cuenta,
+                    debe: 0.0,
+                    haber: ingreso.importe.abs()*ingreso.tc,
+                    asiento:asiento,
+                    descripcion:"Devolucion TC: ${ingreso.tc}",
+                    referencia:"$ingreso.referenciaBancaria",
+                    fecha:poliza.fecha,
+                    tipo:poliza.tipo,
+                    entidad:'MovimientoDeCuenta',
+                    origen:ingreso.id)
+            //}
         }
 }
