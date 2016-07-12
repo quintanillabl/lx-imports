@@ -133,9 +133,11 @@ class PolizaDeComprasService extends ProcesadorService{
             asiento="Cuenta por pagar"
             
             // 1. Cargo al inventario
-            def cuenta=CuentaContable.findByClave('115-0001')
+            //def cuenta=CuentaContable.findByClave('115-0001')
+            def claveProv="502-$factura.proveedor.subCuentaOperativa"
+            def cuenta = CuentaContable.findByClave(claveProv)
             if(cuenta==null){
-                throw new RuntimeException("No existe la cuenta 115-0001")
+                throw new RuntimeException("No existe la cuenta $claveProv")
             }
             poliza.addToPartidas(
                 cuenta:cuenta,
@@ -169,6 +171,31 @@ class PolizaDeComprasService extends ProcesadorService{
                 ,entidad:'CuentaPorPagar'
                 ,origen:factura.id)
             
+            // Cargo a Inventarios
+            
+            poliza.addToPartidas(
+                cuenta:CuentaContable.buscarPorClave('115-0001'),
+                debe:factura.importe*pedimento.tipoDeCambio,
+                haber:0.0,
+                asiento:asiento,
+                descripcion:"$factura.proveedor ($fechaF) $factura.importe  Pedimentos:$pedimentos ",
+                referencia:"$factura.documento",
+                ,fecha:poliza.fecha
+                ,tipo:poliza.tipo
+                ,entidad:'CuentaPorPagar'
+                ,origen:factura.id)
+
+            poliza.addToPartidas(
+                cuenta: CuentaContable.buscarPorClave(claveProv),
+                debe:0.0,
+                haber:factura.importe*pedimento.tipoDeCambio,
+                asiento:asiento,
+                descripcion:"$factura.proveedor ($fechaF) $factura.importe  Pedimentos:$pedimentos ",
+                referencia:"$factura.documento",
+                ,fecha:poliza.fecha
+                ,tipo:poliza.tipo
+                ,entidad:'CuentaPorPagar'
+                ,origen:factura.id)
         }
     }
     
@@ -195,7 +222,7 @@ class PolizaDeComprasService extends ProcesadorService{
                 debe:pedimento.dta,
                 haber:0.0,
                 asiento:asiento,
-                descripcion:"Ped:$pedimento.pedimento $pedimento.fecha Ref:$pedimento.referenciacg Prov:$provImp",
+                descripcion:"Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",
                 referencia:"$pedimento.pedimento",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -218,7 +245,7 @@ class PolizaDeComprasService extends ProcesadorService{
                 debe:contraPrestacion,
                 haber:0.0,
                 asiento:asiento,
-                descripcion:"Ped:$pedimento.pedimento $pedimento.fecha Ref:$pedimento.referenciacg Prov:$provImp",
+                descripcion:"Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",
                 referencia:"$pedimento.pedimento",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -246,7 +273,7 @@ class PolizaDeComprasService extends ProcesadorService{
                 debe:imp,
                 haber:0.0,
                 asiento:asiento,
-                descripcion:"Ped:$pedimento.pedimento $pedimento.fecha Ref:$pedimento.referenciacg Prov:$provImp",
+                descripcion:"Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",
                 referencia:"$pedimento.pedimento",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -277,7 +304,7 @@ class PolizaDeComprasService extends ProcesadorService{
                 debe:imp2,
                 haber:0.0,
                 asiento:asiento,
-                descripcion:"Ped:$pedimento.pedimento $pedimento.fecha Ref:$pedimento.referenciacg Prov:$provImp",
+                descripcion:"Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",
                 referencia:"$pedimento.pedimento",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -303,7 +330,7 @@ class PolizaDeComprasService extends ProcesadorService{
                 debe:pedimento.arancel,
                 haber:0.0,
                 asiento:asiento,
-                descripcion:"Ped:$pedimento.pedimento $pedimento.fecha Ref:$pedimento.referenciacg Prov:$provImp",
+                descripcion:"Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",
                 referencia:"$pedimento.pedimento",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -322,7 +349,7 @@ class PolizaDeComprasService extends ProcesadorService{
                     debe:Rounding.round(pedimento.incrementable1.importe*pedimento.tipoDeCambio,0),
                     haber:0.0,
                     asiento:asiento,
-                    descripcion:"Ped:$pedimento.pedimento $pedimento.fecha Ref:$pedimento.referenciacg Prov:$provImp",
+                    descripcion:"Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",
                     referencia:"$pedimento.pedimento",
                     ,fecha:poliza.fecha
                     ,tipo:poliza.tipo
@@ -355,7 +382,7 @@ class PolizaDeComprasService extends ProcesadorService{
                 debe:0.0,
                 haber:haber,
                 asiento:asiento,
-                descripcion:"Ped:$pedimento.pedimento $pedimento.fecha Ref:$pedimento.referenciacg Prov:$provImp",
+                descripcion:"Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",
                 referencia:"$pedimento.pedimento",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -393,7 +420,7 @@ class PolizaDeComprasService extends ProcesadorService{
             }
             
             //1.Cargo a cuenta de gastos
-            def clave="600-H001"
+            def clave="504-$cg.proveedor.subCuentaOperativa"
             def cuenta=CuentaContable.findByClave(clave)
             def importe=cg.facturas.sum(0.0,{!it.incrementable?it.importe:0.0})
             importe=Rounding.round(importe, 2)
@@ -404,7 +431,7 @@ class PolizaDeComprasService extends ProcesadorService{
                 debe:importe,
                 haber:0.0,
                 asiento:asiento,
-                descripcion:"$cg.proveedor.nombre Ref:$cg.referencia $cg.fecha ",
+                descripcion:"$cg.proveedor.nombre Ref:$cg.referencia ${cg.fecha.text()} ",
                 referencia:"$cg.referencia",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -464,7 +491,7 @@ class PolizaDeComprasService extends ProcesadorService{
                     debe:0.0,
                     haber:cg.total,
                     asiento:asiento,
-                    descripcion:"$cg.proveedor.nombre Ref:$cg.referencia $cg.fecha ",
+                    descripcion:"$cg.proveedor.nombre Ref:$cg.referencia ${cg.fecha.text()} ",
                     referencia:"$cg.referencia",
                     ,fecha:poliza.fecha
                     ,tipo:poliza.tipo

@@ -173,7 +173,8 @@
 						aria-hidden="true">&times;</button>
 					<h4 class="modal-title" id="myModalLabel">Detalle de póliza</h4>
 				</div>
-				<g:form action="agregarPartida" class="form-horizontal" id="${polizaInstance.id}">
+				<g:form action="agregarPartida" class="form-horizontal" >
+					<g:hiddenField name="polizaId" value="${polizaInstance.id}" />
 					<div id="createPanel" class="modal-body">
 						<f:with bean="${new PolizaDet() }">
 							<f:field property="cuenta"  >

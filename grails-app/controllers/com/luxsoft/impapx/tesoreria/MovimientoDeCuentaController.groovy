@@ -39,8 +39,13 @@ class MovimientoDeCuentaController {
         def count=0
         if(tipo=='TODOS'){
         	//list=MovimientoDeCuenta.list(params)
-        	list=MovimientoDeCuenta.findAllByFechaBetween(periodo.inicioDeMes(),periodo.finDeMes(),params)
-        	count=MovimientoDeCuenta.countByFechaBetween(periodo.inicioDeMes(),periodo.finDeMes())
+        	def q = MovimientoDeCuenta.where{
+        		fecha >= periodo.inicioDeMes() && fecha <= periodo.finDeMes()
+        	}
+        	list = q.list(params)
+        	count = q.count()
+        	//list=MovimientoDeCuenta.findAllByFechaBetween(periodo.inicioDeMes(),periodo.finDeMes(),params)
+        	//count=MovimientoDeCuenta.countByFechaBetween(periodo.inicioDeMes(),periodo.finDeMes())
         }else{
 
         	boolean ingreso=tipo=='DEPOSITOS'
@@ -164,14 +169,14 @@ class MovimientoDeCuentaController {
         def movimientoDeCuentaInstance = MovimientoDeCuenta.get(params.id)
         if (!movimientoDeCuentaInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'movimientoDeCuenta.label', default: 'MovimientoDeCuenta'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
 
         try {
             movimientoDeCuentaInstance.delete(flush: true)
 			flash.message = message(code: 'default.deleted.message', args: [message(code: 'movimientoDeCuenta.label', default: 'MovimientoDeCuenta'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
         }
         catch (DataIntegrityViolationException e) {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'movimientoDeCuenta.label', default: 'MovimientoDeCuenta'), params.id])

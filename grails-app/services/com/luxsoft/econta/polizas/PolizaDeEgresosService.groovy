@@ -219,6 +219,9 @@ class PolizaDeEgresosService extends ProcesadorService{
     		
     		//def clave="201-$req.proveedor.subCuentaOperativa"
     		def asiento='PAGO DE GASTOS'
+            if(req.comentario.contains('DIVIDENDO')){
+                asiento = 'PAGO DE DIVIDENDOS'
+            }
     		def pagoAcu=0
     		def ietu=0.0
     		req.partidas.each{ det->
@@ -631,7 +634,9 @@ class PolizaDeEgresosService extends ProcesadorService{
     		
     		def clave="205-$proveedor.subCuentaOperativa"
     		//println 'Localizando cuenta operativa contable para Proveedor: '+proveedor
-    		def cuenta=CuentaContable.buscarPorClave(clave)
+            def cuenta = CuentaContable.findByClave(clave)
+    		//def cuenta=CuentaContable.buscarPorClave(clave)
+            assert cuenta, 'No existe la cuenta operativa para el proveedor: '+proveedor+ '  '+ clave
     		def requisicion=pago.requisicion
     		poliza.addToPartidas(
     			cuenta:cuenta,

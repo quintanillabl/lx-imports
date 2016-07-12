@@ -183,7 +183,8 @@ class PolizaController {
     	redirect action:'index',params:[subTipo:polizaInstance.subTipo]
     }
 	
-	def agregarPartida(Poliza poliza){
+	def agregarPartida(){
+		def poliza = Poliza.get(params.polizaId)
 		poliza = polizaService.agregarPartida(poliza,params)
 		flash.message = "Partida agregada"
 		redirect action:'edit',id:poliza.id
