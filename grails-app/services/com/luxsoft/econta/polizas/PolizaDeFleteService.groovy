@@ -113,7 +113,7 @@ class PolizaDeFleteService extends ProcesadorService{
     			debe:fac.impuestos-fac.retImp,
     			haber:0.0,
     			asiento:asiento,
-    			descripcion:"Fac: $fac.documento "+fac.fecha.text(),
+    			descripcion:"Fac: $fac.documento ${fac.fecha.text()} ${fac.proveedor}",
     			referencia:"$fac.documento"
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
@@ -126,7 +126,7 @@ class PolizaDeFleteService extends ProcesadorService{
     			debe:fac.retImp,
     			haber:0.0,
     			asiento:asiento,
-    			descripcion:"Fac: $fac.documento "+fac.fecha.text(),
+    			descripcion:"Fac: $fac.documento ${fac.fecha.text()} ${fac.proveedor}",
     			referencia:"$fac.documento"
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
@@ -139,7 +139,7 @@ class PolizaDeFleteService extends ProcesadorService{
     			debe:0.0,
     			haber:fac.retImp,
     			asiento:asiento,
-    			descripcion:"Fac: $fac.documento "+fac.fecha.text(),
+    			descripcion:"Fac: $fac.documento ${fac.fecha.text()} ${fac.proveedor}",
     			referencia:"$fac.documento"
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo

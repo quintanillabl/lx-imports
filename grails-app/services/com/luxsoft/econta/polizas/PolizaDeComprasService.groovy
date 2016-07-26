@@ -437,7 +437,34 @@ class PolizaDeComprasService extends ProcesadorService{
                 ,tipo:poliza.tipo
                 ,entidad:'CuentaDeGastos'
                 ,origen:cg.id)
-            
+
+            ///********* Cargo al costo (501-0020) con abono a gastos de importacion (504) **********/
+            poliza.addToPartidas(
+                cuenta:CuentaContable.buscarPorClave('501-0020'),
+                debe:importe,
+                haber:0.0,
+                asiento:asiento,
+                descripcion:" COSTOS: Ref:$cg.referencia ${cg.fecha.text()} ",
+                referencia:"$cg.referencia",
+                ,fecha:poliza.fecha
+                ,tipo:poliza.tipo
+                ,entidad:'CuentaDeGastos'
+                ,origen:cg.id)
+
+            poliza.addToPartidas(
+                cuenta: CuentaContable.buscarPorClave("504-${cg.proveedor.subCuentaOperativa}"),
+                debe: 0.0,
+                haber:importe,
+                asiento:asiento,
+                descripcion:" GASTO: Ref:$cg.referencia ${cg.fecha.text()} ",
+                referencia:"$cg.referencia",
+                ,fecha:poliza.fecha
+                ,tipo:poliza.tipo
+                ,entidad:'CuentaDeGastos'
+                ,origen:cg.id)
+
+            /*****************************************************************************************/
+
             
             //2 Cargo a IVA al 11 de cuenta de gastos
             def impuesto11=cg.facturas.sum(0.0,{it.tasaDeImpuesto==11.0?it.impuestos*it.tc:0.0})

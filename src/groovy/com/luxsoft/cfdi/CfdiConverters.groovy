@@ -76,7 +76,7 @@ class CfdiConverters {
 		comprobante.setFecha(CFDIUtils.toXmlDate(fecha).getCalendarValue())
 		comprobante.setFormaDePago("PAGO EN UNA SOLA EXHIBICION")
 		//comprobante.setMetodoDePago(source.formaDePago)
-		comprobante.setMetodoDePago('98')
+		comprobante.setMetodoDePago('03')
 		comprobante.setMoneda(source.moneda.getCurrencyCode())
 		comprobante.setTipoCambio(source.tc.toString())
 		comprobante.setDescuento(source.descuentos)
@@ -184,7 +184,7 @@ class CfdiConverters {
 		comprobante.setFecha(CFDIUtils.toXmlDate(new Date()).getCalendarValue())
 		comprobante.setFormaDePago("PAGO EN UNA SOLA EXHIBICION")
 		//comprobante.setMetodoDePago("NO IDENTIFICADO")
-		comprobante.setMetodoDePago('98')
+		comprobante.setMetodoDePago('99')
 		comprobante.setMoneda(source.moneda.getCurrencyCode())
 		comprobante.setTipoCambio(source.tc.toString())
 		
