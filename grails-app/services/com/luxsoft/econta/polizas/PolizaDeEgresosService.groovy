@@ -679,7 +679,7 @@ class PolizaDeEgresosService extends ProcesadorService{
 
             //Cargo a proveedor
              
-            def clave="205-P004"
+            def clave="205-P001"
             def cuenta=CuentaContable.buscarPorClave(clave)
             
             poliza.addToPartidas(

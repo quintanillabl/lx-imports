@@ -65,7 +65,7 @@ class PolizaDeFleteService extends ProcesadorService{
     			
     			if(c.descuento>0){
     				poliza.addToPartidas(
-    					cuenta:CuentaContable.buscarPorClave("205-P004"),
+    					cuenta:CuentaContable.buscarPorClave("205-P001"),
     					debe:0.0,
     					haber:c.descuento,
     					asiento:asiento,
@@ -79,7 +79,7 @@ class PolizaDeFleteService extends ProcesadorService{
     			
     			if(c.rembolso>0){
     				poliza.addToPartidas(
-    					cuenta:CuentaContable.buscarPorClave("205-P004"),
+    					cuenta:CuentaContable.buscarPorClave("205-P001"),
     					debe:0.0,
     					haber:c.rembolso,
     					asiento:asiento,
@@ -93,7 +93,7 @@ class PolizaDeFleteService extends ProcesadorService{
     			
     			if(c.otros>0){
     				poliza.addToPartidas(
-    					cuenta:CuentaContable.buscarPorClave("205-P004"),
+    					cuenta:CuentaContable.buscarPorClave("205-P001"),
     					debe:0.0,
     					haber:c.otros,
     					asiento:asiento,
