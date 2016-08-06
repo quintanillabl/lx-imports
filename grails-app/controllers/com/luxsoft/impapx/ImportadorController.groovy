@@ -304,7 +304,7 @@ class ImportadorController {
 		def db = new Sql(dataSource_importacion)
 		
 		
-		def rows=db.rows("""
+	/*	def rows=db.rows("""
 			select a.clave,a.descripcion,precioContado,precioCredito,b.nombre as linea,c.nombre as marca,d.nombre as clase,e.unidad as unidad
 				   ,a.kilos,a.gramos,a.largo,a.ancho,a.calibre,a.caras,a.acabado,a.color,a.M2MILLAR as m2
 						 from sx_productos a 
@@ -314,7 +314,7 @@ class ImportadorController {
 						 left join sx_unidades e on(a.unidad=e.unidad)
 						 where a.clave=?
 			""",[params.clave]
-			)
+			)*/
 		 
 		//println 'Productos a importar: '+rows
 		def res=db.eachRow("""
@@ -350,7 +350,8 @@ class ImportadorController {
 			Producto pp=producto.save(failOnError:true)
 			log.info 'Producto importado'+pp.properties
 		}
-		redirect (controller:'producto', action:'list',params:[max:20])
+		db.close()
+		redirect (controller:'producto', action:'index',params:[max:20])
 	}
 	
 	

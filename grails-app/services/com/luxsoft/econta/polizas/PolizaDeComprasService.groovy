@@ -420,101 +420,93 @@ class PolizaDeComprasService extends ProcesadorService{
             }
             
             //1.Cargo a cuenta de gastos
-            def clave="504-$cg.proveedor.subCuentaOperativa"
-            def cuenta=CuentaContable.findByClave(clave)
-            def importe=cg.facturas.sum(0.0,{!it.incrementable?it.importe:0.0})
-            importe=Rounding.round(importe, 2)
-            if(cuenta==null)
-                throw new RuntimeException("No existe  la cuenta con clave: $clave")
-            poliza.addToPartidas(
-                cuenta:cuenta,
-                debe:importe,
-                haber:0.0,
-                asiento:asiento,
-                descripcion:"$cg.proveedor.nombre Ref:$cg.referencia ${cg.fecha.text()} ",
-                referencia:"$cg.referencia",
-                ,fecha:poliza.fecha
-                ,tipo:poliza.tipo
-                ,entidad:'CuentaDeGastos'
-                ,origen:cg.id)
-
-            ///********* Cargo al costo (501-0020) con abono a gastos de importacion (504) **********/
-            poliza.addToPartidas(
-                cuenta:CuentaContable.buscarPorClave('501-0020'),
-                debe:importe,
-                haber:0.0,
-                asiento:asiento,
-                descripcion:" COSTOS: Ref:$cg.referencia ${cg.fecha.text()} ",
-                referencia:"$cg.referencia",
-                ,fecha:poliza.fecha
-                ,tipo:poliza.tipo
-                ,entidad:'CuentaDeGastos'
-                ,origen:cg.id)
-
-            poliza.addToPartidas(
-                cuenta: CuentaContable.buscarPorClave("504-${cg.proveedor.subCuentaOperativa}"),
-                debe: 0.0,
-                haber:importe,
-                asiento:asiento,
-                descripcion:" GASTO: Ref:$cg.referencia ${cg.fecha.text()} ",
-                referencia:"$cg.referencia",
-                ,fecha:poliza.fecha
-                ,tipo:poliza.tipo
-                ,entidad:'CuentaDeGastos'
-                ,origen:cg.id)
-
-            /*****************************************************************************************/
-
+            //def clave="504-$cg.proveedor.subCuentaOperativa"
+            //def importe=cg.facturas.sum(0.0,{!it.incrementable?it.importe:0.0})
             
-            //2 Cargo a IVA al 11 de cuenta de gastos
-            def impuesto11=cg.facturas.sum(0.0,{it.tasaDeImpuesto==11.0?it.impuestos*it.tc:0.0})
-            impuesto11=Rounding.round(impuesto11, 2)
-            if(impuesto11>0){
-                clave="118-0002"
-                cuenta=CuentaContable.findByClave(clave)
-                if(cuenta==null)
-                    throw new RuntimeException("No existe  la cuenta con clave: $clave")
+            def facturas = cg.facturas.findAll({!it.incrementable})
+            facturas.each { fac ->
+                assert fac.proveedor.subCuentaOperativa,' No se ha registrado la sub cuenta operativa para el proveedor: '+fac.proveedor
+                def cuentaProveedor = CuentaContable.buscarPorClave("504-$fac.proveedor.subCuentaOperativa")
+                def importe=fac.importe
+                def desc = "Fac:$fac.documento ${fac.fecha.text()} $fac.proveedor.nombre  "
+                
+                //1.Cargo a cuenta de gastos
                 poliza.addToPartidas(
-                    cuenta:cuenta,
-                    debe:impuesto11,
+                    cuenta:cuentaProveedor,
+                    debe:importe,
                     haber:0.0,
                     asiento:asiento,
-                    descripcion:"$cg.proveedor.nombre Ref:$cg.referencia",
+                    descripcion:desc,
                     referencia:"$cg.referencia",
-                    ,fecha:poliza.fecha
-                    ,tipo:poliza.tipo
-                    ,entidad:'CuentaDeGastos'
-                    ,origen:cg.id)
-            }
-            
-            //2 Cargo a IVA al 11 de cuenta de gastos
-            def impuesto16=cg.facturas.sum(0.0,{it.tasaDeImpuesto==16.0?it.impuestos*it.tc:0.0})
-            impuesto16=Rounding.round(impuesto16, 2)
-            if(impuesto16>0){
-                clave="118-0001"
-                cuenta=CuentaContable.findByClave(clave)
-                if(cuenta==null)
-                    throw new RuntimeException("No existe  la cuenta con clave: $clave")
+                    fecha:poliza.fecha,
+                    tipo:poliza.tipo,
+                    entidad:'CuentaDeGastos',
+                    origen:cg.id)
+
+                ///********* Cargo al costo (501-0020) con abono a gastos de importacion (504) **********/
                 poliza.addToPartidas(
-                    cuenta:cuenta,
-                    debe:impuesto16,
+                    cuenta:CuentaContable.buscarPorClave('501-0020'),
+                    debe:importe,
                     haber:0.0,
                     asiento:asiento,
-                    descripcion:"$cg.proveedor.nombre Ref:$cg.referencia",
+                    descripcion:" COSTOS: "+desc,
                     referencia:"$cg.referencia",
-                    ,fecha:poliza.fecha
-                    ,tipo:poliza.tipo
-                    ,entidad:'CuentaDeGastos'
-                    ,origen:cg.id)
+                    fecha:poliza.fecha,
+                    tipo:poliza.tipo,
+                    entidad:'CuentaDeGastos',
+                    origen:cg.id)
+
+                poliza.addToPartidas(
+                    cuenta: cuentaProveedor,
+                    debe: 0.0,
+                    haber:importe,
+                    asiento:asiento,
+                    descripcion:" GASTO: "+desc,
+                    referencia:"$cg.referencia",
+                    fecha:poliza.fecha,
+                    tipo:poliza.tipo,
+                    entidad:'CuentaDeGastos',
+                    origen:cg.id)
+                /*****************************************************************************************/
+
+                //2 Cargo a IVA al 11 de cuenta de gastos
+                if(fac.tasaDeImpuesto==11.0){
+                    def impuesto11=fac.impuestos*fac.tc
+                    impuesto11=Rounding.round(impuesto11, 2)
+                    poliza.addToPartidas(
+                        cuenta:CuentaContable.buscarPorClave("118-0002"),
+                        debe:impuesto11,
+                        haber:0.0,
+                        asiento:asiento,
+                        descripcion:desc,
+                        referencia:"$cg.referencia",
+                        ,fecha:poliza.fecha
+                        ,tipo:poliza.tipo
+                        ,entidad:'CuentaDeGastos'
+                        ,origen:cg.id)
+                }
+                //2 Cargo a IVA al 16 de cuenta de gastos
+                if(fac.tasaDeImpuesto==16.0){
+                    def impuesto16=fac.impuestos*fac.tc
+                    impuesto16=Rounding.round(impuesto16, 2)
+                    poliza.addToPartidas(
+                        cuenta:CuentaContable.buscarPorClave("118-0001"),
+                        debe:impuesto16,
+                        haber:0.0,
+                        asiento:asiento,
+                        descripcion:desc,
+                        referencia:"$cg.referencia",
+                        ,fecha:poliza.fecha
+                        ,tipo:poliza.tipo
+                        ,entidad:'CuentaDeGastos'
+                        ,origen:cg.id)
+                }
             }
-            
+
             //3 Abono a Deudores
-            clave="107-$cg.proveedor.subCuentaOperativa"
-            cuenta=CuentaContable.findByClave(clave)
-            if(cuenta==null)
-                throw new RuntimeException("No existe  la cuenta  con clave: $clave para el proveedor: $cg.proveedor.nombre")
-                poliza.addToPartidas(
-                    cuenta:cuenta,
+            assert cg.proveedor.subCuentaOperativa,' No existe la cuenta operativa para el proveedor: '+cg.proveedor.subCuentaOperativa
+            poliza.addToPartidas(
+                    cuenta:CuentaContable.buscarPorClave("107-$cg.proveedor.subCuentaOperativa"),
                     debe:0.0,
                     haber:cg.total,
                     asiento:asiento,
@@ -525,9 +517,10 @@ class PolizaDeComprasService extends ProcesadorService{
                     ,entidad:'CuentaDeGastos'
                     ,origen:cg.id)
                 
-                def ietuCg=cg.facturas.sum(0.0,{
-                    it.incrementable?0.0:it.importe*it.tc}
-                )
+            def ietuCg=cg.facturas.sum(0.0,{
+                it.incrementable?0.0:it.importe*it.tc}
+            )
+                
                 
         }
     }
