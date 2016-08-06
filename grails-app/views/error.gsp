@@ -2,8 +2,12 @@
 <html>
 	<head>
 		<title>Luxor Backend Error</title>
+		<meta name="layout" content="main"/>
 		
-		<g:if env="development"><asset:stylesheet src="errors.css"/></g:if>
+		%{-- <g:if env="development">
+			
+		</g:if> --}%
+		<asset:stylesheet src="errors.css"/>
 	</head>
 	<body>
 		<div class="container">

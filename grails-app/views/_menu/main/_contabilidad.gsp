@@ -1,12 +1,10 @@
 
 <g:set var="contabilidadControllers" 
-    value="${['cuentaContable','saldoPorCuentaContable','polizaDeCompras','polizaDeEgresos','polizaDeDiario','polizaDeDiarioFlete','polizaDeDiarioIvaIsr','polizaDeDiarioAplicacionAnticipo','polizaDeIngresos','polizaDeImpuestos','poliza','polizaDeProvisionAnual','polizaDeCierreAnual','diot','cuentaSat','procesadorDePoliza','balanza']}" />
+    value="${['cuentaContable','saldoPorCuentaContable','polizaDeCompras','polizaDeEgresos','polizaDeDiario','polizaDeDiarioFlete','polizaDeDiarioIvaIsr','polizaDeDiarioAplicacionAnticipo','polizaDeIngresos','polizaDeImpuestos','poliza','polizaDeProvisionAnual','polizaDeCierreAnual','diot','procesadorDePoliza','balanza']}" />
 
 <g:set var="polizaControllers" 
     value="${['poliza','procesadorDePoliza','polizaDeCompras','polizaDeEgresos','polizaDeDiario','polizaDeDiarioFlete','polizaDeDiarioIvaIsr','polizaDeDiarioAplicacionAnticipo','polizaDeIngresos','polizaDeImpuestos','poliza','polizaDeProvisionAnual','polizaDeCierreAnual','balanza']}" />
 
-<g:set var="satControllers" 
-    value="${['cuentaSat']}" />
 
 <li class="${contabilidadControllers.contains(webRequest.controllerName)?'active':''}">
     <a href="#"><i class="fa fa-calculator"></i>
@@ -65,22 +63,7 @@
             </li>
 
             
-            <li class="${satControllers.contains(webRequest.controllerName)?'active':''}">
-                <a href="#">Contabilidad SAT <span class="fa arrow"></span></a>
-                <ul class="nav nav-third-level">
-                    <li class="${webRequest.controllerName=='cuentaSat'?'active':''}">
-                        <g:link controller="cuentaSat">Cuentas SAT</g:link>
-                    </li>
-
-                    <li class="${webRequest.controllerName=='econta'?'active':''}">
-                        <g:link controller="econta">Catálogo XML</g:link>
-                    </li>
-
-                    <li class="${webRequest.controllerName=='polizaDeEgresos'?'active':''}">
-                        <g:link controller="polizaDeEgresos">Balnazas</g:link>
-                    </li>
-                </ul>
-            </li>
+           
 
             
         </sec:ifAnyGranted>

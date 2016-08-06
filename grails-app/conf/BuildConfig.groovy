@@ -68,6 +68,8 @@ grails.project.dependency.resolution = {
         // build('org.grails:grails-docs:2.4.3') {
         //     excludes 'itext'
         // }
+        compile 'econta:catalogos:1.0.0'
+        compile 'econta:balanzas:1.0.0'
     }
 
     plugins {

@@ -69,6 +69,7 @@
     <g:render template="/_menu/main/cuentasPorCobrar"/>
     <g:render template="/_menu/main/cuentasPorPagar"/>
     <g:render template="/_menu/main/contabilidad"/>
+    <g:render template="/_menu/main/contabilidadSat"/>
     <g:render template="/_menu/main/tesoreria"/>
     <g:render template="/_menu/main/consultas"/>
     <g:render template="/_menu/main/sistemas"/>

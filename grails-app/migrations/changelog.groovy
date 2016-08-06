@@ -48,4 +48,8 @@ databaseChangeLog = {
 	include file: 'poliza-det-fix.groovy'
 
 	include file: 'RetencionesCfdi.groovy'
+	
+	include file: 'econta-catalogo-01.groovy'
+
+	include file: 'econta-balanza-01.groovy'
 }
