@@ -21,6 +21,8 @@ class CuentaContable {
 	boolean presentacionFinanciera=false
 	boolean presentacionPresupuestal=false
 	CuentaSat cuentaSat
+
+	Boolean suspendida = false
 	
 	Date dateCreated
 	Date lastUpdated
@@ -35,6 +37,7 @@ class CuentaContable {
 		subTipo(nullable:true)
 		naturaleza(inList:['DEUDORA','ACREEDORA','MIXTA'])
 		cuentaSat(nullable:true)
+		
     }
 	
 	static mapping ={

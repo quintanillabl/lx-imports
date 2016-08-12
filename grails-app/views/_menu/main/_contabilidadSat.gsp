@@ -18,7 +18,7 @@
             </li>
 
             <li class="${webRequest.controllerName=='satBalanzaLog'?'active':''}">
-                <g:link controller="satBalanzaLog">Balnazas</g:link>
+                <g:link controller="satBalanzaLog">Balanzas</g:link>
             </li>
 
             <li class="${webRequest.controllerName=='satPolizasLog'?'active':''}">

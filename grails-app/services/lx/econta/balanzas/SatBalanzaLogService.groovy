@@ -39,6 +39,7 @@ class SatBalanzaLogService {
     	}
     	balanzaSat.comentario = comentario
     	balanzaSat.xml = xml
+        balanzaSat.fechaModBal = balanza?.fechaModBal?.toGregorianCalendar()?.getTime()
 		balanzaSat.save failOnError:true, flush:true
     }
 
@@ -90,7 +91,8 @@ class SatBalanzaLogService {
     		
     	}
     	Date lastUpdated = findUltimaModificacionContable(empresa,ejercicio,month)
-        balanza.setFechaModBal(DateUtils.getXmlGregorianCalendar(lastUpdated))
+        if(lastUpdated)
+            balanza.setFechaModBal(DateUtils.getXmlGregorianCalendar(lastUpdated))
         return balanza
     }
 
@@ -101,7 +103,7 @@ class SatBalanzaLogService {
 
     def findUltimaModificacionContable(Empresa empresa, int ejercicio, int mes){
     	//def found  = PolizaDet.where {poliza.ejercicio == ejercicio && poliza.mes == mes}.last()
-        def found  = PolizaDet.where {poliza.ejercicio == ejercicio && poliza.mes == mes}.list()
+        def found = SatBalanzaLog.where {rfc == empresa.rfc && ejercicio==ejercicio && mes==mes && acuse!= null}.find([sort:'id', order:'desc']).find()
     	return found ? found.get(0).poliza.lastUpdated : new Date()
     }
 
@@ -138,7 +140,7 @@ class SatBalanzaLogService {
                 mes: balanza.mes.toInteger(),
                 comentario: "Importadoc con: ${fileName}",
                 tipo: tipoEnvio,
-                fechaModBal: balanza?.fechaModBal?.toGregorianCalendar().getTime(),
+                fechaModBal: balanza?.fechaModBal?.toGregorianCalendar()?.getTime(),
                 xml: BalanzaUtils.toXmlByteArray(balanza)
             )
         bal.save failOnError:true, flush:true

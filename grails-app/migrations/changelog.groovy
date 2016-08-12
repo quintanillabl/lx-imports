@@ -52,4 +52,6 @@ databaseChangeLog = {
 	include file: 'econta-catalogo-01.groovy'
 
 	include file: 'econta-balanza-01.groovy'
+	
+	include file: 'cuenta-suspendida.groovy'
 }
