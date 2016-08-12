@@ -40,6 +40,7 @@
 							<f:display property="presentacionFinanciera" wrapper="bootstrap3"/>
 							<f:display property="presentacionFiscal" wrapper="bootstrap3"/>
 							<f:display property="presentacionPresupuestal" wrapper="bootstrap3"/>
+							<f:display property="suspendida" wrapper="bootstrap3"/>
 							<f:display property="cuentaSat" wrapper="bootstrap3"/>
 						</f:with>
 						<div class="form-group">

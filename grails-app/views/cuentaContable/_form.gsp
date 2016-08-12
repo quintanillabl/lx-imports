@@ -13,6 +13,7 @@
 				<f:field property="presentacionFinanciera"/>
 				<f:field property="presentacionFiscal"/>
 				<f:field property="presentacionPresupuestal"/>
+				<f:field property="suspendida"/>
 			</f:with>
 			<div class="form-actions">
 				<button type="submit" class="btn btn-primary">

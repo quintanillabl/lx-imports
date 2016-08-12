@@ -41,6 +41,7 @@
 							<f:field property="presentacionFinanciera" wrapper="bootstrap3"/>
 							<f:field property="presentacionFiscal" wrapper="bootstrap3"/>
 							<f:field property="presentacionPresupuestal" wrapper="bootstrap3"/>
+							<f:field property="suspendida" wrapper="bootstrap3"/>
 							<f:field property="cuentaSat" wrapper="bootstrap3" widget-class="form-control chosen-select"/>
 						</f:with>
 						<div class="form-group">
