@@ -2,6 +2,8 @@ package com.luxsoft.impapx.tesoreria
 
 import java.text.NumberFormat;
 
+import java.text.DecimalFormat;
+
 import org.springframework.dao.DataIntegrityViolationException
 
 import com.luxsoft.impapx.CuentaBancaria;
@@ -122,8 +124,15 @@ class SaldoDeCuentaController {
 		
 		//def movimientos=MovimientoDeCuenta.findAllByCuentaAndFechaBetween(cuenta,fechaIni,fechaFin,[sort:('fecha')])
 		def movimientos=MovimientoDeCuenta.findAll("from MovimientoDeCuenta where date(fecha) between ? and ? and cuenta=? order by fecha,id ",[periodo.inicioDeMes(),periodo.finDeMes(),cuenta])
+
+		def acumulado=saldoInicial
+
 		def modelData=movimientos.collect { mov ->
+
+			acumulado+=mov.importe
 			
+			//NumberFormat nf1=NumberFormat.getNumberInstance()
+			NumberFormat nf1 = new DecimalFormat("#,##0.00");  
 			def res=[
 			//'FOLIO':mov.id
 			'FECHA':mov.fecha.format("dd"),
@@ -131,13 +140,16 @@ class SaldoDeCuentaController {
 			 ,'TIPO':mov.tipo
 			,'INGRESO':mov.importe>0?mov.importe.abs():0.0
 			,'EGRESO':mov.importe<0?mov.importe.abs():0.0
+			,'INGRESOSTR':nf1.format(mov.importe>0?mov.importe.abs():0.0)
+			,'EGRESOSTR':nf1.format(mov.importe<0?mov.importe.abs():0.0)
 			 ,'COMENTARIO':mov.comentario
 			 ,'REFERENCIA':mov.referenciaBancaria
+			 ,'ACUMULADOSTR':nf1.format(acumulado)
 			 ,INI:saldoInicial
 			 ]
 			return res
 		}
-		NumberFormat nf=NumberFormat.getNumberInstance()
+		NumberFormat nf=new DecimalFormat("#,##0.00");  
 		def repParams=[CUENTA:cuenta.toString()
 			,FECHA_INI:fechaIni.text()
 			,FECHA_FIN:fechaFin.text()

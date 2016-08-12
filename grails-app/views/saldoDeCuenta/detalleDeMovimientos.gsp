@@ -2,6 +2,8 @@
 <!doctype html>
 <html>
 <head>
+<meta charset="utf-8">
+
 <meta name="layout" content="luxor">
 <g:set var="entityName"
 	value="${message(code: 'movimientoDeCuenta.label', default: 'MovimientoDeCuenta')}" />

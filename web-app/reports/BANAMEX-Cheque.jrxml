@@ -30,7 +30,7 @@
 	<parameter name="IMPORTE" isForPrompting="true" class="java.lang.String">
 		<defaultValueExpression ><![CDATA["282942.46"]]></defaultValueExpression>
 	</parameter>
-	<queryString><![CDATA[SELECT ch.ID,M.FECHA,p.nombre AS AFAVOR,-m.importe as IMPORTE
+	<queryString><![CDATA[SELECT ch.ID,M.FECHA,UPPER(p.nombre) AS AFAVOR,-m.importe as IMPORTE
 FROM cheque ch 
 join movimiento_de_cuenta m on(m.id=ch.egreso_id) 
 join pago_proveedor pp on(pp.egreso_id=m.id) 
