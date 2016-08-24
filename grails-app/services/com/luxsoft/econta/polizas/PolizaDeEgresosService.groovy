@@ -149,7 +149,7 @@ class PolizaDeEgresosService extends ProcesadorService{
 			poliza.addToPartidas(
 					cuenta:egreso.cuenta.cuentaContable,
 					debe:0.0,
-					haber:egreso.importe.abs()*egreso.tc,
+					haber:Rounding.round(egreso.importe.abs()*egreso.tc,2),
 					asiento:asiento,
 					descripcion:"$fp-${egreso.referenciaBancaria?:'FALTA'} $req.proveedor "+egreso.importe.abs()+" * $egreso.tc",
 					referencia:"$egreso.referenciaBancaria"
@@ -159,7 +159,8 @@ class PolizaDeEgresosService extends ProcesadorService{
 					,origen:egreso.id)
 			
 			//Diferencia cambiaria
-			def dif=(egreso.importe.abs()*egreso.tc)-pagoAcu
+			//def dif=(egreso.importe.abs()*egreso.tc)-pagoAcu
+            def dif = ( Rounding.round(egreso.importe.abs()*egreso.tc,2) - pagoAcu )
 			
 			if(dif.abs()>0.0){
 				def clave=dif<0.0?'702-0002':'701-0002'
