@@ -150,7 +150,11 @@ class PagoProveedorController {
 		def requisiciones=Requisicion.findAll("from Requisicion r left join fetch r.pagoProveedor pp where r.total>0  and str(r.id) like ? and pp is  null",['%'+params.term+'%'])
 		def requisicionesList=requisiciones.collect { req ->
 			def desc="Id: ${req.id} ${req.proveedor.nombre}  ${req.total} ${req.moneda}"
-			[id:req.id,label:desc,value:desc]
+			[id:req.id,
+			label:desc,
+			value:desc,
+            formaDePago:req.formaDePago.toString()
+			]
 		}
 		render requisicionesList as JSON
 	}

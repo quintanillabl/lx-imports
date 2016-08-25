@@ -28,6 +28,8 @@ class SatBalanzaLog {
 
     byte[] acuse
 
+    byte[] acuseDeAceptacion
+
 	byte[] xml
 
     Date dateCreated
@@ -45,6 +47,7 @@ class SatBalanzaLog {
         comentario nullable: true
         enviado nullable: true
         fechaModBal nullable:true
+        acuseDeAceptacion nullable: true, maxSize:(1024 * 512)  // 50kb para almacenar el acuse
     }
 
     Balanza asBalanza(){

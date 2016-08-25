@@ -44,9 +44,10 @@
 	            				<th>Cuenta</th>
 	            				<th>Req</th>
 	            				<th>TC</th>
+	            				<th>F.P</th>
 	            				<th>Fecha</th>
 	            				<th>Importe</th>
-	            				<th>CxP</th>
+	            				%{-- <th>CxP</th> --}%
 	            			</tr>
 	            		</thead>
 	            		<tbody>
@@ -65,9 +66,10 @@
 	            						</g:link>
 	            					</td>
 	            					<td>${fieldValue(bean: pago, field: "egreso.moneda")}</td>
+	            					<td>${pago?.requisicion?.formaDePago[0..1]}</td>
 	            					<td><lx:shortDate date="${pago.fecha }"/></td>
 	            					<td><lx:moneyFormat number="${pago.egreso.importe }"/></td>
-	            					<td>${fieldValue(bean: pago, field: "comentario")}</td>
+	            					%{-- <td>${fieldValue(bean: pago, field: "comentario")}</td> --}%
 	            				</tr>
 	            			</g:each>
 	            		</tbody>

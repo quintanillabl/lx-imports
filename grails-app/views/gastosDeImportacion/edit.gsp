@@ -28,6 +28,7 @@
 						<li><a href="#embarquesPanel" data-toggle="tab">Embarques</a></li>
 						<li><a href="#contenedoresPanel" data-toggle="tab">Contenedores</a></li>
 						<li><a href="#pagosAplicadosPanel" data-toggle="tab">Abonos</a></li>
+						<li ><a href="#cfdiPanel" data-toggle="tab">CFDI</a></li>
 					</ul>
 					<div class="tab-content">
 					<div class="tab-pane fade in active" id="facturasPanel">
@@ -84,11 +85,76 @@
 							</tfoot>
 						</table>
 					</div>
+
+					<div class="tab-pane fade in" id="cfdiPanel">
+						<br>
+						<g:if test="${gastosDeImportacionInstance.comprobante}">
+							<div class="row">
+								<div class="col-md-8">
+									<form class="form-horizontal" >
+										<f:with bean="${gastosDeImportacionInstance.comprobante}">
+											<f:display property="serie" wrapper="bootstrap3"/>
+											<f:display property="folio" wrapper="bootstrap3"/>
+											<f:display property="uuid" wrapper="bootstrap3"/>
+											<f:display property="total" widget="money" wrapper="bootstrap3"/>
+											<f:display property="cfdiFileName" wrapper="bootstrap3" label="Archivo"/>
+											<f:display property="acuseEstado" wrapper="bootstrap3"/>
+											<f:display property="acuseCodigoEstatus" wrapper="bootstrap3"/>								
+										</f:with>
+									</form>
+								</div>
+									<div class="col-lg-offset-2 col-lg-6">
+						                <g:link controller="comprobanteFiscal" action="validar" onclick="return confirm('Validar en el SAT?');"
+						                		class="btn btn-default btn-outline" id="${gastosDeImportacionInstance.comprobante.id}">
+						                	    <i class="fa fa-check-square-o"></i> Validar (SAT)
+						                </g:link> 
+						                <g:if test="${gastosDeImportacionInstance.comprobante.acuse}">
+						                	<g:link  controller="comprobanteFiscal" action="mostrarAcuse" 
+						                		id="${gastosDeImportacionInstance.comprobante.id}"
+						                		class="btn btn-default btn-outline" >
+						                		<i class="fa fa-file-code-o"></i> Acuse
+						                	</g:link>
+						                	
+						                </g:if>
+						                <g:if test="${gastosDeImportacionInstance.comprobante}">
+						                	<g:link class="btn btn-default btn-outline" 
+						                		controller="comprobanteFiscal" action="mostrarCfdi" 
+						                		id="${gastosDeImportacionInstance.comprobante.id}">CFDI</g:link>
+						                	
+						                	<g:link  controller="comprobanteFiscal" action="mostrarCfdi" 
+						                		id="${gastosDeImportacionInstance.comprobante.id}"
+						                		class="btn btn-default btn-outline" >
+						                		  CFDI (XML)
+						                	</g:link>
+
+						                	<g:link  controller="comprobanteFiscal" action="descargarCfdi" 
+						                		id="${gastosDeImportacionInstance.comprobante.id}"
+						                		class="btn btn-default btn-outline" >
+						                		<i class="fa fa-download"></i>  CFDI
+						                	</g:link>
+
+						                </g:if>
+						                %{-- <a href="#uploadFileDialog" data-toggle="modal" class="btn btn-success btn-outline">
+											<i class="fa fa-upload"></i></span> Cargar CFDI
+										</a> --}%
+						            </div>
+							</div>
+							
+						</g:if>
+						<g:else>
+							<div class="btn-group">
+								 <a href="#uploadFileDialog" data-toggle="modal" class="btn btn-success btn-outline">
+									<i class="fa fa-upload"></i></span> Cargar CFDI
+								</a>
+							</div>
+						</g:else>
+					</div>
 				</div>		
 			    </div>
 			</div>
 		</div>
 	</div>
+	<g:render template="/comprobanteFiscal/uploadXmlFile" bean="${gastosDeImportacionInstance}"/>
 </content>
 
 

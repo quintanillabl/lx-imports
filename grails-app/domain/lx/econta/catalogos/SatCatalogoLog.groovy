@@ -24,6 +24,8 @@ class SatCatalogoLog {
 
     byte[] acuse
 
+    byte[] acuseDeAceptacion
+
 	byte[] xml
 
     Date dateCreated
@@ -38,6 +40,7 @@ class SatCatalogoLog {
         acuse nullable: true, maxSize:(1024 * 512)  // 50kb para almacenar el acuse
         comentario nullable: true
         enviado nullable: true
+        acuseDeAceptacion nullable: true, maxSize:(1024 * 512)  // 50kb para almacenar el acuse
         
     }
 

@@ -3,7 +3,7 @@
 	value="${value?.id}"
 	from="${com.luxsoft.impapx.Requisicion.findAll("from Requisicion r left join fetch r.pagoProveedor pp where r.total>0  and pp is  null")}" 
 	optionKey="id" 
-	
+	noSelection="${['null':'Seleccione una requisicion']}"
 	required='required'
 	/>
 <%--

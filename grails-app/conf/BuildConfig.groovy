@@ -71,6 +71,7 @@ grails.project.dependency.resolution = {
         // }
         compile 'econta:catalogos:1.0.0'
         compile 'econta:balanzas:1.0.0'
+        compile 'econta:polizas:1.0.0'
     }
 
     plugins {
