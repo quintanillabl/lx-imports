@@ -22,6 +22,7 @@ class PagoProveedorService {
 			,tipo:requisicion.formaDePago
 			,origen:'CXP'
 			//,concepto:'PAGO_PROVEEDOR'
+			,referenciaBancaria: pago.referencia
 			,concepto:"Pago: $requisicion.proveedor.nombre  $requisicion.concepto" 
 			,comentario:'PAGO REQUISICION:'+requisicion.id)
 		

@@ -44,7 +44,7 @@ class CuentaBancaria {
 	}
 	
 	String toString() {
-		return "${numero} ${moneda} (${banco?.nombre}) "
+		return "${numero} ${moneda} (${banco?.nombre} - ${banco.nacional?'Nac':'Ext'}) "
 	}
 	
 	boolean equals(Object obj){

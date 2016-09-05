@@ -65,6 +65,7 @@
 							<f:field property="cuentaDestino" wrapper="bootstrap3" 
 								widget-class="form-control" 
 								widget-disabled="true"/>
+							<f:field property="referencia" widget-class="form-control" wrapper="bootstrap3"/>
 							<div class="form-group">
 								<div class="col-lg-offset-3 col-lg-10">
 									<button id="saveBtn" class="btn btn-primary ">

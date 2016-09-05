@@ -19,5 +19,11 @@ databaseChangeLog = {
         }
         addNotNullConstraint(tableName: "banco", columnDataType: "bit",columnName: "nacional")
 	}
+
+	changeSet(author: "rcancino (generated)", id: "1471540492699-3") {
+		addColumn(tableName: "pago_proveedor") {
+			column(name: "referencia", type: "varchar(255)")
+		}
+	}
 	
 }

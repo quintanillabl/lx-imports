@@ -18,12 +18,14 @@ class PagoProveedor {
 	CuentaBancaria cuenta
 	Requisicion requisicion
 	String comentario
+
 	MovimientoDeCuenta egreso
 	BigDecimal tipoDeCambio
 
 	BancoSat bancoDestino
 	String cuentaDestino
 	String bancoDestinoExt
+	String referencia
 	
 	Date dateCreated
 	Date lastUpdated
@@ -39,6 +41,7 @@ class PagoProveedor {
 		})
 		bancoDestino nullable:true
     	cuentaDestino nullable:true
+    	referencia nullable:true
 		
     }
 	

@@ -60,7 +60,7 @@ class PagoProveedorController {
         	[pagoProveedorInstance: new PagoProveedor(fecha:new Date(),tipoDeCambio:1.0)]
 			break
 		case 'POST':
-			
+			log.info('Salvando pago proveedor con params: ' + params)
 			def requisicion=Requisicion.get(params.requisicion.id)
 	        def pagoProveedorInstance = new PagoProveedor(params)
 			pagoProveedorInstance.requisicion=requisicion

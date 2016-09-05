@@ -39,6 +39,7 @@
 							<f:display property="bancoDestinoExt" wrapper="bootstrap3"/>
 							<f:display property="comentario"  wrapper="bootstrap3"/>
 							<f:display property="cuentaDestino" wrapper="bootstrap3"/>
+							<f:display property="referencia" wrapper="bootstrap3"/>
 							<div class="form-group">
 								<div class="col-lg-offset-3 col-lg-10">
 									<lx:backButton/>
