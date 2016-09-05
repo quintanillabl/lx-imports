@@ -56,4 +56,5 @@ databaseChangeLog = {
 	include file: 'econta-polizas-01.groovy'
 
 	include file: 'econta-pago-proveedor-transferencia-fix.groovy'
+	include file: 'econta-pago-proveedor-transferencia-fix2.groovy'
 }

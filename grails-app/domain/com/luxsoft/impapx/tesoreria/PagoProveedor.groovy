@@ -23,6 +23,7 @@ class PagoProveedor {
 
 	BancoSat bancoDestino
 	String cuentaDestino
+	String bancoDestinoExt
 	
 	Date dateCreated
 	Date lastUpdated

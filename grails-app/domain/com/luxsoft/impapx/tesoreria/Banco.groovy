@@ -7,6 +7,7 @@ class Banco {
 	
 	String nombre
 	BancoSat bancoSat
+	Boolean nacional = true
 	
 	static hasMany = [cuentas:CuentaBancaria]
 

@@ -37,21 +37,34 @@
 									required autofocus="true">
 								</input>
 							</f:field>
+							<div class="form-group">
+								<label class="col-lg-3 control-label">F.P.</label>
+								<div class="col-lg-9">
+								    <input id="formaDePagoField" class="form-control" type="text" disabled> 
+								</div>
+							</div>
 							<f:field property="fecha"  wrapper="bootstrap3"/>
 							<f:field property="cuenta" widget-class="form-control chosen-select" wrapper="bootstrap3"/>
 							<f:field property="tipoDeCambio" widget="tc" wrapper="bootstrap3" widget-required="required"/>
 							<f:field property="comentario" widget-class="form-control" wrapper="bootstrap3"/>
 							<f:field property="bancoDestino" wrapper="bootstrap3">
-									<g:hiddenField id="bancoDestinoId" name="bancoDestino.id" value="${value}" />
-									<input 
-										id="bancoDestinoField" 
-										type="text" 
-										class="form-control" 
-										value="${value}" 
-										placeholder="Seleccione un Banco destino " disabled>
-									</input>
-								</f:field>
-								<f:field property="cuentaDestino" wrapper="bootstrap3" widget-class="form-control" widget-disabled="true"/>
+								<g:hiddenField id="bancoDestinoId" name="bancoDestino.id" value="${value}" />
+								<input 
+									id="bancoDestinoField" 
+									type="text" 
+									class="form-control" 
+									value="${value}" 
+									placeholder="Seleccione un Banco destino nacional" disabled>
+								</input>
+							</f:field>
+							<f:field property="bancoDestinoExt" 
+								wrapper="bootstrap3" 
+								widget-class="form-control" 
+								widget-placeholder="Digite nombre del banco extranjero "
+								/>
+							<f:field property="cuentaDestino" wrapper="bootstrap3" 
+								widget-class="form-control" 
+								widget-disabled="true"/>
 							<div class="form-group">
 								<div class="col-lg-offset-3 col-lg-10">
 									<button id="saveBtn" class="btn btn-primary ">
@@ -151,6 +164,7 @@
 						$("#cuentaDestino").prop( "required", false );
 						
 					}
+					$("#formaDePagoField").val(fp);
 				}
 			});
 			
@@ -163,6 +177,16 @@
 					$("#bancoDestinoId").val(ui.item.id);
 					
 				}
+			});
+			$("#bancoDestinoExt").change(function(){
+				var bd = $(this).val();
+				console.log('Seleccionando banco extranjero: ' + bd);
+				if(bd){
+					$("#bancoDestinoField").prop( "disabled", true );
+				} else {
+					$("#bancoDestinoField").prop( "disabled", false );
+				}
+				
 			});
 
 		});

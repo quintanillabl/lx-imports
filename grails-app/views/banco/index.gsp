@@ -37,6 +37,7 @@
 	            			<tr>
 	            				<th>Nombre</th>
 	            				<th>Banco SAT</th>
+	            				<th>Nacional</th>
 	            			</tr>
 	            		</thead>
 	            		<tbody>
@@ -46,6 +47,7 @@
 	            					<g:link action="show" id="${row.id}">${row.nombre}</g:link>
 	            				</td>
 	            				<td>${row.bancoSat}</td>
+	            				<td ><g:checkBox name="nacional" value="${row.nacional}" disabled = "disabled"/></td>
 	            			</tr>
 	            			</g:each> 
 	            		</tbody>

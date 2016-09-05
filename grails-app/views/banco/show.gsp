@@ -24,6 +24,7 @@
 			            	<lx:printButton/>
 			            	<g:form class="form-horizontal">
 			            		<f:display property="nombre" bean="bancoInstance"/>
+			            		<f:display property="nacional" bean="bancoInstance"/>
 			            		<f:display property="bancoSat" bean="bancoInstance"/>
 			            		
 			            	</g:form>
