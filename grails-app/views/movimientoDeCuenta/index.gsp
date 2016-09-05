@@ -74,6 +74,7 @@
 				<th >Importe</th>
 				<th>Origen</th>
 				<th >Comentario</th>
+				<th >Ref</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -89,6 +90,7 @@
 				<lx:moneyTableRow number="${row.importe}"/>
 				<td>${fieldValue(bean: row, field: "origen")}</td>
 				<td>${fieldValue(bean: row, field: "comentario")}</td>
+				<td>${fieldValue(bean: row, field: "referenciaBancaria")}</td>
 			</tr>
 			</g:each> 
 		</tbody>
