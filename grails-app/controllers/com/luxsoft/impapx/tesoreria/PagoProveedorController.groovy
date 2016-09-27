@@ -37,6 +37,7 @@ class PagoProveedorController {
     }
 
     def save(PagoProveedor pagoProveedorInstance){
+    	log.info('Salvando pago proveedor con params: ' + params)
     	pagoProveedorInstance.validate(["requisicion","fecha","tipoDeCambio","comentario"])
         if (pagoProveedorInstance.hasErrors()) {
             render view:'create',model:[pagoProveedorInstance:pagoProveedorInstance]

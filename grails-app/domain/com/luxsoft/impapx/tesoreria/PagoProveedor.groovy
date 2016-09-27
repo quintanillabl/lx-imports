@@ -42,6 +42,7 @@ class PagoProveedor {
 		bancoDestino nullable:true
     	cuentaDestino nullable:true
     	referencia nullable:true
+    	bancoDestinoExt nullable:true
 		
     }
 	
