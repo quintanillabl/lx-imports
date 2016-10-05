@@ -57,4 +57,8 @@ databaseChangeLog = {
 
 	include file: 'econta-pago-proveedor-transferencia-fix.groovy'
 	include file: 'econta-pago-proveedor-transferencia-fix2.groovy'
+
+	include file: 'econta-comprobante-nacional.groovy'
+
+	include file: 'econta-comprobante-extranjero.groovy'
 }

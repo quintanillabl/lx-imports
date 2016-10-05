@@ -17,9 +17,12 @@ class PolizaDet {
 	String origen
 	String entidad
 	
-	
-	
 	static belongsTo = [poliza:Poliza]
+
+	static hasOne = [comprobanteNacional: ComprobanteNacional, 
+		comprobanteExtranjero: ComprobanteExtranjero,
+		transaccionCheque: TransaccionCheque,
+		transaccionTransferencia: TransaccionTransferencia]
 
     static constraints = {
     	concepto(nullable:true,maxSize:300)
@@ -28,8 +31,8 @@ class PolizaDet {
 		origen(nullable:true,maxSize:255)
 		entidad(nullable:true,maxSize:255)
 		descripcion(nullable:true,maxSize:255)
-		
-		
+		comprobanteNacional nullable:true
+		comprobanteExtranjero nullable:true
     }
 
     static mapping ={
