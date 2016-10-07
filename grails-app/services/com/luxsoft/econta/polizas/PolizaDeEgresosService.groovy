@@ -266,7 +266,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     						,entidad:'PagoProveedor'
     						,origen:pago.id)
     				}
-    				
+    				/*
     				else if(fFactura.toMonth()==fPago.toMonth()){
     					
     					//Cargo a gasto concepto
@@ -323,7 +323,10 @@ class PolizaDeEgresosService extends ProcesadorService{
     					}
     					
     				//}else{ //Cancelamos la provision
-    				}else if(fFactura.toMonth()!=fPago.toMonth()){
+    				}
+                    */
+                    //else if (fFactura.toMonth()!=fPago.toMonth()){ 
+                    else {
     					
     					//Cargo a agredores diversos o cancelar la provision
     				    def iva=c.impuesto
