@@ -741,12 +741,12 @@ class PolizaDeEgresosService extends ProcesadorService{
                         //log.info('Procesando transaccion transferencia NACIONAL')
                         def transferencia=new TransaccionTransferencia(
                             polizaDet:polizaDet,
-                            bancoOrigenNacional:egreso.cuenta.banco?.bancoSat?.clave,
+                            bancoOrigenNacional:egreso.cuenta.banco?.bancoSat,
                             cuentaOrigen:egreso.cuenta.numero,
                             fecha:egreso.fecha,
                             beneficiario:aFavor,
                             rfc:proveedor.rfc,
-                            monto:egreso.importe,
+                            monto:egreso.importe.abs(),
                             cuentaDestino: pago.cuentaDestino,
                             bancoDestinoNacional: pago.bancoDestino,
                             bancoDestinoExtranjero: pago.bancoDestinoExt
@@ -761,7 +761,7 @@ class PolizaDeEgresosService extends ProcesadorService{
                             fecha:egreso.fecha,
                             beneficiario:aFavor,
                             rfc:proveedor.rfc?:'XEXX010101000',
-                            monto:egreso.importe,
+                            monto:egreso.importe.abs(),
                             bancoDestinoNacional: pago.bancoDestino,
                             cuentaDestino: pago.cuentaDestino,
                             bancoDestinoExtranjero: pago.bancoDestinoExt
@@ -779,7 +779,7 @@ class PolizaDeEgresosService extends ProcesadorService{
                             fecha:egreso.fecha,
                             beneficiario:aFavor,
                             rfc:proveedor.rfc,
-                            monto:egreso.importe,
+                            monto:egreso.importe.abs(),
                             moneda:  egreso.moneda.getCurrencyCode(),
                             tipoDeCambio: egreso.tc
                         )
@@ -793,7 +793,7 @@ class PolizaDeEgresosService extends ProcesadorService{
                             fecha:egreso.fecha,
                             beneficiario:aFavor,
                             rfc:proveedor.rfc?:'XEXX010101000',
-                            monto:egreso.importe,
+                            monto:egreso.importe.abs(),
                             moneda:  egreso.moneda.getCurrencyCode(),
                             tipoDeCambio: egreso.tc
                         )
