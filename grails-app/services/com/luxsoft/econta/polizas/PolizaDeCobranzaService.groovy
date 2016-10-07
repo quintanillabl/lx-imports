@@ -23,16 +23,12 @@ class PolizaDeCobranzaService extends ProcesadorService{
         def pagos=CXCPago.findAll("from CXCPago p where date(p.fecha)=? ",[dia])
             	
     	pagos.each{ pago->
-    		
     		//Cargo al banco
-            
     		def desc="${pago.cliente.nombre} ${pago.formaDePago.substring(0,2)} "
-
     		if(pago.moneda==MonedaUtils.DOLARES){
     			desc+=" $pago.total * $pago.tc"
     		}
-            //desc+= " $pago.referenciaBancaria "
-    		
+
     		poliza.addToPartidas(
     			cuenta:pago.cuenta.cuentaContable,
     			debe:pago.total.abs()*pago.tc,
@@ -96,12 +92,9 @@ class PolizaDeCobranzaService extends ProcesadorService{
     				,origen:aplic.id)
     		}
 		}
-
     	cuadrar(poliza)
 		depurar(poliza)
 		save poliza
-        
     }
-
     
 }

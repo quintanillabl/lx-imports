@@ -47,12 +47,34 @@ class TransaccionTransferencia {
     	rfc maxSize:13
     	monto scale:6
     	tipoDeCambio scale:5
+        bancoOrigenNacional nullable:true
+        bancoDestinoNacional nullable:true
     }
 
     static belongsTo = [polizaDet:PolizaDet]
 
     static mapping = {
     	//fecha type:'date'
+    }
+
+    String info(){
+        def writer = new StringWriter()
+        def builder = new groovy.xml.MarkupBuilder(writer)
+        builder.div{
+            p('CtaOri: '+ this.cuentaOrigen)
+            p('BancoOriNal:' + this.bancoOrigenNacional)
+            p('BancoOriExt: ' + this.bancoOrigenExtranjero)
+            p('CtaDest: ' + this.cuentaDestino)
+            p('BancoDestNal: ' + this.bancoDestinoNacional)
+            p('BancoDestExt: ' + this.bancoDestinoExtranjero)
+            p('Fecha: ' + this.fecha)
+            p('Benef: ' + this.beneficiario)
+            p('RFC: ' + this.rfc)
+            p('Monto: ' + this.monto)
+            p('Moneda: ' + this.moneda.getCurrencyCode() )
+            p('TipCamb: ' + this.tipoDeCambio)
+        }
+        return writer.toString()
     }
 }
 

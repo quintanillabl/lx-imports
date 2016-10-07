@@ -28,7 +28,7 @@ class PolizaDeComprasService extends ProcesadorService{
         procearCuentaPorPagarMateriaPrima(poliza, dia)
         procearImpuestosAduanales(poliza, dia)
         proceaCuentaDeGastos(poliza, dia)
-
+        procesarComplementos(poliza)
         cuadrar(poliza)
         depurar(poliza)
         save poliza
@@ -415,8 +415,8 @@ class PolizaDeComprasService extends ProcesadorService{
                     referencia:"$cg.referencia",
                     ,fecha:poliza.fecha
                     ,tipo:poliza.tipo
-                    ,entidad:'CuentaDeGastos'
-                    ,origen:cg.id)
+                    ,entidad:fac1.class.getSimpleName()
+                    ,origen:fac1.id)
             }
             
             //1.Cargo a cuenta de gastos
@@ -440,8 +440,8 @@ class PolizaDeComprasService extends ProcesadorService{
                     referencia:"$cg.referencia",
                     fecha:poliza.fecha,
                     tipo:poliza.tipo,
-                    entidad:'CuentaDeGastos',
-                    origen:cg.id)
+                    entidad:fac.class.getSimpleName(),
+                    origen:fac.id)
 
                 ///********* Cargo al costo (501-0020) con abono a gastos de importacion (504) **********/
                 poliza.addToPartidas(
@@ -453,8 +453,8 @@ class PolizaDeComprasService extends ProcesadorService{
                     referencia:"$cg.referencia",
                     fecha:poliza.fecha,
                     tipo:poliza.tipo,
-                    entidad:'CuentaDeGastos',
-                    origen:cg.id)
+                    entidad:fac.class.getSimpleName(),
+                    origen:fac.id)
 
                 poliza.addToPartidas(
                     cuenta: cuentaProveedor,
@@ -465,8 +465,8 @@ class PolizaDeComprasService extends ProcesadorService{
                     referencia:"$cg.referencia",
                     fecha:poliza.fecha,
                     tipo:poliza.tipo,
-                    entidad:'CuentaDeGastos',
-                    origen:cg.id)
+                    entidad:fac.class.getSimpleName(),
+                    origen:fac.id)
                 /*****************************************************************************************/
 
                 //2 Cargo a IVA al 11 de cuenta de gastos
@@ -482,8 +482,8 @@ class PolizaDeComprasService extends ProcesadorService{
                         referencia:"$cg.referencia",
                         ,fecha:poliza.fecha
                         ,tipo:poliza.tipo
-                        ,entidad:'CuentaDeGastos'
-                        ,origen:cg.id)
+                        ,entidad:fac.class.getSimpleName()
+                        ,origen:fac.id)
                 }
                 //2 Cargo a IVA al 16 de cuenta de gastos
                 if(fac.tasaDeImpuesto==16.0){
@@ -498,8 +498,8 @@ class PolizaDeComprasService extends ProcesadorService{
                         referencia:"$cg.referencia",
                         ,fecha:poliza.fecha
                         ,tipo:poliza.tipo
-                        ,entidad:'CuentaDeGastos'
-                        ,origen:cg.id)
+                        ,entidad:fac.class.getSimpleName()
+                        ,origen:fac.id)
                 }
             }
 
@@ -522,6 +522,38 @@ class PolizaDeComprasService extends ProcesadorService{
             )
                 
                 
+        }
+    }
+
+    def procesarComplementos(def poliza){
+
+        poliza.partidas.each {polizaDet ->
+
+            if(polizaDet.entidad == 'CuentaPorPagar' || polizaDet.entidad == 'GastosDeImportacion'){
+                def cxp = com.luxsoft.impapx.CuentaPorPagar.get(polizaDet.origen)
+                if(cxp.instanceOf(FacturaDeImportacion)){
+                    def comprobante = new ComprobanteExtranjero(
+                        polizaDet:polizaDet,
+                        numFacExt: cxp.documento,
+                        montoTotal: cxp.total,
+                        moneda: cxp.moneda.getCurrencyCode(),
+                        tipCamb: cxp.tc
+                    )
+                    polizaDet.comprobanteExtranjero = comprobante
+                }
+                if(cxp?.comprobante){
+                    def cfdi = cxp.comprobante
+                    def comprobante = new ComprobanteNacional(
+                      polizaDet:polizaDet,
+                      uuidcfdi:cfdi.uuid,
+                      rfc: cfdi.emisorRfc,
+                      montoTotal: cfdi.total,
+                      moneda: cxp.moneda.getCurrencyCode(),
+                      tipCamb: cxp.tc
+                    )
+                    polizaDet.comprobanteNacional = comprobante
+                }
+            }
         }
     }
 

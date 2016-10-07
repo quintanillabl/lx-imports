@@ -18,6 +18,7 @@ class PolizaDeNotaDeCreditoService extends ProcesadorService{
 
         def dia = poliza.fecha
         procesarNotasDeCreditoCxC poliza,dia
+        procesarComplementos(poliza)
     }
 
     private procesarNotasDeCreditoCxC(def poliza,def dia){
@@ -51,7 +52,7 @@ class PolizaDeNotaDeCreditoService extends ProcesadorService{
     			referencia:"$nota.comprobanteFiscal",
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
-    			,entidad:'NotaDeCredito'
+    			,entidad:'CXCNota'
     			,origen:nota.id)
     		//Cargo a IVA Pendiente por trasladar (descuentos y rebajas)
     		clave="209-0001"
@@ -64,9 +65,24 @@ class PolizaDeNotaDeCreditoService extends ProcesadorService{
     			referencia:"$nota.comprobanteFiscal",
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
-    			,entidad:'NotaDeCredito'
+    			,entidad:'CXCNota'
     			,origen:nota.id)
     		
     	}
+    }
+
+    def procesarComplementos(def poliza){
+        poliza.partidas.each { polizaDet ->
+            def serie = 'CRE'
+            def row = polizaDet.origen
+            def cfdi = Cfdi.where {serie == serie && origen == row}.find()
+            def comprobante = new ComprobanteNacional(
+                  polizaDet:polizaDet,
+                  uuidcfdi:cfdi.uuid,
+                  rfc: cfdi.rfc,
+                  montoTotal: cfdi.total
+            )
+            polizaDet.comprobanteNacional = comprobante
+        }
     }
 }

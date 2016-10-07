@@ -159,10 +159,29 @@ class PolizaDeFleteService extends ProcesadorService{
     			,entidad:'FacturaDeGasto'
     			,origen:fac.id)
 		}
-
+        procesarComplementos(poliza)
         cuadrar(poliza)
 		depurar(poliza)
 		save poliza
+    }
+
+    def procesarComplementos(def poliza){
+        poliza.partidas.each {polizaDet ->
+            def cxp = com.luxsoft.impapx.CuentaPorPagar.get(polizaDet.origen)
+            if(cxp?.comprobante){
+                def cfdi = cxp.comprobante
+                def comprobante = new ComprobanteNacional(
+                  polizaDet:polizaDet,
+                  uuidcfdi:cfdi.uuid,
+                  rfc: cfdi.emisorRfc,
+                  montoTotal: cfdi.total,
+                  moneda: cxp.moneda.getCurrencyCode(),
+                  tipCamb: cxp.tc
+                )
+                polizaDet.comprobanteNacional = comprobante
+            }
+            
+        }
     }
 
     

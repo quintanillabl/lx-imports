@@ -33,6 +33,8 @@ class PolizaDet {
 		descripcion(nullable:true,maxSize:255)
 		comprobanteNacional nullable:true
 		comprobanteExtranjero nullable:true
+		transaccionCheque nullable:true
+		transaccionTransferencia nullable:true
     }
 
     static mapping ={
@@ -40,7 +42,14 @@ class PolizaDet {
 	}
 	
 	
-	
+	public List complementos(){
+		def res =  [];
+		if(comprobanteExtranjero) res.add(comprobanteExtranjero)
+		if(comprobanteNacional) res.add(comprobanteNacional)
+		if(transaccionCheque) res.add(transaccionCheque)
+		if(transaccionTransferencia) res.add(transaccionTransferencia)
+		return res;
+	}
 	
 	
 }

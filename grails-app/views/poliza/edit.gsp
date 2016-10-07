@@ -106,7 +106,8 @@
 	            				<th>Asiento</th>
 	            				<th>Entidad</th>
 	            				<th>Origen</th>
-	            				<th>E</th>
+	            				<th></th>
+	            				<th></th>
 	            				
 	            				
 	            			</tr>
@@ -133,6 +134,18 @@
 	            					<td>${fieldValue(bean: row, field: "asiento")}</td>
 	            					<td>${fieldValue(bean: row, field: "entidad")}</td>
 	            					<td><g:formatNumber number="${row.origen}" format="########"/></td>
+	            					<td>
+	            						<g:each in="${row.complementos()}" var="item">
+	            							
+	            							<a  data-toggle="popover" role="button" tabindex="0"
+	            								title="Complemento"
+	            								data-placement="left" 
+	            								data-content="${item.info()}" 
+	            								data-html="true">
+	            								<i class="fa fa-info"></i>
+	            							</a>
+	            						</g:each>
+	            					</td>
 	            					<td>
 	            						<g:if test="${polizaInstance.manual}">
 	            							<g:link action="eliminarPartida" id="${row.id}"

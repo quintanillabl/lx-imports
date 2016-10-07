@@ -34,7 +34,6 @@ class PolizaDeEgresosService extends ProcesadorService{
 	    anticiposCompra(fecha)
 	    chequesCancelados(fecha)
 	    pagoChoferes(fecha)
-        
         rembolsoChoferes fecha
         
 	    return "Polizas de egresos generadas para el dia ${fecha.text()}"
@@ -140,8 +139,8 @@ class PolizaDeEgresosService extends ProcesadorService{
 						referencia:"$fac.documento"
 						,fecha:poliza.fecha
 						,tipo:poliza.tipo
-						,entidad:'FacturaDeImportacion'
-						,origen:fac.id)
+						,entidad:'PagoProveedor'
+						,origen:pago.id)
 			}
 			//Abono al banco
 			if(!egreso.cuenta.cuentaContable)
@@ -155,8 +154,8 @@ class PolizaDeEgresosService extends ProcesadorService{
 					referencia:"$egreso.referenciaBancaria"
 					,fecha:poliza.fecha
 					,tipo:poliza.tipo
-					,entidad:'MovimientoDeCuenta'
-					,origen:egreso.id)
+					,entidad:'PagoProveedor'
+					,origen:pago.id)
 			
 			//Diferencia cambiaria
 			//def dif=(egreso.importe.abs()*egreso.tc)-pagoAcu
@@ -173,11 +172,11 @@ class PolizaDeEgresosService extends ProcesadorService{
 					referencia:"$egreso.referenciaBancaria"
 					,fecha:poliza.fecha
 					,tipo:poliza.tipo
-					,entidad:'MovimientoDeCuenta'
-					,origen:egreso.id)
+					,entidad:'PagoProveedor'
+					,origen:pago.id)
 			}
 
-
+            procesarComplementos(poliza)
 			cuadrar(poliza)
     	    depurar(poliza)
     		save poliza
@@ -207,6 +206,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     		
     	}
 
+        log.info "Procesando ${pagos.size()} GASTOS del ${dia.text()} "
     	
     	pagos.each{ pago->
     		
@@ -251,8 +251,8 @@ class PolizaDeEgresosService extends ProcesadorService{
     						referencia:"$fac.documento"
     						,fecha:poliza.fecha
     						,tipo:poliza.tipo
-    						,entidad:'FacturaDeGasto'
-    						,origen:fac.id)
+    						,entidad:'PagoProveedor'
+    						,origen:pago.id)
     					//Abono al ISR de Honorarios al Consejo
     					poliza.addToPartidas(
     						cuenta:CuentaContable.buscarPorClave("213-0007"),
@@ -263,8 +263,8 @@ class PolizaDeEgresosService extends ProcesadorService{
     						referencia:"$fac.documento"
     						,fecha:poliza.fecha
     						,tipo:poliza.tipo
-    						,entidad:'FacturaDeGasto'
-    						,origen:fac.id)
+    						,entidad:'PagoProveedor'
+    						,origen:pago.id)
     				}
     				
     				else if(fFactura.toMonth()==fPago.toMonth()){
@@ -279,8 +279,8 @@ class PolizaDeEgresosService extends ProcesadorService{
     						referencia:"$fac.documento"
     						,fecha:poliza.fecha
     						,tipo:poliza.tipo
-    						,entidad:'FacturaDeGasto'
-    						,origen:fac.id)
+    						,entidad:'PagoProveedor'
+    						,origen:pago.id)
     					//Cargo al iva de gasto
     					poliza.addToPartidas(
     						cuenta:CuentaContable.buscarPorClave("118-0001"),
@@ -291,8 +291,8 @@ class PolizaDeEgresosService extends ProcesadorService{
     						referencia:"$fac.documento"
     						,fecha:poliza.fecha
     						,tipo:poliza.tipo
-    						,entidad:'FacturaDeGasto'
-    						,origen:fac.id)
+    						,entidad:'PagoProveedor'
+    						,origen:pago.id)
     					
     					if(c.retension>0){
     						poliza.addToPartidas(
@@ -304,8 +304,8 @@ class PolizaDeEgresosService extends ProcesadorService{
     							referencia:"$fac.documento"
     							,fecha:poliza.fecha
     							,tipo:poliza.tipo
-    							,entidad:'FacturaDeGasto'
-    							,origen:fac.id)
+    							,entidad:'PagoProveedor'
+    							,origen:pago.id)
     					}
     					
     					if(c.retensionIsr){
@@ -318,8 +318,8 @@ class PolizaDeEgresosService extends ProcesadorService{
     							referencia:"$fac.documento"
     							,fecha:poliza.fecha
     							,tipo:poliza.tipo
-    							,entidad:'FacturaDeGasto'
-    							,origen:fac.id)
+    							,entidad:'PagoProveedor'
+    							,origen:pago.id)
     					}
     					
     				//}else{ //Cancelamos la provision
@@ -352,8 +352,8 @@ class PolizaDeEgresosService extends ProcesadorService{
     					referencia:"$fac.documento"
     					,fecha:poliza.fecha
     					,tipo:poliza.tipo
-    					,entidad:'FacturaDeGasto'
-    					,origen:fac.id)
+    					,entidad:'PagoProveedor'
+    					,origen:pago.id)
     					//Cargo al iva de gasto
     					poliza.addToPartidas(						
     						cuenta:CuentaContable.buscarPorClave("118-0001"),
@@ -365,8 +365,8 @@ class PolizaDeEgresosService extends ProcesadorService{
     						referencia:"$fac.documento"
     						,fecha:poliza.fecha
     						,tipo:poliza.tipo
-    						,entidad:'FacturaDeGasto'
-    						,origen:fac.id)
+    						,entidad:'PagoProveedor'
+    						,origen:pago.id)
     					//Abono al iva pendiente  de gasto
     					poliza.addToPartidas(
     						cuenta:CuentaContable.buscarPorClave("119-0001"),
@@ -378,8 +378,8 @@ class PolizaDeEgresosService extends ProcesadorService{
     						referencia:"$fac.documento"
     						,fecha:poliza.fecha
     						,tipo:poliza.tipo
-    						,entidad:'FacturaDeGasto'
-    						,origen:fac.id)
+    						,entidad:'PagoProveedor'
+    						,origen:pago.id)
     				
     				}
     				
@@ -400,8 +400,8 @@ class PolizaDeEgresosService extends ProcesadorService{
     				referencia:"$egreso.referenciaBancaria"
     				,fecha:poliza.fecha
     				,tipo:poliza.tipo
-    				,entidad:'MovimientoDeCuenta'
-    				,origen:egreso.id)
+    				,entidad:'PagoProveedor'
+    				,origen:pago.id)
     		
     		def cuentaCargo=CuentaContable.buscarPorClave("900-0002")
     		def cuentaAbono=CuentaContable.buscarPorClave("901-0002")
@@ -436,8 +436,8 @@ class PolizaDeEgresosService extends ProcesadorService{
     				referencia:"$egreso.referenciaBancaria"
     				,fecha:poliza.fecha
     				,tipo:poliza.tipo
-    				,entidad:'MovimientoDeCuenta'
-    				,origen:egreso.id)
+    				,entidad:'PagoProveedor'
+    				,origen:pago.id)
     		
     			poliza.addToPartidas(
     				cuenta:CuentaContable.buscarPorClave("109-0001"),
@@ -448,12 +448,13 @@ class PolizaDeEgresosService extends ProcesadorService{
     				referencia:"$egreso.referenciaBancaria"
     				,fecha:poliza.fecha
     				,tipo:poliza.tipo
-    				,entidad:'MovimientoDeCuenta'
-    				,origen:egreso.id)
+    				,entidad:'PagoProveedor'
+    				,origen:pago.id)
     	   }
     		
     		
     		//Salvar la poliza
+            procesarComplementos(poliza)
     		cuadrar(poliza)
     	    depurar(poliza)
     		save poliza
@@ -467,7 +468,9 @@ class PolizaDeEgresosService extends ProcesadorService{
     	def anticipos=PagoProveedor
         .findAll("from PagoProveedor p where p.requisicion.concepto in (?,?) and date(p.egreso.fecha)=?",['ANTICIPO','ANTICIPO_COMPLEMENTO',dia])
     	
-    	anticipos.each{ pago ->
+        log.info "Procesando ${anticipos.size()} anticipos del ${dia.text()} "
+    	
+        anticipos.each{ pago ->
     		
     		def fp=pago.egreso.tipo.substring(0,2)
     		def egreso=pago.egreso
@@ -519,6 +522,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     				,origen:pago.id)
     		}
     		//Salvar la poliza
+            procesarComplementos(poliza)
     		cuadrar(poliza)
     	    depurar(poliza)
     		save poliza
@@ -529,7 +533,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     	//Asiento: Anticipos
     	
     	def anticipos=PagoProveedor.findAll("from PagoProveedor p where p.requisicion.concepto=? and date(p.egreso.fecha)=?",['ANTICIPO_COMPRA',dia])
-    	
+    	log.info "Procesando ${anticipos.size()} anticipos de compra ${dia.text()} "
     	anticipos.each{ pago ->
     		
     		def fp=pago.egreso.tipo.substring(0,2)
@@ -578,6 +582,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     				,entidad:'PagoProveedor'
     				,origen:pago.id)
     		}
+            procesarComplementos(poliza)
     		cuadrar(poliza)
     	    depurar(poliza)
     		save poliza
@@ -656,7 +661,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     			,tipo:poliza.tipo
     			,entidad:'PagoProveedor'
     			,origen:pago.id)
-    		
+    		procesarComplementos(poliza)
     		cuadrar(poliza)
 		    depurar(poliza)
 			save poliza
@@ -712,7 +717,7 @@ class PolizaDeEgresosService extends ProcesadorService{
                 ,origen:egreso.id)
             
             
-            
+            procesarComplementos(poliza)
             cuadrar(poliza)
             depurar(poliza)
             save poliza
@@ -721,5 +726,81 @@ class PolizaDeEgresosService extends ProcesadorService{
 
     String toString(){
         return "Procesador de polizas de egreso"
+    }
+
+    def procesarComplementos(def poliza){
+        log.info("Generando complementos de contabilidad electronica para la poliza $poliza.subTipo - ${poliza.fecha.text()}")
+        poliza.partidas.each {polizaDet ->
+            if(polizaDet.entidad == 'PagoProveedor'){
+                def pago = PagoProveedor.get(polizaDet.origen)
+                def proveedor = pago.requisicion.proveedor
+                def aFavor = pago.requisicion.proveedor.nombre
+                def egreso = pago.egreso
+                if(egreso.tipo == 'TRANSFERENCIA'){
+                    if(egreso.cuenta.banco.nacional){
+                        //log.info('Procesando transaccion transferencia NACIONAL')
+                        def transferencia=new TransaccionTransferencia(
+                            polizaDet:polizaDet,
+                            bancoOrigenNacional:egreso.cuenta.banco?.bancoSat?.clave,
+                            cuentaOrigen:egreso.cuenta.numero,
+                            fecha:egreso.fecha,
+                            beneficiario:aFavor,
+                            rfc:proveedor.rfc,
+                            monto:egreso.importe,
+                            cuentaDestino: pago.cuentaDestino,
+                            bancoDestinoNacional: pago.bancoDestino,
+                            bancoDestinoExtranjero: pago.bancoDestinoExt
+                        )
+                        polizaDet.transaccionTransferencia=transferencia
+                    } else {
+                        //log.info('Procesando transaccion transferencia EXTRANJERA')
+                        def transferencia=new TransaccionTransferencia(
+                            polizaDet:polizaDet,
+                            bancoOrigenExtranjero: egreso.cuenta.banco.nombre,
+                            cuentaOrigen:egreso.cuenta.numero,
+                            fecha:egreso.fecha,
+                            beneficiario:aFavor,
+                            rfc:proveedor.rfc?:'XEXX010101000',
+                            monto:egreso.importe,
+                            bancoDestinoNacional: pago.bancoDestino,
+                            cuentaDestino: pago.cuentaDestino,
+                            bancoDestinoExtranjero: pago.bancoDestinoExt
+                        )
+                        polizaDet.transaccionTransferencia=transferencia
+                    }
+                }
+                if(egreso.tipo == 'CHEQUE'){
+                    if(egreso.cuenta.banco.nacional){
+                        log.info('Generando transaccion CHEQUE NACIONAL')
+                        def cheque=new TransaccionCheque(
+                            polizaDet:polizaDet,
+                            numero:egreso.referenciaBancaria,
+                            cuentaOrigen:egreso.cuenta.numero,
+                            fecha:egreso.fecha,
+                            beneficiario:aFavor,
+                            rfc:proveedor.rfc,
+                            monto:egreso.importe,
+                            moneda:  egreso.moneda.getCurrencyCode(),
+                            tipoDeCambio: egreso.tc
+                        )
+                        polizaDet.transaccionCheque=cheque
+                    } else {
+                        log.info('Generando transaccion CHEQUE EXTRANJERO')
+                        def cheque=new TransaccionCheque(
+                            polizaDet:polizaDet,
+                            bancoEmisorExtranjero: egreso.cuenta.banco.nombre,
+                            cuentaOrigen:egreso.cuenta.numero,
+                            fecha:egreso.fecha,
+                            beneficiario:aFavor,
+                            rfc:proveedor.rfc?:'XEXX010101000',
+                            monto:egreso.importe,
+                            moneda:  egreso.moneda.getCurrencyCode(),
+                            tipoDeCambio: egreso.tc
+                        )
+                        polizaDet.transaccionCheque=cheque
+                    }
+                }
+            }
+        }
     }
 }

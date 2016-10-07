@@ -7,6 +7,7 @@ import com.luxsoft.impapx.tesoreria.*
 import com.luxsoft.impapx.Venta
 import com.luxsoft.cfdi.*
 import org.apache.commons.lang.StringUtils
+import com.luxsoft.impapx.contabilidad.ComprobanteNacional
 
 
 @Transactional
@@ -34,9 +35,9 @@ class PolizaDeFacturacionService extends ProcesadorService{
         }
         
         facturacion(poliza,facturas)
-
         procesarServiciosservicios(poliza,servicios)
         procesarNotasDeCargoCxC poliza,poliza.fecha
+        procesarComplementos(poliza)
         cuadrar(poliza)
 		depurar(poliza)
 		save poliza
@@ -260,6 +261,21 @@ class PolizaDeFacturacionService extends ProcesadorService{
             polizaDet.comprobanteNacional = comprobante
         }
 
+    }
+
+    def procesarComplementos(def poliza){
+        poliza.partidas.each { polizaDet ->
+            def serie = polizaDet.entidad == 'Venta' ? 'FAC' : 'CAR'
+            def row = polizaDet.origen
+            def cfdi = Cfdi.where {serie == serie && origen == row}.find()
+            def comprobante = new ComprobanteNacional(
+                  polizaDet:polizaDet,
+                  uuidcfdi:cfdi.uuid,
+                  rfc: cfdi.rfc,
+                  montoTotal: cfdi.total
+            )
+            polizaDet.comprobanteNacional = comprobante
+        }
     }
 
     

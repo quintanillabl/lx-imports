@@ -8,6 +8,7 @@ import com.luxsoft.utils.Periodo
 import com.luxsoft.lx.utils.MonedaUtils
 
 //import static com.luxsoft.econta.polizas.PolizaUtils.*
+import com.luxsoft.impapx.*
 import org.apache.commons.lang.StringUtils
 
 
@@ -66,7 +67,7 @@ class ProcesadorService {
     }
 
     /// Metodos comunes
-
+    /*
 	Poliza cargoA(def poliza,def cuenta,def importe,def descripcion,def asiento,def referencia,def entidad){
 		poliza.addToPartidas(
         	cuenta:cuenta,
@@ -96,6 +97,61 @@ class ProcesadorService {
 		)
         return poliza
 	}
+    */
+    
+    def cargoA(def poliza,def cuenta,def importe,def descripcion,def asiento,def referencia,def entidad){
+        def det=new PolizaDet(
+            cuenta:cuenta,
+            concepto:cuenta.descripcion,
+            debe:importe.abs(),
+            haber:0.0,
+            descripcion:StringUtils.substring(descripcion,0,255),
+            asiento:asiento,
+            referencia:referencia,
+            origen:entidad.id.toString(),
+            entidad:entidad.class.toString()
+        )
+        poliza.addToPartidas(det)
+        return det;
+    }
+
+    def abonoA(def poliza,def cuenta,def importe,def descripcion,def asiento,def referencia,def entidad){
+        def det=new PolizaDet(
+            cuenta:cuenta,
+            concepto:cuenta.descripcion,
+            debe:0.0,
+            haber:importe.abs(),
+            descripcion:StringUtils.substring(descripcion,0,255),
+            asiento:asiento,
+            referencia:referencia,
+            origen:entidad.id.toString(),
+            entidad:entidad.class.toString()
+        )
+        poliza.addToPartidas(det)
+        return det
+    }
+
+    def addComplementoComprobante(def polizaDet, def cxp){
+        if(cxp.instanceOf(FacturaDeImportacion)){
+            def comprobanteExt = new ComprobanteExtranjero(
+                    polizaDet:polizaDet,
+                    numFacExt:cxp.documento,
+                    taxId: cxp.taxId,
+                    moneda: cxp.moneda,
+                    tipCamb: cxp.tc,
+                    montoTotal: cxp.total   
+            )
+        }
+        if(cxp.uuid){
+            def comprobanteNacional = new ComprobanteNacional(
+                    polizaDet:polizaDet,
+                    uuidcfdi:cxp.uuid,
+                    rfc: cxp.proveedor.rfc,
+                    montoTotal: cxp.total
+            )
+            polizaDet.comprobanteNacional = comprobanteNacional
+        }
+    }
 
     def build(def fecha,def tipo,def subTipo){
 		def mes=Periodo.obtenerMes(fecha)+1

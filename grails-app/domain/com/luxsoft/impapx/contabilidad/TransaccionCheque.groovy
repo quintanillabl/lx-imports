@@ -40,6 +40,7 @@ class TransaccionCheque {
 
     static constraints = {
     	numero minSize:1,maxSize:20
+        bancoEmisorNacional nullable:true
     	bancoEmisorExtranjero nullable:true,maxSize:150
     	cuentaOrigen maxSize:50
     	beneficiario maxSize:300
@@ -52,5 +53,24 @@ class TransaccionCheque {
 
     static mapping = {
     	//fecha type:'date'
+    }
+
+    String info(){
+        def writer = new StringWriter()
+        def builder = new groovy.xml.MarkupBuilder(writer)
+        builder.div{
+            p('Num: '+ this.numero)
+            p('BanEmisNal:' + this.bancoEmisorNacional)
+            p('BanEmisExt: ' + this.bancoEmisorExtranjero)
+            p('CtaOri: '+ this.cuentaOrigen)
+            p('Fecha: ' + this.fecha)
+            p('Benef: ' + this.beneficiario)
+            p('RFC: ' + this.rfc)
+            p('Monto: ' + this.monto)
+            p('Moneda: ' + this.moneda.getCurrencyCode() )
+            p('TipCamb: ' + this.tipoDeCambio)
+            
+        }
+        return writer.toString()
     }
 }
