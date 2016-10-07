@@ -23,10 +23,9 @@ class PolizaDeProvisionGastosService extends ProcesadorService{
         poliza.descripcion = "Poliza de provisión de gastos "
 
         def dia = poliza.fecha
-    	def inicio=dia.inicioDeMes()
 
-    	def gastos=FacturaDeGastos.findAll("from FacturaDeGastos g where  date(g.fecha) between ? and ? ",
-    		[inicio,dia])
+    	def gastos=FacturaDeGastos.findAll("from FacturaDeGastos g where  date(g.fecha) = ? ",
+    		[dia])
 
     	gastos=gastos.findAll { it.buscarSaldoAlCorte(dia) }
 
@@ -50,10 +49,10 @@ class PolizaDeProvisionGastosService extends ProcesadorService{
     }
 
     def cargoAGastos(def poliza,def gasto,def descripcion){
-		log.info 'Cargo a gastos'
+		//log.info 'Cargo a gastos'
 		gasto.conceptos.each { det ->
 			assert det.concepto,"Detalle del gasto sin cuenta contable ${gasto.id}"
-			cargoA(poliza,
+			def polizaDet = cargoA(poliza,
 				det.concepto,
 				det.importe,
 				descripcion,
@@ -61,12 +60,13 @@ class PolizaDeProvisionGastosService extends ProcesadorService{
 				'F:'+gasto.documento,
 				gasto
 			)
+			agregarComplemento(polizaDet,gasto)
 		}
 	}
 
 	def cargoAIvaPendienteDeAcreditar(def poliza,def gasto,def descripcion){
-		log.info 'Cargo a iva pendiente de acreditar'
-		cargoA(poliza,
+		//log.info 'Cargo a iva pendiente de acreditar'
+		def polizaDet = cargoA(poliza,
 			CuentaContable.buscarPorClave('119-0001'),
 			gasto.impuestos,
 			descripcion,
@@ -74,17 +74,18 @@ class PolizaDeProvisionGastosService extends ProcesadorService{
 			'F:'+gasto.documento,
 			gasto
 		)
+		agregarComplemento(polizaDet,gasto)
 	}
 
 	def abonoAAcredoresDiversos(def poliza,def gasto,def descripcion){
-		log.info 'Abono a acredores diversos'
+		//log.info 'Abono a acredores diversos'
 		def proveedor = gasto.proveedor
 		//assert proveedor.subCuentaOperativa, 'No existe la subCuentaOperativa del proveedor:  '+proveedor
 		def cta = CuentaContable.findByClave('205-'+proveedor.subCuentaOperativa)
 		if(cta == null){
 			cta = CuentaContable.findByClave('205-V001')
 		}
-		abonoA(poliza,
+		def polizaDet = abonoA(poliza,
 			cta,
 			gasto.total,
 			descripcion,
@@ -92,6 +93,26 @@ class PolizaDeProvisionGastosService extends ProcesadorService{
 			'F:'+gasto.documento,
 			gasto
 		)
+		agregarComplemento(polizaDet,gasto)
+	}
+
+	def agregarComplemento(def polizaDet, def cxp){
+		
+		if(cxp?.comprobante){
+		    def cfdi = cxp.comprobante
+		    def comprobante = new ComprobanteNacional(
+		      polizaDet:polizaDet,
+		      uuidcfdi:cfdi.uuid,
+		      rfc: cfdi.emisorRfc,
+		      montoTotal: cfdi.total,
+		      moneda: cxp.moneda.getCurrencyCode(),
+		      tipCamb: cxp.tc
+		    )
+		    polizaDet.comprobanteNacional = comprobante
+		}else {
+			log.info(" CxP $cxp.id (${cxp.class.getSimpleName()}) sin CFDI no se puede generar complemento")
+		}
+	    
 	}
 
 	

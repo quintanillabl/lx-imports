@@ -109,7 +109,7 @@ class ProcesadorService {
             asiento:asiento,
             referencia:referencia,
             origen:entidad.id.toString(),
-            entidad:entidad.class.toString()
+            entidad:entidad.class.getSimpleName()
         )
         poliza.addToPartidas(det)
         return det;
@@ -125,7 +125,7 @@ class ProcesadorService {
             asiento:asiento,
             referencia:referencia,
             origen:entidad.id.toString(),
-            entidad:entidad.class.toString()
+            entidad:entidad.class.getSimpleName()
         )
         poliza.addToPartidas(det)
         return det
