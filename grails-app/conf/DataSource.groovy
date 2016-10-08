@@ -175,7 +175,7 @@ environments {
     impapx2 {
       dataSource {
         pooled = true
-        dbCreate=""
+        dbCreate="update"
         url="jdbc:mysql://10.10.1.228/impapx2?autoReconnect=true"
         //url="jdbc:mysql://localhost/impapx2?autoReconnect=true"
         driverClassName = "com.mysql.jdbc.Driver"
