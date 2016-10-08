@@ -149,7 +149,7 @@ environments {
     production {
         dataSource {
           pooled = true
-          dbCreate=""
+          dbCreate="update"
           url="jdbc:mysql://10.10.1.228/paperx2?autoReconnect=true"
           driverClassName = "com.mysql.jdbc.Driver"
           dialect = org.hibernate.dialect.MySQL5InnoDBDialect
