@@ -14,6 +14,7 @@ class ProcesadorDePoliza {
 	String descripcion
 	String service
     String label
+    int orden = 0
 
 
     static constraints = {

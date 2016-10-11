@@ -20,6 +20,8 @@ class CuentaBancaria {
 	int diasInversionIsr=365
 	int plazo=1
 	CuentaContable cuentaContable
+
+	String cuentaRetencion
 	
 	static belongsTo = [banco:Banco]
 
@@ -37,6 +39,7 @@ class CuentaBancaria {
 		tasaDeInversion (nullable:true)
 		tasaIsr(nullabl:true) 
 		diasInversionIsr(nullable:true)
+		cuentaRetencion nullable:true
     }
 	
 	static mapping ={

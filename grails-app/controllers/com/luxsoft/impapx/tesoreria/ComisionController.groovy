@@ -8,6 +8,8 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import com.luxsoft.impapx.TipoDeCambio
 import util.MonedaUtils
+import grails.converters.JSON
+import com.luxsoft.impapx.FacturaDeGastos
 
 @Secured(["hasRole('TESORERIA')"])
 @Transactional(readOnly = true)
@@ -127,6 +129,25 @@ class ComisionController {
             }
             '*'{ render status: NOT_FOUND }
         }
+    }
+
+    def getCxPDisponibles() {
+
+        def term=params.term+'%'
+        log.info 'Buscando facturas: '+term
+        def args=[term.toLowerCase()]
+        def params=[max:30,sort:"fecha",order:"desc"]
+        def hql="from FacturaDeGastos g where g.comprobante.id != null and ( lower(g.proveedor.nombre) like ?)  and g not in(select c.cxp from Comision c) order by g.fecha desc"
+        def list=FacturaDeGastos.findAll(hql,args,params)
+        
+        list=list.collect{ c->
+            def nombre="$c.proveedor.nombre ${c.fecha.text()} F: ${c.comprobante?.folio} ($c.importe) "
+            [id:c.id,
+            label:nombre,
+            value:nombre]
+        }
+        def res=list as JSON
+        render res
     }
 }
 

@@ -10,6 +10,13 @@
 				<f:field property="vencimiento" wrapper="bootstrap3"  />
 				<f:display property="moneda" wrapper="bootstrap3"/>
 				<f:display property="tc" widget-class="form-control" wrapper="bootstrap3"/>
+				<f:field property="concepto" wrapper="bootstrap3">
+					<g:select class="form-control"  
+						name="${property}" 
+						value="${value}"
+						from="${com.luxsoft.impapx.FacturaDeGastos.CONCEPTOS}" 
+						/>
+				</f:field>
 				<f:field property="comentario" widget-class="form-control" wrapper="bootstrap3"/>
 			</div>
 			<div class="col-md-6">

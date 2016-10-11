@@ -3,19 +3,29 @@ package com.luxsoft.impapx.tesoreria
 import com.luxsoft.impapx.CuentaBancaria;
 import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
+import com.luxsoft.impapx.CuentaPorPagar
 
 class Comision {
 
 	static auditable = true
 	
 	Date fecha
+
 	CuentaBancaria cuenta
+
 	BigDecimal tc
+
 	BigDecimal comision
+
 	BigDecimal impuestoTasa
+
 	BigDecimal impuesto
+
 	String comentario
+
 	String referenciaBancaria
+
+	CuentaPorPagar cxp
 	
 	static hasMany =[movimientos:MovimientoDeCuenta]
 
@@ -23,6 +33,7 @@ class Comision {
 		comentario(nullable:true,maxSize:200)
 		referenciaBancaria(nullable:true,maxSize:100)
 		tc(scale:4)
+		cxp nullable:true
     }
 	
 	static mapping ={

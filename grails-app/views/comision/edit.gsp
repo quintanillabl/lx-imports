@@ -24,7 +24,8 @@
 					<lx:iboxTitle title="Comisión bancaria"/>
 				    <div class="ibox-content">
 				    	<lx:errorsHeader bean="${comisionInstance}"/>
-				    	<form class="form-horizontal" >	
+				    	
+				    	<g:form class="form-horizontal" action="update" class="form-horizontal" method="PUT">
 				    		<f:with bean="comisionInstance">
 				    			<g:hiddenField name="id" value="${comisionInstance.id}"/>
 				    			<g:hiddenField name="version" value="${comisionInstance.version}"/>
@@ -32,20 +33,25 @@
 				    			<f:display property="cuenta" wrapper="bootstrap3"/>
 				    			<f:display property="referenciaBancaria" widget-class="form-control " wrapper="bootstrap3"/>
 				    			<f:display property="comentario" widget-class="form-control "  wrapper="bootstrap3"/>
-				    			<f:display property="cxp" widget-class="form-control "  wrapper="bootstrap3" label="Factura"/>
-				    			
+				    			<f:field property="cxp" wrapper="bootstrap3" label="Factura">
+				    				<g:hiddenField id="gastoId" name="cxp.id" />
+				    				<input type="text" value="${value}" id="gastoField" class="form-control">
+				    			</f:field>
 				    		</f:with>
 				    		<div class="form-group">
 				    			<div class="col-lg-offset-3 col-lg-10">
 				    				<lx:backButton label="Comisiones"/>
-				    				<g:link class="btn btn-outline btn-info" action="edit" id="${comisionInstance.id}">
-				    					<i class="fa fa-pencil"></i> Editar
-				    				</g:link>
+				    				<lx:createButton/>
+				    				
+				    				<g:actionSubmit class="btn btn-primary " 
+				    					action="update" 
+				    					value="Actualizar" />
+				    					
 				    				<a href="" class="btn btn-danger " data-toggle="modal" data-target="#deleteDialog"><i class="fa fa-trash"></i> Eliminar</a> 
 
 				    			</div>
 				    		</div>
-				    	</form>
+				    	</g:form>
 				    </div>
 				</div>
 			</div>
@@ -136,7 +142,16 @@
 		
 	</div>
 
-	
+	<script>
+		$("#gastoField").autocomplete({
+			source:'<g:createLink controller="comision" action="getCxPDisponibles"/>',
+			minLength:1,
+			select:function(e,ui){
+				console.log('Valor seleccionado: '+ui.item.id);
+				$("#gastoId").val(ui.item.id);
+			}
+		});
+	</script>
 	
 </content>
 	

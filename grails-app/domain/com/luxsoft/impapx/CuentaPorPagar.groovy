@@ -42,6 +42,8 @@ class CuentaPorPagar {
 	BigDecimal saldoActual=0
 	BigDecimal saldoAlCorte=0
 
+	Boolean gastoPorComprobar = true
+
 	Date dateCreated
 	Date lastUpdated	
 
@@ -68,6 +70,7 @@ class CuentaPorPagar {
 		retImp(nullable:true)
 		comprobante nullable:true
 		retensionIsr(nullable:true)
+		gastoPorComprobar nullable:true
 		
     }
 	

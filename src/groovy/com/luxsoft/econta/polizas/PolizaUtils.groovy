@@ -232,6 +232,27 @@ class PolizaUtils {
 			).save failOnError:true,flush:true
 		}
 
+		if(!ProcesadorDePoliza.find{subTipo== 'ING_VARIOS'}){
+		    new ProcesadorDePoliza(
+		        tipo:'INGRESO',
+		        subTipo:'ING_VARIOS',
+		        descripcion:'Póliza de ',
+		        label:'Ingreso (Varios)',
+		        service:'polizaDeIngresoVariosService'
+			).save failOnError:true,flush:true
+		}
+
+		if(!ProcesadorDePoliza.find{subTipo== 'COMISIONES_BANCARIAS_GASTO'}){
+		    new ProcesadorDePoliza(
+		        tipo:'DIARIO',
+		        subTipo:'COMISIONES_BANCARIAS_GASTO',
+		        descripcion:'Póliza de comisiones bancarias (Gasto)',
+		        label:'Comisiones (Gasto)',
+		        service:'polizaDeComisionesBancariasGastoService'
+			).save failOnError:true,flush:true
+		}
+		
+
 		
 	}
 

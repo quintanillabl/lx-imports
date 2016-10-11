@@ -59,24 +59,6 @@ class ComprobanteFiscalService {
             
             def domicilioFiscal=emisorNode.breadthFirst().find { it.name() == 'DomicilioFiscal'}
             def dom=domicilioFiscal.attributes()
-            // def direccion=new Direccion(
-            //     calle:dom.calle,
-            //     numeroExterior:dom.noExterior,
-            //     numeroInterior:dom.noInterior,
-            //     colonia:dom.colonia,
-            //     municipio:dom.municipio,
-            //     estado:dom.estado,
-            //     pais:dom.pais,
-            //     codigoPostal:dom.codigoPostal)
-            // log.info "Alta de proveedor: $nombre ($rfc) $direccion"
-            // proveedor=new Proveedor(nombre:nombre,rfc:rfc,direccion:direccion,empresa:empresa)
-            // proveedor.validate()
-            // log.info "Valido: "+proveedor.hasErrors()
-            // if(proveedor.hasErrors()){
-            //     log.info 'Errores en datos para alta de proveedor: '+proveedor.errors
-            // }
-            //proveedor.save failOnError:true,flush:true
-            // 
             throw new ComprobanteFiscalException(message:"No esta dado de alta el proveedor:${nombre} o no tiene registrado su RFC:${rfc} ")
             
         }
@@ -102,7 +84,8 @@ class ComprobanteFiscalService {
             emisorRfc:rfc,
             receptorRfc:receptorRfc,
             total:total,
-            fecha:fecha
+            fecha:fecha,
+            gastoPorComprobar: false
         )
         
         cxp.proveedor=proveedor
