@@ -1,6 +1,8 @@
 package com.luxsoft.econta.polizas
 
 import grails.transaction.Transactional
+import org.apache.commons.lang.StringUtils
+
 import com.luxsoft.impapx.contabilidad.Poliza
 import com.luxsoft.impapx.contabilidad.*
 import com.luxsoft.impapx.tesoreria.*
@@ -8,27 +10,32 @@ import com.luxsoft.impapx.*
 
 @Transactional
 class PolizaDeComisionesBancariasGastoService extends ProcesadorService{
-    
-    void procesar(def poliza){
-        
+
+    def procesar(Poliza poliza){
         def fecha=poliza.fecha
+        log.info "Generando poliza de comisiones bancarias (Gasto)  ${fecha.text()} "
+        poliza.descripcion="Comisiones bancarias  (Gasto) ${fecha.format('dd/MMMM/yyyy')}"
+        
         def gastos = FacturaDeGastos.where {concepto == 'COMISIONES_BANCARIAS' && gastoPorComprobat && fecha == fecha }.list().each { gasto ->
-            def desc = "Comisión F:${gasto.folio} (${gasto.fecha}) ${gasto.proveedor.nombre} "
+            
+            def desc = "Comisión F:${gasto.documento} (${gasto.fecha}) ${gasto.proveedor.nombre} "
             //Cargo a gastos
             cargoAGastos(poliza,gasto,desc,'COMISION_GASTO')
+            
             //Abono a deudores
             abonoDeudores(poliza,gasto,desc,'COMISION_GASTO')
         }
-        log.info "Generando poliza de comisiones bancarias (Gasto) $empresa ${fecha.text()} "
-        poliza.concepto="Comisiones bancarias  (Gasto) ${fecha.format('dd/MMMM/yyyy')}"
+        
+        
     }
+    
 
     def cargoAGastos(def poliza,def gasto,def descripcion,def asiento){
         log.info 'Cargo a gastos'
-        gasto.partidas.each { det ->
-            assert det.cuentaContable,"Detalle del gasto sin cuenta contable ${gasto.id}"
-            def cuenta = det.cuentaContable
-            def referencia = 'F:'+gasto.folio
+        gasto.conceptos.each { det ->
+            assert det.concepto,"Detalle del gasto sin cuenta contable ${gasto.id}"
+            def cuenta = det.concepto
+            def referencia = 'F:'+gasto.documento
             cargoA(poliza,cuenta,det.importe,descripcion,asiento,referencia,gasto)
         }
     }
@@ -36,11 +43,11 @@ class PolizaDeComisionesBancariasGastoService extends ProcesadorService{
     def abonoDeudores(def poliza,def gasto,def descripcion,def asiento){
         
         assert gasto.proveedor.subCuentaOperativa, "No existe la subCuenta operativa para el proveedor: $gasto.proveedor"
-        def cuenta = CuentaContable.buscarPorClave(poliza.empresa,'107-' + gasto.proveedor.subCuentaOperativa)
+        def cuenta = CuentaContable.buscarPorClave('107-' + gasto.proveedor.subCuentaOperativa)
         assert cuenta, 'No existe cuenta acredora ya sea para el proveedor o la generica provedores diversos'
-        def referencia = 'F:'+gasto.folio
+        def referencia = 'F:'+gasto.documento
         //cargoA(poliza,cuenta,det.importe,descripcion,asiento,referencia,gasto)
-        abonoA(poliza,cuenta,gasto.subTotal,descripcion,asiento,referencia,gasto)
+        abonoA(poliza,cuenta,gasto.importe,descripcion,asiento,referencia,gasto)
     }
 
     def cargoA(def poliza,def cuenta,def importe,def descripcion,def asiento,def referencia,def entidad){
@@ -53,7 +60,7 @@ class PolizaDeComisionesBancariasGastoService extends ProcesadorService{
             asiento:asiento,
             referencia:referencia,
             origen:entidad.id.toString(),
-            entidad:entidad.class.toString()
+            entidad:entidad.class.getSimpleName()
         )
         addComplemento(det,entidad)
         poliza.addToPartidas(det)
@@ -70,24 +77,26 @@ class PolizaDeComisionesBancariasGastoService extends ProcesadorService{
             asiento:asiento,
             referencia:referencia,
             origen:entidad.id.toString(),
-            entidad:entidad.class.toString()
+            entidad:entidad.class.getSimpleName()
         )
         addComplemento(det,entidad)
         poliza.addToPartidas(det)
         return det
     }
 
-    def addComplemento(def polizaDet, def gasto){
-        log.info("Agregando complenento de comprobante nacional para gasto: $gasto  UUID:$gasto.uuid")
-        if(gasto.uuid){
-            def comprobante = new ComprobanteExtranjero(
-                polizaDet:polizaDet,
-                numFacExt: cxp.documento,
-                montoTotal: cxp.total,
-                moneda: cxp.moneda.getCurrencyCode(),
-                tipCamb: cxp.tc
+    def addComplemento(def polizaDet, def cxp){
+        if(cxp?.comprobante){
+            log.info("Agregando complenento de comprobante nacional para cxp: $cxp.documento  UUID:${cxp.comprobante?.uuid}")
+            def cfdi = cxp.comprobante
+            def comprobante = new ComprobanteNacional(
+              polizaDet:polizaDet,
+              uuidcfdi:cfdi.uuid,
+              rfc: cfdi.emisorRfc,
+              montoTotal: cfdi.total,
+              moneda: cxp.moneda.getCurrencyCode(),
+              tipCamb: cxp.tc
             )
-            polizaDet.comprobanteExtranjero = comprobante
+            polizaDet.comprobanteNacional = comprobante
         }
 
     }

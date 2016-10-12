@@ -19,6 +19,7 @@ import com.luxsoft.impapx.contabilidad.CuentaContable
 
 
 
+
 class ComprobanteFiscalService {
 
 	static transactional = false
@@ -56,10 +57,25 @@ class ComprobanteFiscalService {
         def proveedor=Proveedor.findByRfc(rfc)
         
         if(!proveedor){
-            
+
+            log.debug "Alta de proveedor: $nombre ($rfc)"
             def domicilioFiscal=emisorNode.breadthFirst().find { it.name() == 'DomicilioFiscal'}
             def dom=domicilioFiscal.attributes()
-            throw new ComprobanteFiscalException(message:"No esta dado de alta el proveedor:${nombre} o no tiene registrado su RFC:${rfc} ")
+            def direccion=new Direccion(
+                calle:dom.calle,
+                numeroExterior:dom.noExterior,
+                numeroInterior:dom.noInterior,
+                colonia:dom.colonia,
+                municipio:dom.municipio,
+                estado:dom.estado,
+                pais:dom.pais,
+                codigoPostal:dom.codigoPostal)
+            proveedor=new Proveedor(nombre:nombre,rfc:rfc,direccion:direccion,empresa:empresa)
+            proveedor.save failOnError:true,flush:true
+
+            //def domicilioFiscal=emisorNode.breadthFirst().find { it.name() == 'DomicilioFiscal'}
+            //def dom=domicilioFiscal.attributes()
+            //throw new ComprobanteFiscalException(message:"No esta dado de alta el proveedor:${nombre} o no tiene registrado su RFC:${rfc} ")
             
         }
         def serie=xml.attributes()['serie']
