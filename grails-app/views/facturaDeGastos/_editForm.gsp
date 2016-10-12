@@ -10,6 +10,7 @@
 				<f:field property="vencimiento" wrapper="bootstrap3"  />
 				<f:display property="moneda" wrapper="bootstrap3"/>
 				<f:display property="tc" widget-class="form-control" wrapper="bootstrap3"/>
+				<f:field property="gastoPorComprobar" widget-class="form-control "  wrapper="bootstrap3"/>
 				<f:field property="concepto" wrapper="bootstrap3">
 					<g:select class="form-control"  
 						name="${property}" 
