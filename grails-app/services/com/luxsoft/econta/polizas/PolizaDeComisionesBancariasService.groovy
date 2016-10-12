@@ -31,7 +31,8 @@ class PolizaDeComisionesBancariasService extends ProcesadorService {
     		// def cuenta=CuentaContable.findByClave('600-0013')
     		// if(cuenta==null)
     		// 	throw new RuntimeException("No existe la cuenta contable 600-0013")
-            def cuenta = CuentaContable.buscarPorClave('107-V001')
+            //def cuenta = CuentaContable.buscarPorClave('107-V001')
+            def cuenta = CuentaContable.buscarPorClave('107-' + comision.cuenta.subCuentaOperativa)
             assert cuenta, 'No existe cuenta acredora ya sea para el proveedor o la generica provedores diversos'     
     		poliza.addToPartidas(
     			cuenta:cuenta,

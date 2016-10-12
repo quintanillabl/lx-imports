@@ -20,6 +20,7 @@ class CuentaBancaria {
 	int diasInversionIsr=365
 	int plazo=1
 	CuentaContable cuentaContable
+	String subCuentaOperativa
 
 	String cuentaRetencion
 	
@@ -40,6 +41,7 @@ class CuentaBancaria {
 		tasaIsr(nullabl:true) 
 		diasInversionIsr(nullable:true)
 		cuentaRetencion nullable:true
+		subCuentaOperativa(nullable:true,maxSize:4)
     }
 	
 	static mapping ={
