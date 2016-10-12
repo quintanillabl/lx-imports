@@ -100,8 +100,7 @@ class ComprobanteFiscalService {
             emisorRfc:rfc,
             receptorRfc:receptorRfc,
             total:total,
-            fecha:fecha,
-            gastoPorComprobar: false
+            fecha:fecha
         )
         
         cxp.proveedor=proveedor
@@ -118,6 +117,7 @@ class ComprobanteFiscalService {
         cxp.retTasa=0
         cxp.retImp=0
         cxp.comentario="CFDI Importado"
+        cxp.gastoPorComprobar = false
 
         def traslados=xml.breadthFirst().find { it.name() == 'Traslados'}
         if(traslados){
