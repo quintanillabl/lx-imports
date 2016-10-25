@@ -13,7 +13,7 @@
 					
 					<f:field property="concepto" wrapper="bootstrap3">
 						<g:hiddenField id="conceptoId" name="concepto.id"/>
-						<g:field type="text" id="concepto" name="conceptoDesc" required="true" 
+						<g:field type="text" id="conceptoField" name="conceptoDesc" required="true" 
 							class="form-control "/>
 					</f:field>
 
@@ -60,7 +60,15 @@
 	</div>
 	<script>
 	$(function(){
-		$("#concepto").autocomplete({
+		// $("#concepto").autocomplete({
+		// 	source:'<g:createLink controller="cuentaContable" action="cuentasDeDetalleJSONList"/>',
+		// 	minLength:1,
+		// 	select:function(e,ui){
+		// 		console.log('Valor seleccionado: '+ui.item.id);
+		// 		$("#conceptoId").val(ui.item.id);
+		// 	}
+		// });
+		$("#conceptoField").autocomplete({
 			source:'<g:createLink controller="cuentaContable" action="cuentasDeDetalleJSONList"/>',
 			minLength:1,
 			select:function(e,ui){
@@ -70,8 +78,8 @@
 		});
 
 		$('body').on('shown.bs.modal', '.modal', function () {
- 				    $('[id$=concepto]').focus();
- 				});
+ 			$('[id$=concepto]').focus();
+ 		});
 		
 		$("#eliminarBtn").click(function(e){
 			eliminar();
@@ -113,18 +121,12 @@
 			var descuento=$("#descuento").autoNumeric('get');
 			var descuento=$("#rembolso").autoNumeric('get');
 			var descuento=$("#otros").autoNumeric('get');
-
 			var impuesto=importe*(ivaTasa/100);
-			
-
-
-
-
 		};
 		$("input[type='text']").on("focusout",function(){
-			
 			//actualizar();
 		});
+		
 		
 	});
 	
