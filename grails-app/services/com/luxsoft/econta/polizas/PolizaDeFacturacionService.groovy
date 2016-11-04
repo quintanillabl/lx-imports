@@ -164,7 +164,7 @@ class PolizaDeFacturacionService extends ProcesadorService{
     private procesarNotasDeCargoCxC(def poliza,def dia){
         def asiento='NOTAS DE CARGO CXC'
         
-        def notas=Venta.findAll ("from Venta v where v.tipo='NOTA_DE_CARGO' and date(v.fecha)=?",[dia])
+        def notas=Venta.findAll ("from Venta v where v.tipo='NOTA_DE_CARGO' and date(v.fecha)=? and comentario <> 'CANCELACION'",[dia])
         
         notas.each{ nota ->
             
@@ -265,9 +265,15 @@ class PolizaDeFacturacionService extends ProcesadorService{
 
     def procesarComplementos(def poliza){
         poliza.partidas.each { polizaDet ->
-            def serie = polizaDet.entidad == 'Venta' ? 'FAC' : 'CAR'
+          
+            def serie = polizaDet.entidad == 'Venta' && polizaDet.asiento != 'NOTAS DE CARGO CXC'  ? 'FAC' : 'CAR'
             def row = polizaDet.origen
-            def cfdi = Cfdi.where {serie == serie && origen == row}.find()
+            
+
+            def cfdi = Cfdi.where {serie == serie && origen == row && origen!='CANCELACION' }.find()
+
+               
+
             def comprobante = new ComprobanteNacional(
                   polizaDet:polizaDet,
                   uuidcfdi:cfdi.uuid,

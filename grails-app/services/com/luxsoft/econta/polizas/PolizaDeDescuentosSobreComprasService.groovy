@@ -7,6 +7,8 @@ import com.luxsoft.impapx.tesoreria.*
 import com.luxsoft.impapx.Venta
 import com.luxsoft.impapx.cxp.NotaDeCredito
 import com.luxsoft.cfdi.*
+import com.luxsoft.impapx.contabilidad.*
+import com.luxsoft.impapx.cxp.*
 
 @Transactional
 class PolizaDeDescuentosSobreComprasService extends ProcesadorService{
@@ -16,6 +18,7 @@ class PolizaDeDescuentosSobreComprasService extends ProcesadorService{
 
         def dia = poliza.fecha
         procesarDescuentosCxP poliza,dia
+        procesarComplementos(poliza)
     }
 
     private procesarDescuentosCxP(def poliza,def dia){
@@ -53,5 +56,24 @@ class PolizaDeDescuentosSobreComprasService extends ProcesadorService{
     			,origen:nota.id)
     		
     	}
+    }
+
+    def procesarComplementos(def poliza){
+
+        poliza.partidas.each {polizaDet ->
+
+            if(polizaDet.entidad == 'NotaDeCredito'){
+                def nota = NotaDeCredito.get(polizaDet.origen)
+                def comprobante = new ComprobanteExtranjero(
+                    polizaDet:polizaDet,
+                    numFacExt: nota.documento,
+                    taxId: nota.proveedor.rfc,
+                    montoTotal: nota.total,
+                    moneda: nota.moneda.getCurrencyCode(),
+                    tipCamb: nota.tc
+                )
+                polizaDet.comprobanteExtranjero = comprobante
+            }
+        }
     }
 }

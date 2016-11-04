@@ -26,6 +26,7 @@ class ComprobanteExtranjero {
 
     static constraints = {
     	taxId nullable:true
+        tipCamb scale:5
     }
 
     static belongsTo = [polizaDet:PolizaDet]

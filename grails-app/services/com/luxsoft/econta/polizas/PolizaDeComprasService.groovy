@@ -532,12 +532,15 @@ class PolizaDeComprasService extends ProcesadorService{
             if(polizaDet.entidad == 'CuentaPorPagar' || polizaDet.entidad == 'GastosDeImportacion'){
                 def cxp = com.luxsoft.impapx.CuentaPorPagar.get(polizaDet.origen)
                 if(cxp.instanceOf(FacturaDeImportacion)){
+                    //def pedimento=EmbarqueDet.executeQuery('select d.pedimento from EmbarqueDet d where d.factura=?',[cxp])
+                    def det = EmbarqueDet.find('from EmbarqueDet d where d.factura=?', [cxp])
                     def comprobante = new ComprobanteExtranjero(
                         polizaDet:polizaDet,
                         numFacExt: cxp.documento,
+                        taxId: cxp.proveedor.rfc,
                         montoTotal: cxp.total,
                         moneda: cxp.moneda.getCurrencyCode(),
-                        tipCamb: cxp.tc
+                        tipCamb: det.pedimento.tipoDeCambio
                     )
                     polizaDet.comprobanteExtranjero = comprobante
                 }

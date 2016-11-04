@@ -75,7 +75,14 @@ class PolizaDeNotaDeCreditoService extends ProcesadorService{
         poliza.partidas.each { polizaDet ->
             def serie = 'CRE'
             def row = polizaDet.origen
-            def cfdi = Cfdi.where {serie == serie && origen == row}.find()
+
+            
+
+            def cfdi = Cfdi.where {serie == serie && origen == row && origen!='CANCELACION'}.find()
+
+           
+
+
             def comprobante = new ComprobanteNacional(
                   polizaDet:polizaDet,
                   uuidcfdi:cfdi.uuid,

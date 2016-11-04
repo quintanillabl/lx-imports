@@ -752,7 +752,9 @@ class PolizaDeEgresosService extends ProcesadorService{
                             monto:egreso.importe.abs(),
                             cuentaDestino: pago.cuentaDestino,
                             bancoDestinoNacional: pago.bancoDestino,
-                            bancoDestinoExtranjero: pago.bancoDestinoExt
+                            bancoDestinoExtranjero: pago.bancoDestinoExt,
+                            moneda: pago.egreso.cuenta.moneda.toString(),
+                            tipoDeCambio: pago.egreso.tc
                         )
                         polizaDet.transaccionTransferencia=transferencia
                     } else {
@@ -767,7 +769,9 @@ class PolizaDeEgresosService extends ProcesadorService{
                             monto:egreso.importe.abs(),
                             bancoDestinoNacional: pago.bancoDestino,
                             cuentaDestino: pago.cuentaDestino,
-                            bancoDestinoExtranjero: pago.bancoDestinoExt
+                            bancoDestinoExtranjero: pago.bancoDestinoExt,
+                            moneda: pago.egreso.cuenta.moneda.toString(),
+                            tipoDeCambio: pago.egreso.tc
                         )
                         polizaDet.transaccionTransferencia=transferencia
                     }
