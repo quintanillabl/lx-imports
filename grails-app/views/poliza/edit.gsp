@@ -68,6 +68,22 @@
 	        		    	</a> 
 	        		    </g:if>
 	        		</div>
+	        		<div class="btn-group">
+				    <button type="button" name="reportes"
+				            class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+				            role="menu">
+				            Reportes <span class="caret"></span>
+				    </button>
+
+				    <ul class="dropdown-menu">
+				    	<li>
+				    		<g:link action="printComplemento"  id="${polizaInstance.id}">
+				    		    <i class="fa fa-print"></i> Complementos
+				    		</g:link> 
+				    	</li>
+				        
+				    </ul>
+				</div>
 	        		
 	        	    <div class="ibox-tools">
 	        	        <a class="collapse-link">

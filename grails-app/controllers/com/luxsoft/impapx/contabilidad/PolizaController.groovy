@@ -216,6 +216,30 @@ class PolizaController {
 	        fileName:file)
 	}
 
+	def printComplemento(Poliza poliza){
+        def command = null
+        params.COMPANY=session.empresa.nombre
+	    params.POLIZA_ID=poliza.id
+	    
+	    if(poliza.partidas.find {it.transaccionCheque || it.transaccionTransferencia})
+	    	command = reportService.buildCommand(session.empresa,'PolizaComplementoMetodoPago')
+        else
+        	command = reportService.buildCommand(session.empresa,'PolizaComprobanteNacional')
+        try {
+            def stream=reportService.build(command,params)
+            def file="PolizaComplemento_${poliza.subTipo}_${poliza.folio}.pdf"
+	    	render(
+                file: stream.toByteArray(), 
+                contentType: 'application/pdf',
+                fileName:file)
+        }
+        catch(Exception e) {
+            String msg="Error ejecutando reporte $command.reportName" + ExceptionUtils.getRootCauseMessage(e)
+            throw new RuntimeException(msg)
+        }
+        
+    }
+
 	def generarPoliza(GenerarCommand command){
 
 

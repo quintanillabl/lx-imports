@@ -678,6 +678,8 @@ class PolizaDeEgresosService extends ProcesadorService{
         egresos.each{ egreso ->
 
             def fp=egreso.tipo.substring(0,2)
+
+            def pago = PagoProveedor.where {egreso == egreso}.find()
            
             def descripcion="$fp-${egreso.referenciaBancaria?:''} PAPEL S.A. (Reembolso choferes) "
             
@@ -700,8 +702,8 @@ class PolizaDeEgresosService extends ProcesadorService{
                 referencia:"$egreso.referenciaBancaria"
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
-                ,entidad:'MovimientoDeCuenta'
-                ,origen:egreso.id)
+                ,entidad:'PagoProveedor'
+                ,origen:pago.id)
             
             //Abono a bancos
             def cuentaDeBanco=egreso.cuenta
@@ -716,8 +718,8 @@ class PolizaDeEgresosService extends ProcesadorService{
                 referencia:"$egreso.referenciaBancaria",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
-                ,entidad:'MovimientoDeCuenta'
-                ,origen:egreso.id)
+                ,entidad:'PagoProveedor'
+                ,origen:pago.id)
             
             
             procesarComplementos(poliza)
@@ -737,6 +739,7 @@ class PolizaDeEgresosService extends ProcesadorService{
             if(polizaDet.entidad == 'PagoProveedor'){
                 def pago = PagoProveedor.get(polizaDet.origen)
                 def proveedor = pago.requisicion.proveedor
+                assert proveedor.rfc, "El proveedor $proveedor no tiene rfc asignado"
                 def aFavor = pago.requisicion.proveedor.nombre
                 def egreso = pago.egreso
                 if(egreso.tipo == 'TRANSFERENCIA'){
@@ -779,9 +782,11 @@ class PolizaDeEgresosService extends ProcesadorService{
                 if(egreso.tipo == 'CHEQUE'){
                     if(egreso.cuenta.banco.nacional){
                         log.info('Generando transaccion CHEQUE NACIONAL')
+
                         def cheque=new TransaccionCheque(
                             polizaDet:polizaDet,
                             numero:egreso.referenciaBancaria,
+                            bancoEmisorNacional:egreso.cuenta.banco.bancoSat,
                             cuentaOrigen:egreso.cuenta.numero,
                             fecha:egreso.fecha,
                             beneficiario:aFavor,
@@ -792,7 +797,7 @@ class PolizaDeEgresosService extends ProcesadorService{
                         )
                         polizaDet.transaccionCheque=cheque
                     } else {
-                        log.info('Generando transaccion CHEQUE EXTRANJERO')
+                        //log.info('Generando transaccion CHEQUE EXTRANJERO')
                         def cheque=new TransaccionCheque(
                             polizaDet:polizaDet,
                             bancoEmisorExtranjero: egreso.cuenta.banco.nombre,

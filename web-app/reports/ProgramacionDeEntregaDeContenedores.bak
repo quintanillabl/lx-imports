@@ -227,8 +227,7 @@ $F{SUCURSAL}.equals( "SOLIS" ) ? "JOSE LUIS CONTRERAS ALONSO" :
 $F{SUCURSAL}.equals( "GACELA" ) ? "MIGUEL ANGEL GARCIA" :
 $F{SUCURSAL}.equals( "PROGRESO" ) ? "JOSE CORDOBA" :
 $F{SUCURSAL}.equals( "CF5FEBRERO" ) ? "JOSE LUIS CONTRERAS ALONSO" :
-$F{SUCURSAL}.equals( "QUERETARO" ) ? "FERNANDO SUSTERSICK" :
-$F{SUCURSAL}.equals( "PROMASA NORTE" ) ? "ING. RICARDO ESQUIVEL" : ""]]></textFieldExpression>
+$F{SUCURSAL}.equals( "QUERETARO" ) ? "FERNANDO SUSTERSICK" : ""]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement
@@ -271,8 +270,7 @@ $F{SUCURSAL}.equals( "SOLIS" ) ? "55 5740-7777" :
 $F{SUCURSAL}.equals( "GACELA" ) ? "55 5443-1012" :
 $F{SUCURSAL}.equals( "PROGRESO" ) ? "55 5727-0266" :
 $F{SUCURSAL}.equals( "CF5FEBRERO" ) ? "55 5740-7777" :
-$F{SUCURSAL}.equals( "QUERETARO" ) ? "01 442 215-4510" : 
-$F{SUCURSAL}.equals( "PROMASA NORTE" ) ? "55 5870-1018" :""]]></textFieldExpression>
+$F{SUCURSAL}.equals( "QUERETARO" ) ? "01 442 215-4510" : ""]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement
@@ -315,8 +313,7 @@ $F{SUCURSAL}.equals( "SOLIS" ) ? "ANTONIO SOLIS # 141, COL. OBRERA , Del. CUAUHT
 $F{SUCURSAL}.equals( "GACELA" ) ? "LEBRIJA # 480, COL. CERRO DE LA ESTRELLA,DEL. IZTAPALAPA, C.P. 09860, MEXICO, DISTRITO FEDERAL" :
 $F{SUCURSAL}.equals( "PROGRESO" ) ? "ANTONIO ROJAS # 7 BIS, COL. SAN SIMON TOLNAHUAC, C.P. 06920, MEXICO, DISTRITO FEDERAL" :
 $F{SUCURSAL}.equals( "CF5FEBRERO" ) ? "5 DE FEBRERO # 378, COL. OBRERA , Del. CUAUHTEMOC, C.P. 06800, MEXICO DISTRITO FEDERAL" :
-$F{SUCURSAL}.equals( "QUERETARO" ) ? "GRACIANO SANCHEZ 3, Col. CASA BLANCA, Del. QUERETARO QRO., C.P. 76030, MEXICO QUERETARO QRO." : 
-$F{SUCURSAL}.equals( "PROMASA NORTE" ) ? "CARRETERA MEXICO-CUAUTITLAN Km 31.5 CONJUNTO INDUSTRIAL CUAUTITLAN, (CIC) NAVE 22 LOMA BONITA 54800" :""]]></textFieldExpression>
+$F{SUCURSAL}.equals( "QUERETARO" ) ? "GRACIANO SANCHEZ 3, Col. CASA BLANCA, Del. QUERETARO QRO., C.P. 76030, MEXICO QUERETARO QRO." : ""]]></textFieldExpression>
 				</textField>
 			</band>
 			</groupFooter>

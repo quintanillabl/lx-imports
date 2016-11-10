@@ -28,12 +28,14 @@ class PolizaDeCompraDolaresService extends ProcesadorService{
             
             //Cargo a la cuenta destino
             def cuentaDestino = compra.cuentaDestino
-           
+            def proveedor = compra.requisicion.proveedor
+            assert proveedor.subCuentaOperativa, 'No se ha registrado sub cuenta operativa para el proveedor: '+proveedor
+            def  cuenta = CuentaContable.buscarPorClave('205-'+ proveedor.subCuentaOperativa)
             def importe = compra.ingreso.importe.abs()*compra.tipoDeCambioCompra
             //(def poliza,def cuenta,def importe,def descripcion,def asiento,def referencia,def entidad)
             def det = cargoA(
                 poliza,
-                cuentaDestino.cuentaContable,
+                cuenta,
                 importe,
                 descripcion, 
                 asiento, 
