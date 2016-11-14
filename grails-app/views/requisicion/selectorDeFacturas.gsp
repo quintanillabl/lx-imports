@@ -35,6 +35,7 @@
 	            		<thead>
 	            			<tr>
 	            				<th>Folio</th>
+	            				<th>Proveedor</th>
 	            				<th>Documento</th>
 	            				<th>Fecha</th>
 	            				<th>Vencimiento</th>
@@ -42,6 +43,7 @@
 	            				<th>Total</th>
 	            				<th>Saldo</th>
 	            				<th>Requisitado</th>
+	            				<th>Ej-Sem</th>
 	            				%{-- <th>Pendiente</th> --}%
 	            			</tr>
 	            		</thead>
@@ -49,6 +51,7 @@
 	            			<g:each in="${cuentaPorPagarInstanceList}" var="row">
 	            			<tr id="${row.id}">	
 	            				<td>${row.id}</td>
+	            				<td>${fieldValue(bean: row, field: "proveedor.nombre")}</td>
 	            				<td>${fieldValue(bean: row, field: "documento")}</td>
 	            				<td><lx:shortDate date="${row.fecha}"/></td>
 	            				<td><lx:shortDate date="${row.vencimiento }"/></td>
@@ -56,6 +59,8 @@
 	            				<td><lx:moneyFormat number="${row.total }"/></td>
 	            				<td><lx:moneyFormat number="${row.saldoActual }"/></td>
 	            				<td><lx:moneyFormat number="${row.requisitado }"/></td>
+	            				<td>${row.fecha[Calendar.YEAR]} - S${row.fecha[Calendar.WEEK_OF_YEAR]}</td>
+	            				
 	            				%{-- <td><lx:moneyFormat number="${row.pendienteRequisitar }"/></td> --}%
 	            			</tr>
 	            			</g:each> 

@@ -71,7 +71,6 @@
 					<thead>
 						<tr>
 							<th>Folio</th>
-							<th>Clave</th>
 							<th>Nombre</th>
 							<th>RFC</th>
 							<th>Modificado</th>
@@ -85,10 +84,8 @@
 										${fieldValue(bean:row,field:"id")}
 									</g:link>
 								</td>
-								<td >
-									<g:link  action="edit" id="${row.id}">
-										${fieldValue(bean:row,field:"clave")}
-									</g:link>
+								<td>
+									
 								</td>
 								<td>
 									<g:link  action="edit" id="${row.id}">

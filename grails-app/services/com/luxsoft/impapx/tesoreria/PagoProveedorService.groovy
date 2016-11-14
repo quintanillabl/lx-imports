@@ -9,7 +9,7 @@ class PagoProveedorService {
 
     def registrarEgreso(PagoProveedor pago) {
 		def requisicion=pago.requisicion
-		println 'Pagando con requisicion: '+requisicion
+		
 		if(pago.cuenta.moneda!=MonedaUtils.PESOS){
 			//Localizar el tipo de cambio 
 		}
@@ -25,6 +25,9 @@ class PagoProveedorService {
 			,referenciaBancaria: pago.referencia
 			,concepto:"Pago: $requisicion.proveedor.nombre  $requisicion.concepto" 
 			,comentario:'PAGO REQUISICION:'+requisicion.id)
+		if(pago.requisicion.proveedor.subCuentaOperativa == 'F001'){
+			egreso.grupo = true
+		}
 		
 		def cxp=new Pago(
 			proveedor:requisicion.proveedor

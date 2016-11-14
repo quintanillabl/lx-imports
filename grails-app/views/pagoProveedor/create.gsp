@@ -148,8 +148,10 @@
 					//$("#aFavor").val(ui.item.afavor);
 					//$("#fecha").val(ui.item.pago);
 					var fp = ui.item.formaDePago;
+					var subCuentaOperativa = ui.item.subCuentaOperativa;
+					console.log('Cuenta operativa: ' + subCuentaOperativa);
 					$("#formaDePago").val(fp);
-					if(fp === 'TRANSFERENCIA'){
+					if(fp === 'TRANSFERENCIA' && subCuentaOperativa !== 'F001'){
 						console.log('TR: ' + fp);
 						
 						$("#bancoDestinoField").prop( "disabled", false );

@@ -24,6 +24,8 @@ class MovimientoDeCuenta {
 	boolean ingreso
 	//Cheque cheque
 	CuentaContable cuentaDeudora
+
+	boolean grupo = false
 	
 	static belongsTo =[Traspaso,Comision,PagoProveedor,CompraDeMoneda]
 	//static hasOne =[cheque:Cheque]
@@ -40,6 +42,7 @@ class MovimientoDeCuenta {
 		origen(blank:false,maxSize:70)
 		concepto(blank:false,maxSize:255)
 		cuentaDeudora(nullable:true)
+		
 		//cheque(nullable:true)
     }
 	

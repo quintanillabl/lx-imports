@@ -29,6 +29,11 @@
 				<f:display property="retTasa" widget="porcentaje" widget-class="form-control" wrapper="bootstrap3"/>
 				<f:display property="retImp" widget="money" wrapper="bootstrap3"/>
 				<f:display property="total" widget="money" wrapper="bootstrap3"/>
+
+				<f:display property="descuento" widget="money" wrapper="bootstrap3"/>
+				<f:display property="rembolso" widget="money" wrapper="bootstrap3" label="Vales"/>
+				<f:display property="otros" widget="money" wrapper="bootstrap3"/>
+				<f:display property="saldoActual" widget="money" wrapper="bootstrap3" label="Saldo"/>
 			</div>
 		</div>
 	</f:with>

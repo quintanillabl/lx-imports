@@ -14,6 +14,9 @@
 				<f:field property="paisDeOrigen" wrapper="bootstrap3" widget-class="form-control"/>
 	  			<f:field property="nacionalidad" wrapper="bootstrap3" widget-class="form-control"/>
 	  			<f:field property="subCuentaOperativa" wrapper="bootstrap3" widget-class="form-control"/>
+	  			<f:field property="cuentaBancaria" wrapper="bootstrap3" widget-class="form-control"/>
+	  			<f:field property="bancoDestino" wrapper="bootstrap3" widget-class="form-control"/>
+	  			
 			</div>
 			<div class="col-md-6">
 				<f:field property="correoElectronico" wrapper="bootstrap3" widget-class="form-control"/>

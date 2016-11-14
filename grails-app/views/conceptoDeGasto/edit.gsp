@@ -58,7 +58,7 @@
 	                            <button id="saveBtn" class="btn btn-primary ">
 	                                <i class="fa fa-floppy-o"></i> Actualizar
 	                            </button>
-	                            <lx:backButton/>
+	                            <lx:backButton controller="facturaDeGastos" action="edit" id="${conceptoDeGastoInstance.factura.id}"/>
 	                        </div>
 	                    </div>
 	                </g:form>

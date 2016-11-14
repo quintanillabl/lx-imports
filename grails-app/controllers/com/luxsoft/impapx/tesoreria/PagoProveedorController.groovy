@@ -154,7 +154,8 @@ class PagoProveedorController {
 			[id:req.id,
 			label:desc,
 			value:desc,
-            formaDePago:req.formaDePago.toString()
+            formaDePago:req.formaDePago.toString(),
+            subCuentaOperativa: req.proveedor.subCuentaOperativa
 			]
 		}
 		render requisicionesList as JSON

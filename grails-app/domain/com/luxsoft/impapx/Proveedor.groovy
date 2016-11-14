@@ -1,6 +1,7 @@
 package com.luxsoft.impapx
 
 import com.luxsoft.impapx.contabilidad.CuentaContable
+import com.luxsoft.lx.sat.BancoSat
 
 class Proveedor {
 	
@@ -17,6 +18,9 @@ class Proveedor {
 	boolean vencimentoBl=false
 	//CuentaContable cuentaContable
 	String subCuentaOperativa
+
+	String cuentaBancaria
+	BancoSat bancoDestino
 
 	String paisDeOrigen
 
@@ -47,6 +51,8 @@ class Proveedor {
 		subCuentaOperativa(nullable:true,maxSize:4)
 		paisDeOrigen(nullable:true)
 		nacionalidad(nullable:true)
+		cuentaBancaria nullable:true, maxSize:30
+		bancoDestino nullable:true
 		//agenciaAduanal nullable:true
     }
 	
