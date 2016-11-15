@@ -49,7 +49,7 @@ class Empresa {
 				CertificateFactory fact= CertificateFactory.getInstance("X.509","BC")
 				InputStream is=new ByteArrayInputStream(certificadoDigital)
 				certificado = (X509Certificate)fact.generateCertificate(is)
-				certificado.checkValidity()
+				//certificado.checkValidity()
 					//is.closeQuietly();
 				is.close();
 				this.certificado=certificado

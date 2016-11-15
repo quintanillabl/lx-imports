@@ -115,7 +115,7 @@ class EmpresaController {
         def file=request.getFile('file')
         empresaInstance.llavePrivada=file.getBytes()
         empresaInstance.save flush:true
-        forward action: 'edit',id:empresaInstance.id
+        redirect action: 'edit',id:empresaInstance.id
         
     }
 
@@ -130,8 +130,8 @@ class EmpresaController {
         empresaInstance.numeroDeCertificado=file.getOriginalFilename()-'.cer'
         empresaInstance.certificadoDigital=file.getBytes()
         empresaInstance.save flush:true
-        forward action: 'edit',id:empresaInstance.id
-        
+        //forward action: 'edit',id:empresaInstance.id
+        redirect action: 'edit',id:empresaInstance.id
     }
 
     @Transactional
@@ -143,7 +143,8 @@ class EmpresaController {
         def file=request.getFile('file')
         empresaInstance.certificadoDigitalPfx=file.getBytes()
         empresaInstance.save flush:true
-        forward action: 'edit',id:empresaInstance.id
+        //forward action: 'edit',id:empresaInstance.id
+        redirect action: 'edit',id:empresaInstance.id
         
     }
 
