@@ -27,6 +27,8 @@ class Proveedor {
 	String nacionalidad
 
 	Boolean agenciaAduanal = false
+
+	String tipo
 	
 	
 	Date dateCreated
@@ -54,6 +56,7 @@ class Proveedor {
 		cuentaBancaria nullable:true, maxSize:30
 		bancoDestino nullable:true
 		//agenciaAduanal nullable:true
+		tipo nullable: true, maxSize:40
     }
 	
 	String toString(){

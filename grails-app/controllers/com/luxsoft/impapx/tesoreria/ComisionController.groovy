@@ -137,7 +137,7 @@ class ComisionController {
         log.info 'Buscando facturas: '+term
         def args=[term.toLowerCase()]
         def params=[max:30,sort:"fecha",order:"desc"]
-        def hql="from FacturaDeGastos g where g.comprobante.id != null and ( lower(g.proveedor.nombre) like ?)  and g not in(select c.cxp from Comision c) order by g.fecha desc"
+        def hql="from FacturaDeGastos g where g.concepto = 'COMISIONES_BANCARIAS' and g.comprobante.id != null and ( lower(g.proveedor.nombre) like ?)  and g not in(select c.cxp from Comision c) order by g.fecha desc"
         def list=FacturaDeGastos.findAll(hql,args,params)
         
         list=list.collect{ c->

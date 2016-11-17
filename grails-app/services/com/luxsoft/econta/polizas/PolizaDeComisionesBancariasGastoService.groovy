@@ -7,6 +7,7 @@ import com.luxsoft.impapx.contabilidad.Poliza
 import com.luxsoft.impapx.contabilidad.*
 import com.luxsoft.impapx.tesoreria.*
 import com.luxsoft.impapx.*
+import com.luxsoft.lx.utils.MonedaUtils
 
 @Transactional
 class PolizaDeComisionesBancariasGastoService extends ProcesadorService{
@@ -18,7 +19,10 @@ class PolizaDeComisionesBancariasGastoService extends ProcesadorService{
         
         def gastos = FacturaDeGastos.where {concepto == 'COMISIONES_BANCARIAS' && gastoPorComprobat && fecha == fecha }.list().each { gasto ->
             
-            def desc = "Comisión F:${gasto.documento} (${gasto.fecha}) ${gasto.proveedor.nombre} "
+            def desc = "F:${gasto.documento} (${gasto.fecha.text()}) ${gasto.proveedor.nombre} "
+            if(gasto.tc > 0.0){
+                desc = "F:${gasto.documento} (${gasto.fecha.text()}) TC: ${gasto.tc} ${gasto.proveedor.nombre} "
+            }
             //Cargo a gastos
             cargoAGastos(poliza,gasto,desc,'COMISION_GASTO')
             
@@ -36,7 +40,9 @@ class PolizaDeComisionesBancariasGastoService extends ProcesadorService{
             assert det.concepto,"Detalle del gasto sin cuenta contable ${gasto.id}"
             def cuenta = det.concepto
             def referencia = 'F:'+gasto.documento
-            cargoA(poliza,cuenta,det.importe,descripcion,asiento,referencia,gasto)
+            def importe = det.importe * gasto.tc
+            importe = MonedaUtils.round(importe)
+            cargoA(poliza,cuenta,importe,descripcion,asiento,referencia,gasto)
         }
     }
     
@@ -46,8 +52,9 @@ class PolizaDeComisionesBancariasGastoService extends ProcesadorService{
         def cuenta = CuentaContable.buscarPorClave('107-' + gasto.proveedor.subCuentaOperativa)
         assert cuenta, 'No existe cuenta acredora ya sea para el proveedor o la generica provedores diversos'
         def referencia = 'F:'+gasto.documento
-        //cargoA(poliza,cuenta,det.importe,descripcion,asiento,referencia,gasto)
-        abonoA(poliza,cuenta,gasto.importe,descripcion,asiento,referencia,gasto)
+        def importe = gasto.importe * gasto.tc
+            importe = MonedaUtils.round(importe)
+        abonoA(poliza,cuenta,importe,descripcion,asiento,referencia,gasto)
     }
 
     def cargoA(def poliza,def cuenta,def importe,def descripcion,def asiento,def referencia,def entidad){
@@ -85,7 +92,8 @@ class PolizaDeComisionesBancariasGastoService extends ProcesadorService{
     }
 
     def addComplemento(def polizaDet, def cxp){
-        if(cxp?.comprobante){
+        log.info("Generando complemento para : " + cxp)
+        if(cxp.comprobante){
             log.info("Agregando complenento de comprobante nacional para cxp: $cxp.documento  UUID:${cxp.comprobante?.uuid}")
             def cfdi = cxp.comprobante
             def comprobante = new ComprobanteNacional(

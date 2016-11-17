@@ -209,6 +209,7 @@
 			$(".money").autoNumeric('init',{wEmpty:'zero',mRound:'B',aSign: '$'});
 			$(".tc").autoNumeric('init',{vMin:'0.0000'});
 			$(".porcentaje").autoNumeric('init',{altDec: '%', vMax: '99.99'});
+			$(".tc").autoNumeric('init',{vMin:'0.0000'});
 		});
 	</script>
 </content>
