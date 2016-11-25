@@ -644,27 +644,36 @@ class PolizaDeEgresosService extends ProcesadorService{
     			,origen:pago.id)
     		
     		//Cargo a proveedor
+            /*
     		def proveedor=pago.requisicion.proveedor
-    		
     		def clave="205-$proveedor.subCuentaOperativa"
-    		//println 'Localizando cuenta operativa contable para Proveedor: '+proveedor
             def cuenta = CuentaContable.findByClave(clave)
-    		//def cuenta=CuentaContable.buscarPorClave(clave)
             assert cuenta, 'No existe la cuenta operativa para el proveedor: '+proveedor+ '  '+ clave
-    		def requisicion=pago.requisicion
-    		poliza.addToPartidas(
-    			cuenta:cuenta,
-    			debe:pago.egreso.importe.abs(),
-    			haber:0.0,
-    			asiento:asiento,
-    			//descripcion:"$pago.egreso.cuenta ",
+    		*/
+        
+            def requisicion=pago.requisicion
+            requisicion.partidas.each { rdet ->
+
+                def fac=det.factura
+                def proveedor=fac.proveedor
+                def clave="205-$proveedor.subCuentaOperativa"
+                def cuenta = CuentaContable.findByClave(clave)
+                assert cuenta, 'No existe la cuenta operativa para el proveedor: '+proveedor+ '  '+ clave
+
+                poliza.addToPartidas(
+                cuenta:cuenta,
+                debe:pago.egreso.importe.abs(),
+                haber:0.0,
+                asiento:asiento,
                 descripcion: descripcion,
-    			referencia:"$pago.egreso.referenciaBancaria"
-    			,fecha:poliza.fecha
-    			,tipo:poliza.tipo
-    			,entidad:'PagoProveedor'
-    			,origen:pago.id)
-    		procesarComplementos(poliza)
+                referencia:"$pago.egreso.referenciaBancaria"
+                ,fecha:poliza.fecha
+                ,tipo:poliza.tipo
+                ,entidad:'PagoProveedor'
+                ,origen:pago.id)
+                procesarComplementos(poliza)
+            }
+            
     		cuadrar(poliza)
 		    depurar(poliza)
 			save poliza
