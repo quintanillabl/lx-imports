@@ -92,4 +92,23 @@ class RequisicionDetController {
             '*'{ render status: NOT_FOUND }
         }
     }
+
+    def getFacturasDisponibles() {
+
+        def term=params.term+'%'
+        log.info 'Buscando facturas: '+term
+        def args=[term.toLowerCase()]
+        def params=[max:30,sort:"fecha",order:"desc"]
+        def hql="from FacturaDeGastos g where g.proveedor.tipo = 'FLETES' and g.comprobante.id != null and ( lower(g.proveedor.nombre) like ?)  and g not in(select c.factura from RequisicionDet c) order by g.fecha desc"
+        def list=FacturaDeGastos.findAll(hql,args,params)
+        
+        list=list.collect{ c->
+            def nombre="$c.proveedor.nombre ${c.fecha.text()} F: ${c.comprobante?.folio} ($c.importe) "
+            [id:c.id,
+            label:nombre,
+            value:nombre]
+        }
+        def res=list as JSON
+        render res
+    }
 }

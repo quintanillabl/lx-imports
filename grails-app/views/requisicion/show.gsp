@@ -88,7 +88,14 @@
 					<tbody>
 						<g:each in="${requisicionInstance.partidas}" var="row">
 							<tr id="${row.id}">
-							    <td>${fieldValue(bean: row, field: "documento")}</td>
+								<td>
+									<g:link controller="requisicionDet" action="edit" id="${row.id}">
+										${fieldValue(bean: row, field: "documento")}</td>
+									</g:link>
+								</td>
+							    <td>
+
+							    
 								<td><lx:shortDate date="${row.fechaDocumento}" /></td>
 								<td><lx:moneyFormat number="${row.totalDocumento }" /></td>
 								<td><lx:moneyFormat number="${row.total }" /></td>

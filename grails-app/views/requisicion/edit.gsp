@@ -90,6 +90,10 @@
 				    	</g:link> 
 				    	<a id="eliminarPartidas" class="btn btn-danger"><i class="fa fa-trash"></i> Eliminar partidas</a> 
 				    </g:if> 
+				    <g:link action="selectorDeFacturas" 
+				    		class="btn btn-default " id="${requisicionInstance.id}">
+				    	    <i class="fa fa-cart-plus"></i> Agregar factura
+				    </g:link> 
 				</div>
 				<table class=" grid table  table-hover table-bordered table-condensed">
 					<thead>

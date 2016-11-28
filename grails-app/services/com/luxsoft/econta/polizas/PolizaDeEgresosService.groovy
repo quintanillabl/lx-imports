@@ -652,7 +652,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     		*/
         
             def requisicion=pago.requisicion
-            requisicion.partidas.each { rdet ->
+            requisicion.partidas.each { det ->
 
                 def fac=det.factura
                 def proveedor=fac.proveedor

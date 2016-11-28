@@ -147,8 +147,11 @@ class PolizaDeFleteService extends ProcesadorService{
     			,origen:fac.id)
     		
     		//Abono a Acredores
+            assert fac.proveedor.subCuentaOperativa, 'No se ha registrado la sub cuenta operativa para :' + fac.proveedor
+            def ctaChofer = CuentaContable.findByClave("205-" + fac.proveedor.subCuentaOperativa)
+            assert ctaChofer, 'No existe la cuenta contable ' + "205-" + fac.proveedor.subCuentaOperativa + ' Requerida para el proveedor/flete : ' + fac.proveedor
     		poliza.addToPartidas(
-    			cuenta:CuentaContable.buscarPorClave("205-F001"),
+    			cuenta:ctaChofer,
     			debe:0.0,
     			haber:fac.total-(fac.descuento?:0.0)-(fac.rembolso?:0.0)-(fac.otros?:0.0),
     			asiento:asiento,

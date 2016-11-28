@@ -123,9 +123,9 @@ class RequisicionController {
     def selectorDeFacturas(Requisicion requisicion){
         def hql="from CuentaPorPagar p where p.proveedor=?   and p.total-p.requisitado>0 and moneda=? and total-pagosAplicados>0 order by p.fecha,p.documento "
         def res = []
-        if(requisicion.proveedor.subCuentaOperativa == 'F001') {
-            hql="from CuentaPorPagar p where date(p.fecha)>=? and p.proveedor.subCuentaOperativa = ?   and p.total-p.requisitado>0 and moneda=? and total-pagosAplicados>0 order by p.fecha,p.documento "
-            res=CuentaPorPagar.findAll(hql,[Date.parse('dd/MM/yyyy','01/01/2015'),'F001',requisicion.moneda])
+        if(requisicion.proveedor.tipo == 'FLETES') {
+            hql="from CuentaPorPagar p where date(p.fecha)>=? and p.proveedor.tipo = ?   and p.total-p.requisitado>0 and moneda=? and total-pagosAplicados>0 order by p.fecha,p.documento "
+            res=CuentaPorPagar.findAll(hql,[Date.parse('dd/MM/yyyy','01/01/2015'),'FLETES',requisicion.moneda])
             [requisicionInstance:requisicion,cuentaPorPagarInstanceList:res,cuentasPorPagarTotal:res.size()]
         } else {
             res=CuentaPorPagar.findAll(hql,[requisicion.proveedor,requisicion.moneda])

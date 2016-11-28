@@ -209,4 +209,49 @@ class CoreTagLib {
         """
         out<<sb.toString()
     }
+
+    def warningLabel = {
+        if(flash.message) {
+            out << " <small><span class='label label-warning' >${flash.message}</span></small> "
+        }
+        //out << "<g:if test=${flash.message}><small><span class='label label-warning' >${flash.message}</span></small></g:if> "
+    }
+
+    def ibox = { attrs, body ->
+        out << "<div class='ibox float-e-margins'>"
+        out << body()
+        out << "</div>"
+    }
+
+    def iboxContent = { attrs, body ->
+        out << "<div class='ibox-content'>"
+        out << body()
+        out << "</div>"
+    }
+
+    /**
+     * Titulo para el Ibox
+     * 
+     * @attrs title  Título para el ibox
+     */
+    def iboxTitle2 = { attrs, body ->
+        out << "<div class='ibox-title'>"
+        out << "<h5>${attrs.title}</h5>"
+        out << body()
+        out << "</div>"
+    }
+
+    def iboxTools = {attrs, body ->
+        out << "<div class='ibox-tools'>"
+        out << body()
+        out << "<a class='collapse-link'><i class='fa fa-chevron-up'></i></a>"
+        
+        out << "</div>" 
+    }
+
+    def iboxFooter = { attrs, body ->
+        out << "<div class='ibox-footer'>"
+        out << body()
+        out << "</div>"
+    }
 }
