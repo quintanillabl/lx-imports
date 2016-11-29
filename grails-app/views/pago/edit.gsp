@@ -10,7 +10,7 @@
 <body>
 
 <content tag="header">
-	Pago: ${pagoInstance}
+	Pago: ${pagoInstance} (${pagoInstance.proveedor})
 </content>
  	
 <content tag="subHeader">

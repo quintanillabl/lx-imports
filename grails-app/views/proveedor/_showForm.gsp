@@ -16,6 +16,7 @@
   			<f:display property="subCuentaOperativa" wrapper="bootstrap3"/>
   			<f:display property="cuentaBancaria" wrapper="bootstrap3" widget-class="form-control"/>
 	  		<f:display property="bancoDestino" wrapper="bootstrap3" widget-class="form-control"/>
+	  		<f:display property="tipo" wrapper="bootstrap3" widget-class="form-control"/>
 		</div>
 		<div class="col-md-6">
 			<f:display property="correoElectronico" wrapper="bootstrap3"/>

@@ -37,6 +37,7 @@
 								<th>Total</th>
 								<th>Pagos</th>
 								<th>Saldo</th>
+								<th>Ej-Sem</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -51,6 +52,7 @@
 								<td><lx:moneyFormat number="${row.total }"/></td>
 								<td><lx:moneyFormat number="${row.pagosAplicados }"/></td>
 								<td><lx:moneyFormat number="${row.saldoActual }"/></td>
+								<td>${row.fecha[Calendar.YEAR]} - S${row.fecha[Calendar.WEEK_OF_YEAR]}</td>
 							</tr>
 							</g:each> 
 						</tbody>

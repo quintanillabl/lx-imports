@@ -118,10 +118,17 @@ class PagoController {
 	def selectorDeFacturas(){
 		//println 'Selector de factoras para aplicaciones: '+params
 		def pago = Pago.get(params.id)
-		
-		def facturas=CuentaPorPagar
+		def facturas = []
+		if(pago.proveedor.tipo == 'FLETES'){
+			facturas = CuentaPorPagar
+			.findAll("from CuentaPorPagar p where p.proveedor.tipo = ? and date(p.fecha) >= ? and p.moneda=? and p.total-p.pagosAplicados>0"
+				,['FLETES',Date.parse('dd/MM/yyyy','31/12/2014'),pago.moneda])
+		} else {
+			facturas=CuentaPorPagar
 			.findAll("from CuentaPorPagar p where p.proveedor=? and p.moneda=? and p.total-p.pagosAplicados>0"
 				,[pago.proveedor,pago.moneda])
+		}
+		
 		[cuentaPorPagarInstanceList:facturas,cuentasPorPagarTotal:facturas.size(),abonoInstance:pago]
 	}
 	

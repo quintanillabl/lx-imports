@@ -25,7 +25,7 @@ class PagoProveedorService {
 			,referenciaBancaria: pago.referencia
 			,concepto:"Pago: $requisicion.proveedor.nombre  $requisicion.concepto" 
 			,comentario:'PAGO REQUISICION:'+requisicion.id)
-		if(pago.requisicion.proveedor.subCuentaOperativa == 'F001'){
+		if(pago.requisicion.proveedor.tipo == 'FLETES'){
 			egreso.grupo = true
 		}
 		
@@ -58,5 +58,11 @@ class PagoProveedorService {
 		pago.egreso=egreso
 		pago.pago=cxp
 		return pago.save(failOnError:true)
+    }
+
+    def eliminar(PagoProveedor pago){
+    	if(pago.egreso)
+    		pago.egreso.delete flush:true
+    	pago.delete flush:true
     }
 }

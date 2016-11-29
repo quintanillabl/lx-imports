@@ -140,8 +140,9 @@ class PagoProveedorController {
             redirect action: 'index'
             return
         }
-        pagoProveedorInstance.delete(flush: true)
-		flash.message = message(code: 'default.deleted.message', args: [message(code: 'pagoProveedor.label', default: 'PagoProveedor'), params.id])
+        //pagoProveedorInstance.delete(flush: true)
+        pagoProveedorService.eliminar(pagoProveedorInstance)
+		flash.message = "Pago a proveedor ${pagoProveedorInstance.id} eliminado"
         redirect action: 'index'
         
     }
