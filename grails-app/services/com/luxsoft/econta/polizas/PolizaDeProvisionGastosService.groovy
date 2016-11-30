@@ -24,7 +24,7 @@ class PolizaDeProvisionGastosService extends ProcesadorService{
 
         def dia = poliza.fecha
 
-    	def gastos=FacturaDeGastos.findAll("from FacturaDeGastos g where  date(g.fecha) = ? ",
+    	def gastos=FacturaDeGastos.findAll("from FacturaDeGastos g where  date(g.fecha) = ? and g.concepto != 'COMISIONES_BANCARIAS'",
     		[dia])
 
     	gastos=gastos.findAll { it.buscarSaldoAlCorte(dia) }
