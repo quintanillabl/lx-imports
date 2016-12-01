@@ -34,9 +34,9 @@ class PolizaDeEgresosService extends ProcesadorService{
 	    anticiposCompra(fecha)
 	    chequesCancelados(fecha)
 	    pagoChoferes(fecha)
-        prestamos(fecha)
-        rembolsoChoferes fecha
         
+        rembolsoChoferes fecha
+        prestamos(fecha)
 	    return "Polizas de egresos generadas para el dia ${fecha.text()}"
 	    
 	}
@@ -745,7 +745,7 @@ class PolizaDeEgresosService extends ProcesadorService{
         return "Procesador de polizas de egreso"
     }
 
-    private pertamos(def dia){
+    private prestamos(def dia){
         //Asiento: Anticipos
         
         def anticipos=PagoProveedor
