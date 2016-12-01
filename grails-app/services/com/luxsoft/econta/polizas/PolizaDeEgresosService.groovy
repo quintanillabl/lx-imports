@@ -34,6 +34,7 @@ class PolizaDeEgresosService extends ProcesadorService{
 	    anticiposCompra(fecha)
 	    chequesCancelados(fecha)
 	    pagoChoferes(fecha)
+        prestamos(fecha)
         rembolsoChoferes fecha
         
 	    return "Polizas de egresos generadas para el dia ${fecha.text()}"
@@ -742,6 +743,70 @@ class PolizaDeEgresosService extends ProcesadorService{
 
     String toString(){
         return "Procesador de polizas de egreso"
+    }
+
+    private pertamos(def dia){
+        //Asiento: Anticipos
+        
+        def anticipos=PagoProveedor
+        .findAll("from PagoProveedor p where p.requisicion.concepto in (?,?) and date(p.egreso.fecha)=?",['PRESTAMO',dia])
+        
+        
+        anticipos.each{ pago ->
+            
+            def fp=pago.egreso.tipo.substring(0,2)
+            def egreso=pago.egreso
+            
+            def req=pago.requisicion
+            def descripcion="$fp-${egreso.referenciaBancaria?:''} $req.proveedor ($req.concepto) "
+            Poliza poliza=build(dia,descripcion)
+
+            def clave="201-$req.proveedor.subCuentaOperativa"
+            def asiento='PRESTAMO'
+            
+
+            
+            //Abono a bancos
+            def cuentaDeBanco=pago.egreso.cuenta
+            if(cuentaDeBanco.cuentaContable==null)
+                throw new RuntimeException("Cuenta de banco sin cuenta contable asignada: $cuentaDeBanco")
+            poliza.addToPartidas(
+                cuenta:cuentaDeBanco.cuentaContable,
+                debe:0.0,
+                haber:pago.egreso.importe.abs()*pago.egreso.tc,
+                asiento:asiento,
+                descripcion:"$fp-${egreso.referenciaBancaria?:'ERROR'} $req.proveedor",
+                referencia:"$pago.egreso.referenciaBancaria",
+                ,fecha:poliza.fecha
+                ,tipo:poliza.tipo
+                ,entidad:'PagoProveedor'
+                ,origen:pago.id)
+            
+            //Cargo a proveedor
+            def proveedor=pago.requisicion.proveedor
+            clave="106-$proveedor.subCuentaOperativa"
+            def cuenta=CuentaContable.findByClave(clave)
+            if(!cuenta) throw new RuntimeException("No existe la cuenta para el proveedor: "+proveedor.nombre+ 'Clave: '+clave)
+            def requisicion=pago.requisicion
+            requisicion.partidas.each{ reqDet ->
+                poliza.addToPartidas(
+                    cuenta:cuenta,
+                    debe:reqDet.importe.abs()*pago.egreso.tc,
+                    haber:0.0,
+                    asiento:asiento,
+                    descripcion:"Ref:$reqDet.documento ",
+                    referencia:"$pago.egreso.referenciaBancaria"
+                    ,fecha:poliza.fecha
+                    ,tipo:poliza.tipo
+                    ,entidad:'PagoProveedor'
+                    ,origen:pago.id)
+            }
+            //Salvar la poliza
+            procesarComplementos(poliza)
+            cuadrar(poliza)
+            depurar(poliza)
+            save poliza
+        }
     }
 
     def procesarComplementos(def poliza){
