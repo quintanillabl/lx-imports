@@ -115,7 +115,7 @@ class PolizaDeComprasService extends ProcesadorService{
                         ,origen:factura.id)
                 }
                 if(variacionCambiaria<0){
-                    cuenta=CuentaContable.buscarPorClave("703-0003")
+                    cuenta=CuentaContable.buscarPorClave("702-0002")
                     poliza.addToPartidas(
                         cuenta:cuenta,
                         debe:0.0,

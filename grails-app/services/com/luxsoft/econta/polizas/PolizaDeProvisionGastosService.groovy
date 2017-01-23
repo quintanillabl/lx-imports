@@ -54,7 +54,7 @@ class PolizaDeProvisionGastosService extends ProcesadorService{
 			assert det.concepto,"Detalle del gasto sin cuenta contable ${gasto.id}"
 			def polizaDet = cargoA(poliza,
 				det.concepto,
-				det.importe,
+				det.importe*gasto.tc,
 				descripcion,
 				'PROVISION',
 				'F:'+gasto.documento,
@@ -87,13 +87,25 @@ class PolizaDeProvisionGastosService extends ProcesadorService{
 		}
 		def polizaDet = abonoA(poliza,
 			cta,
-			gasto.total,
+			gasto.total*gasto.tc,
 			descripcion,
 			'PROVISION',
 			'F:'+gasto.documento,
 			gasto
 		)
 		agregarComplemento(polizaDet,gasto)
+
+		if(gasto.retensionIsr){
+			def polizaDetRet = abonoA(poliza,
+			CuentaContable.buscarPorClave('216-0002'),
+			gasto.retensionIsr,
+			descripcion,
+			'PROVISION',
+			'F:'+gasto.documento,
+			gasto)
+			agregarComplemento(polizaDetRet,gasto)
+
+		}
 	}
 
 	def agregarComplemento(def polizaDet, def cxp){

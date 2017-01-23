@@ -243,9 +243,12 @@ class PolizaDeEgresosService extends ProcesadorService{
     				
     				if(c.tipo=='HONORARIOS AL CONSEJO ADMON'){
     					//Cargo a gasto concepto
+                        assert fac.proveedor.subCuentaOperativa,"El proveedor ${fac.proveedor} no tiene sub tuenta operativa"
+
+                        def cta = CuentaContable.buscarPorClave("205-"+fac.proveedor.subCuentaOperativa)
     					poliza.addToPartidas(
-    						cuenta:c.concepto,
-    						debe:c.importe,
+    						cuenta:cta,
+    						debe:c.total,
     						haber:0.0,
     						asiento:asiento,
     						descripcion:"Fac:$fac.documento ($fechaFac) $c.descripcion",
@@ -255,6 +258,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     						,entidad:'PagoProveedor'
     						,origen:pago.id)
     					//Abono al ISR de Honorarios al Consejo
+           /*             //
     					poliza.addToPartidas(
     						cuenta:CuentaContable.buscarPorClave("213-0007"),
     						debe:0.0,
@@ -265,7 +269,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     						,fecha:poliza.fecha
     						,tipo:poliza.tipo
     						,entidad:'PagoProveedor'
-    						,origen:pago.id)
+    						,origen:pago.id)*/
     				}
     				/*
     				else if(fFactura.toMonth()==fPago.toMonth()){
@@ -348,7 +352,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     					
     					poliza.addToPartidas(
     					cuenta:cuenta,
-    					debe:monto,
+    					debe:monto*pago.egreso.tc,
     					haber:0.0,
     					asiento:asiento,
     					//descripcion:"Fac:$fac.documento ($fechaFac) $c.descripcion",
@@ -407,27 +411,9 @@ class PolizaDeEgresosService extends ProcesadorService{
     				,entidad:'PagoProveedor'
     				,origen:pago.id)
     		
-    		def cuentaCargo=CuentaContable.buscarPorClave("900-0002")
-    		def cuentaAbono=CuentaContable.buscarPorClave("901-0002")
+    	
     		def c=req.partidas[0]?.factura?.conceptos.iterator().next()
-    		if(c!=null && c.tipo=='SEGUROS Y FIANZAS'){
-    			 cuentaCargo=CuentaContable.buscarPorClave("900-0007")
-    			 cuentaAbono=CuentaContable.buscarPorClave("901-0007")
-    		 
-    			 
-    		}
-    		if(c!=null && c.tipo=='GASTOS'){
-    			cuentaCargo=CuentaContable.buscarPorClave("900-0003")
-    			cuentaAbono=CuentaContable.buscarPorClave("901-0003")
-    	   }
-    		
-    		if(c!=null && c.tipo=='SERVICIOS INDEPENDIENTES'){
-    			cuentaCargo=CuentaContable.buscarPorClave("900-0006")
-    			cuentaAbono=CuentaContable.buscarPorClave("901-0006")
-    		
-    	   }
-    		
-    		
+    	
     		if(c!=null && c.tipo=='SEGUROS Y FIANZAS'){
     			//Amorti de activo diferido
     			
@@ -689,6 +675,8 @@ class PolizaDeEgresosService extends ProcesadorService{
 
         egresos.each{ egreso ->
 
+
+
             def fp=egreso.tipo.substring(0,2)
 
             def pago = PagoProveedor.where {egreso == egreso}.find()
@@ -704,6 +692,8 @@ class PolizaDeEgresosService extends ProcesadorService{
              
             def clave="205-P001"
             def cuenta=CuentaContable.buscarPorClave(clave)
+
+         
             
             poliza.addToPartidas(
                 cuenta:cuenta,
@@ -749,7 +739,7 @@ class PolizaDeEgresosService extends ProcesadorService{
         //Asiento: Anticipos
         
         def anticipos=PagoProveedor
-        .findAll("from PagoProveedor p where p.requisicion.concepto in (?,?) and date(p.egreso.fecha)=?",['PRESTAMO',dia])
+        .findAll("from PagoProveedor p where p.requisicion.concepto in (?) and date(p.egreso.fecha)=?",['PRESTAMO',dia])
         
         
         anticipos.each{ pago ->
