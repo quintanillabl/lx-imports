@@ -1,8 +1,7 @@
 <%@page expressionCodec="none" %>
-<asset:stylesheet src="jquery-ui.css"/>
-<asset:javascript src="jquery-ui/autocomplete.js"/>
+%{-- <asset:stylesheet src="jquery-ui.css"/>
+<asset:javascript src="jquery-ui/autocomplete.js"/> --}%
 <g:hiddenField id="cuentaSatId" name="${property}.id" value="${value?.id}" />
-%{-- <input type="text" id="cuentaCondigoField" class="form-control" placeholder="Codigo"> --}%
 <input 
 	id="${property}" 
 	type="text" 

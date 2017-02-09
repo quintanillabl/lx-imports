@@ -4,11 +4,15 @@ import util.MonedaUtils;
 
 import com.luxsoft.impapx.cxp.Aplicacion
 import com.luxsoft.impapx.cxp.Pago
-import grails.validation.ValidationException;
+import grails.validation.ValidationException
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 class CompraDeMonedaService {
 	
 	def pagoProveedorService
+
+	def saldoDeCuentaService
 
     def registrarCompra(CompraDeMoneda c) {
 		//c.moneda=MonedaUtils.PESOS
@@ -136,11 +140,30 @@ class CompraDeMonedaService {
 			pago.egreso=egreso
 			pago.tipoDeCambio=c.tipoDeCambioCompra
 			pago.pago=cxp
-			pago.save(failOnError:true)
+			pago.save(failOnError:true,flush:true)
 			c.ingreso=ingreso
 			c.pagoProveedor=pago
-			c.save(failOnError:true)
+			c.save(failOnError:true,flush:true)
 		
+	}
+
+
+	def delete(CompraDeMoneda compra){
+
+		def pagoProveedor=compra.pagoProveedor
+		def pago=pagoProveedor.pago
+		def egreso=pago.greso
+		def ingreso=compra.ingreso
+
+		egreso.delete(flush:true)
+		ingreso.delet(flush:true)
+		pago.delete flush:true
+		pagoProveedor.delete(flush:true)
+
+		compra.delete flush:true
+
+		//actualizarSaldoEnBancos
+
 	}
 	
 }

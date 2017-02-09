@@ -3,10 +3,13 @@ package com.luxsoft.impapx
 import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 
-import com.luxsoft.impapx.cxc.CXCAplicacion;
+
+import com.luxsoft.impapx.cxp.ComprobanteFiscal
+import com.luxsoft.impapx.cxp.Aplicacion
 
 class CuentaPorPagar {
 	
+	static auditable = true	
 	
 	Proveedor proveedor
 	String documento
@@ -26,6 +29,7 @@ class CuentaPorPagar {
 	
 	BigDecimal retTasa=0
 	BigDecimal retImp=0
+	BigDecimal retensionIsr=0
 	
 	/**
 	 * Importa analizado
@@ -37,6 +41,8 @@ class CuentaPorPagar {
 	BigDecimal pendienteRequisitar=0
 	BigDecimal saldoActual=0
 	BigDecimal saldoAlCorte=0
+
+	Boolean gastoPorComprobar = true
 
 	Date dateCreated
 	Date lastUpdated	
@@ -62,6 +68,9 @@ class CuentaPorPagar {
 		requisitado(nullable:true)
 		retTasa(nullable:true)
 		retImp(nullable:true)
+		comprobante nullable:true
+		retensionIsr(nullable:true)
+		gastoPorComprobar nullable:true
 		
     }
 	
@@ -70,6 +79,10 @@ class CuentaPorPagar {
 		requisitado formula:'(select ifnull(sum(x.total),0) from requisicion_det x where x.factura_id=id)'
 		pagosAplicados formula:'(select ifnull(sum(x.total),0) from aplicacion x where x.factura_id=id)'
 	}
+
+	static hasOne = [comprobante: ComprobanteFiscal]
+	
+	static hasMany = [aplicaciones:Aplicacion]
 	
 	static transients = ['pendienteRequisitar','saldoActual','saldoAlCorte']
 	
@@ -121,5 +134,14 @@ class CuentaPorPagar {
 		saldo=getSaldoActual()
 		save()
 	}*/
+	
+	public BigDecimal buscarSaldoAlCorte(Date corte){
+		def found=Aplicacion.executeQuery(
+			"select sum(a.importe) from Aplicacion a where a.factura=? and date(a.fecha)<=?",[this,corte])
+    	def aplicado=found[0]?:0.0
+    	def saldo=this.total-aplicado
+    	return saldo
+	}
+	
 	
 }

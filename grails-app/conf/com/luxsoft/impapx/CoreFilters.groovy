@@ -2,7 +2,11 @@ package com.luxsoft.impapx
 
 import com.luxsoft.utils.Periodo
 import com.luxsoft.impapx.Empresa
+import com.luxsoft.lx.contabilidad.PeriodoContable
+
 class CoreFilters {
+
+    
 
     def filters = {
         
@@ -10,7 +14,7 @@ class CoreFilters {
 
             before = {
                 if(!session.periodo){
-                    session.periodo=Periodo.ytd()
+                    session.periodo=new Periodo(new Date()-90,new Date())
                 }
                 if(!session.ejercicion){
                     session.ejercicio=Periodo.obtenerYear(new Date())
@@ -22,7 +26,13 @@ class CoreFilters {
                 if(!session.empresa){
                     session.empresa=Empresa.first()
                 }
-                /*
+                if(!session.tipoDeCambio){
+                    session.tipoDeCambio=TipoDeCambio.buscarTipoDeCambioOperativo()
+                }
+                // if(!session.username){
+                //     session.username=applicationContext.springSecurityService.getCurrentUser().nombre
+                // }
+                
                 if(!session.periodoContable){
                     def today=new Date()
                     session.periodoContable=new PeriodoContable(
@@ -30,7 +40,7 @@ class CoreFilters {
                             mes:Periodo.obtenerMes(today)+1
                         )
                 }
-                */
+                
             }
             after = { Map model ->
                 

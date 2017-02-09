@@ -1,101 +1,119 @@
-
 <%@ page import="com.luxsoft.impapx.tesoreria.Cheque" %>
 <%@ page import="luxsoft.cfd.ImporteALetra" %>
 <!doctype html>
 <html>
-	<head>
-		<meta name="layout" content="luxor">
-		<g:set var="entityName" value="${message(code: 'cheque.label', default: 'Cheque')}" />
-		<title><g:message code="default.show.label" args="[entityName]" /></title>
-	</head>
-	<body>
-		<div class="row-fluid">
-			<div class="span3">
-				<div class="well">
-					<ul class="nav nav-list">
-						<li class="nav-header">${entityName}</li>
-						<li>
-							<g:link class="list" action="list">
-								<i class="icon-list"></i>
-								<g:message code="default.list.label" args="[entityName]" />
-							</g:link>
-						</li>
-						<li>
-							<g:link class="create" action="create">
-								<i class="icon-plus"></i>
-								<g:message code="default.create.label" args="[entityName]" />
-							</g:link>
-						</li>
-					</ul>
+<head>
+	<title>Cheque ${chequeInstance.id}</title>
+	<meta name="layout" content="luxor">
+</head>
+<body>
+
+<content tag="header">Cheque ${chequeInstance.folio} / ${chequeInstance.cuenta}</content>
+<content tag="subHeader">
+	<ol class="breadcrumb">
+    	<li><g:link action="index">Cheques</g:link></li>
+    	<li class="active"><strong>Alta</strong></li>
+	</ol>
+</content>
+
+<content tag="document">
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="row">
+			<div class="col-lg-8">
+				<div class="ibox float-e-margins ">
+					<lx:iboxTitle title="Folio: ${chequeInstance.folio} ${chequeInstance.cancelacion?'CANCELADO':''}"/>
+				    <div class="ibox-content">
+				    	<lx:errorsHeader bean="${chequeInstance}"/>
+				    	<g:form name="createForm" action="create" class="form-horizontal" method="POST">	
+				    		<f:with bean="chequeInstance">
+				    			<f:display property="egreso" widget="numeric" wrapper="bootstrap3" />
+								<f:display property="folio" widget="numeric" wrapper="bootstrap3" />
+								<f:display property="egreso.importe" widget="numeric" wrapper="bootstrap3" />
+								<f:display property="fechaImpresion" widget="datetime" wrapper="bootstrap3" label="Fecha"/>
+								<f:display property="cancelacion" widget="numeric" wrapper="bootstrap3" />
+								<f:display property="comentarioCancelacion" widget="numeric" wrapper="bootstrap3" />
+				    		</f:with>
+				    		<div class="form-group">
+				    			<div class="col-lg-offset-3 col-lg-10">
+				    				<div class="btn-group">
+				    					<lx:backButton label="Cheques"/>
+				    					<g:if test="${!chequeInstance.cancelacion}">
+				    						<button class="btn btn-danger btn-outline" 
+				    							data-toggle="modal" data-target="#cancelarDialog">
+				    							<i class="fa fa-ban"></i> Cancelar
+				    						</button>
+				    						
+				    					</g:if>
+				    				</div>
+				    				
+				    			</div>
+				    		</div>
+				    	</g:form>
+				    	<g:if test="${!chequeInstance.cancelacion}">
+				    		<div class="col-lg-5">
+				    			<g:jasperReport jasper="${chequeInstance.cuenta.nombre}-Cheque" format="PDF" name="Cheque">
+				    					<g:hiddenField name="ID" value="${chequeInstance.id}"/>
+				    					<g:hiddenField name="IMPLETRA" value="${importeALetra}"/>
+				    					<g:hiddenField name="IMPORTE" 
+				    					value="${new java.text.DecimalFormat('##,###.00').format(chequeInstance.egreso.importe.abs())}"/>
+				    			</g:jasperReport>
+				    		</div>
+				    		<div class="">
+				    			<g:jasperReport jasper="PolizaCheque" format="PDF" name=" Póliza">
+				    					<g:hiddenField name="ID" value="${chequeInstance.id}"/>
+				    					<g:hiddenField name="IMPLETRA" value="${importeALetra}"/>
+				    					<g:hiddenField name="IMPORTE" 
+				    					value="${new java.text.DecimalFormat('##,###.00').format(chequeInstance.egreso.importe.abs())}"/>
+				    			</g:jasperReport>
+				    			
+				    		</div>
+				    	</g:if>
+				    	
+				    </div>
+
 				</div>
 			</div>
-			
-			<div class="span9">
-
-				<div class="page-header">
-					<h3><g:message code="default.show.label" args="[entityName]" /></h3>
-				</div>
-
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
-
-				<dl>
-					<dt>Id</dt>
-						<dd>${chequeInstance.id}</dd>
-						
-					<g:if test="${chequeInstance?.egreso}">
-						<dt><g:message code="cheque.egreso.label" default="Egreso" /></dt>
-						
-							<dd><g:link controller="movimientoDeCuenta" action="show" id="${chequeInstance?.egreso?.id}">${chequeInstance?.egreso?.encodeAsHTML()}</g:link></dd>
-						
-					</g:if>	
+			<div class="col-lg-4">
 				
-					<g:if test="${pago}">
-						<dt>Pago Proveedor</dt>
-							<dd><g:fieldValue bean="${pago}" field="id"/></dd>
-					</g:if>
-					
-					<g:if test="${pago}">
-						<dt>Requisición</dt>
-							<dd><g:fieldValue bean="${pago}" field="requisicion"/></dd>
-					</g:if>
-				
-					<g:if test="${chequeInstance?.fechaImpresion}">
-						<dt><g:message code="cheque.fechaImpresion.label" default="Fecha Impresion" /></dt>
-						
-							<dd><g:formatDate date="${chequeInstance?.fechaImpresion}" /></dd>
-						
-					</g:if>
-				
-					<g:if test="${chequeInstance?.folio}">
-						<dt><g:message code="cheque.folio.label" default="Folio" /></dt>
-						
-							<dd><g:fieldValue bean="${chequeInstance}" field="folio"/></dd>
-					</g:if>
-				
-					<g:if test="${chequeInstance?.cancelacion}">
-						<dt>Cancelación</dt>
-							<dd><g:fieldValue bean="${chequeInstance}" field="cancelacion"/></dd>
-							<dd><g:fieldValue bean="${chequeInstance}" field="comentarioCancelacion"/></dd>
-					</g:if>
-				
-				</dl>
-				
-				<g:jasperReport jasper="${chequeInstance.cuenta.nombre}-Cheque" format="PDF" name="Cheque">
-						<g:hiddenField name="ID" value="${chequeInstance.id}"/>
-						<g:hiddenField name="IMPLETRA" value="${importeALetra}"/>
-					</g:jasperReport>
-				
-				<g:jasperReport jasper="PolizaCheque" format="PDF" name=" Póliza">
-						<g:hiddenField name="ID" value="${chequeInstance.id}"/>
-						<g:hiddenField name="IMPLETRA" value="${importeALetra}"/>
-					</g:jasperReport>
-								
-
 			</div>
-
 		</div>
+	</div>
+
+	<div class="modal fade" id="cancelarDialog" tabindex="-1">
+		<div class="modal-dialog ">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">Cancelación</h4>
+				</div>
+				<g:form action="cancelar" class="form-horizontal" id="${chequeInstance.id}">
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="comentario" class="control-label col-sm-2">Comentario</label>
+							<div class="col-sm-10">
+								<input name="comentario" class="form-control" value="">
+							</div>
+						</div>
+					</div>
+					
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+						<g:submitButton class="btn btn-info" name="aceptar"
+								value="Aceptar" />
+					</div>
+				</g:form>
 	
-	</body>
+			</div>
+			<!-- moda-content -->
+		</div>
+		<!-- modal-di -->
+	</div>
+	
+</content>
+	
+
+</body>
 </html>
+
+

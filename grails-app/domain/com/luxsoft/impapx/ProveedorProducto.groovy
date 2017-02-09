@@ -32,7 +32,7 @@ class ProveedorProducto {
 	
 	@Override
 	public String toString() {
-		return "${codigo} - ${descripcion}"
+		return "${producto.clave} - ${producto.descripcion} Codigo: ${codigo}"
 	}
 	
 	int hashCode() {

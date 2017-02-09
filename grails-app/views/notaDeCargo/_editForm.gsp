@@ -1,42 +1,73 @@
 <%@ page import="com.luxsoft.impapx.Venta"%>
+<%@ page import="com.luxsoft.cfdi.Cfdi"%>
 <g:set var="mnEnabled" value="${ventaInstance.moneda.currencyCode=='MXN'}"/>
-<fieldset>
-	<g:form class="form-horizontal" action="edit" id="${ventaInstance.id}">
-		<fieldset>
+<div class="row">
+	<div class="col-md-8">
+		<g:form name="updateForm" class="form-horizontal" action="update" method="PUT">
+			<g:hiddenField name="id" value="${ventaInstance.id}"/>
+			<g:hiddenField name="version" value="${ventaInstance.version}"/>
 			<f:with bean="ventaInstance" >
-				<g:hiddenField name="clienteId" value="${ventaInstance?.cliente?.id}"/>
-				<g:hiddenField name="cliente.id" value="${ventaInstance?.cliente?.id}"/>
-				<g:hiddenField name="tipo" value="${'NOTA_DE_CARGO' }"/>
-				<g:hiddenField name="cuentaDePago" value="${'0000' }"/>
-				<f:field property="cliente"/>
-				<f:field property="fecha" input-id="fecha"/>
-				<f:field property="moneda"/>
-				<f:field property="tc" label="Tipo de cambio" input-disabled="true"/>
-				<f:field property="importe" />
-				<f:field property="impuestos" />
-				<f:field property="total" />
-				<f:field property="formaDePago"/>
+				<f:display property="cliente" wrapper="bootstrap3"/>
+				<f:display property="clase" wrapper="bootstrap3" widget-class="form-control"/>
+				<f:display property="moneda" wrapper="bootstrap3"/>
+				<f:display property="tc" widget="tc" widget-disabled="true" wrapper="bootstrap3"/>
+
+				<g:if test="${ventaInstance.cfdi}">
+					<f:display property="importe" wrapper="bootstrap3" widget="money"/>
+					<f:display property="impuestos" wrapper="bootstrap3" widget="money"/>
+					<f:display property="total" wrapper="bootstrap3" widget="money"/>
+					<f:display property="fecha" wrapper="bootstrap3"/>
+					<f:display property="formaDePago" wrapper="bootstrap3"/>
+					<f:display property="comentario" wrapper="bootstrap3"/>
+				</g:if>
+				<g:else>
+					<f:field property="importe" wrapper="bootstrap3" widget="money"/>
+					<f:field property="impuestos" wrapper="bootstrap3" widget="money"/>
+					<f:field property="total" wrapper="bootstrap3" widget="money"/>
+					<f:field property="fecha" wrapper="bootstrap3"/>
+					<f:field property="formaDePago" wrapper="bootstrap3">
+						<g:select class="form-control "  
+							name="${property}" 
+							value="${value}"
+							from="${['CHEQUE','TRANSFERENCIA','EFECTIVO','TARJETA','DEPOSITO']}"/>
+						
+					</f:field>
+					<f:field property="comentario" wrapper="bootstrap3" widget-class="form-control"/>
+				</g:else>
 				
-				<f:field property="comentario" input-class="input-xxlarge"/>
 			</f:with>
-			<div class="form-actions">
-				<button type="submit" class="btn btn-primary">
-					<i class="icon-ok icon-white"></i>
-					<g:message code="default.button.update.label" default="Actualizar" />
-				</button>
-				<g:link  controller="cfdi" action="facturar" class="btn btn-info" 
-					onclick="return myConfirm2(this,'Facturar cargo: ${ventaInstance.id}','Facturación');"
-					id="${ventaInstance.id}">
-  		 			Generar CFDI
-  				</g:link>
-				<button class="btn btn-danger" type="submit" name="_action_delete">
-					<i class="icon-trash icon-white"></i>
-					<g:message code="default.button.delete.label" default="Delete" />
-				</button>
+			<div class="col-md-offset-3 col-md-6">
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary">
+						<i class="icon-ok icon-white"></i>
+						<g:message code="default.button.update.label" default="Actualizar" />
+					</button>
+					<g:if test="${cfdi}" >
+						<g:link controller="cfdi" action="show" class="btn  btn-success" id="${cfdi?.id}">
+							CFDI :${cfdi.id}   UUID: ${cfdi.uuid?:'Por Timbrar' }
+						</g:link>
+					</g:if>
+					<g:else>
+						<g:link  controller="cfdi" action="facturar" class="btn btn-info" 
+							onclick="return confirm('Facturar venta: ${ventaInstance.id}');"
+							id="${ventaInstance.id}">
+	  		 				Facturar
+	  					</g:link>
+	  					
+	  					<a href="" class="btn btn-danger " data-toggle="modal" data-target="#deleteDialog"><i class="fa fa-trash"></i> Eliminar</a> 
+	  					
+					</g:else>
+				</div>
 			</div>
-		</fieldset>
-	</g:form>
-</fieldset>
+			
+		</g:form>
+	</div>
+	<g:render template="/common/deleteDialog" bean="${ventaInstance}"/>
+</div>
+
+
+
+<%--
 <r:script>
 $(function(){
 	//var mon=$("#moneda").val();
@@ -53,18 +84,6 @@ $(function(){
 	$("#cuentaDePago").mask("9999");
 	$("#fecha").mask("99/99/9999");
 	
-	$('#importe').autoNumeric();
-	$('#impuestos').autoNumeric();
-	$('#total').autoNumeric();
-		
-	$('#importe').blur(function(){
-		var importe=$(this).autoNumericGet();
-		var impuestos=importe*.16;
-		var total=importe*1.16;
-		//$('#subTotal').autoNumericSet(importe);
-		$('#impuestos').autoNumericSet(impuestos);
-		$('#total').autoNumericSet(total);
-	});
-	
 });
 </r:script>
+--%>

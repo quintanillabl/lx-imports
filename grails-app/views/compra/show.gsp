@@ -2,112 +2,71 @@
 <%@ page import="com.luxsoft.impapx.Compra" %>
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<g:set var="entityName" value="${message(code: 'compra.label', default: 'Compra')}" />
-		<title><g:message code="default.show.label" args="[entityName]" /></title>
-	</head>
-	<body>
-		<div class="container">
-			
-			<div class="row row-header">
-				<div class="col-md-8 col-sm-offset-2 toolbar-panel">
-					<div class="btn-group">
-					    <lx:backButton/>
-					    <lx:createButton/>
-					    <lx:editButton id="${compraInstance?.id}"/>
-					    <lx:printButton/>
-					</div>
-				</div>
-			</div> <!-- End .row 1 -->
-			<div class="row">
-			    <div class="col-md-8 col-sm-offset-2">
-					<div class="panel panel-primary">
-						<div class="panel-heading"> ${entityName}: ${compraInstance} </div>
-						<g:if test="${flash.message}">
-							<small><span class="label label-info ">${flash.message}</span></small>
-						</g:if> 
-					  	<div class="panel-body">
-					  		<g:form class="form-horizontal">
-					  			
-					  					
-					  			<f:display property="proveedor" bean="compraInstance"/>
-					  					
-					  			
-					  					
-					  			<f:display property="fecha" bean="compraInstance"/>
-					  					
-					  			
-					  					
-					  			<f:display property="entrega" bean="compraInstance"/>
-					  					
-					  			
-					  					
-					  			<f:display property="depuracion" bean="compraInstance"/>
-					  					
-					  			
-					  					
-					  			<f:display property="comentario" bean="compraInstance"/>
-					  					
-					  			
-					  					
-					  			<f:display property="moneda" bean="compraInstance"/>
-					  					
-					  			
-					  					
-					  			<f:display property="tc" bean="compraInstance"/>
-					  					
-					  			
-					  					
-					  			<f:display property="folio" bean="compraInstance"/>
-					  					
-					  			
-					  					
-					  			<f:display property="origen" bean="compraInstance"/>
-					  					
-					  			
-					  					
-					  			<f:display property="importe" bean="compraInstance"/>
-					  					
-					  			
-					  					
-					  			<f:display property="descuentos" bean="compraInstance"/>
-					  					
-					  			
-					  					
-					  			<f:display property="subtotal" bean="compraInstance"/>
-					  					
-					  			
-					  					
-					  			<f:display property="impuestos" bean="compraInstance"/>
-					  					
-					  			
-					  					
-					  			<f:display property="total" bean="compraInstance"/>
-					  					
-					  			
-					  					
-								<f:display property="dateCreated" bean="compraInstance" widget="datetime"/>
-					  					
-					  			
-					  					
-					  			<f:display property="lastUpdated" bean="compraInstance"/>
-					  					
-					  			
-					  					
-					  			<f:display property="partidas" bean="compraInstance"/>
-					  					
-					  			
-					  		</g:form>
-					  </div>
-					</div>
-			    </div>
-			</div><!-- End .row 2 -->
 
-		</div><!-- End container -->
+<head>
+	<meta name="layout" content="luxor">
+	<g:set var="entityName" value="${message(code: 'compra.label', default: 'Compra')}" scope="request"/>
+	<g:set var="entity" value="${compraInstance}" scope="request" />
+	<title>Compra ${entity.id}</title>
+</head>
 
-	</body>
+<body>
+	
+<content tag="header"> Compra Id:${compraInstance.id}</content>
+<content tag="subHeader">
+	<ol class="breadcrumb">
+	    <li><g:link action="index">${entityName}(s)</g:link></li>
+	    <li><g:link action="create">Alta</g:link></li>
+	    <li class="active"><strong>Consulta</strong></li>
+	    <li><g:link action="edit" id="${entity.id}">Edición</g:link></li>
+	</ol>
+</content>
+
+<content tag="document">
+
+	<div class="wrapper wrapper-content animated fadeInRight">
+	    <div class="row">
+	        <div class="col-lg-12">
+	            <div class="ibox float-e-margins">
+	                %{-- <lx:iboxTitle title="Propiedades"/> --}%
+	                <div class="ibox-content">
+	                	<ul class="nav nav-tabs" role="tablist">
+	                		<li class="active"><a href="#compra" data-toggle="tab"> <i class="fa fa-pencil"></i>  Propiedades</a></li>
+	                	   <li class="partidas">
+	                	   		<a data-target="#partidas" data-toggle="tab"> <i class="fa fa-th-list"></i> Partidas</a>
+	                	   	</li>
+	                	</ul>
+            	  		<div class="tab-content"> 
+            	  			<div class="tab-pane active" id="compra">
+            	  				<div class="row">
+            	  					<div class="col-md-6">
+            	  						<br>
+            	  						<g:render template="showForm"/>	
+            	  					</div>
+            	  					
+            	  				</div>
+            	  				
+            				</div> 		
+            	  			<div class="tab-pane " id="partidas">
+            	  				<br>
+            					<g:render template="partidas"/>
+            				</div> 		
+            	  		</div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+
+	    
+	</div>
+
+</content>
+	
+	
+
+	
+
+</body>
 </html>
 
 

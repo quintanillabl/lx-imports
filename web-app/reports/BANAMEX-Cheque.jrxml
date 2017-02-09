@@ -27,7 +27,10 @@
 	<parameter name="IMPLETRA" isForPrompting="true" class="java.lang.String">
 		<defaultValueExpression ><![CDATA["DOS CIENTOS OCHENTA Y DOS MIL NOVECIENTOS CUARENTA Y DOS 40/100 PESOS"]]></defaultValueExpression>
 	</parameter>
-	<queryString><![CDATA[SELECT ch.ID,M.FECHA,p.nombre AS AFAVOR,-m.importe as IMPORTE
+	<parameter name="IMPORTE" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["282942.46"]]></defaultValueExpression>
+	</parameter>
+	<queryString><![CDATA[SELECT ch.ID,M.FECHA,UPPER(p.nombre) AS AFAVOR,-m.importe as IMPORTE
 FROM cheque ch 
 join movimiento_de_cuenta m on(m.id=ch.egreso_id) 
 join pago_proveedor pp on(pp.egreso_id=m.id) 
@@ -60,9 +63,9 @@ where ch.id=$P{ID}]]></queryString>
 			<band height="140"  isSplitAllowed="true" >
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="361"
+						x="373"
 						y="38"
-						width="304"
+						width="301"
 						height="26"
 						key="textField"/>
 					<box></box>
@@ -73,9 +76,9 @@ where ch.id=$P{ID}]]></queryString>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="dd-MMMMM-yyyy" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="639"
+						x="657"
 						y="11"
-						width="128"
+						width="124"
 						height="15"
 						key="textField"/>
 					<box></box>
@@ -86,10 +89,10 @@ where ch.id=$P{ID}]]></queryString>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="362"
-						y="64"
-						width="303"
-						height="24"
+						x="374"
+						y="66"
+						width="397"
+						height="22"
 						key="textField-1"/>
 					<box></box>
 					<textElement verticalAlignment="Bottom">
@@ -97,10 +100,10 @@ where ch.id=$P{ID}]]></queryString>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[new String("(").concat($P{IMPLETRA}).concat(")")]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="#,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" pattern="¤ #,##0.00" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="692"
-						y="61"
+						x="701"
+						y="52"
 						width="77"
 						height="12"
 						key="textField"/>
@@ -108,7 +111,7 @@ where ch.id=$P{ID}]]></queryString>
 					<textElement>
 						<font pdfFontName="Helvetica-Bold" size="9" isBold="true"/>
 					</textElement>
-				<textFieldExpression   class="java.math.BigDecimal"><![CDATA[$F{IMPORTE}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{IMPORTE}.toString()]]></textFieldExpression>
 				</textField>
 			</band>
 		</detail>

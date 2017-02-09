@@ -2,77 +2,100 @@
 <!doctype html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<g:set var="entityName" value="${message(code: 'embarque.label', default: 'Embarque')}" />
-	<title><g:message code="default.create.label" args="[entityName]" /></title>
+	<title>Alta de embarque</title>
+	<meta name="layout" content="luxor">
+	<asset:javascript src="forms/forms.js"/>
 </head>
 <body>
-	<div class="container">
-		
+
+<content tag="header">Alta de embarque de importación</content>
+
+<content tag="subHeader">
+	<ol class="breadcrumb">
+    	<li><g:link action="index">Embarques</g:link></li>
+    	<li class="active"><strong>Alta</strong></li>
+	</ol>
+</content>
+	
+<content tag="document">
+	<div class="wrapper wrapper-content animated fadeInRight">
 		<div class="row">
-			<div class="col-md-6 col-md-offset-3">
-				<div class="page-header">
-				  <h1><g:message code="default.create.label" args="[entityName]" /></h1>
-				  	<g:if test="${flash.message}">
-				  		<small><span class="label label-warning ">${flash.message}</span></small>
-				  	</g:if> 
-				  </h1>
+			<div class="col-lg-8">
+				<lx:iboxTitle title="Alta de pago a proveedo "/>
+				<div class="ibox-content">
+					<lx:errorsHeader bean="${embarqueInstance}"/>
+					<g:form name="createForm" action="save" class="form-horizontal" method="POST">
+						<f:with bean="embarqueInstance">
+							<f:field property="bl" widget="mayusculas" ></f:field>
+							<f:field property="nombre" widget="mayusculas"></f:field>
+							<f:field property="fechaEmbarque" label="F.Embarque"/>
+							<f:field property="proveedor" ></f:field>
+							<f:field property="aduana"></f:field>
+							<f:field property="ingresoAduana" widget-class="form-control" label="ETA"/>
+							<f:field property="contenedores" widget="numeric"/>
+							<f:field property="comentario" >
+								<g:textArea name="comentario" class="comentario form-control" />
+							</f:field>
+							<div class="form-group">
+								<div class="col-lg-offset-2 col-lg-9">
+									<button id="saveBtn" class="btn btn-primary ">
+										<i class="fa fa-floppy-o"></i> Salvar
+									</button>
+									<lx:backButton/>
+								</div>
+							</div>
+						</f:with>
+
+						%{-- <f:with bean="pagoProveedorInstance">
+							<f:field property="requisicion" widget-class="form-control " wrapper="bootstrap3"/>
+							<f:field property="fecha"  wrapper="bootstrap3"/>
+							<f:field property="cuenta" widget-class="form-control chosen-select" wrapper="bootstrap3"/>
+							<f:field property="tipoDeCambio" widget="tc" wrapper="bootstrap3" widget-required="required"/>
+							<f:field property="comentario" widget-class="form-control" wrapper="bootstrap3"/>
+							
+						</f:with> --}%
+						
+					</g:form>
 				</div>
 			</div>
-		</div><!-- end .row -->
-
-		<div class="row ">
-			
-			<div class="col-md-6 col-md-offset-3">
-				<g:form class="form-horizontal" action="save" >
-
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							<g:message code="default.create.label" args="[entityName]" />
-						</div>
-					  	<div class="panel-body">
-					    	<g:hasErrors bean="embarqueInstance">
-					    		<div class="alert alert-danger">
-					    			<ul class="errors" >
-					    				<g:renderErrors bean="embarqueInstance" as="list" />
-					    			</ul>
-					    		</div>
-					    	</g:hasErrors>
-							<f:with bean="embarqueInstance">
-								<f:field property="bl" input-class="mayusculas" ></f:field>
-								<f:field property="nombre" input-class="mayusculas" ></f:field>
-								<f:field property="fechaEmbarque" label="F.Embarque"/>
-								 <f:field property="proveedor" ></f:field>
-								 <f:field property="aduana"></f:field>
-								 <f:field property="ingresoAduana" widget-class="form-control" label="ETA"/>
-								<f:field property="contenedores" widget-class="form-control"/>
-								<f:field property="comentario" >
-									<g:textArea name="comentario" class="comentario form-control" />
-								</f:field>
-								
-							</f:with>
-					  	</div>
-					 
-					  	<div class="panel-footer">
-					  		<div class="form-group">
-					  			<div class="buttons col-md-offset-2 col-md-4">
-					  				<g:submitButton name="create" 
-					  					class="btn btn-primary " 
-					  					value="${message(code: 'default.button.create.label', default: 'Salvar')}"/>
-					  				<g:link action="index" class="btn btn-default"> Cancelar</g:link>
-					  			</div>
-					  		</div>
-					  	</div>
-
-					</div>
-
-				</g:form>
-				
-			</div>
-		</div> <!-- end .row 2 -->
-
+		</div>
 	</div>
+	<script type="text/javascript">
+		$(function(){
+			
+			$('.input-group.date').bootstrapDP({
+				format: 'dd/mm/yyyy',
+	            todayBtn: "linked",
+	            keyboardNavigation: false,
+	            forceParse: false,
+	            calendarWeeks: true,
+	            autoclose: true
+			});
+			$(".numeric").autoNumeric('init',{vMin:'0'},{vMax:'9999'});
+			
+			$('.chosen-select').chosen();
+			
+			$('form[name=createForm]').submit(function(e){
+				//e.preventDefault(); 
+	    		var button=$("#saveBtn");
+	    		button.attr('disabled','disabled')
+	    		 .html('Procesando...');
+	    		$(".tc",this).each(function(index,element){
+	    		   var val=$(element).val();
+	    		  var name=$(this).attr('name');
+	    		  var newVal=$(this).autoNumeric('get');
+	    		  $(this).val(newVal);
+	    		  console.log('Enviando elemento numerico con valor:'+name+" : "+val+ " new val:"+newVal);
+	    		});
+	    		return true;
+			});
+			
 
+			
+		});
+	</script>	
+</content>
 </body>
 </html>
+
+

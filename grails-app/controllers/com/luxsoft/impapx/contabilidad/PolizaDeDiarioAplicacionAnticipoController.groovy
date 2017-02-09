@@ -22,35 +22,36 @@ import com.luxsoft.impapx.tesoreria.PagoProveedor
 import com.luxsoft.impapx.tesoreria.SaldoDeCuenta
 import com.luxsoft.impapx.tesoreria.Traspaso
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeDiarioAplicacionAnticipoController {
 
 	def polizaService
 	
-     def index() {
-	   redirect action: 'list', params: params
+    def index() {
+    	def sort=params.sort?:'fecha'
+    	def order=params.order?:'desc'
+    	def periodo=session.periodoContable
+    	
+    	def q = Poliza.where {
+    		subTipo == 'DIARIO_ANTICIPO' && ejercicio == periodo.ejercicio && mes == periodo.mes 
+
+    	}
+    	respond q.list(params)
+    	
     }
+     
+    def mostrarPoliza(long id){
+    	def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
+    	render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
+    }
+	
+	
 	 
-	def mostrarPoliza(long id){
-		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
-		render (view:'poliza' ,model:[poliza:poliza,partidas:poliza.partidas])
-	}
-	 
-	def list() {
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
-		def sort=params.sort?:'fecha'
-		def order=params.order?:'desc'
-		
-		//def polizas=Poliza.findAllByTipoAndFechaBetweenAndDescripcionLike('DIARIO',periodo.inicio,periodo.fin,'%anticipo%',[sort:sort,order:order])
-		def polizas=Poliza.findAllByTipoAndDescripcionIlikeAndFechaBetween('DIARIO','%anticipo%',periodo.inicio,periodo.fin,[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-	}
 	
 	def generarPoliza(String fecha){
+		
 		Date dia=Date.parse("dd/MM/yyyy",fecha)
 		
 		params.dia=dia
@@ -58,13 +59,16 @@ class PolizaDeDiarioAplicacionAnticipoController {
 		def finDeMes=dia.finDeMes().clearTime()
 		if(dia.clearTime()!=finDeMes){
 			flash.message='Solo se puede ejcurar el fin de mes'
-			redirect action:'list'
+			redirect action:'index'
+			return
 		}
 		
 		
 		//Prepara la poliza
 		Poliza poliza=new Poliza(tipo:'DIARIO',folio:1, fecha:dia,descripcion:'Aplicacion de anticipo'+dia.text(),partidas:[])
-		
+		poliza.ejercicio = session.periodoContable.ejercicio
+		poliza.mes = session.periodoContable.mes
+		poliza.subTipo= 'DIARIO_ANTICIPO'
 		procesar(poliza ,dia)
 		
 		//Salvar la poliza
@@ -115,7 +119,7 @@ class PolizaDeDiarioAplicacionAnticipoController {
 						//Abono a anticipos
 						def importeTcPago=Rounding.round(det.total*egreso.tc,2)
 						poliza.addToPartidas(
-							cuenta:CuentaContable.buscarPorClave("111-$req.proveedor.subCuentaOperativa"),
+							cuenta:CuentaContable.buscarPorClave("120-$req.proveedor.subCuentaOperativa"),
 							debe:0.0,
 							haber:importeTcPago,
 							asiento:asiento,
@@ -132,7 +136,7 @@ class PolizaDeDiarioAplicacionAnticipoController {
 			}
 			//Diferencia cambiaria
 			if(difAcu.abs()>0){
-				def clave=difAcu<0?'701-0002':'705-0002'
+				def clave=difAcu<0?'703-002':'701-0002'
 				poliza.addToPartidas(
 					cuenta:CuentaContable.buscarPorClave(clave),
 					debe:difAcu>0?difAcu.abs():0.0,

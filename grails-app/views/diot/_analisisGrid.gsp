@@ -1,6 +1,5 @@
 
-<div class="gridPanel" id="analisisGridPanel">
-	<table id="grid"
+<table id="grid"
 			class="table table-striped table-hover table-bordered table-condensed">
 			<thead>
 				<tr>
@@ -46,5 +45,4 @@
 					</tr>
 				</g:each>
 			</tbody>
-		</table>
-</div>
+	</table>

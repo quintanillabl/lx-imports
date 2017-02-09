@@ -1,76 +1,81 @@
 <%@ page import="com.luxsoft.impapx.FacturaDeImportacion" %>
+<%@ page import="com.luxsoft.impapx.FacturasPorPeriodoCommand" %>
 <!doctype html>
 <html>
 <head>
-	<meta name="layout" content="cxp">
-	<g:set var="entityName"
-		value="${message(code: 'facturaDeImportacion.label', default: 'Facturas')}" />
+	<meta name="layout" content="operaciones">
 	<title>Facturas de importación</title>
-	<asset:javascript src="fp.js"/>
-	<asset:stylesheet src="fp.css"/>
-	<asset:stylesheet src="jquery-ui.css"/>
-	<asset:javascript src="jquery-ui/autocomplete.js"/>
 </head>
 <body>
+ <content tag="header">
+ 	Facturas de importación
+ </content>
+ <content tag="periodo">
+ 	Periodo:${session.periodo.mothLabel()}
+ </content>
+ <content tag="operaciones">
+ 	<li>
+ 		<g:link  action="create"  >
+ 		    <i class="fa fa-plus"></i> Nueva de factura
+ 		</g:link> 
+ 	</li>
+ 	<li>
+ 	    <g:link action="programacionDePagos"  >
+ 	        <i class="fa fa-list-ol"></i> Programación de pagos
+ 	    </g:link> 
+ 	</li>
+ 	<li>
+ 	    <a href="#searchDialog" data-toggle="modal" > 
+ 	    	<i class="fa fa-search"></i> Buscar
+ 	    </a>
+ 	</li>
+ </content>
+ <content tag="grid">
+ 	<g:render template="facturasPanel" 
+ 				model="['cuentaPorPagarInstance':facturaDeImportacionInstance
+ 						,'facturasList':facturaDeImportacionInstanceList
+ 						,'cuentaPorPagarInstanceTotal':facturaDeImportacionInstanceTotal]"
+ 						/>
+ </content>
+
+ <content tag="searchPanel">
+ 	%{-- <div class="modal fade" id="searchDialog" tabindex="-1">
+ 		<div class="modal-dialog ">
+ 			<div class="modal-content">
+ 				<div class="modal-header">
+ 					<button type="button" class="close" data-dismiss="modal"
+ 						aria-hidden="true">&times;</button>
+ 					<h4 class="modal-title" id="myModalLabel">Buscar factura</h4>
+ 				</div>
+ 				<g:form action="search" class="form-horizontal" >
+ 					<div class="modal-body">
+ 						<f:with bean="${cuentaContableInstance}">
+ 							<f:field property="clave"/>
+ 							<f:field property="descripcion" input-class="input-xxlarge"/>
+ 							
+ 						</f:with>
+ 					</div>
+ 					
+ 					<div class="modal-footer">
+ 						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+ 						<g:submitButton class="btn btn-info" name="aceptar"
+ 								value="Buscar" />
+ 					</div>
+ 				</g:form>
  	
- 	<content tag="document">
- 		
-		<div class="row toolbar-panel">
-    		<div class="col-md-6">
-    			<g:form class="form-horizontal" action="show">
-    				<g:hiddenField name="id" />
-    	      		<div class="input-group">
-    	      		    <input id="compraField" name="compraDesc" type="text" 
-    			    	    class="form-control " placeholder="Buscar">
-          		    	<span class="input-group-btn">
-				       		<button id="buscarBtn" type="submit" class="btn btn-default" disabled="disabled">
-								<i class="fa fa-search"></i></span>
-							</button> 
-          		      	</span>
-    	      		</div>
-          		</g:form>
-    		</div>
+ 			</div>
+ 			<!-- moda-content -->
+ 		</div>
+ 		<!-- modal-di -->
+ 	</div> --}%
+ </content>
 
-		    <div class="btn-group">
-	        	<lx:refreshButton/>
-	            <lx:printButton/>
-	            <filterpane:filterButton text="Filtrar" />
-		    </div>
-		    <div class="btn-group">
-		        <button type="button" name="operaciones"
-		                class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-		                role="menu">
-		                Operaciones <span class="caret"></span>
-		        </button>
-		        <ul class="dropdown-menu">
-		        	<li>
-		        		<g:link  action="create"  >
-		        		    <i class="fa fa-plus"></i> Nueva de factura
-		        		</g:link> 
-		        	</li>
-		        	<li>
-		        	    <g:link action="programacionDePagos"  >
-		        	        <i class="fa fa-list-ol"></i> Programación de pagos
-		        	    </g:link> 
-		        	</li>
-		        </ul>
-		    </div>
-		</div>
-		<g:render template="facturasPanel" 
-			model="['cuentaPorPagarInstance':facturaDeImportacionInstance
-					,'facturasList':facturaDeImportacionInstanceList
-					,'cuentaPorPagarInstanceTotal':facturaDeImportacionInstanceTotal]"
-					/>
-		<filterpane:filterPane 
-			domain="com.luxsoft.impapx.FacturaDeImportacion" dialog="true"
-			dateFormat="${[fecha: 'dd/MM/yyyy', entrega: 'dd/MM/yyyy']}"
-			excludeProperties="dateCreated,lastUpdated"
-			filterPropertyValues="${[fecha:[years:2013..2019,precision:'day',default:new Date()-30]]}"/>
- 	</content>
+ <content tag="searchService">
+ 	<g:createLink action="search"/>
+ </content>
+ 	
 
- 	<conten tag="script">
- 		
- 	</conten>
+ 	
 	
 	
 </body>

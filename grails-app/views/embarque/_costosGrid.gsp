@@ -24,7 +24,7 @@
 			<tbody>
 				<g:each in="${partidas}" var="row">
 				<tr id="${fieldValue(bean:row, field:"id")}" name="embarqueDetId"
-					class="${row?.kilosNetos<=0?'textError':'' } ">
+					class="${row?.kilosNetos<=0?'text-danger':'' } ">
 					<td>
 						<g:link action="edit" controller="embarqueDet" id="${row?.id}" params="[proveedorId:embarqueInstance.proveedor.id]">
 							${fieldValue(bean:row, field:"producto.clave")}
@@ -46,7 +46,12 @@
 					<td><lx:moneyFormat number="${row.incrementables}"/></td>
 					<td><lx:moneyFormat number="${row.gastosHonorarios}"/></td>
 					<td name="gastosPorPedimento">
-						<lx:moneyFormat number="${row.gastosPorPedimento}"/></td>
+						<g:if test="${row.pedimento}">
+							<g:link action="edit" controller="pedimento" id="${row.pedimento.id}" target="_blank">
+								<lx:moneyFormat number="${row.gastosPorPedimento}"/>
+							</g:link>
+						</g:if>
+					</td>
 					<td name="gastosPorPedimento">
 						<g:formatNumber number="${row.getCostoDeImportacion()}" format='% ##.##'/>
 					</td>

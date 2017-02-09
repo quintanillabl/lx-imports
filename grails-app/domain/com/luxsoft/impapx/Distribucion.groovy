@@ -20,8 +20,8 @@ class Distribucion {
     }
 	
 	static mapping = {
-		partidas lazy:false
-		embarque fetch:'join'
+		//partidas lazy:false
+		//embarque fetch:'join'
 		partidas cascade: "all-delete-orphan"
 	}
 	

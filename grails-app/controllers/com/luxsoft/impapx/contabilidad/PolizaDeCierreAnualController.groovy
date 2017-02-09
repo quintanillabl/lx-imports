@@ -1,45 +1,51 @@
 package com.luxsoft.impapx.contabilidad
 
+import grails.plugin.springsecurity.annotation.Secured
+import com.luxsoft.utils.*
+
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeCierreAnualController {
 
     def polizaService
 
-   def index() {
-	   redirect action: 'list', params: params
-    }
+   	
+  	def index() {
+  		def q = Poliza.where{subTipo == 'CIERRE_ANUAL'}
+  		[polizaInstanceList: q.list()]
+  	}
 	 
 	def mostrarPoliza(long id){
 		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
 		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
 	}
 	 
-	def list() {
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
-		def sort=params.sort?:'fecha'
-		def order=params.order?:'desc'
-		
-		def polizas=Poliza.findAllByTipoAndDescripcionLikeAndFechaBetween('CIERRE_ANUAL'
-			,'CIERRE ANUAL %'+periodo.year
-			,periodo.inicio,periodo.fin,[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-	}
+	
 	
 	def generarSaldos(){
 		
 	}
 	
-	def generarPoliza(String fecha){
-		Date dia=Date.parse("dd/MM/yyyy",fecha)
+	def generarPoliza(){
+
+		def ejercicio = session.periodoContable.ejercicio
 		
-		params.dia=dia
+		Date dia = Periodo.getPeriodoAnual(ejercicio).fechaFinal
+
+		def clave = "304-"+ejercicio.toString()
+		CuentaContable cuenta=CuentaContable.find{clave==clave}
+		if(cuenta == null){
+			flash.message = "No existe la cuenta de resultados: "+clave
+			redirect action:'index'
+			return
+		}
+
 		
 		//Prepara la poliza
 		Poliza poliza=new Poliza(tipo:'GENERICA',folio:1, fecha:dia,descripcion:'CIERRE ANUAL '+dia.toYear(),partidas:[])
+		poliza.ejercicio = session.periodoContable.ejercicio
+		poliza.mes = session.periodoContable.mes
+		poliza.subTipo= 'CIERRE_ANUAL'
+
 		// Procesadores
 		generar(poliza, dia)
 		cancelacionIETU(poliza, dia)
@@ -50,10 +56,11 @@ class PolizaDeCierreAnualController {
 		
 		poliza=polizaService.salvarPoliza(poliza)
 		redirect action: 'mostrarPoliza', params: [id:poliza.id]
+		
 	}
 	
 	def generar(def poliza , def dia){
-		println 'Generando poliza de cierre anual: '+dia
+		log.info 'Generando poliza de cierre anual: '+dia
 		def asiento="CIERRE ANUAL "+dia.toYear()
 		def saldos=SaldoPorCuentaContable
 			.findAll("from SaldoPorCuentaContable s where s.year=? and s.mes=13 and s.cuenta.deResultado=true and s.cuenta.padre!=null and s.cuenta.clave not like ?"
@@ -93,7 +100,9 @@ class PolizaDeCierreAnualController {
 		}
 		def resultado=cargos-abonos
 		
-		CuentaContable cuenta=CuentaContable.buscarPorClave("304-0013")
+		//CuentaContable cuenta=CuentaContable.buscarPorClave("304-0013")
+		def clave = "304-"+poliza.ejercicio.toString()
+		CuentaContable cuenta=CuentaContable.find{clave==clave}
 		if(resultado){
 			poliza.addToPartidas(
 				cuenta:cuenta,

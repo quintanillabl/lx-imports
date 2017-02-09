@@ -1,73 +1,74 @@
 <%@ page import="com.luxsoft.impapx.cxc.CXCNota" %>
 <!doctype html>
 <html>
-	<head>
-		<meta name="layout" content="taskView">
-		<title>CXC Nota de crédito</title>
-		<r:require module="autoNumeric"/>
-	</head>
-	<body>
+<head>
+	<meta name="layout" content="luxor">
+	
+	<g:set var="entityName" value="${message(code: 'CXCNota.label', default: 'CXCNota')}" scope="request"/>
+	<g:set var="entity" value="${CXCNotaInstance}" scope="request" />
+	<title>CXC Nota ${CXCNotaInstance.id}</title>
+</head>
+<body>
 	
 	<content tag="header">
+		Nota ${CXCNotaInstance.id} Disponible: ${formatNumber(number:entity.disponible,type:'currency')}
  	</content>
- 	
-	<content tag="consultas">
-		<li><g:link controller="cuentasPorCobrar" action="list">
-			<i class="icon-list"></i>
-			CxC
-			</g:link>
-		</li>
-		<li><g:link class="list" action="list">
-			<i class="icon-list"></i>
-			Notas registradas
-			</g:link>
-		</li>
-	</content>
-	
- 	<content tag="operaciones">
- 		<li><g:link  action="create"><i class="icon-plus "></i> Alta de nota</g:link></li>
+ 	<content tag="subHeader">
+ 		<ol class="breadcrumb">
+            <li><g:link action="index">${entityName}(s)</g:link></li>
+            <li><g:link action="show" id="${entity.id}">Consulta</g:link></li>
+            <li><g:link action="edit" id="${entity.id}"><strong>Edición</strong></g:link></li>
+        </ol>
  	</content>
- 	
- 	<content tag="document">
- 		<div class="alert">
-			<h4><strong>
-				Nota ${CXCNotaInstance.tipo} : ${CXCNotaInstance.id}  ${CXCNotaInstance.cliente.nombre} 
-				Total:<lx:moneyFormat number="${CXCNotaInstance.total}"/> /
-				Disponible: <lx:moneyFormat number="${CXCNotaInstance.disponibleMN}"/> 
-				CFD: ${CXCNotaInstance?.cfd?.folio }
-			</strong></h4>
-		</div>
- 		<g:render template="/shared/messagePanel" model="[beanInstance:CXCNotaInstance]"/>
- 		
- 		<ul class="nav nav-tabs" id="editTab">
-			<li class=""><a href="#abonoPanel"  data-toggle="tab">Nota</a></li>
-			<li class=""><a href="#conceptosPanel" 	  data-toggle="tab">Conceptos</a></li>
-			<li class="active"><a href="#aplicacionesPanel" data-toggle="tab">Aplicaciones</a></li>
-			
-		</ul>
-		
-		<div class="tab-content">
-			
-			<div class="tab-pane " id="abonoPanel">
-				<g:render template="editForm" bean="${CXPAbonoInstance}"/>
-			</div>
-			
-			<div class="tab-pane " id="conceptosPanel">
-				<g:render template="conceptosPanel" 
-					model="[CXCAbonoInstance:CXCNotaInstance,conceptos:CXCNotaInstance.partidas]"/> 
-			</div>
-			
-			<div class="tab-pane active" id="aplicacionesPanel">
-				<g:render template="aplicacionesPanel" 
-					model="[CXCAbonoInstance:CXCNotaInstance,aplicaciones:CXCNotaInstance.aplicaciones]"/> 
-			</div>
-			
-		</div>
 
-		
-		
+ 	<content tag="document">
+ 		<div class="ibox float-e-margins">
+ 			<div class="ibox-title">
+				<g:if test="${!CXCNotaInstance.cfdi}">
+					
+					<g:link  action="generarCFDI" class="btn btn-info btn-outline" 
+						onclick="return confirm('Generar comprobante fiscal: ${CXCNotaInstance.id}');"
+						id="${CXCNotaInstance.id}">
+			 				Generar CFDI
+						</g:link>
+					<lx:deleteButton bean="${CXCNotaInstance}"/>
+				</g:if>
+				<g:else>
+					<g:link  action="cancelarCFDI" class="btn btn-info" 
+						onclick="return confirm('Generar comprobante fiscal: ${CXCNotaInstance.id}');"
+						id="${CXCNotaInstance.id}">
+			 				Cancelar CFD
+						</g:link>
+				</g:else>
+ 			</div>
+ 		    <div class="ibox-content">
+ 		    	
+ 		    	
+		 		<ul class="nav nav-tabs" id="editTab">
+					<li class="active"><a href="#conceptosPanel" 	  data-toggle="tab">Conceptos</a></li>
+					<li><a href="#aplicacionesPanel" data-toggle="tab">Aplicaciones</a></li>
+					<li><a href="#abonoPanel"  data-toggle="tab">Propiedades</a></li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane active" id="conceptosPanel">
+						<g:render template="conceptosPanel" 
+							model="[CXCAbonoInstance:CXCNotaInstance,conceptos:CXCNotaInstance.partidas]"/> 
+					</div>
+					<div class="tab-pane " id="aplicacionesPanel">
+						<g:render template="aplicacionesPanel" 
+							model="[CXCAbonoInstance:CXCNotaInstance,aplicaciones:CXCNotaInstance.aplicaciones]"/> 
+					</div>
+					<div class="tab-pane " id="abonoPanel">
+						<g:render template="editForm" bean="${CXPAbonoInstance}"/>
+					</div>
+					
+				</div>
+ 		    </div>
+ 		</div>
  	</content>
-	</body>
+ 	
+ 	
+</body>
 </html>
 
 

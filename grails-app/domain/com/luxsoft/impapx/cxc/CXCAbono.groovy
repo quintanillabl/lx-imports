@@ -6,18 +6,21 @@ import com.luxsoft.impapx.Cliente
 import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 
-import util.MonedaUtils;
-import util.Rounding;
+import util.MonedaUtils
+import util.Rounding
 
 class CXCAbono {
 	
+	static auditable = true
+
 	Date fecha
 	Cliente cliente
 	Currency moneda
-	BigDecimal tc
-	BigDecimal importe
-	BigDecimal impuesto
-	BigDecimal total
+	BigDecimal tc=1
+	BigDecimal importe=0
+	BigDecimal impuesto=0
+	BigDecimal total=0
+	BigDecimal totalMN=0
 	BigDecimal aplicado=0
 	BigDecimal disponible=0
 	BigDecimal disponibleMN=0
@@ -45,13 +48,22 @@ class CXCAbono {
 		aplicaciones cascade:"all-delete-orphan"
 	}
 	
-	static transients = ['disponibleMN']
+	static transients = ['disponibleMN','disponible','totalMN']
+
+	BigDecimal getTotalMN(){
+		return Rounding.round(total*tc,2)
+	}
+
+	BigDecimal getAplicadoMN(){
+		return Rounding.round(getAplicadoCalculado()*tc,2)
+	}
 	
 	public BigDecimal getDisponibleMN(){
-		//return Rounding.round(disponible*tc,2)
-		//return disponible
-		def totalmn=Rounding.round(total*tc,2)
-		return totalmn-aplicado
+		return getTotalMN()-getAplicadoMN()
+	}
+
+	BigDecimal getDisponible(){
+		return total-getAplicadoCalculado()
 	}
 	
 	def actualizarImportes(){
@@ -62,26 +74,29 @@ class CXCAbono {
 			this.impuesto=importe*imp
 		}
 	}
+
+	def BigDecimal getAplicadoCalculado(){
+		if(aplicaciones){
+			return aplicaciones.sum(0,{it.total/tc})
+		}else
+			return 0.0
+	}
 	
 	def actualizarAplicado(){
-		//disponible=Rounding.round(total*tc,2)
 		if(aplicaciones){
-			aplicado=aplicaciones.sum(0,{it.total})
-			//disponible=total-aplicado
+			aplicado=getAplicadoCalculado()
 		}else
 			aplicado=0.0
 	}
 	
-	def beforeInsert(){
-		
-	}
+	
 	
 	def beforeUpdate(){
 		actualizarAplicado()
 	}
 	
 	String toString(){
-		return " Folio: $id $fecha?.format('dd/MM/yyyy') $cliente    $total ($moneda)"
+		return " Folio: $id ${fecha?.format('dd/MM/yyyy')} $cliente    $total ($moneda)"
 	}
 	
 	boolean equals(Object obj){

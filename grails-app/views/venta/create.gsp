@@ -1,59 +1,43 @@
 <%@ page import="com.luxsoft.impapx.Venta" %>
 <!doctype html>
 <html>
-	<head>
-		<meta name="layout" content="luxor">
-		<g:set var="entityName" value="${message(code: 'venta.label', default: 'Venta')}" />
-		<title><g:message code="default.create.label" args="[entityName]" /></title>
-		<r:require module="luxorForms"/>
-	</head>
-	<body>
-		<div class="row-fluid">
+<head>
+	<meta name="layout" content="createForm">
+	<g:set var="entityName" value="${message(code: 'venta.label', default: 'Venta')}" scope="request"/>
+	<g:set var="entity" value="${ventaInstance}" scope="request" />
+	<title>Alta de Venta</title>
+</head>
+<body>
+	
+
+<content tag="formFields">
+
+	<f:with bean="ventaInstance" >
+		
+		<f:field property="cliente" wrapper="bootstrap3"/>
+		<f:field property="clase" wrapper="bootstrap3" widget-class="form-control">
+			<g:select class="form-control chosen-select"  
+				name="${property}" 
+				value="${value}"
+				from="${['IMPORTACION','GENERICA']}"/>
+		</f:field>
+		<f:field property="fecha" wrapper="bootstrap3"/>
+		<f:field property="moneda" wrapper="bootstrap3"/>
+		<f:field property="tc" widget="tc" widget-disabled="true" wrapper="bootstrap3"/>
+		<f:field property="formaDePago" wrapper="bootstrap3">
+			<g:select class="form-control chosen-select"  
+				name="${property}" 
+				value="${value}"
+				from="${['CHEQUE','TRANSFERENCIA','EFECTIVO','TARJETA','DEPOSITO']}"/>
 			
-			<div class="span3">
-				<div class="well">
-					<ul class="nav nav-list">
-						<li class="nav-header">${entityName}</li>
-						<li>
-							<g:link class="list" action="list">
-								<i class="icon-list"></i>
-								<g:message code="default.list.label" args="[entityName]" />
-							</g:link>
-						</li>
-						<li class="active">
-							<g:link class="create" action="create">
-								<i class="icon-plus icon-white"></i>
-								<g:message code="default.create.label" args="[entityName]" />
-							</g:link>
-						</li>
-					</ul>
-				</div>
-			</div>
-			
-			<div class="span9">
+		</f:field>
+		<f:field property="comentario" wrapper="bootstrap3" widget-class="form-control"/>
+	</f:with>
 
-				<div class="page-header">
-					<h3><g:message code="default.create.label" args="[entityName]" /></h3>
-				</div>
+</content>
 
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
-
-				<g:hasErrors bean="${ventaInstance}">
-				<bootstrap:alert class="alert-error">
-				<ul>
-					<g:eachError bean="${ventaInstance}" var="error">
-					<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-					</g:eachError>
-				</ul>
-				</bootstrap:alert>
-				</g:hasErrors>
-
-				<g:render template="form"/>
-				
-			</div>
-
-		</div>
-	</body>
+</body>
 </html>
+
+
+

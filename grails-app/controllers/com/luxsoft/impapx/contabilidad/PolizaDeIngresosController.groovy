@@ -1,49 +1,51 @@
 package com.luxsoft.impapx.contabilidad
 
-import util.MonedaUtils;
-import util.Rounding;
+import util.MonedaUtils
+import util.Rounding
 
-import com.luxsoft.impapx.cxc.CXCAplicacion;
-import com.luxsoft.impapx.cxc.CXCPago;
+import com.luxsoft.impapx.cxc.CXCAplicacion
+import com.luxsoft.impapx.cxc.CXCPago
+import grails.plugin.springsecurity.annotation.Secured
 
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeIngresosController {
 
     def polizaService
 
-   def index() {
-	   redirect action: 'list', params: params
+    def index() {
+    	def sort=params.sort?:'fecha'
+    	def order=params.order?:'desc'
+    	def periodo=session.periodoContable
+    	
+    	def q = Poliza.where {
+    		subTipo == 'INGRESO' && ejercicio == periodo.ejercicio && mes == periodo.mes 
+
+    	}
+    	respond q.list(params)
+    	
     }
+     
+    def mostrarPoliza(long id){
+    	def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
+    	render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
+    }
+	
+	
 	 
-	def mostrarPoliza(long id){
-		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
-		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
-	}
-	 
-	def list() {
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
-		def sort=params.sort?:'fecha'
-		def order=params.order?:'desc'
-		
-		def polizas=Poliza.findAllByTipoAndFechaBetween('INGRESO',periodo.inicio,periodo.fin,[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-	}
+	
 	
 	def generarPoliza(String fecha){
 		Date dia=Date.parse("dd/MM/yyyy",fecha)
 		
 		params.dia=dia
 		
-		println 'Generando poliza: '+params
-		
 		
 		def asiento='CXC COBRO'
 		def descripcion="Registro de cobro de factura"
 		Poliza poliza=new Poliza(tipo:'INGRESO',fecha:dia,descripcion:descripcion,partidas:[])
+		poliza.ejercicio = session.periodoContable.ejercicio
+		poliza.mes = session.periodoContable.mes
+		poliza.subTipo= 'INGRESO'
 		
 		def pagos=CXCPago.findAll("from CXCPago p where date(p.fecha)=? ",[dia])
 		
@@ -70,13 +72,13 @@ class PolizaDeIngresosController {
 			pago.aplicaciones.each{aplic->
 				
 				//Abono a clientes
-				def clave="106-"+aplic.abono.cliente.subCuentaOperativa
+				def clave="105-"+aplic.abono.cliente.subCuentaOperativa
 				poliza.addToPartidas(
 					cuenta:CuentaContable.buscarPorClave(clave),
 					debe:0.0,
 					haber:aplic.total,
 					asiento:asiento,
-					descripcion:"Cobro Fac: ${aplic?.factura?.cfd?.folio} ${pago.tc>1?'T.C'+pago.tc:''} ",
+					descripcion:"Cobro Fac: ${aplic?.factura?.facturaFolio} ${pago.tc>1?'T.C'+pago.tc:''} ",
 					referencia:"$pago.referenciaBancaria"
 					,fecha:poliza.fecha
 					,tipo:poliza.tipo
@@ -89,7 +91,7 @@ class PolizaDeIngresosController {
 			
 			//Abono al IVA por trasladar
 			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave("206-0001"),
+				cuenta:CuentaContable.buscarPorClave("208-0001"),
 				debe:0.0,
 				haber:pago.impuesto.abs()*pago.tc,
 				asiento:asiento,
@@ -107,11 +109,11 @@ class PolizaDeIngresosController {
 				def impuesto=Rounding.round(MonedaUtils.calcularImpuesto(importe),2)
 				
 				poliza.addToPartidas(
-					cuenta:CuentaContable.buscarPorClave("206-0002"),
+					cuenta:CuentaContable.buscarPorClave("209-0001"),
 					debe:impuesto,
 					haber:0.0,
 					asiento:asiento,
-					descripcion:"Cobro Fac: ${aplic?.factura?.cfd?.folio} ${pago.tc>1?'T.C'+pago.tc:''} ",
+					descripcion:"Cobro Fac: ${aplic?.factura?.facturaFolio} ${pago.tc>1?'T.C'+pago.tc:''} ",
 					referencia:"$pago.referenciaBancaria"
 					,fecha:poliza.fecha
 					,tipo:poliza.tipo
@@ -119,7 +121,7 @@ class PolizaDeIngresosController {
 					,origen:aplic.id)
 			}
 			
-			//IETU
+			/*IETU
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave("902-0001"),
 				debe:pago.importe.abs()*pago.tc,
@@ -143,7 +145,7 @@ class PolizaDeIngresosController {
 				,tipo:poliza.tipo
 				,entidad:'CXCPago'
 				,origen:pago.id)
-			
+			*/
 			
 		}
 		
@@ -153,6 +155,6 @@ class PolizaDeIngresosController {
 		//poliza.folio=polizaService.nextFolio(poliza)
 	//	poliza.save(failOnError:true)
 		poliza=polizaService.salvarPoliza(poliza)
-		redirect action: 'list'
+		redirect action: 'index'
 	}
 }

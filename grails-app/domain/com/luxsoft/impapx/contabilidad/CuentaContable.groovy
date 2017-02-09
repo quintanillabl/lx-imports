@@ -3,8 +3,8 @@ package com.luxsoft.impapx.contabilidad
 import java.util.Date;
 import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
+import com.luxsoft.lx.sat.CuentaSat
 
-import com.luxsoft.impapx.Proveedor;
 
 class CuentaContable {
 	
@@ -17,9 +17,12 @@ class CuentaContable {
 	boolean deResultado=false
 	String naturaleza
 	boolean presentacionContable=false
-	boolean presentacionFiscal=false;
-	boolean presentacionFinanciera=false;
-	boolean presentacionPresupuestal=false;
+	boolean presentacionFiscal=false
+	boolean presentacionFinanciera=false
+	boolean presentacionPresupuestal=false
+	CuentaSat cuentaSat
+
+	Boolean suspendida = false
 	
 	Date dateCreated
 	Date lastUpdated
@@ -33,6 +36,8 @@ class CuentaContable {
 		tipo(nullable:false,inList:['ACTIVO','PASIVO','CAPITAL','ORDEN'])
 		subTipo(nullable:true)
 		naturaleza(inList:['DEUDORA','ACREEDORA','MIXTA'])
+		cuentaSat(nullable:true)
+		
     }
 	
 	static mapping ={

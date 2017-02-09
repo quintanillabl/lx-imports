@@ -7,10 +7,11 @@ import util.Rounding;
 
 
 class Venta {
-	
+
+	static auditable = true	
 	
 	Cliente cliente
-	Date fecha
+	Date fecha=new Date()
 	
 	Currency moneda=Currency.getInstance('MXN');
 	
@@ -23,7 +24,7 @@ class Venta {
 	BigDecimal total=0
 	
 	int plazo=0
-	Date vencimiento
+	Date vencimiento=new Date()+1
 	String formaDePago
 	String cuentaDePago="0000"
 	
@@ -35,8 +36,9 @@ class Venta {
 	Date lastUpdated
 	List partidas
 	
-	BigDecimal saldo
+	BigDecimal saldo=0
 	BigDecimal pagosAplicados=0
+	BigDecimal saldoActual=0
 	
 	String tipo="VENTA";
 	String clase="IMPORTACION"
@@ -72,14 +74,15 @@ class Venta {
 		partidas cascade: "all-delete-orphan"
 		sort "id"
 		pagosAplicados formula:'(select ifnull(sum(x.total),0) from CXCAplicacion x where x.factura_id=id)'
+		saldoActual formula:'(select total-ifnull(sum(x.total),0) from CXCAplicacion x where x.factura_id=id)'
 	}
 	
-	static transients = ['saldoActual','cfdi','factura','fechaFactura']
+	static transients = ['cfdi','factura','fechaFactura']
 	
-	public BigDecimal getSaldoActual(){
-		def pag=pagosAplicados?:0.0
-		return total-pag
-	}
+	// public BigDecimal getSaldoActual(){
+	// 	def pag=pagosAplicados?:0.0
+	// 	return total-pag
+	// }
 	
 	def getCfdi(){
 		def serie='FAC'

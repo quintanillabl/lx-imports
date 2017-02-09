@@ -2,6 +2,9 @@ package com.luxsoft.impapx
 
 import org.springframework.dao.DataIntegrityViolationException
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasRole('COMPRAS')"])
 class ProveedorProductoController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
@@ -21,7 +24,6 @@ class ProveedorProductoController {
         	[proveedorProductoInstance: new ProveedorProducto(params)]
 			break
 		case 'POST':
-			println 'alta de producto'+ params
 			Proveedor proveedor=Proveedor.get(params.proveedorId)
 			params.proveedor=proveedor
 			params.producto=Producto.findByClave(params.productoId)
@@ -31,11 +33,7 @@ class ProveedorProductoController {
 	            render view: 'create', model: [proveedorProductoInstance: proveedorProductoInstance]
 	            return
 	        }
-
-			//flash.message = message(code: 'default.created.message', args: [message(code: 'proveedorProducto.label', default: 'ProveedorProducto'), proveedorProductoInstance.id])
 			flash.message="Último producto asignado: "+proveedorProductoInstance.producto.toString()
-			println 'ProveedorProducto salvado: '+proveedorProductoInstance.id
-	        //redirect action: 'show', id: proveedorProductoInstance.id
 	        redirect controller:'proveedor',action:'edit',id:proveedor.id
 			break
 		}
@@ -61,7 +59,7 @@ class ProveedorProductoController {
 	            redirect action: 'list'
 	            return
 	        }
-
+	        log.info 'Producto por proveedor: '+proveedorProductoInstance
 	        [proveedorProductoInstance: proveedorProductoInstance]
 			break
 		case 'POST':
@@ -101,6 +99,24 @@ class ProveedorProductoController {
 		}
     }
 
+    def update(ProveedorProducto proveedorProductoInstance){
+    	
+    	log.info 'Actualizando proveedorProducto: '+proveedorProductoInstance.id
+    	log.info 'Errores: '+proveedorProductoInstance.hasErrors()
+    	log.info proveedorProductoInstance.errors
+    	// if(proveedorProductoInstance==null){
+    	// 	notFound()
+    	// 	return
+    	// }
+    	if(proveedorProductoInstance.hasErrors()){
+    		redirect action:'edit',model:[proveedorProductoInstance:proveedorProductoInstance]
+    		return
+    	}
+    	proveedorProductoInstance.save flush:true,failOnError:true
+    	flash.message="Producto por proveedor ${proveedorProductoInstance.id} actualizado"
+    	redirect controller:'proveedor',action:'edit',id:proveedorProductoInstance.proveedor.id
+    }
+
     def delete() {
         def proveedorProductoInstance = ProveedorProducto.get(params.id)
         if (!proveedorProductoInstance) {
@@ -119,4 +135,14 @@ class ProveedorProductoController {
             redirect action: 'show', id: params.id
         }
     }
+
+    // protected void notFound() {
+    //     request.withFormat {
+    //         form multipartForm {
+    //             flash.message = "No localizo el producto por proveedor "
+    //             redirect action: "index", method: "GET"
+    //         }
+    //         '*'{ render status: NOT_FOUND }
+    //     }
+    // }
 }

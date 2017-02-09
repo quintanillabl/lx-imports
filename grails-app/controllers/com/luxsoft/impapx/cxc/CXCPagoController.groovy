@@ -4,27 +4,40 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.springframework.dao.DataIntegrityViolationException
 
-import com.luxsoft.impapx.Venta;
+import com.luxsoft.impapx.Venta
+import util.MonedaUtils
 
-import util.MonedaUtils;
+import grails.plugin.springsecurity.annotation.Secured
 
+@Secured(["hasRole('VENTAS')"])
 class CXCPagoController {
-
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    
+    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
 	def cobranzaService
-	def filterPaneService
-	
-    def index() {
-        redirect action: 'list', params: params
-    }
 
-    def list() {
-		println 'List: '+params
-        params.max = Math.min(params.max ? params.int('max') : 30, 50)
-		params.sort='id'
-		params.order='desc'
-        [CXCPagoInstanceList: CXCPago.list(params), CXCPagoInstanceTotal: CXCPago.count()]
+	def filterPaneService
+
+	def beforeInterceptor = {
+    	if(!session.periodoTesoreria){
+    		session.periodoTesoreria=new Date()
+    	}
+	}
+
+	def cambiarPeriodo(){
+		def fecha=params.date('fecha', 'dd/MM/yyyy')
+		session.periodoTesoreria=fecha
+		redirect(uri: request.getHeader('referer') )
+	}
+
+    def index(Integer max) {
+    	println request.class
+        def periodo=session.periodoTesoreria
+        def list=CXCPago.findAll(
+        	"from CXCPago c where date(c.fecha) between ? and ?  order by c.id desc"
+        	,[periodo.inicioDeMes(),periodo.finDeMes()])
+        log.info 'Cobros registrados en el periodo '+list.size()
+        [cobros: list]
     }
 	
 	def filter(){
@@ -59,79 +72,42 @@ class CXCPagoController {
 		}
     }
 
-    def show() {
-        def CXCPagoInstance = CXCPago.get(params.id)
-        if (!CXCPagoInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'CXCPago.label', default: 'CXCPago'), params.id])
-            redirect action: 'list'
+    def save(CXCPago CXCPagoInstance){
+    	if(CXCPagoInstance==null){
+    		notFound()
+    		return
+    	}
+    	if(!CXCPagoInstance.cuenta){
+    		flash.error="Seleccione la cuenta destino"
+    		render view: 'create', model: [CXCPagoInstance: CXCPagoInstance]
+    		return
+    	}
+		try {
+			def res=cobranzaService.registrarPago(CXCPagoInstance)
+			flash.message = "Cobro registrado ${res.id}"
+			redirect action: 'edit', id:res.id
+			return
+		} catch (CobranzaEnPagoException e) {
+			flash.error=e.message
+			render view: 'create', model: [CXCPagoInstance: e.pago]
             return
-        }
-
-        [CXCPagoInstance: CXCPagoInstance]
-    }
-
-    def edit() {
-		switch (request.method) {
-		case 'GET':
-	        def CXCPagoInstance = CXCPago.get(params.id)
-	        if (!CXCPagoInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'CXCPago.label', default: 'CXCPago'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        [CXCPagoInstance: CXCPagoInstance]
-			break
-		case 'POST':
-			
-	        def CXCPagoInstance = CXCPago.get(params.id)
-	        if (!CXCPagoInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'CXCPago.label', default: 'CXCPago'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (CXCPagoInstance.version > version) {
-	                CXCPagoInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'CXCPago.label', default: 'CXCPago')] as Object[],
-	                          "Another user has updated this CXCPago while you were editing")
-	                render view: 'edit', model: [CXCPagoInstance: CXCPagoInstance]
-	                return
-	            }
-	        }
-
-	        CXCPagoInstance.properties = params
-
-	        if (!CXCPagoInstance.save(flush: true)) {
-	            render view: 'edit', model: [CXCPagoInstance: CXCPagoInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'CXCPago.label', default: 'CXCPago'), CXCPagoInstance.id])
-	        redirect action: 'show', id: CXCPagoInstance.id
-			break
 		}
+
     }
 
-    def delete() {
-        def CXCPagoInstance = CXCPago.get(params.id)
-        if (!CXCPagoInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'CXCPago.label', default: 'CXCPago'), params.id])
-            redirect action: 'list'
-            return
-        }
+    def show(CXCPago CXCPagoInstance) {
+        [CXCPagoInstance: CXCPagoInstance]
+        respond CXCPagoInstance,action:'edit'
+    }
 
-        try {
-            CXCPagoInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'CXCPago.label', default: 'CXCPago'), params.id])
-            redirect action: 'list'
-        }
-        catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'CXCPago.label', default: 'CXCPago'), params.id])
-            redirect action: 'show', id: params.id
-        }
+    def edit(CXCPago CXCPagoInstance ) {
+		[CXCPagoInstance: CXCPagoInstance]
+    }
+
+    def delete(CXCPago CXCPagoInstance) {
+        CXCPagoInstance.delete(flush: true)
+		flash.message = message(code: 'default.deleted.message', args: [message(code: 'CXCPago.label', default: 'CXCPago'), params.id])
+        redirect action: 'index'
     }
 	
 	def pagosAsJSON(){
@@ -158,10 +134,13 @@ class CXCPagoController {
 		render dataToRender as JSON
 	}
 	
-	def selectorDeFacturas(long pagoId){
-		def pago=CXCPago.get(pagoId)
-		
-		def hql="from Venta p where p.cliente.id=?  and p.total-p.pagosAplicados>0 "
+	def selectorDeFacturas(CXCPago pago){
+		if(pago.disponible<=0.0){
+			flash.message="Cobro sin disponible para aplicar"
+			redirect action:'edit', id:pago.id
+			return
+		}
+		def hql="from Venta p where p.cliente.id=?  and p.total-p.pagosAplicados>0 order by p.fecha desc"
 		def res=Venta.findAll(hql,[pago.cliente.id])
 		[pago:pago,facturas:res,facturasTotal:res.size()]
 	}
@@ -186,6 +165,23 @@ class CXCPagoController {
 		cobranzaService.eliminarAplicaciones(pago,jsonArray)
 		dataToRender.pagoId=pago.id
 		render dataToRender as JSON
+	}
+
+	def mostrarIngreso(CXCPago cobro){
+		println cobro
+		render(template:'ingresoForm',bean:cobro.ingreso)
+	}
+
+	
+
+	protected void notFound() {
+	    request.withFormat {
+	        form multipartForm {
+	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'CXCPago.label', default: 'CXCPago'), params.id])
+	            redirect action: "index", method: "GET"
+	        }
+	        '*'{ render status: NOT_FOUND }
+	    }
 	}
 	
 	

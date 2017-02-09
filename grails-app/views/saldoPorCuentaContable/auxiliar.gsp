@@ -2,148 +2,243 @@
 <!doctype html>
 <html>
 <head>
-<meta name="layout" content="documentView">
-
-
-<title>Auxiliar contable (Balanza)</title>
-
-<r:require modules="dataTables,luxorForms,luxorTableUtils"/>
-
+	<meta name="layout" content="luxor">
+	<title>Auxiliar contable (Balanza)</title>
+	<asset:javascript src="forms/forms.js"/>
+	%{-- <r:require modules="dataTables,luxorForms,luxorTableUtils"/> --}%
 </head>
 <body>
 
 	<content tag="header">
-		<div class="accordion" id="saldoDeCuentaAccordion">
- 			<div class="accordion-group">
- 				<div class="accordion-heading">
- 					
- 					<a class="accordion-toggle alert" data-toggle="collapse" 
- 						data-parent="#saldoDeCuentaAccordion" href="#collapseOne">
- 						Auxiliar contable : ${saldo.mes} - ${saldo.year }
- 					</a>
- 					<h4><g:link action="subcuentas" id="${saldoPadre.id}">Cuenta: ${saldoPadre.cuenta} </g:link></h4>
- 					<%-- <h4>Cuenta: ${saldoPadre?.cuenta} </h4>--%>
- 					<h4>Sub Cuenta: ${saldo.cuenta} </h4>
- 					
- 				</div>
- 				<div id="collapseOne" class="accordion-body collapse ">
- 					<div class="accordion-inner ">
-					<dl>
-						<dt>Saldo inicial:<lx:moneyFormat number="${saldo.saldoInicial }"/></dt>
-						<dt>Debe:<lx:moneyFormat number="${saldo.debe }"/></dt>
-						<dt>Haber:<lx:moneyFormat number="${saldo.haber }"/></dt>
-						<dt>Saldo final:<lx:moneyFormat number="${saldo.saldoFinal }"/></dt>
-					</dl>
-					<g:jasperReport
-						controller="saldoPorCuentaContable"
- 						action="imprimirAuxiliarContable" 
- 						jasper="AuxiliarContable" 
- 						format="PDF,HTML,XLS" 
- 						name="Imprimir auxiliar">
-						<g:hiddenField name="id" value="${saldo.id}"/>
-					</g:jasperReport>
- 					</div>
- 				</div>
- 			</div>
- 		</div>
-		
+		Cuenta: ${saldoPadre.cuenta} 
 	</content>
-	
- 	<content tag="document">	
- 		<g:if test="${flash.message}">
-			<bootstrap:alert class="alert-info">
-				${flash.message}
-			</bootstrap:alert>
-		</g:if>
-		<form class="form-inline">
-  			<fieldset>
-    		<label>Debe</label>
-    		<input id="totalDebe"  type="text" class="input-medium moneyField" readOnly="true">
-    		<label>Haber</label>
-    		<input id="totalHaber" type="text" class="input-medium moneyField" readOnly="true">
-    		<label>Cuadre</label>
-    		<input id="totalCuadre" type="text" class="input-medium moneyField" readOnly="true">
-    		<a href="#asignarCuentaDialog" data-toggle="modal" class="btn">Reclasificar</a>
-  			</fieldset>
-		</form>	
-		<table id="grid" 
-			class="table table-striped table-hover table-bordered table-condensed simpleGrid">
-			<thead>
-				<tr>
-					<td>Poliza</td>
-					<th>Cuenta</th>
-					<th>Concepto</th>
-					<th>Debe</th>
-					<th>Haber</th>
-					<th>Descripcion</th>
-					<th>Referencia</th>
-					<th>Asiento</th>
-					<th>Entidad</th>
-					<th>Origen</th>
-					
-					
-				</tr>
-			</thead>
-			<tbody>
-				<g:each in="${partidas}" var="row">
-					<tr id="${row.id}">
-						<td>
-						<g:link controller="poliza" action="mostrarPoliza" target="_blank" id="${row.poliza.id}">
-							${row.poliza.tipo }- ${row.poliza.folio  }
-						</g:link>
-						</td>
-						<td>${fieldValue(bean: row, field: "cuenta.clave")}</td>
-						<td>${fieldValue(bean: row, field: "cuenta.descripcion")}</td>
-						<td><g:formatNumber number="${row.debe}" format="########.##"/></td>
-						<td><g:formatNumber number="${row.haber}" format="########.##"/></td>
-						<td>${fieldValue(bean: row, field: "descripcion")}</td>
-						<td>${fieldValue(bean: row, field: "referencia")}</td>
-						<td>${fieldValue(bean: row, field: "asiento")}</td>
-						<td>${fieldValue(bean: row, field: "entidad")}</td>
-						<td><g:formatNumber number="${row.origen}" format="########"/></td>
-					</tr>
-				</g:each>
-			</tbody>
-			<tfoot>
-				<tr>
-					<th>Poliza</th>
-					<th>Cuenta</th>
-					<th>Concepto</th>
-					<th>Debe</th>
-					<th>Haber</th>
-					<th>Descripcion</th>
-					<th>Referencia</th>
-					<th>Asiento</th>
-					<th>Entidad</th>
-					<th>Origen</th>
-				</tr>
-			</tfoot>
-		</table>
+
+	<content tag="subHeader">
+		<ol class="breadcrumb">
+	    	<li><g:link action="index">Saldos</g:link></li>
+	    	<li><g:link action="subcuentas" id="${saldoPadre.id}">Cuenta: ${saldoPadre.cuenta} </g:link></li>
+	    	<li class="active"><strong>Auxiliar : ${saldo.mes} - ${saldo.year }</strong></li>
+		</ol>
+	</content>
+
+	<content tag="document">
+		<dl>
+			<dt>Saldo inicial:<lx:moneyFormat number="${saldo.saldoInicial }"/></dt>
+			<dt>Debe:<lx:moneyFormat number="${saldo.debe }"/></dt>
+			<dt>Haber:<lx:moneyFormat number="${saldo.haber }"/></dt>
+			<dt>Saldo final:<lx:moneyFormat number="${saldo.saldoFinal }"/></dt>
+		</dl>
 		
-		<div class="modal hide fade" id="asignarCuentaDialog" tabindex=-1 role="dialog" 
-			aria-labelledby="myModalLabel">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="myModalLabel">Reclasificación de cuenta</h4>
+	    <div class="col-lg-12">
+	        <div class="ibox float-e-margins">
+	        	
+	        	<div class="ibox-title">
+	        		 <button data-target="#periodoDialog" data-toggle="modal" class="btn btn-outline btn-success  dim">
+	        		 	<i class="fa fa-calendar"></i> 
+	        		</button>
+	        		<lx:refreshButton/>
+	        		<div class="btn-group">
+	        		    <button type="button" name="operaciones"
+	        		            class="btn btn-info dropdown-toggle" data-toggle="dropdown"
+	        		            role="menu">
+	        		            Reportes <span class="caret"></span>
+	        		    </button>
+	        		    <ul class="dropdown-menu">
+	        		    	<li>
+     							<g:jasperReport
+     								controller="saldoPorCuentaContable"
+     		 						action="imprimirAuxiliarContable" 
+     		 						jasper="AuxiliarContable" 
+     		 						format="PDF" 
+     		 						name="Imprimir auxiliar">
+     								<g:hiddenField name="id" value="${saldo.id}"/>
+     							</g:jasperReport>
+	        		    	</li>
+	        		    </ul>
+	        		</div>
+	        		<div class="btn-group">
+	        		    <button type="button" name="operaciones"
+	        		            class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+	        		            role="menu">
+	        		            Operaciones <span class="caret"></span>
+	        		    </button>
+	        		    <ul class="dropdown-menu">
+    		    	 		<li>
+    		    	 			<a href="#asignarCuentaDialog" data-toggle="modal" class="btn">Reclasificar</a>
+    		    			</li>
+    		    			
+	        		    </ul>
+	        		</div>
+	        	    <div class="ibox-tools">
+	        	        <a class="collapse-link">
+	        	            <i class="fa fa-chevron-up"></i>
+	        	        </a>
+	        	        <a class="close-link">
+	        	            <i class="fa fa-times"></i>
+	        	        </a>
+	        	    </div>
+	        	</div>
+	            <div class="ibox-content">
+        			<form class="form-inline">
+        				<div class="form-group">
+        				    <label for="totalDebe">Debe</label>
+        				    <input id="totalDebe"  type="text" class="money" readOnly="true">
+        				</div>
+        	  			<div class="form-group">
+        				    <label for="totalHaber">Haber</label>
+        				    <input id="totalHaber"  type="text" class="money" readOnly="true">
+        				</div>
+        	    		<div class="form-group">
+        				    <label for="totalCuadre">Cuadre</label>
+        				    <input id="totalCuadre"  type="text" class="money" readOnly="true">
+        				</div>
+        			</form>	
+        			<table id="grid" 
+        				class="table table-striped table-hover table-bordered table-condensed ">
+        				<thead>
+        					<tr>
+        						<td>Poliza</td>
+        						<th>Cuenta</th>
+        						<th>Concepto</th>
+        						<th>Debe</th>
+        						<th>Haber</th>
+        						<th>Descripcion</th>
+        						<th>Referencia</th>
+        						<th>Asiento</th>
+        						<th>Entidad</th>
+        						<th>Origen</th>
+        						
+        						
+        					</tr>
+        				</thead>
+        				<tbody>
+        					<g:each in="${partidas}" var="row">
+        						<tr id="${row.id}">
+        							<td>
+        							<g:link controller="poliza" action="edit" target="_blank" id="${row.poliza.id}">
+        								${row.poliza.tipo }- ${row.poliza.folio  }
+        							</g:link>
+        							</td>
+        							<td>${fieldValue(bean: row, field: "cuenta.clave")}</td>
+        							<td>${fieldValue(bean: row, field: "cuenta.descripcion")}</td>
+        							<td><g:formatNumber number="${row.debe}" format="########.##"/></td>
+        							<td><g:formatNumber number="${row.haber}" format="########.##"/></td>
+        							<td>${fieldValue(bean: row, field: "descripcion")}</td>
+        							<td>${fieldValue(bean: row, field: "referencia")}</td>
+        							<td>${fieldValue(bean: row, field: "asiento")}</td>
+        							<td>${fieldValue(bean: row, field: "entidad")}</td>
+        							<td><g:formatNumber number="${row.origen}" format="########"/></td>
+        						</tr>
+        					</g:each>
+        				</tbody>
+        				<tfoot>
+        					<tr>
+        						<th>Poliza</th>
+        						<th>Cuenta</th>
+        						<th>Concepto</th>
+        						<th>Debe</th>
+        						<th>Haber</th>
+        						<th>Descripcion</th>
+        						<th>Referencia</th>
+        						<th>Asiento</th>
+        						<th>Entidad</th>
+        						<th>Origen</th>
+        					</tr>
+        				</tfoot>
+        			</table>
+	            </div>
+	        </div>
+	    </div>
+		
+		<div class="modal fade" id="asignarCuentaDialog" tabindex="-1">
+			<div class="modal-dialog ">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">Reclasificación de cuentas</h4>
+					</div>
+					<div class="modal-body ui-front">
+						<div class="row">
+							<form>
+								<g:hiddenField id="cuentaId" name="cuenta.id"  />
+								<div class="form-group">
+									<label for="cuenta" class="control-label col-sm-2">Cuenta</label>
+									<div class="col-sm-10">
+										<input id="cuenta" type="text" class="form-control" value="" required/>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+						<button id="asignarCuenta" class="btn btn-primary" >Aplicar</button>
+					</div>
+		
+				</div>
+				<!-- moda-content -->
 			</div>
-			<div class="modal-body">
-				<g:hiddenField id="cuentaId" name="cuenta.id"  />
-				<input id="cuenta" type="text" name="cuenta" 
-					value="" placeholder="Seleccione la cuenta destino" 
-					class="input-xxlarge"
-					required="true"/>
-			</div>
-			<div class="modal-footer">
-				<a href="#" class="btn" data-dismiss="modal">Cancelar</a>
-    			<button id="asignarCuenta" class="btn btn-primary" onclick="reclasificarCuenta()">Aplicar</button>
-			</div>
+			<!-- modal-di -->
 		</div>
-		
+
+	<script type="text/javascript">
+		$(function(){
+			$(".money").autoNumeric({vMin:'-999999999.00',wEmpty:'zero',mRound:'B'});
+ 			$('#grid').dataTable({
+                responsive: true,
+                aLengthMenu: [[100, 150, 200, 250, -1], [100, 150, 200, 250, "Todos"]],
+                "language": {
+					"url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
+	    		},
+	    		"dom": 'T<"clear">lfrtip',
+	    		"tableTools": {
+	    		    "sSwfPath": "${assetPath(src: 'plugins/dataTables/swf/copy_csv_xls_pdf.swf')}"
+	    		},
+	    		"order": [],
+	    		"fnFooterCallback": function ( nRow, aaData, iStart, iEnd, aiDisplay ) {
+		         	var debe=0;
+		         	var haber=0;
+		         	var cuadre=0;
+		         	for(var i=iStart;i<iEnd;i++){
+		         		
+		         		var d1=parseFloat(aaData[ aiDisplay[i] ][3]);
+		         		var d2=parseFloat(aaData[ aiDisplay[i] ][4]);
+		         		debe+=d1;
+		         		haber+=d2;
+		         		
+		         		
+		         	}
+         	
+		         	cuadre=debe-haber
+		         	$('#totalDebe').autoNumeric('set',debe);
+		         	$('#totalHaber').autoNumeric('set',haber);
+		         	$('#totalCuadre').autoNumeric('set',cuadre);
+         		}
+            });
+
+			$("#cuenta").autocomplete({
+					source:'<g:createLink controller="cuentaContable" action="cuentasDeDetalleJSONList"/>',
+					minLength:3,
+					select:function(e,ui){
+						//console.log('Valor seleccionado: '+ui.item.id);
+						$("#cuentaId").val(ui.item.id);
+					}
+			});
+			
+		});
+	</script>
+
 	</content>
-<r:script>
+
+	
+	
+ 	
+<script>
 $(function(){
 	
-	$(".moneyField").autoNumeric({vMin:'-999999999.00',wEmpty:'zero',mRound:'B'});
+	
 	
 	$("#grid").dataTable({
 		aLengthMenu: [[100, 150, 200, 250, -1], [100, 150, 200, 250, "Todos"]]
@@ -181,15 +276,7 @@ $(function(){
          }
 	}).columnFilter();
 
-	$("#cuenta").autocomplete({
-			source:'<g:createLink controller="cuentaContable" action="cuentasDeDetalleJSONList"/>',
-			minLength:3,
-			
-			select:function(e,ui){
-				//console.log('Valor seleccionado: '+ui.item.id);
-				$("#cuentaId").val(ui.item.id);
-			}
-	});
+	
 	
 });
 
@@ -230,7 +317,8 @@ function getDestino(){
 	var res=$("#cuentaId").val();
 	return res;
 }
-</r:script>			
+</script>
+
 </body>
 </html>
 

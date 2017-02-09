@@ -1,217 +1,105 @@
-
 <%@ page import="com.luxsoft.impapx.cxc.CXCNota" %>
 <!doctype html>
 <html>
-	<head>
-		<meta name="layout" content="luxor">
-		<g:set var="entityName" value="${message(code: 'CXCNota.label', default: 'CXCNota')}" />
-		<title>Nota : ${CXCNotaInstance.id }</title>
-	</head>
-	<body>
-		<div class="row-fluid">
-			<div class="span3">
-				<div class="well">
-					<ul class="nav nav-list">
-						<li class="nav-header">${entityName}</li>
-						<li>
-							<g:link class="list" action="list">
-								<i class="icon-list"></i>
-								<g:message code="default.list.label" args="[entityName]" />
-							</g:link>
-						</li>
-						<li>
-							<g:link class="create" action="create">
-								<i class="icon-plus"></i>
-								<g:message code="default.create.label" args="[entityName]" />
-							</g:link>
-						</li>
-					</ul>
-				</div>
-			</div>
-			
-			<div class="span9">
+<head>
+	<meta name="layout" content="luxor">
+	<g:set var="entityName" value="${message(code: 'CXCNota.label', default: 'CXCNota')}" scope="request"/>
+	<g:set var="entity" value="${CXCNotaInstance}" scope="request" />
+	<title>CXC Nota ${CXCNotaInstance.id}</title>
+</head>
+<body>
+	
+	<content tag="header">
+		Nota ${CXCNotaInstance.id} Disponible: ${formatNumber(number:entity.disponible,type:'currency')}
+ 	</content>
+ 	<content tag="subHeader">
+ 		<ol class="breadcrumb">
+            <li><g:link action="index">${entityName}(s)</g:link></li>
+            <li><g:link action="show" id="${entity.id}">Consulta</g:link></li>
+            <g:if test="${CXCNotaInstance.cfdi}">
+            	<li><g:link controller="cfdi" action="show" id="${entity.cfdi}"><strong>CFDI</strong></g:link></li>
+            </g:if>
+            <li><g:link action="edit" id="${entity.id}"><strong>Edición</strong></g:link></li>
+            
+        </ol>
+ 	</content>
 
-				<div class="page-header">
-					<h3>Nota : ${CXCNotaInstance.id }</h3>
-				</div>
-
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
+ 	<content tag="document">
+ 		<div class="ibox float-e-margins">
+ 			<div class="ibox-title">
+				<g:if test="${CXCNotaInstance.cfdi}">
+					<g:link controller="cfdi" action="show" id="${entity.id}"><strong>CFDI</strong></g:link>
 				</g:if>
-
-				<dl>
-				
-					<g:if test="${CXCNotaInstance?.importe}">
-						<dt><g:message code="CXCNota.importe.label" default="Importe" /></dt>
-						
-							<dd><g:fieldValue bean="${CXCNotaInstance}" field="importe"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${CXCNotaInstance?.impuesto}">
-						<dt><g:message code="CXCNota.impuesto.label" default="Impuesto" /></dt>
-						
-							<dd><g:fieldValue bean="${CXCNotaInstance}" field="impuesto"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${CXCNotaInstance?.total}">
-						<dt><g:message code="CXCNota.total.label" default="Total" /></dt>
-						
-							<dd><g:fieldValue bean="${CXCNotaInstance}" field="total"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${CXCNotaInstance?.tc}">
-						<dt><g:message code="CXCNota.tc.label" default="Tc" /></dt>
-						
-							<dd><g:fieldValue bean="${CXCNotaInstance}" field="tc"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${CXCNotaInstance?.impuestoTasa}">
-						<dt><g:message code="CXCNota.impuestoTasa.label" default="Impuesto Tasa" /></dt>
-						
-							<dd><g:fieldValue bean="${CXCNotaInstance}" field="impuestoTasa"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${CXCNotaInstance?.comentario}">
-						<dt><g:message code="CXCNota.comentario.label" default="Comentario" /></dt>
-						
-							<dd><g:fieldValue bean="${CXCNotaInstance}" field="comentario"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${CXCNotaInstance?.cfd}">
-						<dt><g:message code="CXCNota.cfd.label" default="Cfd" /></dt>
-						
-							<dd><g:link controller="comprobanteFiscal" action="show" id="${CXCNotaInstance?.cfd?.id}">${CXCNotaInstance?.cfd?.encodeAsHTML()}</g:link></dd>
-						
-					</g:if>
-				
-					<g:if test="${CXCNotaInstance?.aplicaciones}">
-						<dt><g:message code="CXCNota.aplicaciones.label" default="Aplicaciones" /></dt>
-						
-							<g:each in="${CXCNotaInstance.aplicaciones}" var="a">
-							<dd><g:link controller="CXCAplicacion" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></dd>
-							</g:each>
-						
-					</g:if>
-				
-					<g:if test="${CXCNotaInstance?.aplicado}">
-						<dt><g:message code="CXCNota.aplicado.label" default="Aplicado" /></dt>
-						
-							<dd><g:fieldValue bean="${CXCNotaInstance}" field="aplicado"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${CXCNotaInstance?.cliente}">
-						<dt><g:message code="CXCNota.cliente.label" default="Cliente" /></dt>
-						
-							<dd><g:link controller="cliente" action="show" id="${CXCNotaInstance?.cliente?.id}">${CXCNotaInstance?.cliente?.encodeAsHTML()}</g:link></dd>
-						
-					</g:if>
-				
-					<g:if test="${CXCNotaInstance?.disponible}">
-						<dt><g:message code="CXCNota.disponible.label" default="Disponible" /></dt>
-						
-							<dd><g:fieldValue bean="${CXCNotaInstance}" field="disponible"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${CXCNotaInstance?.fecha}">
-						<dt><g:message code="CXCNota.fecha.label" default="Fecha" /></dt>
-						
-							<dd><g:formatDate date="${CXCNotaInstance?.fecha}" /></dd>
-						
-					</g:if>
-				
-					<g:if test="${CXCNotaInstance?.moneda}">
-						<dt><g:message code="CXCNota.moneda.label" default="Moneda" /></dt>
-						<dd><g:fieldValue bean="${CXCNotaInstance}" field="moneda"/></dd>
-						
-					</g:if>
-					
-					<g:if test="${CXCNotaInstance.cfdi}">
-						<dt>CFDI</dt>
-						<dd><g:link controller="cfdi" action="show" id="${CXCNotaInstance.cfdi}">
-							${CXCNotaInstance?.cfdi}
-							</g:link>
-						</dd>
-							
-					</g:if>
-					
-				
-					<g:if test="${CXCNotaInstance?.partidas}">
-						<dt><g:message code="CXCNota.partidas.label" default="Partidas" /></dt>
-						
-							<g:each in="${CXCNotaInstance.partidas}" var="p">
-							<dd><g:link controller="CXCNotaDet" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></dd>
-							</g:each>
-						
-					</g:if>
-					
-					
-				
-				</dl>
-				
-				<g:if test="${CXCNotaInstance.comprobanteFiscal}">
-					<button  id="#cancelarCfdBtn" class="btn btn-danger" data-target="#cancelarCfdDialog" data-toggle="modal">
-  					Cancelar CFD
-  					</button>
-				</g:if>
-				<g:else>
-					<g:form>
-					<g:hiddenField name="id" value="${CXCNotaInstance?.id}" />
-					<div class="form-actions">
-						<g:link class="btn" action="edit" id="${CXCNotaInstance?.id}">
-							<i class="icon-pencil"></i>
-							<g:message code="default.button.edit.label" default="Edit" />
-						</g:link>
-						<button class="btn btn-danger" type="submit" name="_action_delete">
-							<i class="icon-trash icon-white"></i>
-							<g:message code="default.button.delete.label" default="Delete" />
-						</button>
+ 			</div>
+ 		    <div class="ibox-content">
+		 		<ul class="nav nav-tabs" id="editTab">
+					<li class="active"><a href="#conceptosPanel" 	  data-toggle="tab">Conceptos</a></li>
+					<li><a href="#aplicacionesPanel" data-toggle="tab">Aplicaciones</a></li>
+					<li><a href="#abonoPanel"  data-toggle="tab">Propiedades</a></li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane active" id="conceptosPanel">
+						<g:render template="conceptosPanel" 
+							model="[CXCAbonoInstance:CXCNotaInstance,conceptos:CXCNotaInstance.partidas]"/> 
 					</div>
-				</g:form>
-				
-				</g:else>
-				
-				<div class="modal hide fade" id="cancelarCfdDialog" tabindex=-1 role="dialog" aria-labelledby="myModalLabel">
-					
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="myModalLabel">Cancelación de CFD</h4>
+					<div class="tab-pane " id="aplicacionesPanel">
+						<table id="grid"
+							class="simpleGrid table table-striped table-hover table-bordered table-condensed">
+							<thead>
+								<tr>
+									<th class="header">Id</th>
+									<th class="header">Fecha</th>
+									<th class="header">Documento</th>
+									<th class="header">Fecha(Docto)</th>	
+									<th class="header">Importe (Docto)</th>
+									<th class="header">Saldo (Docto)</th>
+									<th class="header">Pagado</th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								<g:each in="${aplicaciones}" var="row">
+									<tr id="${row.id}">
+									    
+										<td><g:link controller="CXCAplicacion" action="edit" id="${row.id}">
+											${fieldValue(bean: row, field: "id")}</g:link>
+										</td>
+										<td><lx:shortDate date="${row.fecha}" /></td>
+										<td>${fieldValue(bean: row, field: "factura.facturaFolio")}</td>
+										<td>${fieldValue(bean: row, field: "factura.fechaFactura")}</td>
+										<td><lx:moneyFormat number="${row.factura.total }" /></td>	
+										<td><lx:moneyFormat number="${row.factura.saldoActual }" /></td>
+										<td><lx:moneyFormat number="${row.total }" /></td>
+										
+									</tr>
+								</g:each>
+							</tbody>
+							<tfoot>
+								<tr>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td></td>
+									<td><label class="pull-right" >Total: </label></td>
+									<td><lx:moneyFormat number="${CXCNotaInstance.aplicado }" /></td>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+					<div class="tab-pane " id="abonoPanel">
+						<fieldset disabled>
+							<g:render template="editForm" bean="${CXCNotaInstance}"/>
+						</fieldset>
 					</div>
 					
-					<div class="modal-body">
-						<g:form controller="venta" action="cancelar">
-							<g:hiddenField name="id" value="${CXCNotaInstance?.id}" />
-							<input id="comentario" type="text" name="comentario" value="" placeholder="Comentario de cancelación" class="input-xxlarge" required="true">
-						<div class="form-actions">	
-							<button class="btn btn-danger" type="submit" name="cancelar">
-								<i class="icon-trash icon-white"></i>
-								<g:message code="default.button.cancel.label" default="Cancelar" />
-							</button>
-						</div>
-						
-						</g:form>
-					</div>				
-			</div>
-			<g:if test="${CXCNotaInstance.cfd}">
-				<g:jasperReport
-							controller="CXCNota"
-							action="imprimirCfd"
-							jasper="ComprobanteCFD" 
-							format="PDF,HTML" 
-							name="Imprimir CFD">
-				<g:hiddenField name="ID" value="${CXCNotaInstance.id}"/>
-							
-			</g:jasperReport>
-			</g:if>
-			
-
-		</div>
-	</body>
+				</div>
+ 		    </div>
+ 		</div>
+ 	</content>
+ 	
+ 	
+</body>
 </html>
+
+

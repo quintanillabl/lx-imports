@@ -30,6 +30,10 @@ class TipoDeCambio {
 	String toString(){
 		return "$monedaOrigen $monedaFuente    $factor "
 	}
+
+	static mapping = {
+		fecha type:'date'
+	}
 	
 	boolean equals(Object obj){
 		if(!obj.instanceOf(TipoDeCambio))

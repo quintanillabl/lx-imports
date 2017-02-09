@@ -66,7 +66,7 @@ class CfdiConverters {
 	}
 	
 	static ComprobanteDocument toComprobanteFromVenta(Venta source,Empresa empresa){
-		println "Generando ComprobanteDocument para $source.tipo $source.id"
+		
 		final ComprobanteDocument document=ComprobanteDocument.Factory.newInstance()
 		final Comprobante comprobante=document.addNewComprobante()
 		CFDIUtils.depurar(document)
@@ -75,7 +75,8 @@ class CfdiConverters {
 		//def fecha=Date.parse('dd/MM/yyy hh:mm:ss','31/03/2014 20:'+new Date().format('mm:ss'))
 		comprobante.setFecha(CFDIUtils.toXmlDate(fecha).getCalendarValue())
 		comprobante.setFormaDePago("PAGO EN UNA SOLA EXHIBICION")
-		comprobante.setMetodoDePago(source.formaDePago)
+		//comprobante.setMetodoDePago(source.formaDePago)
+		comprobante.setMetodoDePago('03')
 		comprobante.setMoneda(source.moneda.getCurrencyCode())
 		comprobante.setTipoCambio(source.tc.toString())
 		comprobante.setDescuento(source.descuentos)
@@ -129,7 +130,8 @@ class CfdiConverters {
 			c.setNoIdentificacion(det.producto.clave)
 			String desc = det.producto.descripcion
 			if(StringUtils.isNotBlank(det.getComentario()))
-				desc = (new StringBuilder(String.valueOf(desc))).append(StringUtils.stripToEmpty(det.comentario)).toString()
+				//desc = (new StringBuilder(String.valueOf(desc))).append(StringUtils.stripToEmpty(det.comentario)).toString()
+				desc +=' '+det.comentario
 			desc = StringUtils.abbreviate(desc, 250)
 			c.setDescripcion(desc)
 			c.setValorUnitario(det.precio)
@@ -150,7 +152,7 @@ class CfdiConverters {
 			
 			
 		}
-		println 'ComprobanteDocument generado: '+document
+		//println 'ComprobanteDocument generado: '+document
 		return document
 	}
 	
@@ -181,7 +183,8 @@ class CfdiConverters {
 		comprobante.setVersion("3.2")
 		comprobante.setFecha(CFDIUtils.toXmlDate(new Date()).getCalendarValue())
 		comprobante.setFormaDePago("PAGO EN UNA SOLA EXHIBICION")
-		comprobante.setMetodoDePago("NO IDENTIFICADO")
+		//comprobante.setMetodoDePago("NO IDENTIFICADO")
+		comprobante.setMetodoDePago('99')
 		comprobante.setMoneda(source.moneda.getCurrencyCode())
 		comprobante.setTipoCambio(source.tc.toString())
 		

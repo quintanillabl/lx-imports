@@ -3,61 +3,93 @@
 <head>
 <meta name="layout" content="luxor">
 <title>Facturas pendientes de pago</title>
-<r:require module="luxorSimpleTable"/>
 </head>
 <body>
-	<div class="container">
-	
-		<div class="row">
-			<div class="well alert">
-			<strong>Facturas pendientes de pago</strong>
-				<g:link action='edit' id="${abonoInstance.id}" 	>
-				 Abono: ${abonoInstance.id} Proveedor:${abonoInstance.proveedor.nombre}  
-				 Disponible: ${abonoInstance.disponible }
-				</g:link>
-			</div>
-		</div>
-		
-		<div class="row">
-			<div class="span12">
-				<a id="asignar" href="#" class="btn">Agregar</a>
-				<table id="grid" class="grid table table-striped table-hover table-bordered table-condensed">
-					<thead>
-						<tr>
-							<g:sortableColumn property="id"    title="Id"/>
-							<g:sortableColumn property="documento" title="Documento"/>
-							<th class="header">Fecha</th>
-							<th class="header">Proveedor</th>
-							<th class="header">Vencimiento</th>
-							<th class="header">Moneda</th>
-							<th class="header">Total</th>
-							<th class="header">Pagos</th>
-							<th class="header">Saldo</th>
-						</tr>
-					</thead>
-					<tbody>
-						<g:each in="${cuentaPorPagarInstanceList}" var="row">
-						<tr id="${row.id}">	
-							<td>${row.id}</td>
-							<td>${fieldValue(bean: row, field: "documento")}</td>
-							<td><lx:shortDate date="${row.fecha}"/></td>
-							<td>${fieldValue(bean: row, field: "proveedor")}</td>
-							<td><lx:shortDate date="${row.vencimiento }"/></td>
-							<td>${fieldValue(bean: row, field: "moneda")}</td>
-							<td><lx:moneyFormat number="${row.total }"/></td>
-							<td><lx:moneyFormat number="${row.pagosAplicados }"/></td>
-							<td><lx:moneyFormat number="${row.saldoActual }"/></td>
-						</tr>
-						</g:each> 
-					</tbody>
-				</table>
+
+<content tag="header">
+	Facturas pendientes proveedor:${abonoInstance.proveedor.nombre}  
 				
+</content>
+<content tag="subHeader">
+	<ol class="breadcrumb">
+		<li><g:link action="edit" id="${abonoInstance.id}"><strong>Abono ${abonoInstance.id}</strong></g:link></li>
+		<li><strong>Disponible:  ${g.formatNumber(number:abonoInstance.disponible,type:'currency') }</strong></li>
+	</ol>
+</content>
+
+<content tag="document">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="ibox float-e-margins">
+				<div class="ibox-title">
+					<a id="asignar" href="#" class="btn btn-success btn-outline">Agregar</a>
+				</div>
+			    <div class="ibox-content">
+					<table id="grid" class="grid table table-hover table-bordered table-condensed">
+						<thead>
+							<tr>
+								<th>Id</th>
+								<th>Documento</th>
+								<th>Fecha</th>
+								<th>Proveedor</th>
+								<th>Vencimiento</th>
+								<th>Moneda</th>
+								<th>Total</th>
+								<th>Pagos</th>
+								<th>Saldo</th>
+								<th>Ej-Sem</th>
+							</tr>
+						</thead>
+						<tbody>
+							<g:each in="${cuentaPorPagarInstanceList}" var="row">
+							<tr id="${row.id}">	
+								<td>${row.id}</td>
+								<td>${fieldValue(bean: row, field: "documento")}</td>
+								<td><lx:shortDate date="${row.fecha}"/></td>
+								<td>${fieldValue(bean: row, field: "proveedor")}</td>
+								<td><lx:shortDate date="${row.vencimiento }"/></td>
+								<td>${fieldValue(bean: row, field: "moneda")}</td>
+								<td><lx:moneyFormat number="${row.total }"/></td>
+								<td><lx:moneyFormat number="${row.pagosAplicados }"/></td>
+								<td><lx:moneyFormat number="${row.saldoActual }"/></td>
+								<td>${row.fecha[Calendar.YEAR]} - S${row.fecha[Calendar.WEEK_OF_YEAR]}</td>
+							</tr>
+							</g:each> 
+						</tbody>
+					</table>
+			    </div>
 			</div>
 		</div>
 	</div>
-	<r:script>
+	
+	
+	<script type="text/javascript">
 		$(function(){
-		
+
+			$('#grid').dataTable( {
+	        	"paging":   false,
+	        	"ordering": false,
+	        	"info":     false,
+	        	"language": {
+					"url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
+	    		},
+	    		//"dom": '',
+	    		"order": []
+	    	} );
+			
+			$("tbody tr").on('click',function(){
+				$(this).toggleClass("success selected");
+			});
+
+			function selectedRows(){
+				var res=[];
+				var data=$("tbody tr.selected").each(function(){
+					var tr=$(this);
+					res.push(tr.attr("id"));
+				});
+				return res;
+			};
+
 			$("#asignar").click(function(){
 				var res=selectedRows();
 				if(res==""){
@@ -90,7 +122,8 @@
 			});
 			
 		});
-	</r:script>
+	</script>
+</content>
 	
 </body>
 </html>

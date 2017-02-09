@@ -5,43 +5,117 @@ import org.springframework.dao.DataIntegrityViolationException
 import com.luxsoft.impapx.CuentaBancaria;
 import com.luxsoft.impapx.cxc.CXCPago;
 import com.luxsoft.impapx.cxp.Anticipo;
+import grails.converters.JSON
+import org.codehaus.groovy.grails.web.json.JSONArray
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasRole('TESORERIA')"])
 class MovimientoDeCuentaController {
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    
 
-    def index() {
-        redirect action: 'list', params: params
-    }
+    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-    def list() {
-		println 'Movimientos de cuentas..'+params
-		if(!session.periodo){
-			session.periodo=new Date()
-		}
-		if(params.periodo){
-			session.periodo=Date.parse('dd/MM/yyyy',params.periodo)
-		}
-        params.max = 1000
-		params.sort='id'
-		params.order='desc'
-		def periodo=session.periodo
-		def list=MovimientoDeCuenta.findAllByFechaBetween(periodo.inicioDeMes(),periodo.finDeMes(),params)
-        [movimientoDeCuentaInstanceList: list, movimientoDeCuentaInstanceTotal: list.size(),periodo:periodo]
+    def beforeInterceptor = {
+    	if(!session.periodoTesoreria){
+    		session.periodoTesoreria=new Date()
+    	}
+	}
+
+	def cambiarPeriodo(){
+		def fecha=params.date('fecha', 'dd/MM/yyyy')
+		session.periodoTesoreria=fecha
+		redirect(uri: request.getHeader('referer') )
+	}
+
+    def index(Integer max) {
+        params.max = Math.min(max ?: 40, 100)
+        params.sort=params.sort?:'lastUpdated'
+        params.order='desc'
+        def periodo=session.periodoTesoreria
+        def tipo=params.tipo?:'TODOS'
+        def list=[]
+        def count=0
+        if(tipo=='TODOS'){
+        	//list=MovimientoDeCuenta.list(params)
+        	def q = MovimientoDeCuenta.where{
+        		fecha >= periodo.inicioDeMes() && fecha <= periodo.finDeMes()
+        	}
+        	list = q.list(params)
+        	count = q.count()
+        	//list=MovimientoDeCuenta.findAllByFechaBetween(periodo.inicioDeMes(),periodo.finDeMes(),params)
+        	//count=MovimientoDeCuenta.countByFechaBetween(periodo.inicioDeMes(),periodo.finDeMes())
+        }else{
+
+        	boolean ingreso=tipo=='DEPOSITOS'
+        	list=MovimientoDeCuenta.findAllByFechaBetweenAndIngreso(periodo.inicioDeMes(),periodo.finDeMes(),ingreso,params)
+        	count=MovimientoDeCuenta.countByFechaBetweenAndIngreso(periodo.inicioDeMes(),periodo.finDeMes(),ingreso)
+        }
+        respond list, model:[movimientoDeCuentaInstanceCount: count,tipo:tipo]
     }
+    
 	
 	def cobros() {
 		params.max = Math.min(params.max ? params.int('max') : 100, 1000)
 		[CXCPagoInstanceList: CXCPago.list(params), CXCPagoInstanceTotal: CXCPago.count()]
 	}
 	
+	
+
+	def depositar(){
+		def movimientoDeCuentaInstance=new MovimientoDeCuenta(fecha:new Date(),ingreso:true,tc:1.00)
+		def anticipos=Anticipo.findAll(
+			"from Anticipo a where  a.sobrante is null and a.requisicion.concepto=? " //and a.total-a.requisicion.total>0"
+			,['ANTICIPO'])
+		render view:'create',model:[movimientoDeCuentaInstance: movimientoDeCuentaInstance,
+			conceptos:Conceptos.INGRESOS,
+			anticipos:anticipos]
+	}
+	
+	def retirar(){
+		def movimientoDeCuentaInstance=new MovimientoDeCuenta(fecha:new Date(),ingreso:false,tc:1.00)
+		def anticipos=Anticipo.findAll(
+			"from Anticipo a where  a.sobrante is null and a.requisicion.concepto=? " //and a.total-a.requisicion.total>0"
+			,['ANTICIPO'])
+		render view:'create',model:[movimientoDeCuentaInstance: movimientoDeCuentaInstance,
+			conceptos:Conceptos.EGRESOS,
+			anticipos:anticipos]
+	}
+
+	def save(MovimientoDeCuentaCommand command){
+		log.debug("Salvando movimiento de cuenta: "+command)
+		if (command == null) {
+		    notFound()
+		    return
+		}
+		if (command.hasErrors()) {
+		    render view:'create',model:[movimientoDeCuentaInstance:command,conceptos:command.ingreso?Conceptos.INGRESOS:Conceptos.EGRESOS]
+		    return
+		}
+
+		def movimiento=command.toMovimiento()
+		movimiento=movimiento.save flush:true ,failOnError:true
+		flash.message = "Movimiento ${movimiento.id} registrado "
+		if(command.anticipo){
+			def anticipo=command.anticipo
+			anticipo.sobrante=movimiento
+			anticipo.save flush:true,failOnError:true
+			flash.message+=" Con anticipo ${anticipo.id}"
+		}
+		
+		redirect action:'index',id:movimiento.id,params:[tipo:movimiento.ingreso?'DEPOSITOS':'RETIROS']
+	}
 
     def create() {
 		switch (request.method) {
 		case 'GET':
-			println 'Alta de movimiento :'+params
-        	[movimientoDeCuentaInstance: new MovimientoDeCuenta(params),conceptos:params.conceptos]
-			break
+		redirect action:'depositar'
+		return
+			// //println 'Alta de movimiento :'+params.tipo
+			// params.fecha=new Date()
+   //      	[movimientoDeCuentaInstance: new MovimientoDeCuenta(params),conceptos:params.conceptos]
+			// break
 		case 'POST':
 			println 'Generando movimiento: '+params
 			
@@ -59,7 +133,8 @@ class MovimientoDeCuentaController {
 			movimientoDeCuentaInstance.concepto="$movimientoDeCuentaInstance.concepto $movimientoDeCuentaInstance.comentario"
 			
 	        if (!movimientoDeCuentaInstance.save(flush: true)) {
-	            render view: 'create', model: [movimientoDeCuentaInstance: movimientoDeCuentaInstance]
+	            //render view: 'index', model: [movimientoDeCuentaInstance: movimientoDeCuentaInstance]
+	            redirect view:'index', params:[tipo:movimientoDeCuenta.ingreso?'DEPOSITOS':'RETIROS']
 	            return
 	        }
 			
@@ -87,53 +162,6 @@ class MovimientoDeCuentaController {
     }
 
     def edit() {
-		/*
-		switch (request.method) {
-		case 'GET':
-		
-	        def movimientoDeCuentaInstance = MovimientoDeCuenta.get(params.id)
-	        if (!movimientoDeCuentaInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'movimientoDeCuenta.label', default: 'MovimientoDeCuenta'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-			if(movimientoDeCuentaInstance.ingreso)
-				params.conceptos=Conceptos.INGRESOS
-			else
-				params.conceptos=Conceptos.EGRESOS
-	        [movimientoDeCuentaInstance: movimientoDeCuentaInstance,conceptos:params.conceptos]
-			break
-		case 'POST':
-			println 'Actualizando movimiento: '+params
-	        def movimientoDeCuentaInstance = MovimientoDeCuenta.get(params.id)
-	        if (!movimientoDeCuentaInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'movimientoDeCuenta.label', default: 'MovimientoDeCuenta'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (movimientoDeCuentaInstance.version > version) {
-	                movimientoDeCuentaInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'movimientoDeCuenta.label', default: 'MovimientoDeCuenta')] as Object[],
-	                          "Another user has updated this MovimientoDeCuenta while you were editing")
-	                render view: 'edit', model: [movimientoDeCuentaInstance: movimientoDeCuentaInstance]
-	                return
-	            }
-	        }
-			bindData(movimientoDeCuentaInstance,params,[exclude:['origen','tipo']])
-	       
-	        if (!movimientoDeCuentaInstance.save(flush: true)) {
-	            render view: 'edit', model: [movimientoDeCuentaInstance: movimientoDeCuentaInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'movimientoDeCuenta.label', default: 'MovimientoDeCuenta'), movimientoDeCuentaInstance.id])
-	        redirect action: 'show', id: movimientoDeCuentaInstance.id
-			break
-		}
-		 */
 		redirect action:'show',model:params
     }
 
@@ -141,14 +169,14 @@ class MovimientoDeCuentaController {
         def movimientoDeCuentaInstance = MovimientoDeCuenta.get(params.id)
         if (!movimientoDeCuentaInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'movimientoDeCuenta.label', default: 'MovimientoDeCuenta'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
 
         try {
             movimientoDeCuentaInstance.delete(flush: true)
 			flash.message = message(code: 'default.deleted.message', args: [message(code: 'movimientoDeCuenta.label', default: 'MovimientoDeCuenta'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
         }
         catch (DataIntegrityViolationException e) {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'movimientoDeCuenta.label', default: 'MovimientoDeCuenta'), params.id])
@@ -156,14 +184,74 @@ class MovimientoDeCuentaController {
         }
        
     }
+
+    def search(){
+        def term='%'+params.term.trim()+'%'
+        def query=MovimientoDeCuenta.where{
+            (id.toString()=~term || cuenta.numero=~term || cuenta.banco.nombre=~term || referenciaBancaria=~term || importe.toString()=~term) 
+        }
+        def rows=query.list(max:30, sort:"id",order:'desc')
+
+        def res=rows.collect { mov ->
+            def label=" ${mov.cuenta.numero} (${mov.cuenta.banco.nombre}) ${mov.concepto} ${mov.fecha.format('dd/MM/yyyy')} ${mov.importe} (${mov.moneda}) ${mov.referenciaBancaria}"
+            [id:mov.id,label:label,value:label]
+        }
+        render res as JSON
+    }
 	
-	def depositar(){
-		redirect(action:'create'
-			,params:[origen:'TESORERIA',tc:'1.00',ingreso:true,conceptos:Conceptos.INGRESOS,anticipoId:params.anticipoId])
-	}
 	
-	def retirar(){
-		redirect(action:'create'
-			,params:[origen:'TESORERIA',tc:'1.00',ingreso:false,conceptos:Conceptos.EGRESOS])
-	}
 }
+
+import org.grails.databinding.BindingFormat
+import com.luxsoft.impapx.contabilidad.CuentaContable
+import groovy.transform.ToString
+import com.luxsoft.impapx.cxp.Anticipo
+
+@ToString(includeNames=true,includePackage=false)
+class MovimientoDeCuentaCommand {
+
+	CuentaBancaria cuenta
+
+	@BindingFormat('dd/MM/yyyy')
+	Date fecha
+
+	BigDecimal tc
+
+	BigDecimal importe
+
+	String concepto
+	
+
+	String comentario
+
+	String referenciaBancaria
+
+	boolean ingreso
+
+	CuentaContable cuentaDeudora
+
+	Anticipo anticipo
+
+	static constraints={
+	    importFrom MovimientoDeCuenta
+	    importe min:0.1
+	    anticipo nullable:true
+	}
+
+	MovimientoDeCuenta toMovimiento(){
+	    def m=new MovimientoDeCuenta()
+	    m.properties=properties
+	    m.origen='TESORERIA'
+		m.tipo='TRANSFERENCIA'
+		m.concepto="$concepto $comentario"
+		if(ingreso){
+			m.importe=m.importe.abs()
+		}else{
+			m.importe=m.importe.abs()*-1
+		}
+		m.moneda=m.cuenta.moneda
+	    return m
+	}
+
+}
+

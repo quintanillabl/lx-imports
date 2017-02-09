@@ -8,6 +8,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder
 import util.Rounding;
 
 class EmbarqueDet {
+
+	static auditable = true
 	
 	Producto producto
 	CompraDet compraDet
@@ -26,6 +28,7 @@ class EmbarqueDet {
 	BigDecimal costoBruto=0
 	BigDecimal gastosHonorarios=0 //(kilosNetos*totalHonorarios)/embarque.kilosNetos
 	BigDecimal gastosPorPedimento=0 //(kilosNetos*valorPedimentoAsignado)/
+	BigDecimal incrementablesUsd=0.0
 	BigDecimal incrementables=0
 	BigDecimal costoNeto=0  //costoBruto+gosto
 	BigDecimal costoUnitarioNeto=0
@@ -57,6 +60,7 @@ class EmbarqueDet {
 		cantidad(scale:3)
 		incrementables(nullable:true,scale:2)
 		gramos(nullable:true)
+		incrementablesUsd(nullable:false)
     }
 	
 	static mapping={

@@ -2,144 +2,197 @@
 <!doctype html>
 <html>
 <head>
-	<meta name="layout" content="cxp">
 	<title>Requisición ${requisicionInstance.id}</title>
 	<asset:javascript src="forms/forms.js"/>
-	<asset:javascript src="legacy/luxorTableUtils.js"/>
 </head>
 <body>
 
- 	<content tag="header">
-
- 		<div class="col-md-12 ">
- 			<div class="panel panel-primary">
- 				<div class="panel-heading">
- 					Requisición: ${requisicionInstance.id} ${requisicionInstance.proveedor}
- 				</div>
- 				<g:hasErrors bean="${requisicionInstance}">
- 					<div class="alert alert-danger">
- 						<ul class="errors" >
- 							<g:renderErrors bean="${requisicionInstance}" as="list" />
- 						</ul>
- 					</div>
- 				</g:hasErrors>
- 				<div class="btn-group">
- 				    <g:link action="index" class="btn btn-default ">
- 				        <i class="fa fa-step-backward"></i> Requisiciones
- 				    </g:link>
- 				    
- 				    <g:link action="print" class="btn btn-default " id="${requisicionInstance.id}">
- 				        <i class="fa fa-print"></i> Imprimir
- 				    </g:link>
- 				    <g:if test="${!requisicionInstance.pagoProveedor}">
- 				    	<g:link controller="requisicionDet" action="create" class="btn btn-default " id="${requisicionInstance.id}">
- 				    	    <i class="fa fa-plus"></i> Agregar concepto
- 				    	</g:link> 
- 				    	<g:link action="selectorDeFacturas" 
- 				    		class="btn btn-default " id="${requisicionInstance.id}">
- 				    	    <i class="fa fa-cart-plus"></i> Agregar factura
- 				    	</g:link> 
- 				    	<a id="eliminarPartidas" class="btn btn-default"><i class="fa fa-trash"></i> Eliminar partidas</a> 
- 				    	<buttn id="saveBtn" class="btn btn-success">
- 				    		<i class="fa fa-floppy-o"></i> Salvar
- 				    	</buttn>
- 				    	<lx:deleteButton bean="${requisicionInstance}" />
- 				    </g:if> 
- 				</div>
- 				<div class="panel-body">
-	 				<g:form name="updateForm" action="update" method="PUT" class="form-horizontal" >
-	 				<f:with bean="requisicionInstance">
-					<div class="col-md-6">
-						<f:display property="concepto" 
-							widget-class="form-control" wrapper="bootstrap3"/>
-						<f:field property="fecha" 
-							wrapper="bootstrap3"/>
-						<f:field property="fechaDelPago" label="Pago" wrapper="bootstrap3"/>
-						<f:field property="formaDePago" widget-class="form-control" wrapper="bootstrap3" label="F. de Pago"/>
-						<f:field property="moneda" wrapper="bootstrap3"/>
-						<f:field property="tc" widget="tc" label="T.C." wrapper="bootstrap3"/>
-						<f:field property="descuentoFinanciero" widget="porcentaje" label="D.F." wrapper="bootstrap3"/>
-						<f:field property="comentario" widget-class="form-control" wrapper="bootstrap3"/>
-					</div>
-					<div class="col-md-6">
-						<f:display property="importe" wrapper="bootstrap3" widget="money"/>
-						<f:display property="impuestos" wrapper="bootstrap3" widget="money"/>
-						<f:display property="impuestos" wrapper="bootstrap3" widget="money"/>
-						<f:display property="retencionHonorarios" wrapper="bootstrap3" widget="money"/>
-						<f:display property="retencionFlete" wrapper="bootstrap3" widget="money"/>
-						<f:display property="retencionISR" wrapper="bootstrap3" widget="money"/>
-						<f:display property="total" wrapper="bootstrap3" widget="money"/>
+	<div class="row wrapper border-bottom white-bg page-heading">
+       <div class="col-lg-10">
+           <h2>Requisición ${requisicionInstance}</h2>
+           <ol class="breadcrumb">
+           		<li><g:link action="index">Requisiciones</g:link></li>
+           		<li><g:link action="create">Alta</g:link></li>
+           		<li class="active"><strong>Edición</strong></li>
+           </ol>
+       </div>
+       <div class="col-lg-2">
+			
+       </div>
+	</div>
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="ibox float-e-margins">
+					<lx:iboxTitle title="Folio: ${requisicionInstance.id}"/>
+					<g:form name="updateForm" action="update" class="form-horizontal" method="PUT">	
+					<g:hiddenField name="id" value="${requisicionInstance.id}"/>
+					<g:hiddenField name="version" value="${requisicionInstance.version}"/>
+					<f:with bean="requisicionInstance">
+					<div class="ibox-content">
+						<lx:errorsHeader bean="${requisicionInstance}"/>
+						<div class="btn-group">
+							<lx:backButton label="Requisiciones"/>
+							<lx:printButton id="${requisicionInstance.id}"/>
+							<g:if test="${!requisicionInstance.pagoProveedor}">
+								<button id="saveBtn" class="btn btn-primary ">
+									<i class="fa fa-floppy-o"></i> Salvar
+								</button>
+								<a href="" class="btn btn-danger " data-toggle="modal" data-target="#deleteDialog"><i class="fa fa-trash"></i> Eliminar</a> 
+							</g:if>
+							
+						</div>
+						<div class="row">
+							<div class="col-lg-6">
+								<f:field property="concepto" 
+									widget-class="form-control" widget-class="form-control chosen-select" wrapper="bootstrap3"/>
+								<f:field property="fecha" 
+									wrapper="bootstrap3"/>
+								<f:field property="fechaDelPago" label="Pago" wrapper="bootstrap3"/>
+								<f:field property="formaDePago" widget-class="form-control chosen-select" wrapper="bootstrap3" label="F. de Pago"/>
+								<f:field property="moneda" wrapper="bootstrap3"/>
+								<f:field property="tc" widget="tc" label="T.C." wrapper="bootstrap3"/>
+								<f:field property="descuentoFinanciero" widget="porcentaje" label="D.F." wrapper="bootstrap3"/>
+								<f:field property="comentario" widget-class="form-control" wrapper="bootstrap3"/>
+								<f:display property="pagoProveedor" wrapper="bootstrap3" />
+							</div>
+							<div class="col-lg-6">
+								<f:display property="importe" wrapper="bootstrap3" widget="money"/>
+								<f:display property="impuestos" wrapper="bootstrap3" widget="money"/>
+								<f:display property="impuestos" wrapper="bootstrap3" widget="money"/>
+								<f:display property="retencionHonorarios" wrapper="bootstrap3" widget="money"/>
+								<f:display property="retencionFlete" wrapper="bootstrap3" widget="money"/>
+								<f:display property="retencionISR" wrapper="bootstrap3" widget="money"/>
+								<f:display property="total" wrapper="bootstrap3" widget="money"/>
+							</div>
+						</div>
+						
 					</div>
 					</f:with>
-	 				</g:form>
- 				</div>
- 				
- 				<table class=" grid table table-striped table-hover table-bordered table-condensed">
- 					<thead>
- 						<tr>
- 							<th class="header">Documento</th>
- 							<th class="header">Fecha</th>
- 							<th>Total Dcto</th>
- 							<th class="header">A Pagar</th>
- 							<th class="header">Embarque</th>
- 							<th>Vto</th>
- 						</tr>
- 					</thead>
- 					<tbody>
- 						<g:each in="${requisicionInstance.partidas}" var="row">
- 							<tr id="${row.id}">
- 							    <td>${fieldValue(bean: row, field: "documento")}</td>
- 								<td><lx:shortDate date="${row.fechaDocumento}" /></td>
- 								<td><lx:moneyFormat number="${row.totalDocumento }" /></td>
- 								<td><lx:moneyFormat number="${row.total }" /></td>
- 								<td>${fieldValue(bean: row, field: "embarque.id")}</td>
- 								<td><lx:shortDate date="${row?.factura?.vencimiento}" /></td>
- 							</tr>
- 						</g:each>
- 					</tbody>
- 					%{-- <tfoot>
- 						<tr>
- 							<td></td>
- 							<td></td>
- 							<td><label class="pull-right" >Total: </label></td>
- 							<td><lx:moneyFormat number="${requisicionInstance.total }" /></td>
- 							<td></td>
- 						</tr>
- 					</tfoot> --}%
- 				</table>
-		 			
- 			</div>
- 		</div>
+					</g:form>
+				</div> <!-- End ibox 1 -->
+			</div>
+		</div>
 
- 		<script type="text/javascript">
- 			$(function(){
- 				$(".porcentaje").autoNumeric('init',{aSign: '%', pSign: 's', vMax: '99.99'});
- 				$(".tc").autoNumeric('init',{vMin:'0.0000'});
- 				$(".grid tbody tr").hover(function(){
- 					$(this).toggleClass("info");
- 				});
- 				$(".grid tbody tr").click(function(){
- 					$(this).toggleClass("success selected");
- 				});
- 				var selectRows=function(){
- 					var res=[];
- 					var data=$(".grid .selected").each(function(){
- 						var tr=$(this);
- 						res.push(tr.attr("id"));
- 					});
- 					return res;
- 				};
+		<div class="ibox float-e-margins">
+			<lx:iboxTitle title="Partidas"/>
 
- 				$("#saveBtn").on('click',function(){
- 					$('form[name=updateForm]').submit();
- 				});
-
-				$('form[name=updateForm]').submit(function(e){
-
-					$("#saveBtn")
-					.attr('disabled','disabled')
-					.html('Procesando...');
+			<div class="ibox-content">
+				<div class="btn-group">
+				    <g:if test="${!requisicionInstance.pagoProveedor}">
+				    	<a data-toggle="modal" data-target="#createConceptoDialog" data-requisicion="${requisicionInstance.id}"
+				    		class="btn btn-default ">
+				    		<i class="fa fa-plus"></i> Agregar concepto
+				    	</a>
+				    	<g:link action="selectorDeFacturas" 
+				    		class="btn btn-default " id="${requisicionInstance.id}">
+				    	    <i class="fa fa-cart-plus"></i> Agregar factura
+				    	</g:link> 
+				    	<a id="eliminarPartidas" class="btn btn-danger"><i class="fa fa-trash"></i> Eliminar partidas</a> 
+				    </g:if> 
+				    <g:link action="selectorDeFacturas" 
+				    		class="btn btn-default " id="${requisicionInstance.id}">
+				    	    <i class="fa fa-cart-plus"></i> Agregar factura
+				    </g:link> 
+				</div>
+				<table class=" grid table  table-hover table-bordered table-condensed">
+					<thead>
+						<tr>
+							<th>Factura</th>
+							<th>Documento</th>
+							<th>Fecha</th>
+							<th>Total Dcto</th>
+							<th>A Pagar</th>
+							<th>Embarque</th>
+							<th>Vto</th>
+						</tr>
+					</thead>
+					<tbody>
+						<g:each in="${requisicionInstance.partidas}" var="row">
+							<tr id="${row.id}">
+								<td>${fieldValue(bean: row, field: "factura.id")}</td>
+							    <td>${fieldValue(bean: row, field: "documento")}</td>
+								<td><lx:shortDate date="${row.fechaDocumento}" /></td>
+								<td><lx:moneyFormat number="${row.totalDocumento }" /></td>
+								<td><lx:moneyFormat number="${row.total }" /></td>
+								<td>${fieldValue(bean: row, field: "embarque.id")}</td>
+								<td><lx:shortDate date="${row?.factura?.vencimiento}" /></td>
+							</tr>
+						</g:each>
+					</tbody>
+				</table>
+			</div>
+		</div> <!-- End ibox 2 Partidas -->
+	</div>
+	
+	<div class="modal fade in" id="createConceptoDialog" tabindex="-1">
+		<div class="modal-dialog ">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">${requisicionInstance}</h4>
+				</div>
+				<g:form name="updateForm" class="form-horizontal" action="savePartida" >
+				<div class="modal-body">
 					
+						<f:with bean="${new  com.luxsoft.impapx.RequisicionDet()}">
+							<g:hiddenField name="requisicion.id" value="${requisicionInstance.id}"/>
+							<f:field property="documento" widget-class="form-control"/>
+							<f:field property="fechaDocumento" />
+							<f:field property="embarque" />
+							<f:field property="total" widget="money"/>
+						</f:with>
+						
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary">
+							<i class="icon-ok icon-white"></i>
+							<g:message code="default.button.create.label" default="Salvar" />
+						</button>
+				</div>
+				</g:form>
+			</div>
+			<!-- moda-content -->
+		</div>
+		<!-- modal-di -->
+	</div>
+
+	<g:render template="/common/deleteDialog" bean="${requisicionInstance}"/>
+	
+	
+	<script type="text/javascript">
+		$(function(){
+			//$('.chosen-select').chosen();
+			$('.input-group.date').bootstrapDP({
+				format: 'dd/mm/yyyy',
+                todayBtn: "linked",
+                keyboardNavigation: false,
+                forceParse: false,
+                calendarWeeks: true,
+                autoclose: true
+			});
+			$(".porcentaje").autoNumeric('init',{aSign: '%', pSign: 's', vMax: '99.99'});
+			$(".tc").autoNumeric('init',{vMin:'0.0000'});
+			$(".grid tbody tr").click(function(){
+	 			$(this).toggleClass("success selected");
+	 		});
+	 		
+			var selectRows=function(){
+				var res=[];
+				var data=$(".grid .selected").each(function(){
+					var tr=$(this);
+					res.push(tr.attr("id"));
+				});
+				return res;
+			};
+
+			$('form[name=updateForm]').submit(function(e){
+
+				$("#saveBtn")
+				.attr('disabled','disabled')
+				.html('Procesando...');
+				try{
 					$(".money,.porcentaje,.tc",this).each(function(index,element){
 					  var val=$(element).val();
 					  var name=$(this).attr('name');
@@ -147,45 +200,40 @@
 					  $(this).val(newVal);
 					  console.log('Enviando elemento numerico con valor:'+name+" : "+val+ " new val:"+newVal);
 					});
-		    		e.preventDefault(); 
-		    		return true;
-				});
-				
+				}catch(err){
+					console.log(err);
+				}
+	    		//e.preventDefault(); 
+	    		return true;
+			});
 
-				$("#eliminarPartidas").click(function(e){
-					var res=selectRows();
-					if(res.length==0){
-						alert('Debe seleccionar al menos un registro');
-						return;
-					}
-					var ok=confirm('Eliminar  ' + res.length+' partida(s)?');
-					if(!ok)
-						return;
-					console.log('Cancelando facturas: '+res);
-					
-					$.ajax({
-						url:"${createLink(controller:'requisicion',action:'eliminarPartidas')}",
-						data:{
-							requisicionId:${requisicionInstance.id},partidas:JSON.stringify(res)
-						},
-						success:function(response){
-							//$("#facturasGrid").html(response);
-							location.reload();
-						},
-						error:function(request,status,error){
-							alert("Error: "+status);
-						}
-					});
-				});
+			$("#eliminarPartidas").click(function(e){
+				var res=selectRows();
+				if(res.length==0){
+					alert('Debe seleccionar al menos un registro');
+					return;
+				}
+				var ok=confirm('Eliminar  ' + res.length+' partida(s)?');
+				if(!ok)
+					return;
+				console.log('Cancelando facturas: '+res);
+				$.post(
+					"${createLink(controller:'requisicion',action:'eliminarPartidas')}",
+					{requisicionId:${requisicionInstance.id},partidas:JSON.stringify(res)})
+				.done(function(data){
+					location.reload();
+				})
+				.fail(function(jqXHR, textStatus, errorThrown){
+					alert("Error: "+textStatus);
+				});	
 				
-				
-				
- 			});
- 		</script>
- 	</content>
+			});
 
- 	
-	
+			
+		});
+		
+	</script>
+
 </body>
 </html>
 

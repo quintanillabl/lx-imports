@@ -1,3 +1,4 @@
+import grails.plugin.springsecurity.SpringSecurityUtils
 // locations to search for config files that get merged into the main config;
 // config files can be ConfigSlurper scripts, Java properties files, or classes
 // in the classpath in ConfigSlurper format
@@ -95,6 +96,7 @@ grails.hibernate.osiv.readonly = false
 //         // TODO: grails.serverURL = "http://www.changeme.com"
 //     }
 // }
+//grails.plugin.springsecurity.auth.loginFormUrl='/login/login2'
 
 environments {
     development {
@@ -104,13 +106,18 @@ environments {
     }
     production {
         grails.logging.jul.usebridge = false
+        //grails.app.context = '/paperx2'
         // TODO: grails.serverURL = "http://www.changeme.com"
     }
     test{
         grails.plugin.springsecurity.debug.useFilter = false
         grails.plugin.springsecurity.active = false
     }
+    impapx {
+      //grails.app.context = '/impapx'
+    }
 }
+
 
 // log4j configuration
 log4j.main = {
@@ -124,6 +131,17 @@ log4j.main = {
         //             file:"$logDir/kyo-luxor.log",
         //             maxBackupIndex:7
         //             layout: pattern(conversionPattern: '%-5p [%t] %c{1}: %m%n')
+    }
+    appenders {
+        console name:'stdout', layout:pattern(conversionPattern: '%-5p [%c{1}] %m%n')
+        file name:'file', file:System.properties['user.home']  + '/.grails/lx-imports.log',
+             layout: pattern(conversionPattern: '%-5p [%t] %c{1}: %m%n')
+        rollingFile name:'importacionLog',
+                    maxFileSize:'1MB',
+                    file:System.properties['user.home']  + '/.grails/lx-imports.log',
+                    maxBackupIndex:7,
+                    layout: pattern(conversionPattern: '%-5p %d{DATE} [%c{1}] %m%n')
+
     }
 
     error  'org.codehaus.groovy.grails.web.servlet',        // controllers
@@ -142,9 +160,11 @@ log4j.main = {
       development{
         
         info  'grails.app.controllers.com.luxsoft'
+        info  'grails.app.controllers.lx.econta'
         info  'grails.app.services.com.luxsoft'
         info  'grails.app.jobs'
         debug 'com.luxsoft.impapx'
+        debug 'com.luxsoft.econta.polizas'
 
       }
         
@@ -160,9 +180,9 @@ log4j.main = {
 
 // Added by the Spring Security Core plugin:
 grails.plugin.springsecurity.securityConfigType = "Annotation"
-grails.plugin.springsecurity.userLookup.userDomainClassName = 'com.luxsoft.sec.Usuario'
-grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.luxsoft.sec.UsuarioRol'
-grails.plugin.springsecurity.authority.className = 'com.luxsoft.sec.Rol'
+grails.plugin.springsecurity.userLookup.userDomainClassName = 'com.luxsoft.sx4.sec.Usuario'
+grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.luxsoft.sx4.sec.UsuarioRole'
+grails.plugin.springsecurity.authority.className = 'com.luxsoft.sx4.sec.Role'
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/':                       ['permitAll'],
 	'/index':                  ['permitAll'],
@@ -183,59 +203,46 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 
 grails.plugin.springsecurity.roleHierarchy = '''
    OPERADOR > USUARIO 
-   ADMINISTRACION > CONTABILIDAD > OPERADOR > USUARIO
+   CONTABILIDAD > OPERADOR > USUARIO
+   GASTOS > OPERADOR
+   VENTAS > OPERADOR
+   COMPRAS > OPERADOR
    ADMIN > ADMINISTRACION
    ADMIN > TESORERIA
    ADMIN > VENTAS
    ADMIN > COMPRAS
-   GASTOS > OPERADOR
-   VENTAS > OPERADOR
-   COMPRAS > OPERADOR
 '''
+grails.plugin.springsecurity.failureHandler.exceptionMappings = [
+   'org.springframework.security.authentication.CredentialsExpiredException': '/usuario/passwordExpired'
+]
+grails.plugin.springsecurity.apf.storeLastUsername=true
 
+proveedorOrigenParaCompras=42
 environments{
     
   development{
     luxor{
-        sx4{
-          sucursal="OFICINAS"
-        }
-        empleadosDb{
-          url = 'jdbc:mysql://localhost:3306/rh'
-          username = "root"
-          password = "sys"
-        }
-        econtaDb{
-          url = 'jdbc:mysql://localhost:3306/econta'
-          username = "root"
-          password = "sys"
-        }
-        series{
-          ventas='FACTURA'
-        }
-    }
-    grails.assets.bundle=true
-  }
-    
-  production{
-    luxor{
-        sx4{
-          sucursal="OFICINAS"
-        }
         empleadosDb{
           url = 'jdbc:mysql://10.10.1.228:3306/rh'
           username = "root"
           password = "sys"
         }
-        econtaDb{
-          url = 'jdbc:mysql://10.10.1.228:3306/econta'
+        
+    }
+    // grails.assets.bundle=true
+  }
+    
+  production{
+    luxor{
+        empleadosDb{
+          url = 'jdbc:mysql://10.10.1.228:3306/rh'
           username = "root"
           password = "sys"
         }
-        series{
-          ventas='FACTURA'
-        }
     }
+  }
+  impapx2{
+    proveedorOrigenParaCompras=60
   }
 }
 beans {
@@ -243,10 +250,11 @@ beans {
       shared = true
   }
 }
-grails.plugins.twitterbootstrap.fixtaglib = true
 
-//grails.plugin.databasemigration.updateOnStart = true
-//grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
+grails.plugin.databasemigration.updateOnStart = false
+grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
+
+
 grails.databinding.dateFormats = ['dd/MM/yyyy', 'dd-MM-yyyy HH:mm:ss.S', "dd-MM-yyyy'T'hh:mm:ss'Z'"]
 
 
@@ -263,5 +271,51 @@ environments {
         // }
     }
 }
+
+auditLog {
+  //verbose = true // verbosely log all changed values to db
+  logIds = true  // log db-ids of associated objects.
+   // Note: if you change next 2 properties, you must update your database schema!       
+  //tablename = 'my_audit' // table name for audit logs.     
+  //largeValueColumnTypes = true // use large column db types for oldValue/newValue.
+  TRUNCATE_LENGTH = 1000
+  cacheDisabled = true
+  //logFullClassName = true
+  //replacementPatterns = ["local.example.xyz.":""] // replace with empty string.
+  actorClosure = { request, session ->
+
+    if (request.applicationContext.springSecurityService.principal instanceof java.lang.String){
+      return request.applicationContext.springSecurityService.principal
+    }
+    //def username = request.applicationContext.springSecurityService.principal?.username
+    def username = request.applicationContext.springSecurityService.getCurrentUser()?.nombre
+    if (SpringSecurityUtils.isSwitched()){
+      username = SpringSecurityUtils.switchedUserOriginalUsername+" AS "+username
+    }
+    return username
+  }
+  stampEnabled = true
+  //stampAlways = false
+  stampCreatedBy = 'createdBy' // fieldname
+  stampLastUpdatedBy = 'lastUpdatedBy' // fieldname
+
+}
+cxf{
+  client{
+    consultaService{
+      wsdl="https://consultaqr.facturaelectronica.sat.gob.mx/ConsultaCFDIService.svc?singleWsdl"
+      namespace="com.luxsoft.cfdi"
+      //bindingFile = "grails-app/conf/bindings.xml"
+      //client = false //defaults to false
+      //allowChunking = true //false
+      clientInterface = com.luxsoft.cfdi.IConsultaCFDIService
+      serviceEndpointAddress = "https://consultaqr.facturaelectronica.sat.gob.mx/ConsultaCFDIService.svc"
+      receiveTimeout = 120000 //2min
+      connectionTimeout = 120000 //2min
+    }
+    
+  }
+}
+
 
 

@@ -673,7 +673,7 @@ class ImporteALetra {
 
 	
 	public String convertirLetras(final BigDecimal importe){
-		println "El importe a convertir en letras es: " +importe
+		//println "El importe a convertir en letras es: " +importe
 		double  val1=importe.abs().doubleValue();
 		int entero=importe.intValue();
 		double cent=val1-(double)entero;
@@ -682,7 +682,7 @@ class ImporteALetra {
 		final String ok=StringUtils.leftPad(svalor,2,'0');
 		num_letras = decmillon(importe.intValue());
 		num_letras+=" PESOS {0}/100 M.N.";
-		println "Importe con letra  " +num_letras
+		//println "Importe con letra  " +num_letras
 		return MessageFormat.format(num_letras, ok);
 	}
 	

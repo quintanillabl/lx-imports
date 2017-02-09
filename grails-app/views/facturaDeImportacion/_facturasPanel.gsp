@@ -3,19 +3,19 @@
 		class="display table table-striped table-hover table-bordered table-condensed">
 		<thead>
 			<tr>
-				<g:sortableColumn property="id" title="Id" />
-				<g:sortableColumn property="proveedor.nombre" title="Proveedor" />
-
-				<th class="header">Dcto</th>
-				<th class="header">Fecha</th>
-				<th class="header">BL</th>
-				<th class="header">Vto</th>
-				<th class="header">Moneda</th>
-				<th class="header">Total</th>
-				<th class="header">Pagos</th>
-				<th class="header">Saldo</th>
-				<th class="header">Creada</th>
-				<th class="header">Modificada</th>
+				<td>Id</td>
+				<td>Proveedor</td>
+				<th>Dcto</th>
+				<th>Fecha</th>
+				<th>BL</th>
+				<th>Vto</th>
+				<th>Moneda</th>
+				<th>T.C.</th>
+				<th>Total</th>
+				<th>Pagos</th>
+				<th>Saldo</th>
+				<th>Requisitado</th>
+				<th>Modificada</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -36,20 +36,18 @@
 					<td>
 						${fieldValue(bean: row, field: "moneda")}
 					</td>
+					<td>${row.tc}</td>
 					<td><lx:moneyFormat number="${row.total}"/></td>
 					<td><lx:moneyFormat number="${row.pagosAplicados}"/></td>
 					<td><lx:moneyFormat number="${row.saldoActual}"/></td>
 					
-					<td><abbr title="${g.formatDate(date:row.dateCreated)}">
-						...</abbr></td>
-					<td><abbr title="${g.formatDate(date:row.lastUpdated)}">
+					<td><lx:moneyFormat number="${row.requisitado}"/></td>
+					<td><abbr title="${g.formatDate(date:row.lastUpdated,format:'dd/MM/yy HH:mm')}">
 						...</abbr></td>
 				</tr>
 			</g:each>
 		</tbody>
 	</table>
-	<div class="pagination">
-		<g:paginate total="${facturaDeImportacionInstanceCount ?: 0}" />
-	</div>
+	
 </div>
 

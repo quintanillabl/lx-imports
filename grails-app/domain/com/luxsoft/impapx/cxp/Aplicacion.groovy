@@ -31,10 +31,12 @@ class Aplicacion {
 		comentario(nullable:true,maxSize:200)
     }
 	
+	/*
 	static mapping ={
 		abono fetch:'join'
 		factura fetch:'join'
 	}
+	*/
 	
 	String toString(){
 		return " Folio: $id  $fecha   $total"

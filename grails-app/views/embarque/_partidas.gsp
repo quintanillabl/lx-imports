@@ -3,36 +3,39 @@
     <div class="col-md-3">
     	<input type='text' id="filtro" placeholder="Filtrar" class="form-control" autofocus="on">
     </div>
-
     <div class="btn-group">
-    	<g:if test="${embarqueInstance.facturado<=0}">
-	        <g:link action="comprasPendientes" class="btn btn-primary btn-sm" id="${embarqueInstance.id}">
-	        	<i class="fa fa-plus"></i> Agregar
-	        </g:link> 
-	        <button  class="btn btn-danger btn-sm" onclick="eliminarPartidas()">
-				<i class="fa fa-trash"></i>  Eliminar partidas
-			</button>
-			<button  class="btn btn-default btn-sm" data-target="#asignarFacturaDialog" data-toggle="modal">
-				Asignar Factura
-			</button>
-			<button  id="#cancelarFacturaBtn "  onclick="cancelarFacturas()" class="btn btn-default btn-sm">
-			  	Cancelar asignación
-			</button>
-			<button  class="btn btn-default btn-sm" data-target="#asignarContendorDialog" data-toggle="modal">
-				Asignar Contenedor
-			</button>
-			<g:link class="btn btn-default btn-sm" action="eliminarFaltantes" id="${embarqueInstance.id}"
-				onclick="return confirm('Eliminar partidas sin kilos netos asignados?');">
-				<i class="icon-plus icon-white"></i>Eliminar faltantes
-			</g:link>
-    	</g:if>
-        
-		<g:link action="print" class="btn btn-default btn-sm" id="${embarqueInstance.id}">
-		    <i class="fa fa-print"></i> Imprimir
-		</g:link> 
+    	<g:link action="comprasPendientes" id="${embarqueInstance.id}" class="btn btn-outline btn-primary">
+        	<i class="fa fa-plus"></i> Agregar
+        </g:link> 
+    	<button  id="#eliminarBtn" class="btn btn-danger" onclick="eliminarPartidas()">
+			<i class="fa fa-trash"></i> Eliminar
+  		</button>
     </div>
-    
-    
+    <div class="btn-group">
+        <button type="button" name="operaciones"
+                class="btn btn-success btn-outline dropdown-toggle" data-toggle="dropdown"
+                role="menu">
+                Operaciones <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+        	<g:if test="${embarqueInstance.facturado<=0}">
+        		<li><a id="asignarFacturaBtn"><i class="fa fa-chain"></i> Asignar factura</a></li>
+        		<li><a  onclick="cancelarFacturas()"><i class="fa fa-chain-broken"></i> Canclear asignación</a></li>
+        		<li><a id="asignarContenedorBtn"><i class="fa fa-cube"></i> Asignar Contenedor</a></li>
+        		<li>
+        			<g:link  action="eliminarFaltantes" id="${embarqueInstance.id}"
+        				onclick="return confirm('Eliminar partidas sin kilos netos asignados?');">
+        				<i class="fa fa-eraser"></i> Eliminar faltantes
+        			</g:link>
+        		</li>
+        		<li>
+        			<g:link action="print"  id="${embarqueInstance.id}">
+        			    <i class="fa fa-print"></i> Imprimir
+        			</g:link> 
+        		</li>
+        	</g:if>
+        </ul>
+    </div>
 </div>
 
 <div>
@@ -41,12 +44,6 @@
 			Cuenta de gastos:  ${embarqueInstance.cuentaDeGastos}
 		</g:link>
 	</g:if>
-</div>
-
-<div class="row">
-	<div class="col-sm-12">
-		
-	</div>
 </div>
 
 <div class="row">
@@ -65,13 +62,12 @@
 					<th>Factura</th>
 					<th>Contenedor</th>
 					<th>Tarimas</th>
-					
 				</tr>
 			</thead>
 			<tbody>
 				<g:each in="${partidas}" var="row">
 				<tr id="${ formatNumber(number:row.id,format:'##########') }" name="embarqueDetId"
-					class="${( row?.kilosNetos<=0 || row?.tarimas<=0 )?'textError':'' }">
+					class="${( row?.kilosNetos<=0 || row?.tarimas<=0 )?'text-danger':'' }">
 					<td>
 						<g:link action="edit" controller="embarqueDet" id="${row?.id}" params="[proveedorId:embarqueInstance.proveedor.id]">
 							${fieldValue(bean:row, field:"producto.clave")}
@@ -134,7 +130,7 @@
 			    </div>
 			</div>
 			<div class="modal-footer">
-				<a href="#" class="btn" data-dismiss="modal">Cancelar</a>
+				<a href="#" class="btn btn-default btn-outline" data-dismiss="modal">Cancelar</a>
 		    	<button id="asignarFactura" class="btn btn-primary" onclick="asignarFactura()">Asignar</button>
 			</div>
 		</div><!-- moda-content -->
@@ -144,108 +140,53 @@
 <div class="modal fade" id="asignarContendorDialog" tabindex="-1">
 	<div class="modal-dialog ">
 		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"
-					aria-hidden="true">&times;</button>
-				<h4 class="myModalLabel">Asignacion de facturas</h4>
-			</div>
-			<div class="modal-body ui-front">
-				<div class="form-group">
-			        <input id="contenedor" type="text" name="contendor" value="" 
-			        	placeholder="Seleccione una contenedor" class="form-control" >
-			    </div>
-			</div>
-			<div class="modal-footer">
-				<a href="#" class="btn" data-dismiss="modal">Cancelar</a>
-		    	<button id="asignarContenedor" class="btn btn-primary" onclick="asignarContenedor()">Aplicar</button>
-			</div>
+			<form name="asignarContenedorForm">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="myModalLabel">Asignacion de contenedor</h4>
+				</div>
+				<div class="modal-body ui-front">
+					<div class="form-group">
+				        <input id="contenedor" type="text" name="contendor" value="" 
+				        	placeholder="Digite el  contenedor" class="form-control" >
+				    </div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+			    	<g:submitButton name="asignar" class="btn btn-info"  value="Aplicar" />
+			    	%{-- <g:submitButton name="aceptar" class="btn btn-primary " value="Asignar"/> --}%
+				</div>
+			</form>
 		</div><!-- moda-content -->
 	</div><!-- modal-di -->
 </div>
 
-%{-- <div class="modal hide fade" id="asignarContendorDialog" tabindex=-1 role="dialog" 
-	aria-labelledby="myModalLabel">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h4 class="myModalLabel">Asignacion de contenedor</h4>
-	</div>
-	<div class="modal-body">
-		
-	</div>
-	<div class="modal-footer">
-		<a href="#" class="btn" data-dismiss="modal">Cancelar</a>
-    	
-	</div>
-</div> --}%
-
-%{-- <div class="modal hide fade" id="asignarFacturaGastosDialog" tabindex=-1 role="dialog" 
-	aria-labelledby="myModalLabel">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		<h4 class="myModalLabel">Gastos de importación</h4>
-	</div>
-	<div class="modal-body">
-		<g:hiddenField name="facturaGastosId"/>
-		<input id="facturaGastos"  type="text" name="facturaGastos" value="" placeholder="Seleccione una factura de gastos" class="input-xxlarge">
-	</div>
-	<div class="modal-footer">
-		<a href="#" class="btn" data-dismiss="modal">Cancelar</a>
-    	<button id="asignarFacturaGastos" class="btn btn-primary" onclick="asignarFacturaDeGastos()">Aplicar</button>
-    	
-	</div>
-</div> --}%
-
-
 <script type="text/javascript">
 	
 	$(function(){	
-			// $('#grid').dataTable( {
-		 //    	"language": {
-			// 		"url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
-		 //    	},
-		 //    	"bPaginate": false,
-			// 	"autoWidth": false
-			// } );
-					$('#grid').dataTable( {
-			        	"paging":   false,
-			        	"ordering": false,
-			        	"info":     false
-			        	,"dom": '<"toolbar col-md-4">rt<"bottom"lp>'
-			    	} );
-	    	    	$("#filtro").on('keyup',function(e){
-	    	    		var term=$(this).val();
-	    	    		$('#grid').DataTable().search(
-	    					$(this).val()
-	    	    		        
-	    	    		).draw();
-	    	    	});
-		// $("#grid").dataTable({
-		// 	"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
-		// 	//"sDom": "<'row'<'span6'l><'span12'f>r>t<'row'<'span6'i><'span6'p>>",
-		// 	aLengthMenu: [[100, 150, 200, 250, -1], [100, 150, 200, 250, "Todos"]],
-  //         	iDisplayLength: 100,
-  //         	"oLanguage": {
-  //     			"oPaginate": {
-  //       			"sFirst": "Inicio",
-  //       			"sNext": "Siguiente",
-  //       			"sPrevious": "Página anterior",
 
-  //     				},
-  //     				"sSearch": "Filtrar:",
-  //   			},
-  //   			"sEmptyTable": "No data available in table",
-  //   			"sLoadingRecords": "Please wait - loading...",
-  //   			"sProcessing": "DataTables is currently busy",
-  //   			"bPaginate": false,
-  //   			"bInfo": false,
-  //   			"sSearch": "Filtrar:",
-  //   			"aaSorting": []
-		// });
-		
+		// Grid y seleccion
+		$('#grid').dataTable( {
+        	"paging":   false,
+        	"ordering": false,
+        	"info":     false,
+        	"language": {
+				"url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
+    		},
+    		//"dom": '',
+    		"order": []
+    	} );
+    	$("#filtro").on('keyup',function(e){
+    		var term=$(this).val();
+    		$('#grid').DataTable().search(
+				$(this).val()
+    		        
+    		).draw();
+    	});
 		$("tbody tr").on('click',function(){
 			$(this).toggleClass("success selected");
 		});
-		
 		$(document).on("keydown",function(event){
 			var keycode = (event.keyCode ? event.keyCode : event.which);
 			if(event.ctrlKey ){
@@ -258,34 +199,91 @@
 				}
 			}
 		})
-		
-		$("#factura").autocomplete(
-			{
-				source:'${createLink(controller:'embarque',action:'facturasPorAsignarJSON',params:[proveedorId:embarqueInstance.proveedor.id]) }',
-				minLength:3,
-				select:function(e,ui){
-		   			$("#facturaId").val(ui.item.id);
+		/// End grid y seleccion
+
+		/*** Asignacion de facturas ***/
+
+		$("#factura").autocomplete({
+			source:'${createLink(action:'facturasPorAsignarJSON',params:[proveedorId:embarqueInstance.proveedor.id]) }',
+			minLength:1,
+			select:function(e,ui){
+	   			$("#facturaId").val(ui.item.id);
 			}
 		});
 		
-		$('#asignarFacturaDialog').on('show', function(){
+		$("#facturaGastos").autocomplete({
+			source:'${createLink(action:'facturasDeGastosPorAsignarJSON') }',
+			minLength:1,
+			select:function(e,ui){
+	   			$("#facturaGastosId").val(ui.item.id);
+			}
+		});
+
+		$("#asignarFacturaBtn").on('click',function(){
+			var res=selectedRows();
+			if(res.length==0){
+				alert('Debe seleccionar al menos un registro');
+				return;
+			}
 			$("#facturaId").val("");
-			$("#factura").val("")
+			$("#factura").val("");
+			$('#asignarFacturaDialog').modal('show');
 		});
 		
-		$("#facturaGastos").autocomplete(
-			{
-				source:'${createLink(controller:'embarque',action:'facturasDeGastosPorAsignarJSON') }',
-				minLength:3,
-				select:function(e,ui){
-		   			$("#facturaGastosId").val(ui.item.id);
-			}
-		});
-		
+		$('body').on('shown.bs.modal', '#asignarFacturaDialog', function () {
+          $('[id$=factura]').focus();
+      	});
+
 		$('#asignarFacturaGastosDialog').on('show', function(){
 			$("#facturaGastosId").val("");
 			$("#facturaGastos").val("")
 		});
+
+		$('#asignarFacturaDialog').on('show', function(){
+			$("#facturaId").val("");
+			$("#factura").val("");
+		});
+
+		//// Asignacion de CONTENEDOR
+
+		$("#asignarContenedorBtn").on('click',function(){
+			var res=selectedRows();
+			if(res.length==0){
+				alert('Debe seleccionar al menos un registro');
+				return;
+			}
+			$("#contenedor").val("").focus();
+			$('#asignarContendorDialog').modal('show');
+		});
+
+		$('body').on('shown.bs.modal', '#asignarContendorDialog', function () {
+          $('[id$=contenedor]').focus();
+      	});
+
+      	$('form[name=asignarContenedorForm]').submit(function(e){
+      	    e.preventDefault(); 
+      	    var res=selectedRows();
+      	    var contenedor=$("#contenedor").val();
+      	    //console.log('Asignando contenedor: '+contenedor+' a partidas: '+res);
+      	    $.post(
+      	    	"${createLink(controller:'embarque',action:'asignandoContenedor')}",
+      	    	{contenedor:contenedor,partidas:JSON.stringify(res)}
+      	    ).done(function(data){
+      	    	//console.log('Rres: '+data.contenedor);
+      	    	$('.selected td[name=contenedor]').text(data.contenedor);
+      	    	$("#contenedor").val("");
+      	    	$("#asignarContendorDialog").modal("hide");
+      	    }).fail(function(jqXHR, textStatus, errorThrown){
+      	    	console.log(errorThrown);
+      	    	alert("Error: "+errorThrown);
+      	    });
+      	    return true;
+      	});
+      	// End asignacion de contenedores
+
+      	//Eliminar partidas
+      	
+		
 	});
 	
 
@@ -364,34 +362,7 @@
 	}
 
 
-	function asignarContenedor(){
-		var res=selectedRows();
-		var contenedor=$("#contenedor").val();
-		console.log('Asignando contenedor: '+contenedor+' a partidas: '+res);
-		$.ajax({
-			url:"${createLink(controller:'embarque',action:'actualizarContenedor')}",
-			dataType:"json",
-			data:{
-				contenedor:contenedor,partidas:JSON.stringify(res)
-			},
-			success:function(data,textStatus,jqXHR){
-				console.log('Rres: '+data.contenedor);
-				$('.selected td[name=contenedor]').text(data.contenedor);
-				$("#contenedor").val("");
-				$("#asignarContendorDialog").modal("hide")
-				
-
-			},
-			error:function(request,status,error){
-				console.log(error);
-				alert("Error: "+error);
-			},
-			complete:function(){
-				console.log('OK ');
-				$("#grid tr").removeClass("success selected");
-			}
-		});
-	}
+	
 	
 	
 	function asignarFacturaDeGastos(){
@@ -442,7 +413,8 @@
 			},
 			success:function(data,textStatus,jqXHR){
 				console.log('Partidas eleiminadas: '+data.eliminadas);
-				location.reload();
+				//location.reload();
+				window.location.reload(true);
 			},
 			error:function(request,status,error){
 				//alert("Error: "+error);

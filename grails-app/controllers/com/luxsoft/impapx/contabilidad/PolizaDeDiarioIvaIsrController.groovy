@@ -26,32 +26,32 @@ import com.luxsoft.impapx.tesoreria.PagoProveedor;
 import com.luxsoft.impapx.tesoreria.SaldoDeCuenta;
 import com.luxsoft.impapx.tesoreria.Traspaso;
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeDiarioIvaIsrController {
 
 	def polizaService
 	
-     def index() {
-	   redirect action: 'list', params: params
-    }
+	def index() {
+		def sort=params.sort?:'fecha'
+		def order=params.order?:'desc'
+		def periodo=session.periodoContable
+		
+		def q = Poliza.where {
+			subTipo == 'DIARIO_IVA_ISR' && ejercicio == periodo.ejercicio && mes == periodo.mes 
+
+		}
+		respond q.list(params)
+		
+	}
 	 
 	def mostrarPoliza(long id){
 		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
-		render (view:'poliza' ,model:[poliza:poliza,partidas:poliza.partidas])
+		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
 	}
 	 
-	def list() {
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
-		def sort=params.sort?:'fecha'
-		def order=params.order?:'desc'
-		
-		def polizas=Poliza.findAllByTipoAndDescripcionIlikeAndFechaBetween('DIARIO','%IVA-ISR%',periodo.inicio,periodo.fin,[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-	}
+	
 	
 	def generarPoliza(String fecha){
 		Date dia=Date.parse("dd/MM/yyyy",fecha)
@@ -61,13 +61,17 @@ class PolizaDeDiarioIvaIsrController {
 		def finDeMes=dia.finDeMes().clearTime()
 		if(dia.clearTime()!=finDeMes){
 			flash.message='Solo se puede ejcurar el fin de mes'
-			redirect action:'list'
+			redirect action:'index'
+			return
 		}
 		
 		
 		//Prepara la poliza
 		Poliza poliza=new Poliza(tipo:'DIARIO',folio:1, fecha:dia,descripcion:'Poliza IVA-ISR'+dia.text(),partidas:[])
-		
+		poliza.ejercicio = session.periodoContable.ejercicio
+		poliza.mes = session.periodoContable.mes
+		poliza.subTipo= 'DIARIO_IVA_ISR'
+
 		procesar(poliza ,dia)
 		procesarIva(poliza, dia)
 		//Salvar la poliza
@@ -132,7 +136,7 @@ class PolizaDeDiarioIvaIsrController {
 			,tipo:poliza.tipo
 			,entidad:'SalodPorCuentaContable')
 		poliza.addToPartidas(
-			cuenta:CuentaContable.buscarPorClave("205-0001"),
+			cuenta:CuentaContable.buscarPorClave("213-0001"),
 			debe:0.0,
 			haber:importe,
 			asiento:asiento,
@@ -178,18 +182,22 @@ class PolizaDeDiarioIvaIsrController {
 		int year=dia.toYear()
 		int mes=dia.toMonth()
 		def rows=PolizaDet
-			.findAll("from PolizaDet p where p.cuenta.id in (61,62,63) and year(p.fecha)=? and month(p.fecha)=?"
+			.findAll("from PolizaDet p where p.cuenta.id in (61,62,63) and p.poliza.ejercicio=? and p.poliza.mes=?"
 			,[year,mes])
 		
 		Map res=rows.groupBy({p-> p.cuenta?.id})
 		//res.
 		println 'Map keys: '+res.keySet()
+		if(!res){
+			log.info 'No ejecutar...'
+		}
 		
+
 		def p61=res.get(61l)
 		def p62=res.get(62l)
 		def p63=res.get(63l)
 		
-		println 'P61: '+p61+  '  P62'+p62+  '  P63'+p63
+		
 		
 		def row61
 		def row62
@@ -198,7 +206,7 @@ class PolizaDeDiarioIvaIsrController {
 		def debe61=p61?.sum(0.0,{it.debe})
 		def debe62=p62?.sum(0.0,{it.debe})
 		def debe63=p63?.sum(0.0,{it.debe})
-		def ptotal=p61+p62+p63
+		
 		
 		if(p61){
 			//Abono a
@@ -240,18 +248,25 @@ class PolizaDeDiarioIvaIsrController {
 				,entidad:'PolizaDet')
 		}
 		
+		if(p61 && p62 && p63){
+
+			def ptotal=debe61+debe62+debe63
+			//Abono a
+			poliza.addToPartidas(
+				cuenta:CuentaContable.buscarPorClave("208-0001"),
+				debe:ptotal,
+				haber:0.0,
+				asiento:asiento,
+				descripcion:"Determinacion IVA ${year} - ${mes}",
+				referencia:""
+				,fecha:poliza.fecha
+				,tipo:poliza.tipo
+				,entidad:'PolizaDet')
+
+		}
 		
-		//Abono a
-		poliza.addToPartidas(
-			cuenta:CuentaContable.buscarPorClave("206-0001"),
-			debe:ptotal,
-			haber:0.0,
-			asiento:asiento,
-			descripcion:"Determinacion IVA ${year} - ${mes}",
-			referencia:""
-			,fecha:poliza.fecha
-			,tipo:poliza.tipo
-			,entidad:'PolizaDet')
+		
+		
 			
 	}
 	

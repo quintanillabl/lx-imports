@@ -1,70 +1,52 @@
 <%@ page import="com.luxsoft.impapx.contabilidad.CuentaContable" %>
 <!doctype html>
 <html>
-	<head>
-		<meta name="layout" content="luxor">
-		<g:set var="entityName" value="${message(code: 'cuentaContable.label', default: 'CuentaContable')}" />
-		<title><g:message code="default.create.label" args="[entityName]" /></title>
-	</head>
-	<body>
-		<div class="row-fluid">
-			
-			<div class="span3">
-				<div class="well">
-					<ul class="nav nav-list">
-						<li class="nav-header">${entityName}</li>
-						<li>
-							<g:link class="list" action="list">
-								<i class="icon-list"></i>
-								<g:message code="default.list.label" args="[entityName]" />
-							</g:link>
-						</li>
-						<li class="active">
-							<g:link class="create" action="create">
-								<i class="icon-plus icon-white"></i>
-								<g:message code="default.create.label" args="[entityName]" />
-							</g:link>
-						</li>
-					</ul>
-				</div>
-			</div>
-			
-			<div class="span9">
+<head>
+	<meta name="layout" content="createForm">
+	<g:set var="entityName" value="${message(code: 'cuentaContable.label', default: 'Cuenta contable')}" scope="request"/>
+	<g:set var="entity" value="${cuentaContableInstance}" scope="request" />
+	<title>Alta de Cuenta contable</title>
+</head>
+<body>
+	
 
-				<div class="page-header">
-					<h3><g:message code="default.create.label" args="[entityName]" /></h3>
-				</div>
+<content tag="formFields">
+	<f:with bean="${cuentaContableInstance}" >
+		
+		<f:field property="clave" widget-autofocus="true" wrapper="bootstrap3" widget-class="form-control" />
+		<f:field property="descripcion" wrapper="bootstrap3" widget-class="form-control" />
+		<f:field property="tipo" wrapper="bootstrap3" widget-class="form-control"  />
+		<f:field property="subTipo" wrapper="bootstrap3" widget-class="form-control" />	
+		<f:field property="naturaleza" wrapper="bootstrap3" widget-class="form-control" />
 
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
+		<f:field property="presentacionContable" wrapper="bootstrap3" />
+		<f:field property="presentacionContable" wrapper="bootstrap3" />
+		<f:field property="presentacionFiscal" wrapper="bootstrap3" />
+		<f:field property="presentacionFinanciera" wrapper="bootstrap3" />
+		<f:field property="presentacionPresupuestal" wrapper="bootstrap3" />
 
-				<g:hasErrors bean="${cuentaContableInstance}">
-				<bootstrap:alert class="alert-error">
-				<ul>
-					<g:eachError bean="${cuentaContableInstance}" var="error">
-					<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-					</g:eachError>
-				</ul>
-				</bootstrap:alert>
-				</g:hasErrors>
+		<f:field property="cuentaSat" wrapper="bootstrap3" >
+			<g:select class="form-control chosen-select"  
+				name="${property}" 
+				value="${value?.id}"
+				from="${com.luxsoft.lx.sat.CuentaSat.findAll()}" 
+				optionKey="id" 
+				optionValue="nombre"
+				noSelection="[null:'Seleccione una cuenta del SAT']"
+				/>
+		</f:field>
+		
+	</f:with>
+	<script type="text/javascript">
+		$(function(){
+			$('#clave').mask('000');
+		});
+	</script>
+	
+</content>
 
-				<fieldset>
-					<g:form class="form-horizontal" action="create" >
-						<fieldset>
-							<f:all bean="cuentaContableInstance"/>
-							<div class="form-actions">
-								<button type="submit" class="btn btn-primary">
-									<i class="icon-ok icon-white"></i>
-									<g:message code="default.button.create.label" default="Create" />
-								</button>
-							</div>
-						</fieldset>
-					</g:form>
-				</fieldset>
-				
-			</div>
+</body>
 
-		</div>
-	</body>
+	
 </html>
+

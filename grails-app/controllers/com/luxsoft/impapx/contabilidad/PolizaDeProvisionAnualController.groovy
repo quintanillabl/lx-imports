@@ -13,34 +13,32 @@ import com.luxsoft.impapx.GastosDeImportacion;
 import com.luxsoft.impapx.Pedimento;
 import com.luxsoft.impapx.TipoDeCambio;
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeProvisionAnualController {
 	
 	def polizaService
 
-   def index() {
-	   redirect action: 'list', params: params
+    def index() {
+    	def sort=params.sort?:'fecha'
+    	def order=params.order?:'desc'
+    	def periodo=session.periodoContable
+    	
+    	def q = Poliza.where {
+    		subTipo == 'PROVISION_ANUAL_COMPRAS' && ejercicio == periodo.ejercicio && mes == periodo.mes 
+
+    	}
+    	respond q.list(params)
+    	
     }
-	 
-	def mostrarPoliza(long id){
-		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
-		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
-	}
-	 
-	def list() {
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
-		def sort=params.sort?:'fecha'
-		def order=params.order?:'desc'
-		
-		def polizas=Poliza.findAllByTipoAndDescripcionLikeAndFechaBetween('COMPRAS'
-			,'PROVISION ANUAL %'+periodo.year
-			,periodo.inicio,periodo.fin,[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-	}
+     
+    def mostrarPoliza(long id){
+    	def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
+    	render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
+    }
+
+   	
 	
 	def generarPoliza(String fecha){
 		Date dia=Date.parse("dd/MM/yyyy",fecha)
@@ -49,6 +47,9 @@ class PolizaDeProvisionAnualController {
 		
 		//Prepara la poliza
 		Poliza poliza=new Poliza(tipo:'COMPRAS',folio:1, fecha:dia,descripcion:'PROVISION ANUAL '+dia.toYear(),partidas:[])
+		poliza.ejercicio = session.periodoContable.ejercicio
+		poliza.mes = session.periodoContable.mes
+		poliza.subTipo= 'PROVISION_ANUAL_COMPRAS'
 		// Procesadores
 		procearCuentaPorPagarMateriaPrima(poliza, dia)
 		//Salvar la poliza
@@ -71,7 +72,7 @@ class PolizaDeProvisionAnualController {
 			def fechaF=factura.fecha.text()
 			
 			// 1. Cargo al inventario
-			def cuenta=CuentaContable.buscarPorClave('119-0003')
+			def cuenta=CuentaContable.buscarPorClave('115-0003')
 			def fechaTc=factura.fecha-1
 			def tipoDeCambioInstance=TipoDeCambio.find("from TipoDeCambio t where date(t.fecha)=? and t.monedaFuente=?",[fechaTc,factura.moneda])
 			def valor=factura.importe*tipoDeCambioInstance.factor

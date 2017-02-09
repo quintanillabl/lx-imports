@@ -1,64 +1,32 @@
-<div class="accordion-group">
- 	<div class="accordion-heading">
- 		<a class="accordion-toggle alert" data-toggle="collapse" data-parent="#saldoDeCuentaAccordion" href="#collapseOne">
- 			Periodo contable
- 		</a>
- 	</div>
- 	<div id="collapseOne" class="accordion-body collapse ">
- 		<div class="accordion-inner ">
- 			<g:form controller="poliza" action="actualizarPeriodo">
- 				<fieldset>
- 					<label>Periodo</label>
- 					<g:field type="string" id="periodoContable"  name="currentDate" value="${session.periodoContable.currentDate.text()}"/>
- 				</fieldset>
- 				<div class="form-actions">
- 					<button type="submit" class="btn btn-primary">
-						<i class="icon-ok icon-white"></i>
-						Actualizar
-					</button>
- 				</div>
- 			</g:form>
- 		</div>
- 	</div>
- </div>
- 
- <r:script>
- $(function(){
- 
- 	$.datepicker.regional['es'] = {
-		closeText: 'Cerrar',
-		prevText: '&#x3C;Ant',
-		nextText: 'Sig&#x3E;',
-		currentText: 'Hoy',
-		monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
-		'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
-		monthNamesShort: ['Ene','Feb','Mar','Abr','May','Jun',
-		'Jul','Ago','Sep','Oct','Nov','Dic'],
-		dayNames: ['Domingo','Lunes','Martes','MiÃ©rcoles','Jueves','Viernes','Sábado'],
-		dayNamesShort: ['Dom','Lun','Mar','MiÃ©','Juv','Vie','Sab'],
-		dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sa'],
-		weekHeader: 'Sm',
-		dateFormat: 'dd/mm/yy',
-		firstDay: 1,
-		isRTL: false,
-		showMonthAfterYear: false,
-		yearSuffix: ''};
-	$.datepicker.setDefaults($.datepicker.regional['es']);
- 	
- 	$("#periodoContable").datepicker({
-    	 dateFormat: 'dd/mm/yy',
-         showOtherMonths: true,
-         selectOtherMonths: true,
-         showOn:'focus',
-         showAnim:'fold',
-         minDate:'01/01/2012',
-         maxDate:'31/12/2015',
-         navigationAsDateFormat:false,
-         showButtonPanel:false,
-         changeMonth:true,
-         changeYear:true,
-         closeText:'Cerrar'
-      });
- });
- </r:script>
- 
+<div class="modal fade" id="periodoDialog" tabindex="-1">
+	<div class="modal-dialog ">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="myModalLabel">Cambiar periodo</h4>
+			</div>
+			<g:form action="cambiarPeriodo" class="form-horizontal" >
+				<div class="modal-body">
+					<div class="form-group" id="data_4">
+                        <label class="font-noraml">Seleccionar mes</label>
+                        <div class="input-group date">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            <input type="text" class="form-control" name="fecha"
+                            	value="${formatDate(date:session.periodoContable,format:'dd/MM/yyyy')}">
+                        </div>
+					</div>
+				</div>
+				
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+					<g:submitButton class="btn btn-info" name="aceptar"
+							value="Aceptar" />
+				</div>
+			</g:form>
+
+		</div>
+		
+	</div><!-- moda-content -->
+	
+</div><!-- modal-di -->

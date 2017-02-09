@@ -104,7 +104,9 @@ WHERE L.ID=$P{ID}]]></queryString>
 					<textElement textAlignment="Left" verticalAlignment="Top">
 						<font fontName="Arial" pdfFontName="Helvetica-Bold" size="8" isBold="true" isUnderline="true"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{SUCURSAL}.equals( "TRANSITO" ) && !$P{IDIRECCION}.equals( null ) ? "IRAPUATO" : $F{SUCURSAL}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{SUCURSAL}.equals( "TRANSITO" ) && !$P{IDIRECCION}.equals( null ) ? "IRAPUATO" :
+$F{SUCURSAL}.equals( "ANDRADE" )  ? "ANDRADE   ( VERTIZ 176 )" :
+ $F{SUCURSAL}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement
@@ -216,16 +218,17 @@ CON UNA HORA DE DIFERENCIA ENTRE CONTENEDORES]]></text>
 						<font fontName="Arial" size="6"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{SUCURSAL}.equals( "TRANSITO" ) && !$P{ICONTACTO}.equals( null ) ? $P{ICONTACTO} :
-$F{SUCURSAL}.equals( "ANDRADE" ) ? "JOSE LUIS CONTRERAS" :
+$F{SUCURSAL}.equals( "ANDRADE" ) ? "RAUL GARFIAS ESPINO" :
 $F{SUCURSAL}.equals( "CALLE 4" ) ? "DAVID PERALTA" :
-$F{SUCURSAL}.equals( "TACUBA" ) ? "RUBEN VELAZQUEZ" :
-$F{SUCURSAL}.equals( "VERTIZ 176" ) ? "JOSE LUIS CONTRERAS" :
+$F{SUCURSAL}.equals( "TACUBA" ) ? "GASPAR VELAZQUEZ SANDOVAL" :
+$F{SUCURSAL}.equals( "VERTIZ 176" ) ? "RAUL GARFIAS ESPINO" :
 $F{SUCURSAL}.equals( "ALESA" ) ? "ALEJANDRO RETAMA ALFARO" :
-$F{SUCURSAL}.equals( "PROMASA NORTE" ) ? "DANIEL GOMEZ" :
+$F{SUCURSAL}.equals( "SOLIS" ) ? "JOSE LUIS CONTRERAS ALONSO" :
 $F{SUCURSAL}.equals( "GACELA" ) ? "MIGUEL ANGEL GARCIA" :
 $F{SUCURSAL}.equals( "PROGRESO" ) ? "JOSE CORDOBA" :
-$F{SUCURSAL}.equals( "INTERCARTON" ) ? "MAYRA PONCE" :
-$F{SUCURSAL}.equals( "QUERETARO" ) ? "FERNANDO SUSTERSICK" : ""]]></textFieldExpression>
+$F{SUCURSAL}.equals( "CF5FEBRERO" ) ? "JOSE LUIS CONTRERAS ALONSO" :
+$F{SUCURSAL}.equals( "QUERETARO" ) ? "FERNANDO SUSTERSICK" :
+$F{SUCURSAL}.equals( "PROMASA NORTE" ) ? "ING. RICARDO ESQUIVEL" : ""]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement
@@ -264,11 +267,12 @@ $F{SUCURSAL}.equals( "CALLE 4" ) ? "55 5685-3176" :
 $F{SUCURSAL}.equals( "TACUBA" ) ? "55 2465-0399" :
 $F{SUCURSAL}.equals( "VERTIZ 176" ) ? "55 5578-7400" :
 $F{SUCURSAL}.equals( "ALESA" ) ? "55 5078-5200" :
-$F{SUCURSAL}.equals( "PROMASA NORTE" ) ? "55 5870-1018" :
+$F{SUCURSAL}.equals( "SOLIS" ) ? "55 5740-7777" :
 $F{SUCURSAL}.equals( "GACELA" ) ? "55 5443-1012" :
 $F{SUCURSAL}.equals( "PROGRESO" ) ? "55 5727-0266" :
-$F{SUCURSAL}.equals( "INTERCARTON" ) ? "01 722 279-9333" :
-$F{SUCURSAL}.equals( "QUERETARO" ) ? "01 442 215-4510" : ""]]></textFieldExpression>
+$F{SUCURSAL}.equals( "CF5FEBRERO" ) ? "55 5740-7777" :
+$F{SUCURSAL}.equals( "QUERETARO" ) ? "01 442 215-4510" : 
+$F{SUCURSAL}.equals( "PROMASA NORTE" ) ? "55 5870-1018" :""]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement
@@ -307,11 +311,12 @@ $F{SUCURSAL}.equals( "CALLE 4" ) ? "CALLE 4 194-A, Col. GRANJAS SAN ANTONIO, Del
 $F{SUCURSAL}.equals( "TACUBA" ) ? "BIOLOGO MAXIMINO MARTINEZ 3902, Col. SAN SALVADOR XOCHIMANCA, Del. AZCAPOTZALCO, C.P. 02870, MEXICO DISTRITO FEDERAL" :
 $F{SUCURSAL}.equals( "VERTIZ 176" ) ? "VERTIZ 176, Col. DOCTORES, Del. CUAUHTEMOC, C.P. 06720, MEXICO DISTRITO FEDERAL" :
 $F{SUCURSAL}.equals( "ALESA" ) ? "PONIENTE 148 # 923, COL. INDUSTRIAL VALLEJO, C.P. 02300, MEXICO, DISTRITO FEDERAL" :
-$F{SUCURSAL}.equals( "PROMASA NORTE" ) ? "KM31.5 CARRETERA MEXICO CUAUTITLAN, COL. LOMA BONITA , C.P. 54800, CUAUTITLAN, ESTADO DE MEXICO" :
+$F{SUCURSAL}.equals( "SOLIS" ) ? "ANTONIO SOLIS # 141, COL. OBRERA , Del. CUAUHTEMOC, C.P. 06800, MEXICO DISTRITO FEDERAL" :
 $F{SUCURSAL}.equals( "GACELA" ) ? "LEBRIJA # 480, COL. CERRO DE LA ESTRELLA,DEL. IZTAPALAPA, C.P. 09860, MEXICO, DISTRITO FEDERAL" :
 $F{SUCURSAL}.equals( "PROGRESO" ) ? "ANTONIO ROJAS # 7 BIS, COL. SAN SIMON TOLNAHUAC, C.P. 06920, MEXICO, DISTRITO FEDERAL" :
-$F{SUCURSAL}.equals( "INTERCARTON" ) ? "CALLE 5 LOTE 13 MANZANA IX, PARQUE INDUSTRIAL TOLUCA 2000, C.P. 50200, TOLUCA, EDO. MEXICO" :
-$F{SUCURSAL}.equals( "QUERETARO" ) ? "GRACIANO SANCHEZ 3, Col. CASA BLANCA, Del. QUERETARO QRO., C.P. 76030, MEXICO QUERETARO QRO." : ""]]></textFieldExpression>
+$F{SUCURSAL}.equals( "CF5FEBRERO" ) ? "5 DE FEBRERO # 378, COL. OBRERA , Del. CUAUHTEMOC, C.P. 06800, MEXICO DISTRITO FEDERAL" :
+$F{SUCURSAL}.equals( "QUERETARO" ) ? "GRACIANO SANCHEZ 3, Col. CASA BLANCA, Del. QUERETARO QRO., C.P. 76030, MEXICO QUERETARO QRO." : 
+$F{SUCURSAL}.equals( "PROMASA NORTE" ) ? "CARRETERA MEXICO-CUAUTITLAN Km 31.5 CONJUNTO INDUSTRIAL CUAUTITLAN, (CIC) NAVE 22 LOMA BONITA 54800" :""]]></textFieldExpression>
 				</textField>
 			</band>
 			</groupFooter>

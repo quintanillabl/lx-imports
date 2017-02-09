@@ -31,19 +31,24 @@ class PolizaService implements ApplicationListener<PolizaUpdateEvent>{
 	}
 	
 	def salvarPoliza(Poliza poliza){
-		if(poliza.tipo=='DIARIO'){
-			throw new RuntimeException("Poliza de diario no se puede salvar por este metodo")
-		}
-		def found=Poliza.findByTipoAndFecha(poliza.tipo,poliza.fecha)
+		// if(poliza.tipo=='DIARIO'){
+		// 	throw new RuntimeException("Poliza de diario no se puede salvar por este metodo")
+		// }
+		//def found=Poliza.findByTipoAndFecha(poliza.tipo,poliza.fecha)
+		def found = Poliza.where {
+			subTipo == poliza.subTipo &&
+			ejercicio == poliza.ejercicio &&
+			mes == poliza.mes &&
+			descripcion == poliza.descripcion &&
+			fecha == poliza.fecha
+			}.find()
+
 		if(poliza.tipo=='EGRESO'){
 			found=Poliza.findByTipoAndDescripcionAndFecha(poliza.tipo,poliza.descripcion,poliza.fecha)
 		}
-		if(found){
-			poliza.folio=found.folio
-			found.delete(flush:true)
-		}else{
-			poliza.folio=nextFolio(poliza)
-		}
+
+		
+		poliza.folio=nextFolio(poliza)
 		poliza.cuadrar()
 		poliza.save(failOnError:true)
 		return poliza
@@ -78,39 +83,36 @@ class PolizaService implements ApplicationListener<PolizaUpdateEvent>{
 		}
     }
 	
-	def agregarPartida(long polizaId, def params){
+	def agregarPartida(Poliza poliza, def params){
 		
-		//println 'Agregando partida: '+params+ 'A poliza: '+polizaId
-		//def poliza=Poliza.findById(polizaId,[fetch:[partidas:'eager']])
-		def poliza=Poliza.get(polizaId)
+		println 'Agregando partida: '+params+ 'A poliza: '+poliza.id
+		println 'Descripcion: '+params.descripcion
+		println 'Descripcion de la poliza:'+poliza.descripcion
+		
+		
 		params.id=null
 		
 		def det=new PolizaDet(params)
-		det.fecha=poliza.fecha
-		det.tipo=poliza.tipo
 		det.debe?:0.0
 		det.haber?:0.0
-		
+		//poliza.descripcion=poliza.descripcion?:' '
 		poliza.addToPartidas(cuenta:det.cuenta,
 					debe:det.debe,
 					haber:det.haber,
 					asiento:det.asiento,
 					descripcion:det.descripcion,
-					referencia:det.referencia
-					,fecha:poliza.fecha
-					,tipo:poliza.tipo)
-		poliza.cuadrar()
-		//poliza.save(failOnError:true)
-		/*
-		try {
-			poliza.save(failOnError:true)
-			return poliza
-		} catch (ValidationException e) {
-			e.printStackTrace()
-			return poliza
-		}*/
+					referencia:det.referencia)
+		poliza.actualizar()
+		poliza.save(failOnError:true)
+		return poliza
 	}
-	
+
+	def eliminarPartida(def det) {
+		Poliza poliza = det.poliza
+		poliza.removeFromPartidas(det)
+		poliza=poliza.save(failOnError:true)
+	}
+
 	def eliminarPartidas(Poliza poliza,def partidas) {
 		partidas.each {
 			def det=PolizaDet.get(it.toLong())
@@ -144,5 +146,10 @@ class PolizaService implements ApplicationListener<PolizaUpdateEvent>{
 			saldoPorCuentaContableService.actualizarSaldo(year, mes, c)
 			
 		}
+	}
+
+	def delete( Poliza poliza){
+		poliza.delete flush:true
+		
 	}
 }

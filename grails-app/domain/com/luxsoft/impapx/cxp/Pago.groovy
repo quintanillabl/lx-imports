@@ -9,7 +9,7 @@ class Pago extends Abono{
     static constraints = {
     }
 	
-	static mapping = {
-		pagoProveedor fetch:'join'
-	}
+	// static mapping = {
+	// 	pagoProveedor fetch:'join'
+	// }
 }

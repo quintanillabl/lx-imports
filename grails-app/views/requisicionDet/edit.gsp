@@ -2,74 +2,67 @@
 <!doctype html>
 <html>
 <head>
-<meta name="layout" content="taskView">
-<title><g:message code="requisicionDet.create.label" default="Detalle de requisición"/></title>
-<r:require module="autoNumeric"/>
+
+	<title>Detalle de requisicion ${requisicionDetInstance.id}</title>
 </head>
 <body>
-	
-	<content tag="header">
-		<div class="alert">
-				<g:link controller="requisicion" id="${requisicionInstance?.id}" action="edit">
-					<h4><strong>Req: ${requisicionInstance?.id} (${requisicionInstance?.proveedor?.nombre})</strong></h4>
-				</g:link>
-				
-		</div>
-	<content tag="consultas">
-	</content>
-	
- 	<content tag="operaciones">
- 		
- 	</content>
- 	
- 	<content tag="document">
- 		<g:render template="/shared/messagePanel" model="[beanInstance:requisicionDetInstance]"/>
+	<g:set var="requisicionInstance" value="${requisicionDetInstance.requisicion}"></g:set>
 
-		<fieldset>
-			<g:form class="form-horizontal" action="edit" controller="requisicionDet"
-				id="${requisicionDetInstance?.id}">
-				<fieldset>
-					<f:with bean="requisicionDetInstance">
-						<g:hiddenField name="requisicionId" value="${requisicionInstance?.id}"/>
-						<f:field property="documento" input-disabled="true"/>
-						<f:field property="fechaDocumento" />
-						<f:field property="total" input-class="moneyField" />
-					</f:with>
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<g:link controller="requisicion" id="${requisicionInstance?.id}" action="edit">
+			<h2>Concepto: ${requisicionDetInstance?.id} <small>Req: (${requisicionDetInstance.requisicion})</small></h2>
+		</g:link>
+	</div>
+
+	<div class="row wrapper wrapper-content animated fadeInRight">
+	    
+        <div class="col-lg-6 col-lg-offset-3" >
+        	<lx:ibox>
+        		<g:form name="updateForm" action="update" class="form-horizontal" method="PUT">  
 					
-			<div class="form-actions">
-				<button type="submit" class="btn btn-primary">
-					<i class="icon-ok icon-white"></i>
-					<g:message code="default.button.update.label" default="Salvar" />
-				</button>
-			</div>
-		</fieldset>
-	</g:form>
-</fieldset>
-		
- 	</content>
- 	
- <r:script>
- $(function(){
- 	$(".moneyField").autoNumeric({vMin:'0.00',wEmpty:'zero',mRound:'B'});
- 	
- 	//$("#total").autoNumericSet(0.0).attr("disabled",'disabled');
- 	/*
- 	$('#concepto').bind('change',function(e){
-		var selected=$(this).val();
-		if(selected=="ANTICIPO"){
-			$("#total").removeAttr("disabled");
-		}else{
-			$("#total").attr("disabled",'disabled');
-			$("#total").autoNumericSet(0.0);
-		}
-			
-		
-	});
-	*/ 
- 	
- });
+					<g:hiddenField name="id" value="${requisicionDetInstance.id}"/>
+                    <g:hiddenField name="version" value="${requisicionDetInstance.version}"/>
+					<g:hiddenField name="requisicion.id" value="${requisicionInstance.id}"/>
+        			
+        			<lx:iboxTitle2 title="Propiedades"/>
+        			<lx:iboxContent>
+        				<lx:errorsHeader bean="${requisicionDetInstance}"/>
+						
+						<f:with bean="${requisicionDetInstance}">
+							<f:display property="documento" widget-class="form-control"/>
+							<f:display property="fechaDocumento" />
+							<f:display property="total" widget="money"/>
+							
+							<f:field property="factura" label="Factura">
+			    				<g:hiddenField id="facturaId" name="factura.id" value="${requisicionDetInstance?.factura?.id}"/>
+			    				<input type="text" value="${value}" id="facturaField" class="form-control">
+				    		</f:field>
+						</f:with>
+
+        			</lx:iboxContent>
+        			<lx:iboxFooter>
+        				<button id="saveBtn" class="btn btn-primary ">
+							<i class="fa fa-floppy-o"></i> Actualizar
+                        </button>
+						<lx:backButton controller="requisicion" action="show" id="${requisicionInstance.id}"/>
+        			</lx:iboxFooter>
+        		</g:form>
+        	</lx:ibox>
+        </div>
+	    
+	</div>
+	
+	<script>
+		$("#facturaField").autocomplete({
+			source:'<g:createLink action="getFacturasDisponibles"/>',
+			minLength:1,
+			select:function(e,ui){
+				console.log('Valor seleccionado: '+ui.item.id);
+				$("#facturaId").val(ui.item.id);
+			}
+		});
+	</script>
  
- </r:script>
 	
 </body>
 </html>

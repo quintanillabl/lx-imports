@@ -9,7 +9,7 @@ class PagoProveedorService {
 
     def registrarEgreso(PagoProveedor pago) {
 		def requisicion=pago.requisicion
-		println 'Pagando con requisicion: '+requisicion
+		
 		if(pago.cuenta.moneda!=MonedaUtils.PESOS){
 			//Localizar el tipo de cambio 
 		}
@@ -22,8 +22,12 @@ class PagoProveedorService {
 			,tipo:requisicion.formaDePago
 			,origen:'CXP'
 			//,concepto:'PAGO_PROVEEDOR'
-			,concepto:"Pago: $requisicion.proveedor.nombre"
+			,referenciaBancaria: pago.referencia
+			,concepto:"Pago: $requisicion.proveedor.nombre  $requisicion.concepto" 
 			,comentario:'PAGO REQUISICION:'+requisicion.id)
+		if(pago.requisicion.proveedor.tipo == 'FLETES'){
+			egreso.grupo = true
+		}
 		
 		def cxp=new Pago(
 			proveedor:requisicion.proveedor
@@ -54,5 +58,11 @@ class PagoProveedorService {
 		pago.egreso=egreso
 		pago.pago=cxp
 		return pago.save(failOnError:true)
+    }
+
+    def eliminar(PagoProveedor pago){
+    	if(pago.egreso)
+    		pago.egreso.delete flush:true
+    	pago.delete flush:true
     }
 }

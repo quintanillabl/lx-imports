@@ -1,99 +1,81 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		
-		<title>Usuarios</title>
-		%{-- <asset:stylesheet src="datatables/datatables.css"/>
-		<asset:stylesheet src="jquery-ui.css"/>
-		<asset:javascript src="datatables/jquery.datatables.js"/>
-		<asset:javascript src="jquery-ui/autocomplete.js"/> --}%
-		<asset:stylesheet src="jquery-ui.css"/>
-		<asset:javascript src="jquery-ui/autocomplete.js"/>
-		
-	</head>
+<head>
+	<meta name="layout" content="operaciones">
+	<title>Usuarios</title>
+</head>
 	
-	<body>
-		<div class="container">
-			
-			<div class="row">
-				<div class="col-md-12">
-					<div class="alert alert-info">
-						<h2>Consola para la administración de usuarios</h2>
-						<g:if test="${flash.message}">
-							<span class="label label-warning text-center">${flash.message}</span>
-						</g:if>
-					</div>
+<body>
 
-				</div>
-				
+	<content tag="header">
+		Consola para la administración usuarios y derechos
+	</content>
+	<content tag="subHeader"></content>
 
-			</div><!-- end .row 1 -->
-			
-			<div class="row">
-				<div class="col-md-12">
-					<div class="toolbar-panel">
-						<div class="btn-group">
-							<input type='text' id="nombreField" placeholder="Buscar" class="form-control">
-						</div>
-						
-						
-						<div class="btn-group">
-							<g:link action="index" class="btn btn-default">
-								<span class="glyphicon glyphicon-repeat"></span> Refrescar
-							</g:link>
-							
-							
-							
-						</div>
-						<div class="btn-group">
-							<button type="button" name="operaciones"
-									class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-									role="menu">
-									Operaciones <span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu">
-								<li>
-									<a href="#importarModal" data-toggle="modal">
-										<span class="glyphicon glyphicon-upload"></span> Importar empleado
-									</a>
-									<g:link action="create">
-										<span class="glyphicon glyphicon-floppy-saved"></span> Nuevo
-									</g:link>
-								</li>
-							</ul>
-						</div>
-						<div class="btn-group">
-							<button type="button" name="reportes"
-									class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-									role="menu">
-									Reportes <span class="caret"></span>
-							</button>
-							<ul class="dropdown-menu">
-								<li><g:link controller="reporte" action="usuariosDelSistema"> Usuarios</g:link></li>
-							    
-							</ul>
-						</div>
-						
-					</div>
+	<content tag="periodo"></content>
+	<content tag="operaciones">
+		<li>
+			<a href="#importarModal" data-toggle="modal">
+				<span class="glyphicon glyphicon-upload"></span> Importar empleado
+			</a>
+		</li>
+		<g:render template="importarEmpleadoDialog"/>
+	</content>
+	
+	<content tag="reportes">
+		<li><g:link controller="reporte" action="usuariosDelSistema"> Catálogo</g:link></li>
+	</content>
+
+	<content tag="grid">
+		<table id="usuariosGrid" class="table table-striped table-bordered table-condensed">
+			<thead>
+				<tr>
+					<th>UseName</th>
+					<th>Nombre</th>
+					<th>Número</th>
+					<th>Puesto</th>
+					<th>Sucursal</th>
+					<th>Activo</th>
 					
-				</div>
-			</div><!-- end .row 2 button panel -->
+				</tr>
+			</thead>
+			<tbody>
+				<g:each in="${usuarioInstanceList}" var="row">
+					<tr>
+						<td>
+							<g:link action="edit" id="${row.id}">
+								${row.username}
+							</g:link>
+						</td>
+						<td>
+							<g:link action="show" id="${row.id}">
+								${row.nombre}
+							</g:link>
+						</td>
+						<td>${row.numeroDeEmpleado}</td>
+						<td>${row.puesto}</td>
+						<td>${row.sucursal}</td>
+						<td>
+							<g:if test="${row.enabled}">
+								<i class="fa fa-check"></i>
+							</g:if>
+							<g:else>
+								<i class="fa fa-toggle-off"></i>
+							</g:else>
+						</td>
+					</tr>
+				</g:each>
+			</tbody>
+		</table>
+	</content>
 
-			<div class="row">
-				<div class="col-md-12">
-					<g:render template="gridPanel"/>
-				</div>
-			</div>
-			<g:render template="importarEmpleadoDialog"/>
+	<content tag="searchService">
+		<g:createLink action="search"/>
+	</content>
+
 			
-			
-		</div>
 	
-	<script type="text/javascript">
 		
-
-	</script>
-		
-	</body>
+</body>
 	
 </html>

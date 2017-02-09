@@ -1,19 +1,32 @@
 <g:form class="form-horizontal">
-	<f:display property="nombre" bean="proveedorInstance"/>
-	<f:display property="factorDeUtilidad" bean="proveedorInstance"/>
-	<f:display property="tipoDeCosteo" bean="proveedorInstance"/>
-	<f:display property="correoElectronico" bean="proveedorInstance"/>
-	<f:display property="www" bean="proveedorInstance"/>
-	<f:display property="direccion" bean="proveedorInstance"/>
-	<f:display property="rfc" bean="proveedorInstance"/>
-	<f:display property="nacional" bean="proveedorInstance"/>
-	<f:display property="subCuentaOperativa" bean="proveedorInstance"/>
-	<f:display property="paisDeOrigen" bean="proveedorInstance"/>
-  <f:display property="nacionalidad" bean="proveedorInstance"/>
-  <f:display property="dateCreated" bean="proveedorInstance" widget="datetime"/>
-  <f:display property="lastUpdated" bean="proveedorInstance"/>
-  <f:display property="lineaDeCredito" bean="proveedorInstance"/>
-  <f:display property="plazo" bean="proveedorInstance"/>
-  <f:display property="productos" bean="proveedorInstance"/>
-  <f:display property="vencimentoBl" bean="proveedorInstance"/>
+<f:with bean="${proveedorInstance}">
+	
+	<div class="row">
+		<f:display property="nombre"/>
+	</div>
+	
+	<div class="row">
+		<div class="col-md-6">
+			<f:display property="factorDeUtilidad" wrapper="bootstrap3" />
+			<f:display property="tipoDeCosteo" wrapper="bootstrap3"/>
+			<f:display property="rfc" wrapper="bootstrap3"/>
+			<f:display property="nacional" wrapper="bootstrap3"/>
+			<f:display property="paisDeOrigen" wrapper="bootstrap3"/>
+  			<f:display property="nacionalidad" wrapper="bootstrap3"/>
+  			<f:display property="subCuentaOperativa" wrapper="bootstrap3"/>
+  			<f:display property="cuentaBancaria" wrapper="bootstrap3" widget-class="form-control"/>
+	  		<f:display property="bancoDestino" wrapper="bootstrap3" widget-class="form-control"/>
+	  		<f:display property="tipo" wrapper="bootstrap3" widget-class="form-control"/>
+		</div>
+		<div class="col-md-6">
+			<f:display property="correoElectronico" wrapper="bootstrap3"/>
+			<f:display property="www" wrapper="bootstrap3"/>
+			<f:display property="lineaDeCredito" wrapper="bootstrap3"/>
+			<f:display property="plazo" wrapper="bootstrap3"/>
+			<f:display property="vencimentoBl" wrapper="bootstrap3" />
+			<f:display property="agenciaAduanal" wrapper="bootstrap3" />
+		</div>
+	</div>
+	<f:display property="direccion" />
+</f:with>
 </g:form>

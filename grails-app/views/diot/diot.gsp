@@ -1,34 +1,114 @@
-<%@ page import="com.luxsoft.impapx.contabilidad.Poliza" %>
+<%@ page import="com.luxsoft.impapx.tesoreria.PagoProveedor" %>
 <!doctype html>
 <html>
 <head>
-<meta name="layout" content="luxor">
-
-<title><g:message code="diot.list.label" default="DIOT"/></title>
-<r:require module="dataTables"/>
+	<title><g:message code="diot.list.label" default="DIOT"/></title>
+	<meta name="layout" content="luxor">
 </head>
 <body>
+
+<content tag="header">
+	DIOT Periodo: ${session.periodoContable.asPeriodoText()}
+</content>
 	
-<div class="container-fluid">
-	
-	<div class="row-fluid">
-		<div class="span12">
-			<div class="alert ">
-				<h2>DIOT Periodo: ${fecha?.text()}</h2>
-			</div>
-		</div>
+
+<content tag="document">
+	<div class="row">
+	    <div class="col-lg-12">
+	        <div class="ibox float-e-margins">
+	        	
+	        	<div class="ibox-title">
+	        		<button data-target="#periodoDialog" data-toggle="modal" class="btn btn-outline btn-success  dim">
+	        		 	<i class="fa fa-calendar"></i> 
+	        		</button>
+	        		<div class="btn-group">
+	        		    <g:link action="generar" class="btn btn-outline btn-primary">
+	        		    	<i class="fa fa-cog"></i> Generar
+	        		    </g:link>
+	        		    <g:if test="${downloadFile}">
+	        		    	<g:link class="btn btn-outline btn-success" action="generarArchivo" params="[downloadFile:downloadFile]">Generar Archivo</g:link>
+	        		    </g:if>
+	        		</div>
+	        	    <div class="ibox-tools">
+	        	        <a class="collapse-link">
+	        	            <i class="fa fa-chevron-up"></i>
+	        	        </a>
+	        	        <a class="close-link">
+	        	            <i class="fa fa-times"></i>
+	        	        </a>
+	        	    </div>
+	        	</div>
+	            
+	            <div class="ibox-content">
+	            	<div>
+	            		<ul class="nav nav-tabs" id="myTab">
+	            			<li class="active"><a href="#analisis" data-toggle="tab">Análisis</a></li>
+	            			<li class=""><a data-target="#diot" data-toggle="tab">DIOT</a></li>
+	            		</ul>
+	            		
+	            		<div class="tab-content">
+	            			<div class="tab-pane active" id="analisis">
+	            				<div style=" overflow-x: scroll">
+	            						<g:render template="analisisGrid" model="['rows':rows]"/>
+	            				</div>
+	            				
+	            				
+	            				
+	            			</div> 
+	            			<div class="tab-pane " id="diot">
+	            				<g:render template="diotGrid" model="['diots':diots]"/>
+	            			</div>
+	            		</div>
+	            	</div>
+	            </div>
+
+	        </div>
+	    </div>
 	</div>
-	<div class="row-fluid">
-		<div class="span12">
-			
-			<div class="btn-toolbar">
-				<div class="btn-group">
-				<a href="#cambioDePeriodoDialog" class="btn btn-primary" data-toggle="modal">Procesar</a>
-				<g:if test="${downloadFile}">
-					<g:link class="btn btn-success" action="generarArchivo" params="[downloadFile:downloadFile]">Generar Archivo</g:link>
-				</g:if>
-				
-			</div>
+	
+	
+	<g:render template="/poliza/cambiarPeriodo"/>
+	
+	<script type="text/javascript">
+		$(function(){
+ 			$('#grid').dataTable({
+                responsive: true,
+                aLengthMenu: [[100, 150, 200, 250, -1], [100, 150, 200, 250, "Todos"]],
+                "language": {
+					"url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
+	    		},
+	    		"dom": 'T<"clear">lfrtip',
+	    		"tableTools": {
+	    		    "sSwfPath": "${assetPath(src: 'plugins/dataTables/swf/copy_csv_xls_pdf.swf')}"
+	    		},
+	    		//"scrollX": true,
+	    		"order": []
+            });
+            $('#data_4 .input-group.date').bootstrapDP({
+                minViewMode: 1,
+                format: 'dd/mm/yyyy',
+                keyboardNavigation: false,
+                forceParse: false,
+                autoclose: true,
+                todayHighlight: true,
+
+            });
+      //       $('#analisis').slimScroll({
+      //   		height: '250px'
+    		// });
+
+		});
+	</script>
+	
+</content>
+	
+</body>
+</html>
+
+%{-- 
+
+	
+	
 			
 			</div>
 				<ul class="nav nav-tabs" id="myTab">
@@ -71,43 +151,10 @@
 			</div>
 		
 		
-	</div>
-	
-</div> 	
- 	
+	 --}%
 		
 	
-<r:script>
-$(function(){
-	$("#grid2").dataTable({
-		aLengthMenu: [[100, 150, 200, 250, -1], [100, 150, 200, 250, "Todos"]],
-        iDisplayLength: 50,
-        "oLanguage": {
-      		"sUrl":"<g:resource dir="js" file="dataTables.spanish.txt" />"
-	    },
-    	"aoColumnDefs": [
-        	{ "sType": "numeric","bSortable": true,"aTargets":[0] }
-         ],
-         "bPaginate": false  
-	});
-	$("#fecha").datepicker({
-    	 dateFormat: 'dd/mm/yy',
-         showOtherMonths: true,
-         selectOtherMonths: true,
-         showOn:'focus',
-         showAnim:'fold',
-         minDate:'01/10/2012',
-         maxDate:'31/12/2015',
-         navigationAsDateFormat:false,
-         showButtonPanel: true,
-         changeMonth:true,
-         changeYear:true,
-         closeText:'Cerrar'
-      });
-});
-</r:script>			
-</body>
-</html>
+
 
 
 

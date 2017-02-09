@@ -1,136 +1,152 @@
 package com.luxsoft.impapx
 
+import grails.transaction.Transactional
 import org.springframework.dao.DataIntegrityViolationException
-
+import grails.plugin.springsecurity.annotation.Secured
 import com.luxsoft.cfdi.CFDIUtils;
 
+@Transactional(readOnly = true)
+@Secured(["hasRole('ADMIN')"])
 class EmpresaController {
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
-    def index() {
-        redirect action: 'list', params: params
+    def index(Integer max) {
+        params.max = Math.min(max ?: 10, 100)
+        respond Empresa.list(params), model:[empresaInstanceCount: Empresa.count()]
     }
 
-    def list() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [empresaInstanceList: Empresa.list(params), empresaInstanceTotal: Empresa.count()]
+    def show(Empresa empresaInstance) {
+        redirect action:'edit',id:empresaInstance.id
     }
 
     def create() {
-		switch (request.method) {
-		case 'GET':
-        	[empresaInstance: new Empresa(params)]
-			break
-		case 'POST':
-			//def direccion=new Direccion(params)
-	        def empresaInstance = new Empresa(params)
-			//empresaInstance.direccion=direccion
-	        if (!empresaInstance.save(flush: true)) {
-	            render view: 'create', model: [empresaInstance: empresaInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.created.message', args: [message(code: 'empresa.label', default: 'Empresa'), empresaInstance.id])
-	        redirect action: 'show', id: empresaInstance.id
-			break
-		}
+        respond new Empresa(params)
     }
 
-    def show() {
-        def empresaInstance = Empresa.get(params.id)
-        if (!empresaInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'empresa.label', default: 'Empresa'), params.id])
-            redirect action: 'list'
-            return
-        }
-		//def certificadoDigital=CFDIUtils.leerCertificado(empresaInstance)
-		//def pk=CFDIUtils.leerLlavePrivada(empresaInstance)
-		def certificadoDigital 
-		def llavePrivada
-		/*
-		if(!certificadoDigital){
-			File archivo=new File("C:\\Basura\\CFDI PFX\\PAPER\\pim050124gy7_1211121031s.cer")
-			empresaInstance.certificadoDigital=archivo.getBytes()
-			
-			
-			empresaInstance.llavePrivada=new File("C:\\Basura\\CFDI PFX\\PAPER\\paper2012.key").getBytes()
-			empresaInstance.certificadoDigitalPfx=new File("C:\\Basura\\CFDI PFX\\PAPER\\certificadopaper.pfx").getBytes()
-			
-			empresaInstance.save(failOnError:true)
-			
-		}*/
-		try {
-			certificadoDigital=empresaInstance.certificado
-			llavePrivada=empresaInstance.privateKey
-		} catch (Exception e) {
-			e.printStackTrace()
-		}
-		
-        [empresaInstance: empresaInstance,certificadoDigital:certificadoDigital,llavePrivada:llavePrivada]
-    }
-
-    def edit() {
-		switch (request.method) {
-		case 'GET':
-	        def empresaInstance = Empresa.get(params.id)
-	        if (!empresaInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'empresa.label', default: 'Empresa'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        [empresaInstance: empresaInstance]
-			break
-		case 'POST':
-			println 'Actualizando empresa: '+params
-	        def empresaInstance = Empresa.get(params.id)
-	        if (!empresaInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'empresa.label', default: 'Empresa'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (empresaInstance.version > version) {
-	                empresaInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'empresa.label', default: 'Empresa')] as Object[],
-	                          "Another user has updated this Empresa while you were editing")
-	                render view: 'edit', model: [empresaInstance: empresaInstance]
-	                return
-	            }
-	        }
-
-	        empresaInstance.properties = params
-
-	        if (!empresaInstance.save(flush: true)) {
-	            render view: 'edit', model: [empresaInstance: empresaInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'empresa.label', default: 'Empresa'), empresaInstance.id])
-	        redirect action: 'show', id: empresaInstance.id
-			break
-		}
-    }
-
-    def delete() {
-        def empresaInstance = Empresa.get(params.id)
-        if (!empresaInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'empresa.label', default: 'Empresa'), params.id])
-            redirect action: 'list'
+    @Transactional
+    def save(Empresa empresaInstance) {
+        if (empresaInstance == null) {
+            notFound()
             return
         }
 
-        try {
-            empresaInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'empresa.label', default: 'Empresa'), params.id])
-            redirect action: 'list'
+        if (empresaInstance.hasErrors()) {
+            respond empresaInstance.errors, view:'create'
+            return
         }
-        catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'empresa.label', default: 'Empresa'), params.id])
-            redirect action: 'show', id: params.id
+
+        empresaInstance.save flush:true
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.created.message', args: [message(code: 'empresa.label', default: 'Empresa'), empresaInstance.id])
+                redirect empresaInstance
+            }
+            '*' { respond empresaInstance, [status: CREATED] }
         }
     }
+
+    //@Secured(["hasAnyRole('ADMIN')"])
+    def edit(Empresa empresaInstance) {
+        respond empresaInstance
+    }
+
+    @Transactional
+    @Secured(["hasAnyRole('ADMIN')"])
+    def update(Empresa empresaInstance) {
+        if (empresaInstance == null) {
+            notFound()
+            return
+        }
+
+        if (empresaInstance.hasErrors()) {
+            respond empresaInstance.errors, view:'edit'
+            return
+        }
+
+        empresaInstance.save flush:true
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.updated.message', args: [message(code: 'Empresa.label', default: 'Empresa'), empresaInstance.id])
+                redirect empresaInstance
+            }
+            '*'{ respond empresaInstance, [status: OK] }
+        }
+    }
+
+    @Transactional
+    @Secured(["hasAnyRole('ADMIN')"])
+    def delete(Empresa empresaInstance) {
+
+        if (empresaInstance == null) {
+            notFound()
+            return
+        }
+
+        empresaInstance.delete flush:true
+
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'Empresa.label', default: 'Empresa'), empresaInstance.id])
+                redirect action:"index", method:"GET"
+            }
+            '*'{ render status: NO_CONTENT }
+        }
+    }
+
+    protected void notFound() {
+        request.withFormat {
+            form multipartForm {
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'empresa.label', default: 'Empresa'), params.id])
+                redirect action: "index", method: "GET"
+            }
+            '*'{ render status: NOT_FOUND }
+        }
+    }
+
+    @Transactional
+    def registrarLlavePrivada(Empresa empresaInstance) {
+        if (empresaInstance == null) {
+            notFound()
+            return
+        }
+        def file=request.getFile('file')
+        empresaInstance.llavePrivada=file.getBytes()
+        empresaInstance.save flush:true
+        redirect action: 'edit',id:empresaInstance.id
+        
+    }
+
+    @Transactional
+    def registrarCertificado(Empresa empresaInstance) {
+        if (empresaInstance == null) {
+            notFound()
+            return
+        }
+        def file=request.getFile('file')
+        
+        empresaInstance.numeroDeCertificado=file.getOriginalFilename()-'.cer'
+        empresaInstance.certificadoDigital=file.getBytes()
+        empresaInstance.save flush:true
+        //forward action: 'edit',id:empresaInstance.id
+        redirect action: 'edit',id:empresaInstance.id
+    }
+
+    @Transactional
+    def registrarCertificadoPfx(Empresa empresaInstance) {
+        if (empresaInstance == null) {
+            notFound()
+            return
+        }
+        def file=request.getFile('file')
+        empresaInstance.certificadoDigitalPfx=file.getBytes()
+        empresaInstance.save flush:true
+        //forward action: 'edit',id:empresaInstance.id
+        redirect action: 'edit',id:empresaInstance.id
+        
+    }
+
+    
 }

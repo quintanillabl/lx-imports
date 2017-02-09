@@ -6,6 +6,7 @@ import java.math.RoundingMode;
 import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 
+import com.luxsoft.lx.utils.*
 import util.Rounding;
 
 /**
@@ -16,6 +17,8 @@ import util.Rounding;
  *
  */
 class Pedimento {
+
+	static auditable = true
 	
 	Date fecha
 	String pedimento
@@ -25,11 +28,17 @@ class Pedimento {
 	BigDecimal arancel=0
 	BigDecimal impuestoTasa=16
 	BigDecimal impuesto=0
-	BigDecimal incrementables
+	BigDecimal incrementables=0.0
 	String comentario
 	Proveedor proveedor
 	com.luxsoft.impapx.CuentaPorPagar incrementable1
 	String referenciacg
+
+	String agenteAduanal
+
+	PaisDeOrigen paisDeOrigen
+	BigDecimal contraPrestacion = 0.0
+	
 	
 	Date dateCreated
 	Date lastUpdated
@@ -51,11 +60,13 @@ class Pedimento {
 		proveedor(nullable:true)
 		incrementable1(nullable:true)
 		referenciacg(nullable:true,maxSize:50)
+		agenteAduanal(nullable:true)
+		paisDeOrigen(nullable:true)
     }
 	
 	static mapping ={
 		//embarques fetch:'join'
-		incrementables formula:'(select ifnull(sum(x.incrementables),0) from embarque_det x where x.pedimento_id=id)'
+		//incrementables formula:'(select ifnull(sum(x.incrementables),0) from embarque_det x where x.pedimento_id=id)'
 	}
 	
 	/**
@@ -65,7 +76,7 @@ class Pedimento {
 	 */
 	BigDecimal getTotal(){
 		
-		return dta+prevalidacion+arancel
+		return dta+prevalidacion+arancel+contraPrestacion
 	}
 	
 	BigDecimal getImpuestoMateriaPrima(){
@@ -77,7 +88,7 @@ class Pedimento {
 	}
 	
 	BigDecimal getIvaAcreditable(){
-		def iva=dta+arancel
+		def iva=dta+arancel+incrementables
 		iva=iva*(this.impuestoTasa/100)
 		return Rounding.round(iva+getImpuestoMateriaPrima(),0) 
 	}
@@ -90,55 +101,80 @@ class Pedimento {
 	
 	def beforeUpdate() {
 		actualizarImpuestos()
-		actualizarCostos()
+		//actualizarCostos()
 	}
 	
 	def actualizarImpuestos(){
 		//Actualizar los impuestos
-		impuesto=calcularImpuestoDinamico()
+		
+		def pedimento =this
+		def tc= pedimento.tipoDeCambio
+		def factorIva = pedimento.impuestoTasa/100
+
+
+		def ivaMateriaPrima = pedimento.embarques.sum 0.0,{
+    		it.importe*tc*factorIva
+		}
+		def ivaIncrementables = pedimento.incrementables * factorIva
+
+		def ivaPrevalidacion = pedimento.prevalidacion * factorIva
+
+		def ivaDta = pedimento.dta*factorIva
+
+		def ivaArancel = pedimento.arancel*factorIva
+
+		def ivaContraPrestacion = pedimento.contraPrestacion*factorIva
+
+		def iva1 = ivaMateriaPrima + ivaIncrementables + ivaDta + ivaArancel
+		def totalCP = MonedaUtils.round(ivaPrevalidacion + ivaContraPrestacion + pedimento.contraPrestacion,0)
+
+		this.impuesto = iva1 + pedimento.dta + pedimento.arancel + pedimento.prevalidacion + totalCP
+		this.impuesto = MonedaUtils.round(this.impuesto,0)
+
+
 	}
-	
+
+	/**
+	 * Este metodo se ocupa en la poliza de compra
+	 * 
+	 * @return [description]
+	 */
 	def BigDecimal calcularImpuestoDinamico(){
 		def impuesto=0
 		impuesto=embarques.sum (0.0,{
 			it.importe*tipoDeCambio*(this.impuestoTasa/100)
 			}
 		)
-		impuesto=impuesto.setScale(2, BigDecimal.ROUND_HALF_UP);
-			def iva=0
+		impuesto=Rounding.round(impuesto,0);
+		def iva=0
 		def ivaPrev=Rounding.round(this.prevalidacion*(1+this.impuestoTasa/100),0)
 		iva=(this.dta+arancel)*(1+this.impuestoTasa/100)
 		impuesto=Rounding.round(impuesto+iva,0)+ivaPrev
 		return impuesto
 	}
 	
+	
+	/*
 	def actualizarCostos(){
+	
 		def importe=getTotal()
 		def kilosTotales=embarques.sum {it.kilosNetos}
+
 		embarques.each {
+
 			def gasto=it.kilosNetos*importe/kilosTotales
 			gasto=gasto.setScale(2, BigDecimal.ROUND_HALF_UP);
 			it.gastosPorPedimento=gasto
+			it.save flush:true
 			
 		}
 	}
+	*/
 	
-	/*
-	@Override
-	public boolean equals(Object obj) {
-		if(! (obj.instanceOf(Pedimento)) )
-			return false
-		if(this.is(obj))
-			return true
-		def eb=new EqualsBuilder()
-		eb.append(pedimento, obj.pedimento)
-		return eb.isEquals()
+	
+	def getPaisDeVenta(){
+		if(embarques)
+			return embarques.embarque.first().proveedor.direccion.pais
+		return 'NO DISPONILBE'
 	}
-	
-	@Override
-	public int hashCode() {
-		def hcb=new HashCodeBuilder(17,35)
-		hcb.append(pedimento)
-		return hcb.toHashCode()
-	}*/
 }

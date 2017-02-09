@@ -1,5 +1,10 @@
 package com.luxsoft.impapx.contabilidad
 
+import grails.plugin.springsecurity.annotation.Secured
+
+import com.luxsoft.lx.contabilidad.PeriodoContable
+
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeInversionesController {
 
     def index() {
@@ -54,7 +59,7 @@ class PolizaDeInversionesController {
 		facturas.each{ fac->
 			
 			//Cargo a clientes
-			def clave="106-$fac.cliente.subCuentaOperativa"
+			def clave="105-$fac.cliente.subCuentaOperativa"
 			def cuenta=CuentaContable.findByClave(clave)
 			println 'Cuenta localizada: '+cuenta
 			if(!cuenta) throw new RuntimeException("No existe la cuenta para el cliente: "+fac.cliente+ 'Clave: '+clave)
@@ -88,7 +93,7 @@ class PolizaDeInversionesController {
 			
 			//Abono a iva por trasladar
 			poliza.addToPartidas(
-				cuenta:CuentaContable.findByClave('206-0002'),
+				cuenta:CuentaContable.findByClave('209-0001'),
 				debe:0.0,
 				haber:fac.impuestos,
 				asiento:asiento,

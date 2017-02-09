@@ -1,9 +1,10 @@
 package com.luxsoft.impapx
 
-import grails.validation.Validateable;
-
+import grails.validation.Validateable
+import groovy.transform.ToString
 
 @Validateable
+@ToString(includeNames=true,includePackage=false)
 class Direccion {
 	
 	String calle
@@ -27,7 +28,7 @@ class Direccion {
 		pais(size:1..100)
     }
 	
-	String toString(){
-		return "${calle} ${numeroInterior?:''} ${numeroExterior?:''} ${colonia}"
-	}
+	// String toString(){
+	// 	return "Calle:${calle} ${numeroInterior?:''} ${numeroExterior?:''} ${colonia}"
+	// }
 }

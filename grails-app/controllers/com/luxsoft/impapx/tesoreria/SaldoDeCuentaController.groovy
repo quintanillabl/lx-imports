@@ -2,82 +2,67 @@ package com.luxsoft.impapx.tesoreria
 
 import java.text.NumberFormat;
 
+import java.text.DecimalFormat;
+
 import org.springframework.dao.DataIntegrityViolationException
 
 import com.luxsoft.impapx.CuentaBancaria;
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasRole('TESORERIA')"])
 class SaldoDeCuentaController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    def index() {
-        redirect action: 'list', params: params
-    }
-	
-	def cambiarPeriodo(String fecha){
-		println 'Cambiando periodo: '+fecha
-		def periodo=fecha?Date.parse("dd/MM/yyyy",fecha):new Date()
-		session.periodo=periodo
-		redirect action:'list'
+    def beforeInterceptor = {
+    	if(!session.periodoTesoreria){
+    		session.periodoTesoreria=new Date()
+    	}
 	}
 
-    def list() {
-		log.info('Saldo de cuentas')
-		
+	def cambiarPeriodo(){
+		def fecha=params.date('fecha', 'dd/MM/yyyy')
+		session.periodoTesoreria=fecha
+		redirect(uri: request.getHeader('referer') )
+	}
+
+    def index() {
+        log.info('Saldo de cuentas')
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-		if(!session.periodo){
-			session.periodo=new Date()
-		}
-		
-		//def periodo=params.periodo?Date.parse("dd/MM/yyyy",params.periodo):new Date()
-		def periodo=session.periodo
+		def periodo=session.periodoTesoreria
 		def rango=periodo.asPeriodoText()
-		
 		def saldoDeCuentasList=SaldoDeCuenta.findAllByYearAndMes(periodo.toYear(),periodo.toMonth())
         [saldoDeCuentaInstanceList: saldoDeCuentasList, saldoDeCuentaInstanceTotal: saldoDeCuentasList.size(),periodo:periodo,rango:rango]
     }
-   
 
     def show() {
         def saldoDeCuentaInstance = SaldoDeCuenta.get(params.id)
         if (!saldoDeCuentaInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'saldoDeCuenta.label', default: 'SaldoDeCuenta'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
         [saldoDeCuentaInstance: saldoDeCuentaInstance]
     }
 	
 	def actualizarSaldos(){
-		//def periodo=params.periodo?Date.parse(params.periodo):new Date()
-		println("Actualizando saldos al: "+session.periodo)
-		Date periodo=session.periodo
-		//Date periodo=Date.parse("dd/MM/yyyy", params.periodo).inicioDeMes()
-		//Date periodo=params.periodo
-		//Obtenemos el saldo al inicio del mes
+		Date periodo=session.periodoTesoreria
 		def month=periodo.toMonth()
 		def year=periodo.toYear()
 		log.info("Calculando saldos para el periodo: $month - $year")
-		println "Calculando saldos para el periodo: $month - $year"
-		
-		
 		def fechaIni=periodo.inicioDeMes()
 		def fechaFin=periodo.finDeMes()
 		
-		//Obtenemos una lista de las cuentas
 		def cuentas=CuentaBancaria.list()
 		cuentas.each{
 			
-			//Calculand el saldo inicial
-			//println 'Calculando el saldo final al: '+fechaIni
 			def saldoFinalMesAnterior=MovimientoDeCuenta.executeQuery("select sum(x.importe) from MovimientoDeCuenta x where x.cuenta=? and date(fecha) < ?"
 				,[it,fechaIni])[0]?:00
-			//Calculando los movimientos del mes
+			
 			def hql="select sum(x.importe) from MovimientoDeCuenta x where x.cuenta=? and date(x.fecha) between ? and ? and ingreso=?"
 			def ingresos=MovimientoDeCuenta.executeQuery(hql,[it,fechaIni,fechaFin,true])[0]?:00
 			def egresos=MovimientoDeCuenta.executeQuery(hql,[it,fechaIni,fechaFin,false])[0]?:00
-			//def ingresos=res[0]?:0.0
-			//println "$it  Saldi Inicial:$saldoFinal  Ingresos: $ingresos  Egresos: $egresos"
 			
 			def saldo=SaldoDeCuenta.findOrCreateByCuentaAndYearAndMes(it,year,month)
 			saldo.saldoInicial=saldoFinalMesAnterior
@@ -89,7 +74,7 @@ class SaldoDeCuentaController {
 			saldo.save(flush:true)
 		}
 		flash.message='Saldos actualizados al: '+periodo.text()
-		redirect (action:'list',params:params) 
+		redirect (action:'index',params:params) 
 	}
 	
 	def detalleDeMovimientos(long id,String fecha){
@@ -100,7 +85,8 @@ class SaldoDeCuentaController {
 		if(fecha)
 			session.periodo=Date.parse("dd/MM/yyyy", fecha)
 		//def periodo=Date.parse("dd/MM/yyyy", params.periodo).inicioDeMes()
-		def periodo=session.periodo
+		//def periodo=session.periodo
+		Date periodo=session.periodoTesoreria
 		def saldo=SaldoDeCuenta.findOrCreateByCuentaAndYearAndMes(cuenta,periodo.toYear(),periodo.toMonth())
 		println "Detalle de movientos Cuenta: $cuenta  Saldo:$saldo Periodo:$periodo "
 		if(saldo.id==null){
@@ -117,9 +103,9 @@ class SaldoDeCuentaController {
 		
 		if(!cuenta)
 			throw new RuntimeException("No existe la cuenta: "+id)
-		println 'Periodo: '+session.periodo+ ' Tipo: '+session.periodo.class
+		
 		//def periodo=Date.parse("dd/MM/yyyy", session.periodo)
-		def periodo=session.periodo
+		Date periodo=session.periodoTesoreria
 		
 		println "Generando estado de cuenta para:$cuenta  al:$periodo"
 		
@@ -138,8 +124,15 @@ class SaldoDeCuentaController {
 		
 		//def movimientos=MovimientoDeCuenta.findAllByCuentaAndFechaBetween(cuenta,fechaIni,fechaFin,[sort:('fecha')])
 		def movimientos=MovimientoDeCuenta.findAll("from MovimientoDeCuenta where date(fecha) between ? and ? and cuenta=? order by fecha,id ",[periodo.inicioDeMes(),periodo.finDeMes(),cuenta])
+
+		def acumulado=saldoInicial
+
 		def modelData=movimientos.collect { mov ->
+
+			acumulado+=mov.importe
 			
+			//NumberFormat nf1=NumberFormat.getNumberInstance()
+			NumberFormat nf1 = new DecimalFormat("#,##0.00");  
 			def res=[
 			//'FOLIO':mov.id
 			'FECHA':mov.fecha.format("dd"),
@@ -147,13 +140,16 @@ class SaldoDeCuentaController {
 			 ,'TIPO':mov.tipo
 			,'INGRESO':mov.importe>0?mov.importe.abs():0.0
 			,'EGRESO':mov.importe<0?mov.importe.abs():0.0
+			,'INGRESOSTR':nf1.format(mov.importe>0?mov.importe.abs():0.0)
+			,'EGRESOSTR':nf1.format(mov.importe<0?mov.importe.abs():0.0)
 			 ,'COMENTARIO':mov.comentario
 			 ,'REFERENCIA':mov.referenciaBancaria
+			 ,'ACUMULADOSTR':nf1.format(acumulado)
 			 ,INI:saldoInicial
 			 ]
 			return res
 		}
-		NumberFormat nf=NumberFormat.getNumberInstance()
+		NumberFormat nf=new DecimalFormat("#,##0.00");  
 		def repParams=[CUENTA:cuenta.toString()
 			,FECHA_INI:fechaIni.text()
 			,FECHA_FIN:fechaFin.text()

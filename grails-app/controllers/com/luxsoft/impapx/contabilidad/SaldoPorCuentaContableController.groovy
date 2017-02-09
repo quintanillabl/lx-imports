@@ -1,4 +1,4 @@
-	package com.luxsoft.impapx.contabilidad
+package com.luxsoft.impapx.contabilidad
 
 import grails.converters.JSON
 
@@ -8,52 +8,24 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.springframework.dao.DataIntegrityViolationException
+import com.luxsoft.lx.contabilidad.PeriodoContable
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasRole('CONTABILIDAD')"])
 class SaldoPorCuentaContableController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 	
 	def saldoPorCuentaContableService
 
-    def index() {
-       if(!session.periodoContable){
-		   PeriodoContable periodo=new PeriodoContable()
-		   periodo.actualizarConFecha()
-		   session.periodoContable=periodo
-	   }
-	   redirect action:'list'
-    }
-	
-	def actualizarPeriodo(PeriodoContable periodo){
-		
-		//def periodo=new PeriodoContable()
-		//periodo.properties=params
-		periodo.actualizarConFecha()
-		println 'Actualizando periodo...'+periodo
-		session.periodoContable=periodo
-		redirect action:'index'
-		//println periodo
-	}
-	
-	def list() {
-		println 'Obteniento saldos:'+params
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
-		def sort=params.sort?:'fecha'
-		def order=params.order?:'desc'
-		println 'Periodo:'+periodo
-		def saldos=SaldoPorCuentaContable.findAll("from SaldoPorCuentaContable c where c.cuenta.detalle=? and c.year=? and c.mes=? order by c.cuenta.clave"
-			,[false,periodo.year,periodo.month])
-		println 'Saldos existentes:'+saldos.size()
+ 	def index() {
+		def periodo=session.periodoContable
+		def saldos=SaldoPorCuentaContable
+			.findAll("from SaldoPorCuentaContable c where c.cuenta.detalle=? and c.year=? and c.mes=? order by c.cuenta.clave"
+			,[false,periodo.ejercicio,periodo.mes])
 		[saldoPorCuentaContableInstanceList: saldos, saldoPorCuentaContableInstanceTotal: saldos.size()]
 	}
-
-	
-    
 
     def show() {
         def saldoPorCuentaContableInstance = SaldoPorCuentaContable.get(params.id)
@@ -65,8 +37,6 @@ class SaldoPorCuentaContableController {
 
         [saldoPorCuentaContableInstance: saldoPorCuentaContableInstance]
     }
-
-    
 
     def delete() {
         def saldoPorCuentaContableInstance = SaldoPorCuentaContable.get(params.id)
@@ -89,8 +59,8 @@ class SaldoPorCuentaContableController {
 	
 	def actualizarSaldos(){
 		def periodo=session.periodoContable
-		saldoPorCuentaContableService.actualizarSaldos(periodo.year, periodo.month)
-		redirect action:'list'
+		saldoPorCuentaContableService.actualizarSaldos(periodo.ejercicio, periodo.mes)
+		redirect action:'index'
 	}
 	
 	def subcuentas(long id){
@@ -107,25 +77,30 @@ class SaldoPorCuentaContableController {
 			, saldoPorCuentaContableInstanceTotal: saldos.size(),]
 	}
 	
-	def auxiliar(long id,int year,int month){
-		println 'Auxiliar contable: '+params
-		def saldo=SaldoPorCuentaContable.get(id)
-		def dets=PolizaDet.findAll("from PolizaDet d where d.cuenta=? and date(d.fecha) between ? and ?"
-			,[saldo.cuenta,saldo.fecha.inicioDeMes(),saldo.fecha.finDeMes()])
+	def auxiliar(SaldoPorCuentaContable saldo,int year,int month){
+		log.info 'Auxilar para: '+saldo
+		log.info 'Auxiliar contable: '+params
+		//def saldo=SaldoPorCuentaContable.get(id)
+		def dets=PolizaDet.findAll(
+			"from PolizaDet d where d.cuenta=? and d.poliza.ejercicio=? and d.poliza.mes=?"
+			,[saldo.cuenta,year,month]
+			)
+
 		def saldoPadre=SaldoPorCuentaContable.get(params.saldoPadre)
 		[saldo:saldo,partidas:dets,saldoPadre:saldoPadre]
 	}
 	
 	def imprimirAuxiliarContable(){
-		println 'Imprimiento auxiliar'+params
+		log.info 'Imprimiento auxiliar'+params
 		
 		def saldo=SaldoPorCuentaContable.get(params.long('id'))
 		
 		if(!saldo)
 			throw new RuntimeException("No existe saldo : "+id)
 			
-		def dets=PolizaDet.findAll("from PolizaDet d where d.cuenta=? and date(d.fecha) between ? and ? order by d.fecha"
-			,[saldo.cuenta,saldo.fecha.inicioDeMes(),saldo.fecha.finDeMes()])
+		def dets=PolizaDet.findAll(
+			"from PolizaDet d where d.cuenta=? and d.poliza.ejercicio=? and d.poliza.mes=? order by d.poliza.fecha"
+			,[saldo.cuenta,saldo.year,saldo.mes])
 		
 		def saldoPadre=SaldoPorCuentaContable.get(saldo.cuenta.padre.id)
 		
@@ -183,41 +158,37 @@ class SaldoPorCuentaContableController {
 	
 	def cierreAnual(){
 		
-		if(!session.periodoCierre){
-		   session.periodoCierre=new Date()
-	   }
-		if(params.year){
-			
-			session.periodoCierre=params.year
-			
-		}
-		def periodoCierre=session.periodoCierre
-		println 'Presentando cierre del periodo:'+periodoCierre.toYear()
+		def periodo = session.periodoContable
+		
+		println 'Presentando cierre del periodo:'+periodo.ejercicio
 		
 		def sort=params.sort?:'fecha'
 		def order=params.order?:'desc'
 		
-		def saldos=SaldoPorCuentaContable.findAll("from SaldoPorCuentaContable c where c.cuenta.detalle=? and c.year=? and c.mes=? order by c.cuenta.clave"
-			,[false,periodoCierre.toYear(),13])
-		//println 'Saldos existentes:'+saldos.size()
+		def saldos=SaldoPorCuentaContable.findAll(
+			"from SaldoPorCuentaContable c where c.cuenta.detalle=? and c.year=? and c.mes=? order by c.cuenta.clave"
+			,[false,periodo.ejercicio,13])
 		[saldoPorCuentaContableInstanceList: saldos
 			, saldoPorCuentaContableInstanceTotal: saldos.size()
 			,periodoCierre:periodoCierre]
 	}
 	
 	def generarCierreAnual(){
-		println 'Generando cierre anual: '+session.periodoCierre
-		
-		saldoPorCuentaContableService.cierreAnual(session.periodoCierre)
-		
-		
-		redirect action:'cierreAnual'
+		log.info 'Generando cierre anual: '+session.periodoContable
+		saldoPorCuentaContableService.cierreAnual(session.periodoContable)
+		flash.message = "Saldos para el cierre anual generados"
+		redirect action:'index'
 		
 	}
 	
 	def actualizarCierreAnual(){
-		println 'Actualizando cierre anual: '+session.periodoCierre
-		saldoPorCuentaContableService.actualizarCierreAnual(session.periodoCierre.toYear())
-		redirect action:'cierreAnual'
+		saldoPorCuentaContableService.actualizarCierreAnual(session.periodoContable.ejercicio)
+		redirect action:'index'
+	}
+
+	def eliminarCierreAnual(){
+		saldoPorCuentaContableService.eliminarCierreAnual(session.periodoContable.ejercicio)
+		flash.message ="Saldos para el cierre anual ${session.periodoContable} eliminados "
+		redirect action:'index'	
 	}
 }

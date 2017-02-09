@@ -1,58 +1,74 @@
 <%@ page import="com.luxsoft.impapx.FacturaDeImportacion" %>
 <!doctype html>
 <html>
-	<head>
-		<meta name="layout" content="luxor">
-		<g:set var="entityName" value="${message(code: 'facturaDeImportacion.label', default: 'FacturaDeImportacion')}" />
-		<title><g:message code="default.create.label" args="[entityName]" /></title>
-		<r:require modules="datepicker,luxorForms,autoNumeric"/>
-		
-	</head>
-	<body>
-		<div class="row-fluid">
-			
-			<div class="span3">
-				<div class="well">
-					<ul class="nav nav-list">
-						<li class="nav-header">${entityName}</li>
-						<li>
-							<g:link class="list" action="list">
-								<i class="icon-list"></i>
-								<g:message code="factura.list.label" default="Facturas"  />
-							</g:link>
-						</li>
-						<li class="active">
-							<g:link class="create" action="create">
-								<i class="icon-plus icon-white"></i>
-								<g:message code="factura.create.label" default="Nueva Factura" />
-							</g:link>
-						</li>
-					</ul>
-				</div>
-			</div>
-			
-			<div class="span9">
+<head>
+	<meta name="layout" content="createForm">
+	<g:set var="entityName" value="${message(code: 'facturaDeImportacion.label', default: 'FacturaDeImportacion')}" scope="request"/>
+	<g:set var="entity" value="${facturaDeImportacionInstance}" scope="request" />
+	<title>Alta de factura de importación</title>
+</head>
+<body>
+	
 
-				<div class="page-header">
-					<h3><g:message code="default.create.label" args="[entityName]" /></h3>
-				</div>
+<content tag="formFields">
+	<f:with bean="${entity}" >
+		<f:field property="proveedor" wrapper="bootstrap3" widget-required="true"/>
+		<f:field property="documento" widget-class="form-control" wrapper="bootstrap3"/>
+		<f:field property="fecha" wrapper="bootstrap3"/>
+		<f:field property="vencimiento" wrapper="bootstrap3"/>
+		<f:field property="moneda" wrapper="bootstrap3"/>
+		<f:field property="tc" widget="tc" wrapper="bootstrap3"/>
+		<f:field property="importe" widget="money"  widget-required="true" wrapper="bootstrap3"/>
+		<f:field property="descuentos" widget="money" wrapper="bootstrap3"/>
+		<f:field property="subTotal" widget="money" wrapper="bootstrap3"/>
+		<f:field property="impuestos" widget="money" wrapper="bootstrap3" />
+		<f:field property="total"  widget="money" wrapper="bootstrap3"/>
+		<f:field property="comentario"  widget-class="form-control" wrapper="bootstrap3"/>
+	</f:with>
 
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
+	<script type="text/javascript">
+		$(function(){
+			$("#moneda").change(function(){
+				var date=$("#fecha").val();
+				var moneda=$(this).val();
+				if(moneda==='USD' && date){
+					console.log('Buscando tipo de cambio moneda: '+moneda+' Fecha: '+date);
+					$.get("${createLink(controller:'tipoDeCambio', action:'ajaxTipoDeCambioDiaAnterior')}",
+						{fecha:date}
+						).done(function(data){
+							if(data.error){
+								alert(data.error);
+							}
+							else{
+								var factor=data.factor;
+								$("#tc").autoNumeric('set',factor);
+							}
+						}).fail(function(){
+							alert("Error");
+						});
+				}
+			});
 
-				<g:hasErrors bean="${facturaDeImportacionInstance}">
-				<bootstrap:alert class="alert-error">
-				<ul>
-					<g:eachError bean="${facturaDeImportacionInstance}" var="error">
-					<li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
-					</g:eachError>
-				</ul>
-				</bootstrap:alert>
-				</g:hasErrors>				
-				<g:render template="form" bean="${facturaDeImportacionInstance}" model="[action:'create']"/>
-			</div>
+			$("#importe").on('blur',function(){
+				var importe=$("#importe").autoNumeric('get');
+				$("#subTotal").autoNumeric('set',importe);
+				$("#total").autoNumeric('set',importe);
+			});
 
-		</div>
-	</body>
+			$("#descuentos").on('blur',function(){
+				var importe=$("#importe").autoNumeric('get');
+				var desc=$(this).autoNumeric('get');
+				importe=importe-desc;
+				$("#subTotal").autoNumeric('set',importe);
+				$("#total").autoNumeric('set',importe);
+			});
+		});
+	</script>
+</content>
+
+<content tag="customScript">
+	
+</content>
+
+</body>
 </html>

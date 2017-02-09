@@ -7,6 +7,7 @@ import grails.transaction.Transactional
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.lang.StringUtils
+import com.luxsoft.utils.Periodo
 
 @Secured(["hasRole('COMPRAS')"])
 @Transactional(readOnly = true)
@@ -16,19 +17,33 @@ class FacturaDeImportacionController {
 
     def reportService
 
+    def beforeInterceptor = {
+        if(!session.periodoParaPagos){
+            session.periodoParaPagos=new Periodo(new Date(),new Date()+7)
+        }
+    }
+
+    def cambiarPeriodo(Periodo periodo){
+        session.periodoParaPagos=periodo
+        redirect(uri: request.getHeader('referer') )
+    }
+
+
     def index(Integer max) {
-        params.max = Math.min(max ?: 40, 100)
-        params.sort=params.sort?:'lastUpdated'
-        params.order='desc'
-        respond FacturaDeImportacion.list(params), model:[facturaDeImportacionInstanceCount: FacturaDeImportacion.count()]
+        def periodo=session.periodo
+        def list=FacturaDeImportacion.findAll(
+            "from FacturaDeImportacion f  where date(f.fecha) between ? and ?  and f.saldo>=0 order by f.lastUpdated desc",
+            [periodo.fechaInicial,periodo.fechaFinal])
+        [facturaDeImportacionInstanceList:list]
     }
 
     def show(FacturaDeImportacion facturaDeImportacionInstance) {
-        respond facturaDeImportacionInstance
+        [facturaDeImportacionInstance:facturaDeImportacionInstance]
     }
 
     def create() {
-        respond new FacturaDeImportacion(params)
+        def tc=TipoDeCambio.last()
+        respond new FacturaDeImportacion(fecha:new Date(),vencimiento:new Date()+1,moneda:Currency.getInstance('USD'),tc:tc?.factor)
     }
 
     @Transactional
@@ -113,45 +128,46 @@ class FacturaDeImportacionController {
     def programacionDePagos(){
     	
     	params.max = Math.min(params.max ? params.int('max') : 200, 1000)
-    	params.sort='id'
+    	params.sort='vencimiento'
     	params.order= "desc"
-    	if(!params.fechaInicial)
-    		params.fechaInicial=new Date()
-    	if(!params.fechaFinal)
-    		params.fechaFinal=new Date()+7
     	
-    	// FacturasPorPeriodoCommand cmd=new FacturasPorPeriodoCommand()
-    	// cmd.properties=params
-    	// println 'Periodo: '+cmd+' Proveedor: '+cmd?.proveedor?.id
-    	
+        def periodo=session.periodoParaPagos
+    	def p=null
     	def facturas=[]
     	if(StringUtils.isNotBlank(params.proveedor)){
-    		Proveedor p=Proveedor.get(params.long('proveedor.id'))
-    		cmd.proveedor=p
-    		facturas=FacturaDeImportacion.findAllByProveedorAndVencimientoBetween(p,params.fechaInicial,params.fechaFinal,params)
+    		p=Proveedor.get(params.long('proveedor'))
+    		
+    		facturas=FacturaDeImportacion.findAll(
+                "from FacturaDeImportacion f where f.proveedor=? and f.total-f.pagosAplicados>0 and date(f.vencimiento) between ? and ? order by f.vencimiento asc",
+                [p,periodo.fechaInicial,periodo.fechaFinal])
+                //.findAllByProveedorAndVencimientoBetween(p,periodo.fechaInicial,periodo.fechaFinal,params)
     	}
     	else{
-    		facturas=FacturaDeImportacion.findAllByVencimientoBetween(params.fechaInicial,params.fechaFinal,params)
+    		//facturas=FacturaDeImportacion.findAllByVencimientoBetween(periodo.fechaInicial,periodo.fechaFinal,params)
+            facturas=FacturaDeImportacion.findAll(
+                "from FacturaDeImportacion f where f.total-f.pagosAplicados>0 and date(f.vencimiento) between ? and ? order by f.proveedor.nombre,f.vencimiento asc",
+                [periodo.fechaInicial,periodo.fechaFinal])
     	}
+        //facturas = facturas.findAll {it.saldo>0.0}
+        //facturas = facturas.sort {a,b-> a.proveedor.nombre <=> b.proveedor.nombre ?: a.vencimiento <=> b.vencimiento}
     	flash.message='Facturas: '+facturas.size()
-    	[facturaDeImportacionInstanceList: facturas,facturaDeImportacionInstanceCount: facturas.size()]
+    	[facturaDeImportacionInstanceList: facturas,proveedor:p]
     }
 
     def imprimirProgramacionDePagos(){
-    	if(!params.fechaInicial)
-    		params.fechaInicial=new Date()
-    	if(!params.fechaFinal)
-    		params.fechaFinal=new Date()+7
 
+    	def periodo=session.periodoParaPagos
     	def command=new com.luxsoft.lx.bi.ReportCommand()
     	command.reportName="ProgramacionDePago"
     	command.empresa=session.empresa
+        def proveedor=params.id?:'%'
     	def repParams=[
-    		EMPRESA:session.empresa.nombre,
-    	    FECHA_INI:params.fechaInicial.format('dd/MM/yyyy'),
-    	    FECHA_FIN:params.fechaFinal.format('dd/MM/yyyy'),
-    	    PROVEEDOR:'%'
+    		COMPANY:session.empresa.nombre,
+    	    FECHA_INI:periodo.fechaInicial.format('yyyy/MM/dd'),
+    	    FECHA_FIN:periodo.fechaFinal.format('yyyy/MM/dd'),
+    	    PROVEEDOR:proveedor
     	]
+        println 'Reporte de programacion de pagos: '+repParams
     	def stream=reportService.build(command,repParams)
     	def file="ProgramacionDePagos_"+new Date().format('mmss')+'.'+command.formato.toLowerCase()
     	render(
@@ -159,16 +175,34 @@ class FacturaDeImportacionController {
     	    contentType: 'application/pdf',
     	    fileName:file)
     }
+
+    def search(){
+        def term='%'+params.term.trim()+'%'
+        def query=FacturaDeImportacion.where{
+            //(id.toString()=~term || documento=~term || proveedor.nombre=~term || comentario=~term || pedimento?.pedimento=~term) 
+            (id.toString()=~term || documento=~term || proveedor.nombre=~term ) 
+        }
+        def cuentas=query.list(max:30, sort:"id",order:'desc')
+
+        def cuentasList=cuentas.collect { cuenta ->
+            def label="Id: ${cuenta.id} Docto:${cuenta.documento} ${cuenta.proveedor} ${cuenta.fecha.format('dd/MM/yyyy')} ${cuenta.total} ${cuenta?.pedimento?.pedimento?:''}"
+            [id:cuenta.id,label:label,value:label]
+        }
+        render cuentasList as JSON
+    }
 }
 
 class FacturasPorPeriodoCommand{
 	
+    Proveedor proveedor
+
 	Date fechaInicial=new Date()-90
+
 	Date fechaFinal=new Date()
-	Proveedor proveedor
+	
 	
 	String toString(){
-		return fechaInicial.text() +' al '+fechaFinal.text() 
+		return proveedor?:''+fechaInicial.text() +' al '+fechaFinal.text() 
 	}
 	
 }

@@ -31,7 +31,7 @@ class CfdiCadenaBuilder implements ResourceLoaderAware{
 	 */
 	String generarCadena(ComprobanteDocument document){
 		TransformerFactory factory=TransformerFactory.newInstance()
-		xsltFile=resourceLoader.getResource("sat/cadenaoriginal_3_2.xslt").getFile()
+		xsltFile=resourceLoader.getResource("WEB-INF/sat/cadenaoriginal_3_2.xslt").getFile()
 		assert xsltFile.exists(),"No existe el archivo xslt para la cadena del sat: "+xsltFile.getPath()
 		StreamSource source=new StreamSource(xsltFile);
 		Transformer transformer=factory.newTransformer(source);

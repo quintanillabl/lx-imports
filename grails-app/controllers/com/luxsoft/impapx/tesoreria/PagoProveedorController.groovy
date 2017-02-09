@@ -5,33 +5,63 @@ import org.springframework.dao.DataIntegrityViolationException
 
 import com.luxsoft.impapx.Requisicion;
 import com.luxsoft.impapx.TipoDeCambio;
+import grails.plugin.springsecurity.annotation.Secured
 
+@Secured(["hasRole('TESORERIA')"])
 class PagoProveedorController {
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'DELETE']
+	
 	def pagoProveedorService
 
-    def index() {
-        redirect action: 'list', params: params
+	def beforeInterceptor = {
+    	if(!session.periodoTesoreria){
+    		session.periodoTesoreria=new Date()
+    	}
+	}
+
+	def cambiarPeriodo(){
+		def fecha=params.date('fecha', 'dd/MM/yyyy')
+		session.periodoTesoreria=fecha
+		redirect(uri: request.getHeader('referer') )
+	}
+
+    def index(Integer max) {
+    	params.max = Math.min(max ?: 40, 100)
+        params.sort=params.sort?:'lastUpdated'
+        params.order='desc'
+        def periodo=session.periodoTesoreria
+        def list=PagoProveedor.findAllByFechaBetween(periodo.inicioDeMes(),periodo.finDeMes(),params)
+        def	count=PagoProveedor.countByFechaBetween(periodo.inicioDeMes(),periodo.finDeMes())
+        [pagoProveedorInstanceList: list, pagoProveedorInstanceTotal: count]
     }
 
-    def list() {
-        params.max = Math.min(params.max ? params.int('max') : 500, 1000)
-		
-		params.sort="fecha"
-		params.order="desc"
-        [pagoProveedorInstanceList: PagoProveedor.list(params), pagoProveedorInstanceTotal: PagoProveedor.count()]
+    def save(PagoProveedor pagoProveedorInstance){
+    	log.info('Salvando pago proveedor con params: ' + params)
+    	pagoProveedorInstance.validate(["requisicion","fecha","tipoDeCambio","comentario"])
+        if (pagoProveedorInstance.hasErrors()) {
+            render view:'create',model:[pagoProveedorInstance:pagoProveedorInstance]
+            return
+        }
+		def res=pagoProveedorService.registrarEgreso(pagoProveedorInstance);
+        if (!res) {
+            render view: 'create', model: [pagoProveedorInstance: pagoProveedorInstance]
+            return
+        }
+		flash.message = "Pago registrado: ${res.id}"
+        redirect action: 'show', id: pagoProveedorInstance.id
     }
+    
 
     def create() {
 		
 		switch (request.method) {
 		case 'GET':
 			
-        	[pagoProveedorInstance: new PagoProveedor(fecha:new Date())]
+        	[pagoProveedorInstance: new PagoProveedor(fecha:new Date(),tipoDeCambio:1.0)]
 			break
 		case 'POST':
-			
+			log.info('Salvando pago proveedor con params: ' + params)
 			def requisicion=Requisicion.get(params.requisicion.id)
 	        def pagoProveedorInstance = new PagoProveedor(params)
 			pagoProveedorInstance.requisicion=requisicion
@@ -104,39 +134,30 @@ class PagoProveedorController {
 		}
     }
 
-    def delete() {
-        def pagoProveedorInstance = PagoProveedor.get(params.id)
+    def delete(PagoProveedor pagoProveedorInstance) {
         if (!pagoProveedorInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'pagoProveedor.label', default: 'PagoProveedor'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
-
-        try {
-            pagoProveedorInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'pagoProveedor.label', default: 'PagoProveedor'), params.id])
-            redirect action: 'list'
-        }
-        catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'pagoProveedor.label', default: 'PagoProveedor'), params.id])
-            redirect action: 'show', id: params.id
-        }
+        //pagoProveedorInstance.delete(flush: true)
+        pagoProveedorService.eliminar(pagoProveedorInstance)
+		flash.message = "Pago a proveedor ${pagoProveedorInstance.id} eliminado"
+        redirect action: 'index'
+        
     }
 	
 	def requisicionesDisponiblesJSONList(){
-		println 'Term '+params.term
-		def requisiciones=Requisicion.findAll("from Requisicion r left join fetch r.pagoProveedor pp where r.total>0  and str(r.id) like ? and pp is  null",['%'+params.term+'%'])
-		//def requisiciones=Requisicion.findAll("from Requisicion r left join fetch r.pagoProveedor pp where r.total>0  and pp is  null")
-		/*
-		def requisiciones=Requisicion.findAll(sort:'id'){
-			(total>0.0 )&&(pagoProveedor==null)&&
-			 (proveedor.nombre=~this.params.term+'%')
-			
-		}*/
 		
+		def requisiciones=Requisicion.findAll("from Requisicion r left join fetch r.pagoProveedor pp where r.total>0  and str(r.id) like ? and pp is  null",['%'+params.term+'%'])
 		def requisicionesList=requisiciones.collect { req ->
 			def desc="Id: ${req.id} ${req.proveedor.nombre}  ${req.total} ${req.moneda}"
-			[id:req.id,label:desc,value:desc]
+			[id:req.id,
+			label:desc,
+			value:desc,
+            formaDePago:req.formaDePago.toString(),
+            subCuentaOperativa: req.proveedor.subCuentaOperativa
+			]
 		}
 		render requisicionesList as JSON
 	}

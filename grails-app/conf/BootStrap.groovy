@@ -1,8 +1,10 @@
-import com.luxsoft.sec.*
+import com.luxsoft.sx4.sec.*
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 
 
 class BootStrap {
+
+    def cfdiRetencionesService
 
     def init = { servletContext ->
 
@@ -34,14 +36,14 @@ class BootStrap {
     	}
 
     	java.security.Security.addProvider(new BouncyCastleProvider())
-		def userRole=Rol.findOrSaveWhere(authority:'USUARIO')
-		def mostradorRole=Rol.findOrSaveWhere(authority:'OPERADOR')
-		def administracionRole=Rol.findOrSaveWhere(authority:'ADMINISTRACION')
-		def adminRole=Rol.findOrSaveWhere(authority:'ADMIN')
-		def ventasRole=Rol.findOrSaveWhere(authority:'VENTAS')
-		def tesoreriaRole=Rol.findOrSaveWhere(authority:'TESORERIA')
-		def gastosRole=Rol.findOrSaveWhere(authority:'GASTOS')
-		Rol.findOrSaveWhere(authority:'COMPRAS')
+		def userRole=Role.findOrSaveWhere(authority:'USUARIO')
+		def mostradorRole=Role.findOrSaveWhere(authority:'OPERADOR')
+		def administracionRole=Role.findOrSaveWhere(authority:'ADMINISTRACION')
+		def adminRole=Role.findOrSaveWhere(authority:'ADMIN')
+		def ventasRole=Role.findOrSaveWhere(authority:'VENTAS')
+		def tesoreriaRole=Role.findOrSaveWhere(authority:'TESORERIA')
+		def gastosRole=Role.findOrSaveWhere(authority:'GASTOS')
+		Role.findOrSaveWhere(authority:'COMPRAS')
 
 
 		def admin=Usuario.findByUsername('admin')
@@ -54,16 +56,20 @@ class BootStrap {
 				,nombre:' ADMIN ADMIN'
 				,numeroDeEmpleado:'0000')
 			.save(flush:true,failOnError:true)
-			UsuarioRol.create(admin,userRole,true)
-			UsuarioRol.create(admin,adminRole,true)
+			UsuarioRole.create(admin,userRole,true)
+			UsuarioRole.create(admin,adminRole,true)
 		}
 
-		def contaRol=Rol.findOrSaveWhere(authority:'CONTABILIDAD')
+		def contaRol=Role.findOrSaveWhere(authority:'CONTABILIDAD')
 		if(!admin.getAuthorities().contains(contaRol))
-			UsuarioRol.create(admin,contaRol,true)	
+			UsuarioRole.create(admin,contaRol,true)	
 
 		
-		
+		com.luxsoft.econta.polizas.PolizaUtils.buildProcesadores()
+
+        // CFDI de retenciones
+        cfdiRetencionesService.buildCatalogoDeRetenciones()
+        cfdiRetencionesService.buildCatalogoDeImpuestos()
 		
 		
 

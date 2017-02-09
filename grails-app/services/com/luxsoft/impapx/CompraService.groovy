@@ -11,4 +11,17 @@ class CompraService {
 			}
 		}
     }
+
+
+    def agregarPartida(Compra compra,Producto producto,BigDecimal cantidad){
+    	def det=new CompraDet(
+    		producto:producto,
+    		solicitado:cantidad,
+    		precio:0.0,
+    		descuento:0.0
+    	)
+    	compra.addToPartidas(det)
+    	compra.save failOnError:true,flush:true
+    	return compra;
+    }
 }

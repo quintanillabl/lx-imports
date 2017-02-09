@@ -2,65 +2,39 @@
 <!doctype html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<g:set var="entityName" value="${message(code: 'compra.label', default: 'Compra')}" />
-	<title><g:message code="default.create.label" args="[entityName]" /></title>
+	<meta name="layout" content="createForm">
+	<g:set var="entityName" value="${message(code: 'compra.label', default: 'Compra')}" scope="request"/>
+	<g:set var="entity" value="${compraInstance}" scope="request" />
+	<title>Alta de ${entityName}</title>
 </head>
 <body>
-	<div class="container">
+
+<content tag="formFields">
+	<f:with bean="compraInstance">
+		<f:field property="proveedor" 
+			wrapper="bootstrap3" widget-tabindex="2"/>
+		<f:field property="fecha" wrapper="bootstrap3"/>
+		<f:field property="entrega" wrapper="bootstrap3"/>
+		<f:field property="moneda" wrapper="bootstrap3"/>
+		<f:field property="tc" widget="tc" wrapper="bootstrap3" widget-type="text"/>
+		<f:field property="comentario" 
+			widget-class="form-control" wrapper="bootstrap3"/>
+		%{-- <f:field property="fecha" wrapper="bootstrap3"/>
+		<f:field property="formaDePago" 
+			widget-class="form-control chosen-select" wrapper="bootstrap3"/>
+		<f:field property="cuenta" 
+			widget-class="form-control chosen-select" label="Cuenta destino" wrapper="bootstrap3"/>
 		
-		<div class="row">
-			<div class="col-md-6 col-md-offset-3">
-				<div class="page-header">
-				  <h1><g:message code="default.create.label" args="[entityName]" /></h1>
-				  	<g:if test="${flash.message}">
-				  		<small><span class="label label-warning ">${flash.message}</span></small>
-				  	</g:if> 
-				  </h1>
-				</div>
-			</div>
-		</div><!-- end .row -->
+		<f:field property="total" widget="money" wrapper="bootstrap3" />
+		<f:field property="fechaBancaria" wrapper="bootstrap3"/>
+		<f:field property="referenciaBancaria" 
+			widget-class="form-control" wrapper="bootstrap3"/>
+		 --}%
+		
 
-		<div class="row ">
-			
-			<div class="col-md-6 col-md-offset-3">
-				<g:form class="form-horizontal" action="save" >
+	</f:with>
+</content>
 
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							<g:message code="default.create.label" args="[entityName]" />
-						</div>
-					  	<div class="panel-body">
-					    	<g:hasErrors bean="compraInstance">
-					    		<div class="alert alert-danger">
-					    			<ul class="errors" >
-					    				<g:renderErrors bean="compraInstance" as="list" />
-					    			</ul>
-					    		</div>
-					    	</g:hasErrors>
-							<f:all bean="compraInstance"/>
-					  	</div>
-					 
-					  	<div class="panel-footer">
-					  		<div class="form-group">
-					  			<div class="buttons col-md-offset-2 col-md-4">
-					  				<g:submitButton name="create" 
-					  					class="btn btn-primary " 
-					  					value="${message(code: 'default.button.create.label', default: 'Salvar')}"/>
-					  				<g:link action="index" class="btn btn-default"> Cancelar</g:link>
-					  			</div>
-					  		</div>
-					  	</div>
-
-					</div>
-
-				</g:form>
-				
-			</div>
-		</div> <!-- end .row 2 -->
-
-	</div>
 
 </body>
 </html>

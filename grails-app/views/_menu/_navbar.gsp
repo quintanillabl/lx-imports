@@ -7,7 +7,7 @@
 				<span class="icon-bar"></span>
 			</button>
 			<g:link controller="home" action="index" class="navbar-brand">
-				<i class="fa fa-calculator"></i> LX Imports
+				<i class="fa fa-calculator"></i> LX Imports 
 			</g:link>
 		</div>
 		<sec:ifLoggedIn>

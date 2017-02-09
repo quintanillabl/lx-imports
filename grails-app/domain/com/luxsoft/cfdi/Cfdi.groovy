@@ -62,7 +62,10 @@ class Cfdi {
 		tipoDeCfdi inList:['I','E']
 		comentario nullable:true,maxSize:355
 		url nullable:true,url:true
+		cancelacion nullable:true
     }
+
+    static hasOne = [cancelacion: CancelacionDeCfdi]
 	
 	static transients = ['comprobanteDocument','timbreFiscal']
 	

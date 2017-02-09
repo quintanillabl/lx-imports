@@ -4,128 +4,84 @@ import grails.converters.JSON
 import org.springframework.dao.DataIntegrityViolationException
 
 import com.luxsoft.impapx.Requisicion;
+import grails.plugin.springsecurity.annotation.Secured
 
+@Secured(["hasRole('TESORERIA')"])
 class CompraDeMonedaController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 	
 	def compraDeMonedaService
 
-    def index() {
-        redirect action: 'list', params: params
+    def pagoProveedorService
+
+	def beforeInterceptor = {
+    	if(!session.periodoTesoreria){
+    		session.periodoTesoreria=new Date()
+    	}
+	}
+
+	def cambiarPeriodo(){
+		def fecha=params.date('fecha', 'dd/MM/yyyy')
+		session.periodoTesoreria=fecha
+		redirect(uri: request.getHeader('referer') )
+	}
+
+    def index(Integer max) {
+    	params.max = Math.min(max ?: 40, 100)
+        params.sort=params.sort?:'lastUpdated'
+        params.order='desc'
+        def periodo=session.periodoTesoreria
+        def list=CompraDeMoneda.findAllByFechaBetween(periodo.inicioDeMes(),periodo.finDeMes(),params)
+        def	count=CompraDeMoneda.countByFechaBetween(periodo.inicioDeMes(),periodo.finDeMes())
+        [compraDeMonedaInstanceList: list, compraDeMonedaInstanceTotal: count]
     }
 
-    def list() {
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [compraDeMonedaInstanceList: CompraDeMoneda.list(params), compraDeMonedaInstanceTotal: CompraDeMoneda.count()]
+    def save(CompraDeMoneda compraDeMonedaInstance){
+    	compraDeMonedaInstance.validate(["requisicion","fecha","moneda","tipoDeCambioCompra","tipoDeCambio","cuentaOrigen","cuentaDestino"])
+    	if(compraDeMonedaInstance.hasErrors()){
+    		render view:'create',model:[compraDeMonedaInstance: compraDeMonedaInstance]
+    		return
+    	}
+    	compraDeMonedaInstance=compraDeMonedaService.registrarCompra2(compraDeMonedaInstance)
+    	flash.message="Compra de moneda ${compraDeMonedaInstance.id} registrada"
+    	redirect action:'edit',params:[id:compraDeMonedaInstance.id]
+    	
     }
 
     def create() {
-		switch (request.method) {
-		case 'GET':
-			params.fecha=new Date()
-        	[compraDeMonedaInstance: new CompraDeMoneda(params)]
-			break
-		case 'POST':
-			println 'Salvando compra: '+params
-	        def compraDeMonedaInstance = new CompraDeMoneda(params)
-			compraDeMonedaInstance=compraDeMonedaService.registrarCompra2(compraDeMonedaInstance)
-	        if (compraDeMonedaInstance.hasErrors()) {
-	            render view: 'create', model: [compraDeMonedaInstance: compraDeMonedaInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.created.message', args: [message(code: 'compraDeMoneda.label', default: 'CompraDeMoneda'), compraDeMonedaInstance.id])
-	        redirect action: 'show', id: compraDeMonedaInstance.id
-			break
-		}
+		params.fecha=new Date()
+        [compraDeMonedaInstance: new CompraDeMoneda(params)]
     }
 
-    def show() {
-        def compraDeMonedaInstance = CompraDeMoneda.get(params.id)
-        if (!compraDeMonedaInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'compraDeMoneda.label', default: 'CompraDeMoneda'), params.id])
-            redirect action: 'list'
-            return
-        }
-
-        [compraDeMonedaInstance: compraDeMonedaInstance]
+    def edit(CompraDeMoneda compraDeMonedaInstance){
+    	 [compraDeMonedaInstance: compraDeMonedaInstance]
     }
 
-    def edit() {
-		switch (request.method) {
-		case 'GET':
-	        def compraDeMonedaInstance = CompraDeMoneda.get(params.id)
-			
-	        if (!compraDeMonedaInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'compraDeMoneda.label', default: 'CompraDeMoneda'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
+    // def update(CompraDeMoneda compraDeMonedaInstance){
 
-	        [compraDeMonedaInstance: compraDeMonedaInstance]
-			break
-		case 'POST':
-	        def compraDeMonedaInstance = CompraDeMoneda.get(params.id)
-	        if (!compraDeMonedaInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'compraDeMoneda.label', default: 'CompraDeMoneda'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
+    // 	if(compraDeMonedaInstance.hasErrors()){
+    // 		render view:'edit',model:[compraDeMonedaInstance: compraDeMonedaInstance]
+    // 		return
+    // 	}
+    // 	compraDeMonedaInstance=compraDeMonedaService.update(compraDeMonedaInstance)
+    // 	flash.message="Compra de moneda actualizada"
+    // 	redirect action:'edit',params:[id:compraDeMonedaInstance.id]
+    // }
 
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (compraDeMonedaInstance.version > version) {
-	                compraDeMonedaInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'compraDeMoneda.label', default: 'CompraDeMoneda')] as Object[],
-	                          "Another user has updated this CompraDeMoneda while you were editing")
-	                render view: 'edit', model: [compraDeMonedaInstance: compraDeMonedaInstance]
-	                return
-	            }
-	        }
-
-	        compraDeMonedaInstance.properties = params
-
-	        if (!compraDeMonedaInstance.save(flush: true)) {
-	            render view: 'edit', model: [compraDeMonedaInstance: compraDeMonedaInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'compraDeMoneda.label', default: 'CompraDeMoneda'), compraDeMonedaInstance.id])
-	        redirect action: 'show', id: compraDeMonedaInstance.id
-			break
-		}
-    }
-
-    def delete() {
-        def compraDeMonedaInstance = CompraDeMoneda.get(params.id)
-        if (!compraDeMonedaInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'compraDeMoneda.label', default: 'CompraDeMoneda'), params.id])
-            redirect action: 'list'
-            return
-        }
-
-        try {
-            compraDeMonedaInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'compraDeMoneda.label', default: 'CompraDeMoneda'), params.id])
-            redirect action: 'list'
-        }
-        catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'compraDeMoneda.label', default: 'CompraDeMoneda'), params.id])
-            redirect action: 'show', id: params.id
-        }
+    def delete(CompraDeMoneda compraDeMonedaInstance) {
+        compraDeMonedaService.delete(compraDeMonedaInstance)
+        flash.message = message(code: 'default.deleted.message', args: [message(code: 'compraDeMoneda.label', default: 'CompraDeMoneda'), params.id])
+        redirect action: 'index'
     }
 	
-	
-	def requisicionesDisponiblesJSONList(){
-		
-		def requisiciones=Requisicion.findAll("from Requisicion r left join fetch r.pagoProveedor pp where r.concepto='COMPRA_MONEDA' and r.total>0 and pp is  null")
-		
-		
-		def requisicionesList=requisiciones.collect { req ->
-			def desc="Id: ${req.id} ${req.proveedor.nombre}  ${req.total} "
-			[id:req.id,label:desc,value:desc]
-		}
-		render requisicionesList as JSON
-	}
+	// def requisicionesDisponiblesJSONList(){
+	// 	def requisiciones=Requisicion.findAll(
+	// 		"from Requisicion r left join fetch r.pagoProveedor pp where r.concepto='COMPRA_MONEDA' and r.total>0 and pp is  null")
+	// 	def requisicionesList=requisiciones.collect { req ->
+	// 		def desc="Id: ${req.id} ${req.proveedor.nombre}  ${req.total} "
+	// 		[id:req.id,label:desc,value:desc]
+	// 	}
+	// 	render requisicionesList as JSON
+	// }
 }

@@ -1,55 +1,55 @@
 package com.luxsoft.impapx.contabilidad
 
-import org.apache.commons.lang.builder.EqualsBuilder
-import org.apache.commons.lang.builder.HashCodeBuilder
+import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
 
+@EqualsAndHashCode
+@ToString(includes='cuenta,debe,haber,concepto,referencia',includeNames=true,includePackage=false)
 class PolizaDet {
 	
 	CuentaContable cuenta
 	BigDecimal debe
 	BigDecimal haber
-	String asiento
-	String descripcion
-	String referencia
-	Long origen
-	String entidad
-	Date fecha
-	String tipo
 	String concepto
+	String descripcion
+	String asiento
+	String referencia
+	String origen
+	String entidad
 	
 	static belongsTo = [poliza:Poliza]
 
+	static hasOne = [comprobanteNacional: ComprobanteNacional, 
+		comprobanteExtranjero: ComprobanteExtranjero,
+		transaccionCheque: TransaccionCheque,
+		transaccionTransferencia: TransaccionTransferencia]
+
     static constraints = {
-		tipo(inList:['INGRESO','EGRESO','DIARIO','COMPRAS','GENERICA','CIERRE_ANUAL'])
-		entidad(nullable:true,maxSize:50)
-		origen(nullable:true)
-		concepto(nullable:true,maxSize:50)
+    	concepto(nullable:true,maxSize:300)
+    	asiento nullable:true,maxSize:255
+    	referencia nullable:true
+		origen(nullable:true,maxSize:255)
+		entidad(nullable:true,maxSize:255)
+		descripcion(nullable:true,maxSize:255)
+		comprobanteNacional nullable:true
+		comprobanteExtranjero nullable:true
+		transaccionCheque nullable:true
+		transaccionTransferencia nullable:true
     }
-	
-	static mapping ={
+
+    static mapping ={
 		poliza fetch:'join'
 	}
 	
-	boolean equals(Object obj){
-		if(!obj.instanceOf(PolizaDet))
-			return false
-		if(this.is(obj))
-			return true
-		def eb=new EqualsBuilder()
-		eb.append(id, obj.id)
-		eb.append(id, obj.asiento)
-		eb.append(id, obj.descripcion)
-		eb.append(id, obj.referencia)
-		return eb.isEquals()
+	
+	public List complementos(){
+		def res =  [];
+		if(comprobanteExtranjero) res.add(comprobanteExtranjero)
+		if(comprobanteNacional) res.add(comprobanteNacional)
+		if(transaccionCheque) res.add(transaccionCheque)
+		if(transaccionTransferencia) res.add(transaccionTransferencia)
+		return res;
 	}
 	
-	int hashCode(){
-		def hb=new HashCodeBuilder(17,35)
-		hb.append(id)
-		hb.append(asiento)
-		hb.append(descripcion)
-		hb.append(referencia)
-		return hb.toHashCode()
-	}
 	
 }

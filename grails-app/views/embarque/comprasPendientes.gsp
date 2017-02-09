@@ -3,8 +3,6 @@
 <html>
 	<head>
 		<title>Selector de compras a detalle</title>
-		<asset:stylesheet src="datatables/dataTables.css"/>
-		<asset:javascript src="datatables/dataTables.js"/> 
 	</head>
 <body>
 	<div class="container">
@@ -80,6 +78,19 @@
 	<script>
 		$(function(){
 
+			// $('#grid').dataTable({
+			//     responsive: true,
+			//     aLengthMenu: [[20, 40, 60, 100, -1], [20, 40,60, 100, "Todos"]],
+			//     "language": {
+			//         "url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
+			//     },
+			//     "dom": 'T<"clear">lfrtip',
+			//     "tableTools": {
+			//         "sSwfPath": "${assetPath(src: 'plugins/dataTables/swf/copy_csv_xls_pdf.swf')}"
+			//     },
+			//     "order": []
+			// });
+
 			var table=$('#grid').dataTable( {
 			    	"paging":   true,
 			    	"ordering": true,
@@ -90,7 +101,7 @@
 	    	    	},
 	    	    	aLengthMenu: [[20, 40, 60, 100, -1], [20, 40, 60, 100, "Todos"]],
 	    			iDisplayLength: 20,
-			    	"dom": '<"toolbar col-md-4">rt<"bottom"lp>'
+			    	"order": []
 				} );
 
 				//new $.fn.dataTable.FixedHeader( table );
@@ -158,7 +169,8 @@
 					success:function(data,textStatus,jqXHR){
 						console.log('Rres: '+data.documento);
 						//alert('Compras unitarias asignadas exitosamente');
-						window.location.href='${createLink(controller:'embarque',action:'edit',params:[id:embarque.id])}';
+						window.location.href="${createLink(controller:'embarque',action:'edit',params:[id:embarque.id])}";
+
 
 					},
 					error:function(request,status,error){

@@ -11,6 +11,7 @@ import com.luxsoft.impapx.TipoDeCambio
 
 class RequisicionService {
 
+
 	// def save(Requisicion requisicion){
 	// 	if(requisicion.moneda==MonedaUtils.PESOS){
 	// 		requisicion.tc=1.0
@@ -97,17 +98,31 @@ class RequisicionService {
 	}
 	
 	def agregarPartida(long requisicionId,RequisicionDet det){
+
 		def requisicion=Requisicion.get(requisicionId)
 		det.importe=det.total
 		requisicion.addToPartidas(det)
 		requisicion.actualizarImportes()
-		requisicion.save(flush:true)
+		requisicion.save(flush:true,failOnError:true)
 		
 		if(requisicion.concepto.startsWith('ANTICIPO')){
 			def a=Anticipo.findByRequisicion(requisicion)
+			assert a,'No existe el anticipo para la requisicion: '+requisicion.id
 			a.total=requisicion.total
 			a.save(flush:true)
 		}
 		return requisicion
+	}
+
+	def delete(Long id){
+		def requisicion=Requisicion.get(id)
+		if(requisicion.concepto.startsWith('ANTICIPO')){
+			def anticipo=Anticipo.findByRequisicion(requisicion)
+			if(anticipo){
+				anticipo.delete flush:true
+			}
+
+		}
+		requisicion.delete flush:true
 	}
 }

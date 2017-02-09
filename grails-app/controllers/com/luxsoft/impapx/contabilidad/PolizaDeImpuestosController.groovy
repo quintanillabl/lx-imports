@@ -24,41 +24,40 @@ import com.luxsoft.impapx.tesoreria.PagoProveedor
 import com.luxsoft.impapx.tesoreria.SaldoDeCuenta
 import com.luxsoft.impapx.tesoreria.Traspaso
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeImpuestosController {
 
 	def polizaService
 	
-     def index() {
-	   redirect action: 'list', params: params
+    def index() {
+    	def sort=params.sort?:'fecha'
+    	def order=params.order?:'desc'
+    	def periodo=session.periodoContable
+    	
+    	def q = Poliza.where {
+    		subTipo == 'IMPUESTOS' && ejercicio == periodo.ejercicio && mes == periodo.mes 
+
+    	}
+    	respond q.list(params)
+    	
     }
-	 
-	def mostrarPoliza(long id){
-		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
-		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
-	}
-	 
-	def list() {
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
-		def sort=params.sort?:'fecha'
-		def order=params.order?:'desc'
-		
-		def polizas=Poliza.findAllByTipoAndFechaBetween('DIARIO',periodo.inicio,periodo.fin,[sort:sort,order:order])
-		//[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-		render (view:'/poliza/list2',model:[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size(),polizaListTitle:'Polizas de impuestos (Diario)'])
-	}
+     
+    def mostrarPoliza(long id){
+    	def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
+    	render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
+    }
 	
 	def generarPoliza(String fecha){
 		Date dia=Date.parse("dd/MM/yyyy",fecha)
 		params.dia=dia
 		//Prepara la poliza
 		Poliza poliza=new Poliza(tipo:'DIARIO',folio:1, fecha:dia,descripcion:'Poliza de Impuestos '+dia.asPeriodoText(),partidas:[])
+		poliza.ejercicio = session.periodoContable.ejercicio
+		poliza.mes = session.periodoContable.mes
+		poliza.subTipo= 'INGRESO'
 		// Procesadores
-		
 		
 		
 		//Salvar la poliza

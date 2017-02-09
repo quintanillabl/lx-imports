@@ -32,7 +32,7 @@
 		<defaultValueExpression ><![CDATA[$F{SALDO_INICIAL}]]></defaultValueExpression>
 	</parameter>
 	<queryString><![CDATA[SELECT 
-X.ID,X.CLAVE AS NoCUENTA,X.DESCRIPCION AS CUENTA,C.ID,C.CLAVE,C.DESCRIPCION AS CONCEPTO,S.SALDO_INICIAL,S.DEBE,S.HABER,S.SALDO_FINAL
+X.ID,X.CLAVE AS NoCUENTA,X.DESCRIPCION AS CUENTA,C.ID,C.CLAVE AS CLAV_CONCEP,C.DESCRIPCION AS CONCEPTO,S.SALDO_INICIAL,S.DEBE,S.HABER,S.SALDO_FINAL
 FROM saldo_por_cuenta_contable S 
 JOIN cuenta_contable C ON(C.ID=S.CUENTA_ID)  
 JOIN cuenta_contable X ON(X.ID=C.PADRE_ID) 
@@ -42,7 +42,7 @@ ORDER BY X.CLAVE,C.CLAVE]]></queryString>
 	<field name="ID" class="java.lang.Long"/>
 	<field name="NoCUENTA" class="java.lang.String"/>
 	<field name="CUENTA" class="java.lang.String"/>
-	<field name="CLAVE" class="java.lang.String"/>
+	<field name="CLAV_CONCEP" class="java.lang.String"/>
 	<field name="CONCEPTO" class="java.lang.String"/>
 	<field name="SALDO_INICIAL" class="java.math.BigDecimal"/>
 	<field name="DEBE" class="java.math.BigDecimal"/>
@@ -447,7 +447,7 @@ $P{MES}.equals("12") ? "DICIEMBRE" :
 					<textElement>
 						<font size="7"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{CLAVE}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{CLAV_CONCEP}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement

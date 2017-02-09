@@ -1,44 +1,54 @@
 package com.luxsoft.impapx.contabilidad
 
-import org.hibernate.AssertionFailure;
+import org.hibernate.AssertionFailure
 
-import util.Rounding;
+import util.Rounding
 
-import com.luxsoft.impapx.CuentaDeGastos;
-import com.luxsoft.impapx.CuentaPorPagar;
-import com.luxsoft.impapx.Embarque;
-import com.luxsoft.impapx.EmbarqueDet;
-import com.luxsoft.impapx.FacturaDeImportacion;
-import com.luxsoft.impapx.GastosDeImportacion;
-import com.luxsoft.impapx.Pedimento;
-import com.luxsoft.impapx.TipoDeCambio;
+import com.luxsoft.impapx.CuentaDeGastos
+import com.luxsoft.impapx.CuentaPorPagar
+import com.luxsoft.impapx.Embarque
+import com.luxsoft.impapx.EmbarqueDet
+import com.luxsoft.impapx.FacturaDeImportacion
+import com.luxsoft.impapx.GastosDeImportacion
+import com.luxsoft.impapx.Pedimento
+import com.luxsoft.impapx.TipoDeCambio
+import grails.plugin.springsecurity.annotation.Secured
 
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeComprasController {
 	
 	def polizaService
 
-   def index() {
-	   redirect action: 'list', params: params
-    }
+ 	
+	
+	def index() {
+		def sort=params.sort?:'fecha'
+		def order=params.order?:'desc'
+		def periodo=session.periodoContable.toPeriodo()
+
+		def subTipo=params.subTipo?:'COMPRAS'
+		def ejercicio=session.periodoContable.ejercicio
+		def mes=session.periodoContable.mes
+		
+		def polizas=Poliza.where{
+		    ejercicio==ejercicio &&
+		    mes==mes &&
+		    subTipo==subTipo
+		}
+		
+		def list=polizas.list(sort:'folio',order:'asc')
+
+		//def polizas=Poliza.findAllByTipoAndFechaBetween('COMPRAS',periodo.inicioDeMes(),periodo.finDeMes(),[sort:sort,order:order])
+		//[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+		[polizaInstanceList: list, polizaInstanceTotal: polizas.count()]
+	}
 	 
 	def mostrarPoliza(long id){
 		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
 		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
 	}
 	 
-	def list() {
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
-		def sort=params.sort?:'fecha'
-		def order=params.order?:'desc'
-		
-		def polizas=Poliza.findAllByTipoAndFechaBetween('COMPRAS',periodo.inicio,periodo.fin,[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-	}
+	
 	
 	def generarPoliza(String fecha){
 		Date dia=Date.parse("dd/MM/yyyy",fecha)
@@ -48,6 +58,9 @@ class PolizaDeComprasController {
 		
 		//Prepara la poliza
 		Poliza poliza=new Poliza(tipo:'COMPRAS',folio:1, fecha:dia,descripcion:'Poliza '+dia.text(),partidas:[])
+		poliza.ejercicio = session.periodoContable.ejercicio
+		poliza.mes = session.periodoContable.mes
+		poliza.subTipo= 'COMPRAS'
 		
 		//Collecciones usadas mas de una vez
 		
@@ -60,14 +73,12 @@ class PolizaDeComprasController {
 		//Salvar la poliza
 		poliza.debe=poliza.partidas.sum (0.0,{it.debe})
 		poliza.haber=poliza.partidas.sum(0.0,{it.haber})
-		//poliza.cuadrar()
-		//poliza.save(flush:true)
 		poliza=polizaService.salvarPoliza(poliza)
 		
-		//println 'Poliza generada:'+ poliza
-		redirect action: 'mostrarPoliza', params: [id:poliza.id]
+		redirect controller:'poliza',action:'edit',id:poliza.id
+		//render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
 		
-		//render (view:'poliza' ,model:[poliza:poliza,partidas:poliza.partidas])
+		
 	}
 	
 	private procearCuentaPorPagarMateriaPrima(def poliza , def dia){
@@ -101,7 +112,7 @@ class PolizaDeComprasController {
 				
 				//Cancelar provision
 				// 1. Abono al inventario
-				def cuenta=CuentaContable.buscarPorClave('119-0003')
+				def cuenta=CuentaContable.buscarPorClave('115-0003')
 				def fechaTc=factura.fecha-1
 				def tipoDeCambioInstance=TipoDeCambio.find("from TipoDeCambio t where date(t.fecha)=? and t.monedaFuente=?",[fechaTc,factura.moneda])
 				assert tipoDeCambioInstance,"Debe existir tipo de cambio para el :"+fechaTc.text()
@@ -136,7 +147,7 @@ class PolizaDeComprasController {
 					,entidad:'CuentaPorPagar'
 					,origen:factura.id)
 				if(variacionCambiaria>0){
-					cuenta=CuentaContable.buscarPorClave("705-0002")
+					cuenta=CuentaContable.buscarPorClave("701-0002")
 					poliza.addToPartidas(
 						cuenta:cuenta,
 						debe:variacionCambiaria,
@@ -150,7 +161,7 @@ class PolizaDeComprasController {
 						,origen:factura.id)
 				}
 				if(variacionCambiaria<0){
-					cuenta=CuentaContable.buscarPorClave("701-0002")
+					cuenta=CuentaContable.buscarPorClave("703-0003")
 					poliza.addToPartidas(
 						cuenta:cuenta,
 						debe:0.0,
@@ -168,9 +179,9 @@ class PolizaDeComprasController {
 			asiento="Cuenta por pagar"
 			
 			// 1. Cargo al inventario
-			def cuenta=CuentaContable.findByClave('119-0001')
+			def cuenta=CuentaContable.findByClave('115-0001')
 			if(cuenta==null){
-				throw new RuntimeException("No existe la cuenta 119-0001")
+				throw new RuntimeException("No existe la cuenta 115-0001")
 			}
 			poliza.addToPartidas(
 				cuenta:cuenta,
@@ -273,7 +284,7 @@ class PolizaDeComprasController {
 			def provImp=provImportacion.join(',')
 			
 			//2 Cargo a Prevalidacion
-			def clave="117-0003"
+			def clave="118-0003"
 			def cuenta=CuentaContable.findByClave(clave)
 			if(cuenta==null){
 				throw new RuntimeException("No existe la sub cuenta operativa para el proveedor $cuenta")
@@ -297,7 +308,7 @@ class PolizaDeComprasController {
 				,entidad:'Pedimento'
 				,origen:pedimento.id)
 			/*
-			clave="117-0002"
+			clave="118-0002"
 			cuenta=CuentaContable.findByClave(clave)
 			if(cuenta==null){
 				throw new RuntimeException("No existe la sub cuenta operativa para el proveedor $cuenta")
@@ -382,7 +393,7 @@ class PolizaDeComprasController {
 			*/
 			
 			
-			clave="109-"+pedimento.proveedor.subCuentaOperativa
+			clave="107-"+pedimento.proveedor.subCuentaOperativa
 			cuenta=CuentaContable.findByClave(clave)
 			if(cuenta==null){
 				throw new RuntimeException("No existe la sub cuenta  $clave")
@@ -401,6 +412,7 @@ class PolizaDeComprasController {
 			
 		}
 		
+		/*
 		pedimentos.each{pedimento->
 			def ietu=pedimento.dta+pedimento.arancel+(pedimento.prevalidacion*(1+(pedimento.impuestoTasa/100)))
 			ietu=Rounding.round(ietu, 0)
@@ -444,6 +456,7 @@ class PolizaDeComprasController {
 				,origen:pedimento.id)
 			
 		}
+		*/
 		
 	}
 	
@@ -498,7 +511,7 @@ class PolizaDeComprasController {
 			def impuesto11=cg.facturas.sum(0.0,{it.tasaDeImpuesto==11.0?it.impuestos*it.tc:0.0})
 			impuesto11=Rounding.round(impuesto11, 2)
 			if(impuesto11>0){
-				clave="117-0002"
+				clave="118-0002"
 				cuenta=CuentaContable.findByClave(clave)
 				if(cuenta==null)
 					throw new RuntimeException("No existe  la cuenta con clave: $clave")
@@ -519,7 +532,7 @@ class PolizaDeComprasController {
 			def impuesto16=cg.facturas.sum(0.0,{it.tasaDeImpuesto==16.0?it.impuestos*it.tc:0.0})
 			impuesto16=Rounding.round(impuesto16, 2)
 			if(impuesto16>0){
-				clave="117-0001"
+				clave="118-0001"
 				cuenta=CuentaContable.findByClave(clave)
 				if(cuenta==null)
 					throw new RuntimeException("No existe  la cuenta con clave: $clave")
@@ -537,7 +550,7 @@ class PolizaDeComprasController {
 			}
 			
 			//3 Abono a Deudores
-			clave="109-$cg.proveedor.subCuentaOperativa"
+			clave="107-$cg.proveedor.subCuentaOperativa"
 			cuenta=CuentaContable.findByClave(clave)
 			if(cuenta==null)
 				throw new RuntimeException("No existe  la cuenta  con clave: $clave para el proveedor: $cg.proveedor.nombre")
@@ -556,6 +569,7 @@ class PolizaDeComprasController {
 				def ietuCg=cg.facturas.sum(0.0,{
 					it.incrementable?0.0:it.importe*it.tc}
 				)
+				/*
 				ietuCg=Rounding.round(ietuCg, 2)
 				clave="900-0004"
 				cuenta=CuentaContable.findByClave(clave)
@@ -592,6 +606,7 @@ class PolizaDeComprasController {
 				def ietuIncre=cg.facturas.sum(0.0,{
 					it.incrementable?it.importe*it.tc:0.0}
 				)
+				
 				ietuIncre=Rounding.round(ietuIncre, 2)
 				if(ietuIncre>0){
 					clave="900-0002"
@@ -626,6 +641,7 @@ class PolizaDeComprasController {
 								,entidad:'CuentaDeGastos'
 								,origen:cg.id)
 				}
+				*/
 		}
 	}
 	

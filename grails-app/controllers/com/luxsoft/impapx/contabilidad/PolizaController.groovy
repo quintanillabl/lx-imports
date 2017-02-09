@@ -10,252 +10,324 @@ import groovy.transform.ToString;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.codehaus.groovy.grails.web.json.JSONArray
 import org.springframework.dao.DataIntegrityViolationException
+import grails.plugin.springsecurity.annotation.Secured
+import com.luxsoft.lx.contabilidad.PeriodoContable
+import com.luxsoft.lx.contabilidad.ProcesadorDePoliza
 
+
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaController {
 
-    static allowedMethods = [create: ['POST'], edit: ['GET', 'POST'], delete: 'POST']
+    
+    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE",eliminarPartida:'GET']
 	
 	def polizaService
 
-    def index() {
-       if(!session.periodoContable){
-		   println 'Asignando periodo contable:..'
-		   PeriodoContable periodo=new PeriodoContable()
-		   periodo.actualizarConFecha()
-		   session.periodoContable=periodo
-	   }
-    }
-	
-	def actualizarPeriodo(PeriodoContable periodo){
-		//println 'Actualizando periodo...'+params
-		//def periodo=new PeriodoContable()
-		//periodo.properties=params
-		periodo.actualizarConFecha()
-		session.periodoContable=periodo
-		redirect action:'index'
-		//println periodo
+	def reportService
+ 
+
+	def cambiarPeriodo(PeriodoContable periodoContable){
+		log.info 'Cambiando periodo contable: '+periodoContable
+		log.info ' Params: '+params
+		session.periodoContable=periodoContable
+		redirect(uri: request.getHeader('referer') )
 	}
 
-    def list() {
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
+	def genericas() {
 		def sort=params.sort?:'fecha'
 		def order=params.order?:'desc'
+		def periodo=session.periodoContable
+		def polizas=Poliza.findAllByTipoAndFechaBetween('GENERICA',periodo.inicioDeMes(),periodo.finDeMes(),[sort:sort,order:order])
 		
-		def polizas=Poliza.findAllByTipoAndFechaBetween('GENERICA',periodo.inicio,periodo.fin,[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+		render view:'index',model:[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+	}	
+	
+	def index() {
+		
+		def subTipo=params.subTipo?:'TODAS'
+		def ejercicio=session.periodoContable.ejercicio
+		def mes=session.periodoContable.mes
+		
+		def polizas=Poliza.where{
+		    ejercicio==ejercicio &&
+		    mes==mes
+		}
+		if(subTipo!='TODAS')
+			polizas=polizas.where {subTipo==subTipo}
+		
+		def procesador = ProcesadorDePoliza.where{subTipo==subTipo && service!=null}.find()
+
+		def list=polizas.list(sort:'folio',order:'asc')
+		
+		respond list,model:[subTipo:subTipo,procesador:procesador]
 	}
+
+    
 
     def create() {
-		switch (request.method) {
-		case 'GET':
-			params.tipo='GENERICA'
-			params.fecha=new Date()
-        	[polizaInstance: new Poliza(params)]
-			break
-		case 'POST':
-			params.tipo='GENERICA'
-	        def polizaInstance = new Poliza(params)
-			polizaInstance=polizaService.crearPolizaGenerica(polizaInstance)
-	        if (polizaInstance.hasErrors()) {
-	            render view: 'create', model: [poliza: polizaInstance]
-				//flash.message="Poliza generica con errores no se puede salvar..."
-				//redirect action:'list' model
-	            return
-	        }
 
-			flash.message = message(code: 'default.created.message', args: [message(code: 'poliza.label', default: 'Poliza'), polizaInstance.id])
-	        redirect action: 'edit', id: polizaInstance.id
-			break
-		}
+    	respond new Poliza(tipo:params.tipo,subTipo:params.subTipo,manual:true)
+		
+    }
+
+    
+    def save(Poliza polizaInstance) {
+        if (polizaInstance == null) {
+            notFound()
+            return
+        }
+        log.info 'Salvando: '+params
+        if (polizaInstance.hasErrors()) {
+            respond polizaInstance.errors, view:'create'
+            return
+        }
+        //polizaInstance = polizaService.save polizaInstance
+        polizaInstance = polizaService.salvarPoliza polizaInstance 
+
+        flash.message = "Poliza ${polizaInstance.folio} generada"
+        redirect action:'edit',id:polizaInstance.id
+    }
+
+    
+
+    def edit(Poliza polizaInstance) {
+    	
+		respond polizaInstance
+    }
+
+    def update(Poliza polizaInstance){
+    	if (polizaInstance == null) {
+    	    notFound()
+    	    return
+    	}
+    	if (polizaInstance.hasErrors()) {
+    	    respond polizaInstance, view:'edit'
+    	    return
+    	}
+    	polizaInstance = polizaInstance.save(failOnError:true,flush:true)
+    	flash.message="Poliza  ${polizaInstance.id} actualizada "
+    	redirect action:'edit',id:polizaInstance.id
+    	return
+    }
+
+    def recalcular(Poliza polizaInstance){
+    	if (polizaInstance == null) {
+    	    notFound()
+    	    return
+    	}
+    	
+    	def procesador = ProcesadorDePoliza.find{
+    		subTipo == polizaInstance.subTipo
+    	}
+    	if(procesador){
+
+    		def service = grailsApplication.mainContext.getBean(procesador.service)
+    		if(!service){
+    			flash.message = "Procesador ${procesador} no registrado en Spring context"
+    			redirect action:'index',params:[subTipo:polizaInstance.subTipo]
+    			return
+    		}
+    		
+    		def res = service.generar(polizaInstance.fecha,procesador)
+    		if(res.instanceOf(Poliza)){
+    			flash.message = "Poliza ${res.subTipo} - ${res.folio} re procesada"
+    			redirect action:'edit',id:res.id
+    			return
+    		}else{
+    			redirect action:'index',params:[subTipo:command.subTipo]
+    			return
+
+    		}
+
+    	}else{
+    		flash.message="No existe procesador declarado para la poliza ${polizaInstance.id} "
+    		redirect action:'edit',id:polizaInstance.id
+    		return
+    	}
+    	
+    }
+
+    def editPartida(PolizaDet polizaDetInstance){
+    	[poliza:polizaDetInstance.poliza,polizaDetInstance:polizaDetInstance]
+    }
+
+    def updatePartida(PolizaDet polizaDetInstance){
+    	if(polizaDetInstance == null){
+    		notFound()
+    		return
+    	}
+    	if(polizaDetInstance.hasErrors()){
+    		render view:editPartida,model:[poliza:polizaDet.poliza,polizaDet:polizaDetInstance]
+    		return
+    	}
+    	polizaDetInstance = polizaDetInstance.save flush:true
+    	redirect action:'edit',id:polizaDetInstance.poliza.id
     }
 	
-	def mostrarPoliza(long id){
-		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
-		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
+	
+
+    def show(Poliza polizaInstance) {
+        respond polizaInstance
+    }
+
+    
+
+    def delete(Poliza polizaInstance){
+    	if (polizaInstance == null) {
+    	    notFound()
+    	    return
+    	}
+
+    	polizaInstance.delete flush:true
+    	flash.message="Poliza  ${polizaInstance.id} eliminada "
+    	redirect action:'index',params:[subTipo:polizaInstance.subTipo]
+    }
+	
+	def agregarPartida(){
+		def poliza = Poliza.get(params.polizaId)
+		poliza = polizaService.agregarPartida(poliza,params)
+		flash.message = "Partida agregada"
+		redirect action:'edit',id:poliza.id
+	}
+	
+	def eliminarPartida(PolizaDet det){
+		if (det == null) {
+		    notFound()
+		    return
+		}
+		if (det.hasErrors()) {
+		    respond det.poliza, view:'edit'
+		    return
+		}
+		def poliza = polizaService.eliminarPartida(det)
+		flash.message = "Partida eliminada: "+det.id
+		redirect action:'edit',id:poliza.id
 	}
 
-    def show() {
-        def polizaInstance = Poliza.get(params.id)
-        if (!polizaInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'poliza.label', default: 'Poliza'), params.id])
-            redirect action: 'list'
-            return
-        }
+	def print(Poliza poliza){
+	    def command=reportService.buildCommand(session.empresa,'PolizaContable')
+	    params.COMPANY=session.empresa.nombre
+	    params.ID=poliza.id
+	    def stream=reportService.build(command,params)
+	    def file="Poliza_${poliza.subTipo}_${poliza.folio}.pdf"
+	    render(
+	        file: stream.toByteArray(), 
+	        contentType: 'application/pdf',
+	        fileName:file)
+	}
 
-        [polizaInstance: polizaInstance]
-    }
-
-    def edit() {
-		switch (request.method) {
-		case 'GET':
-	        def polizaInstance = Poliza.get(params.id)
-	        if (!polizaInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'poliza.label', default: 'Poliza'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        [poliza: polizaInstance,partidas:polizaInstance.partidas]
-			break
-		case 'POST':
-	        def polizaInstance = Poliza.get(params.id)
-	        if (!polizaInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'poliza.label', default: 'Poliza'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (polizaInstance.version > version) {
-	                polizaInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'poliza.label', default: 'Poliza')] as Object[],
-	                          "Another user has updated this Poliza while you were editing")
-	                render view: 'edit', model: [polizaInstance: polizaInstance]
-	                return
-	            }
-	        }
-
-	        polizaInstance.properties = params
-
-	        if (!polizaInstance.save(flush: true)) {
-	            render view: 'edit', model: [polizaInstance: polizaInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'poliza.label', default: 'Poliza'), polizaInstance.id])
-	        redirect action: 'show', id: polizaInstance.id
-			break
-		}
-    }
-
-    def delete() {
-        def polizaInstance = Poliza.get(params.id)
-        if (!polizaInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'poliza.label', default: 'Poliza'), params.id])
-            redirect action: 'list'
-            return
-        }
-
+	def printComplemento(Poliza poliza){
+        def command = null
+        params.COMPANY=session.empresa.nombre
+	    params.POLIZA_ID=poliza.id
+	    
+	    if(poliza.partidas.find {it.transaccionCheque || it.transaccionTransferencia})
+	    	command = reportService.buildCommand(session.empresa,'PolizaComplementoMetodoPago')
+        else
+        	command = reportService.buildCommand(session.empresa,'PolizaComprobanteNacional')
         try {
-            polizaInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'poliza.label', default: 'Poliza'), params.id])
-            redirect action: 'list'
+            def stream=reportService.build(command,params)
+            def file="PolizaComplemento_${poliza.subTipo}_${poliza.folio}.pdf"
+	    	render(
+                file: stream.toByteArray(), 
+                contentType: 'application/pdf',
+                fileName:file)
         }
-        catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'poliza.label', default: 'Poliza'), params.id])
-            redirect action: 'show', id: params.id
+        catch(Exception e) {
+            String msg="Error ejecutando reporte $command.reportName" + ExceptionUtils.getRootCauseMessage(e)
+            throw new RuntimeException(msg)
         }
+        
     }
-	
-	def agregarPartida(long id){
-		println 'Agregando partida: '+params
-		def poliza=Poliza.get(id)
-		def cuenta=CuentaContable.get(params.cuenta.id)
-		poliza.addToPartidas(cuenta:cuenta,
-			debe:params.debe,
-			haber:params.haber,
-			asiento:params.asiento,
-			descripcion:params.descripcion,
-			referencia:params.referencia
-			,fecha:poliza.fecha
-			,tipo:poliza.tipo)
-		//poliza.cuadrar()
-		//poliza.save(flush:true)
-		//def poliza=polizaService.agregarPartida(id,params)
-		render view:'edit', model:[poliza:poliza,partidas:poliza.partidas]
-	}
-	
-	def eliminarPartidas(){
-		//println 'Eliminando partidas de poliza: '+params
-		def data=[:]
-		def poliza = Poliza.findById(params.polizaId,[fetch:[partidas:'eager']])
-		JSONArray jsonArray=JSON.parse(params.partidas);
-		try {
-			polizaService.eliminarPartidas(poliza,jsonArray)
-			data.res='APLICACIONES_ELIMINADAS'
-		}
-		catch (RuntimeException e) {
-			e.printStackTrace()
-			//println 'Error: '+e
-			data.res="ERROR"
-			data.error=ExceptionUtils.getRootCauseMessage(e)
-		}
-		render data as JSON
-	}
-	
-	def editPartida(long id) {
-		println 'Editando partida de poliza'
-		switch (request.method) {
-		case 'GET':
-	        def polizaDet = PolizaDet.get(id)
-	        
 
-	        [poliza: polizaDet.poliza,polizaDet:polizaDet]
-			break
-		case 'POST':
-	        def polizaDet = PolizaDet.get(id)
-			if(!polizaDet) throw new RuntimeException("No existe la partida: "+id)
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (polizaDet.version > version) {
-	                polizaDet.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'polizaDet.label', default: 'Poliza Det')] as Object[],
-	                          "Another user has updated this Poliza while you were editing")
-	                render view: 'edit', model: [polizaInstance: polizaDet.poliza]
-	                return
-	            }
-	        }
-	        polizaDet.properties = params
-			def poliza=polizaDet.poliza
-			poliza.actualizarImportes()
-			//poliza=polizaService.salvarPoliza(poliza)
-	        if (!poliza.save(failOnError:true)) {
-	            render view: 'editPartida', model: [polizaDet:polizaDet,poliza:poliza]
-	            return
-	        }
+	def generarPoliza(GenerarCommand command){
 
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'polizaDet.label', default: 'Poliza Det')
-				, poliza.id])
-	        redirect action: 'edit', id: poliza.id
-			break
+
+		if(command == null){
+			redirect action:'index'
+			return
 		}
-    }
+
+		if(command.hasErrors()){
+			flash.message = command.errors
+			redirect action:'index'
+			return
+		}
+
+		
+		def service = grailsApplication.mainContext.getBean(command.procesador.service)
+		def procesador = command.procesador
+		def subTipo = command.subTipo
+
+		if(!service){
+			flash.message = "Procesador ${command.procesador} no registrado en Spring context"
+			redirect action:'index',params:[subTipo:command.subTipo]
+			return
+		}
+		log.debug "Service: "+service
+		log.debug "Generando poliza $procesador $subTipo ${command.fecha.text()}"
+		
+		def res = service.generar(command.fecha,command.procesador)
+		log.debug res
+		
+		if(res instanceof Poliza) {
+			flash.message = "Poliza ${res.folio} generada"
+			redirect action:'edit',id:res.id
+			return
+		}else{
+			flash.message = res
+			redirect action:'index',params:[subTipo:command.subTipo]
+			return
+
+		}
+	}
+
+	private procesarPoliza(def poliza, def procesador){
+		def service = grailsApplication.mainContext.getBean(procesador.service)
+		if(!service){
+			flash.message = "Procesador ${command.procesador} no registrado en Spring context"
+			redirect action:'index',params:[subTipo:command.subTipo]
+			return
+		}
+		def res = service.generar(poliza.fecha,command.procesador)
+		if(res.instanceOf(Poliza)){
+			flash.message = "Poliza ${res.folio} generada"
+			redirect action:'edit',id:res.id
+			return
+		}else{
+			redirect action:'index',params:[subTipo:command.subTipo]
+			return
+
+		}
+	}
+
+	def recalcularFolios(String subTipo){
+		def periodo=session.periodoContable
+		flash.message = "Folios de $subTipo recalculados para el periodo $periodo"
+		def polizas = Poliza.findAll {subTipo==subTipo && ejercicio == periodo.ejercicio && mes == periodo.mes}
+		polizas = polizas.sort {it.fecha}
+		def folio = 1
+		polizas.each { p ->
+			p.folio = folio++
+			p.save flush:true
+		}
+		redirect action:'index',params:[subTipo:subTipo]
+	}
 	
 	
 }
 
-@Validateable
-@ToString
-class PeriodoContable{
-	int year
-	int month
-	Date currentDate=new Date()
-	
-	String toString(){
-		return "$year - $month "
-	}
-	
-	def actualizarConFecha(){
-		year=currentDate.toYear();
-		month=currentDate.toMonth();
-	}
-	
-	static constraints = {
-		//year(nullable:false,inList:[2012..2018])
-		//mes(nullable:false,inList:[1..12])
-	}
-	
-	Date getInicio(){
-		return currentDate.inicioDeMes();
-	}
-	Date getFin(){
-		return currentDate.finDeMes();
-	}
-	
+import groovy.transform.ToString
+
+@ToString(includeNames=true,includePackage=false)
+class GenerarCommand {
+
+	ProcesadorDePoliza procesador
+
+	String subTipo 
+
+	Date fecha
+
 }
+
+

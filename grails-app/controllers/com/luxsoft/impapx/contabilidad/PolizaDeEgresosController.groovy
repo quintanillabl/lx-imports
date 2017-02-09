@@ -1,48 +1,46 @@
 package com.luxsoft.impapx.contabilidad
 
-import util.Rounding;
+import util.Rounding
 
-import com.luxsoft.impapx.EmbarqueDet;
-import com.luxsoft.impapx.FacturaDeGastos;
-import com.luxsoft.impapx.TipoDeCambio;
-import com.luxsoft.impapx.tesoreria.Cheque;
-import com.luxsoft.impapx.tesoreria.MovimientoDeCuenta;
-import com.luxsoft.impapx.tesoreria.PagoProveedor;
+import com.luxsoft.impapx.EmbarqueDet
+import com.luxsoft.impapx.FacturaDeGastos
+import com.luxsoft.impapx.TipoDeCambio
+import com.luxsoft.impapx.tesoreria.Cheque
+import com.luxsoft.impapx.tesoreria.MovimientoDeCuenta
+import com.luxsoft.impapx.tesoreria.PagoProveedor
 
+import grails.plugin.springsecurity.annotation.Secured
+
+
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeEgresosController {
 	
 	def polizaService
 
-   def index() {
-	   redirect action: 'list', params: params
-    }
+ 
+	
+	def index() {
+		def sort=params.sort?:'fecha'
+		def order=params.order?:'desc'
+		def periodo=session.periodoContable
+		//def polizas=Poliza.findAllByTipoAndFechaBetween('EGRESO',periodo.inicioDeMes(),periodo.finDeMes(),[sort:sort,order:order])
+		def q = Poliza.where{
+			subTipo == 'EGRESO' && 
+			ejercicio == periodo.ejercicio && 
+			mes==periodo.mes}
+		//[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+		respond q.list(params)
+	}
 	 
 	def mostrarPoliza(long id){
 		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
 		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
 	}
-	 
-	def list() {
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
-		def sort=params.sort?:'fecha'
-		def order=params.order?:'desc'
-		
-		def polizas=Poliza.findAllByTipoAndFechaBetween('EGRESO',periodo.inicio,periodo.fin,[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
-	}
+	
 	
 	def generarPoliza(String fecha){
 		Date dia=Date.parse("dd/MM/yyyy",fecha)
-		
 		params.dia=dia
-		
-		println 'Generando poliza: '+params
-		
 		def pagos=PagoProveedor.findAll("from PagoProveedor p where date(p.egreso.fecha)=? and p.egreso.moneda='USD' and p.egreso.origen=? and p.requisicion.concepto='PAGO'"
 			,[dia,'CXP'])
 		
@@ -56,6 +54,9 @@ class PolizaDeEgresosController {
 			def req=pago.requisicion
 			def descripcion="$fp-$egreso.referenciaBancaria $req.proveedor (Proveedores extranjeros) id:$egreso.id"
 			Poliza poliza=new Poliza(tipo:'EGRESO',folio:1, fecha:dia,descripcion:descripcion,partidas:[])
+			poliza.ejercicio = session.periodoContable.ejercicio
+			poliza.mes = session.periodoContable.mes
+			poliza.subTipo= 'EGRESO'
 			
 			
 			def asiento='PAGO CXP'
@@ -67,7 +68,7 @@ class PolizaDeEgresosController {
 				def tc=0
 				
 				//NUEVO
-				//System.out.println("Localizando embarqueDet de factura:******************************************"+fac.id);
+				//System.out.println("Localizando embarqueDet de factura:******************************************"+fac.id)
 				def embarqueDet=EmbarqueDet.find("from EmbarqueDet x where x.factura=?",[fac])
 				if(embarqueDet==null) 
 					throw new RuntimeException("La factura ${fac} (${fac.proveedor.nombre}) no esta relacionada en algun embarque por lo tanto no se puede acceder al pedimento ")
@@ -100,10 +101,10 @@ class PolizaDeEgresosController {
 				def clave="201-$req.proveedor.subCuentaOperativa"
 				if(pedimento ){
 					if(egreso.fecha<pedimento.fecha || pedimento.fecha.toMonth()== egreso.fecha.toMonth() ){
-						clave="111-$req.proveedor.subCuentaOperativa"
+						clave="120-$req.proveedor.subCuentaOperativa"
 					}
 				}else{
-					clave="111-$req.proveedor.subCuentaOperativa"
+					clave="120-$req.proveedor.subCuentaOperativa"
 				}
 				
 				
@@ -147,7 +148,7 @@ class PolizaDeEgresosController {
 			def dif=(egreso.importe.abs()*egreso.tc)-pagoAcu
 			
 			if(dif.abs()>0){
-				def clave=dif<0?'701-0002':'705-0002'
+				def clave=dif<0?'703-002':'701-0002'
 				poliza.addToPartidas(
 					cuenta:CuentaContable.buscarPorClave(clave),
 					debe:dif>0?dif.abs():0.0,
@@ -161,7 +162,7 @@ class PolizaDeEgresosController {
 					,origen:egreso.id)
 			}
 			
-			//IETU
+			/*IETU
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave("900-0002"),
 				debe:egreso.importe.abs()*egreso.tc,
@@ -185,7 +186,7 @@ class PolizaDeEgresosController {
 				,tipo:poliza.tipo
 				,entidad:'MovimientoDeCuenta'
 				,origen:egreso.id)
-			
+			*/
 			//Salvar la poliza
 			poliza.debe=poliza.partidas.sum (0.0,{it.debe})
 			poliza.haber=poliza.partidas.sum(0.0,{it.haber})
@@ -199,7 +200,7 @@ class PolizaDeEgresosController {
 		procesarAnticiposCompra(dia)
 		procesarChequesCancelados(dia)
 		procesarPagoChoferes(dia)
-		redirect action: 'list'
+		redirect action: 'index'
 	}
 	
 	
@@ -231,6 +232,9 @@ class PolizaDeEgresosController {
 			def req=pago.requisicion
 			def descripcion="$fp-$egreso.referenciaBancaria $req.proveedor ($req.comentario) id:$egreso.id"
 			Poliza poliza=new Poliza(tipo:'EGRESO', fecha:dia,descripcion:descripcion,partidas:[])
+			poliza.ejercicio = session.periodoContable.ejercicio
+			poliza.mes = session.periodoContable.mes
+			poliza.subTipo= 'EGRESO'
 			
 			//def clave="201-$req.proveedor.subCuentaOperativa"
 			def asiento='PAGO DE GASTOS'
@@ -264,7 +268,7 @@ class PolizaDeEgresosController {
 							,origen:fac.id)
 						//Abono al ISR de Honorarios al Consejo
 						poliza.addToPartidas(
-							cuenta:CuentaContable.buscarPorClave("205-0006"),
+							cuenta:CuentaContable.buscarPorClave("213-0007"),
 							debe:0.0,
 							haber:c.retensionIsr,
 							asiento:asiento,
@@ -292,7 +296,7 @@ class PolizaDeEgresosController {
 							,origen:fac.id)
 						//Cargo al iva de gasto
 						poliza.addToPartidas(
-							cuenta:CuentaContable.buscarPorClave("117-0001"),
+							cuenta:CuentaContable.buscarPorClave("118-0001"),
 							debe:c.impuesto,
 							haber:0.0,
 							asiento:asiento,
@@ -305,7 +309,7 @@ class PolizaDeEgresosController {
 						
 						if(c.retension>0){
 							poliza.addToPartidas(
-								cuenta:CuentaContable.buscarPorClave("117-0008"),
+								cuenta:CuentaContable.buscarPorClave("118-0008"),
 								debe:c.retension,
 								haber:0.0,
 								asiento:asiento,
@@ -319,7 +323,7 @@ class PolizaDeEgresosController {
 						
 						if(c.retensionIsr){
 							poliza.addToPartidas(
-								cuenta:CuentaContable.buscarPorClave("205-0006"),
+								cuenta:CuentaContable.buscarPorClave("213-0007"),
 								debe:c.retensionIsr,
 								haber:0.0,
 								asiento:asiento,
@@ -337,9 +341,9 @@ class PolizaDeEgresosController {
 						//Cargo a agredores diversos o cancelar la provision
 					    def iva=c.impuesto
 						def monto=c.total
-						def cuenta=CuentaContable.buscarPorClave("203-V001")
+						def cuenta=CuentaContable.buscarPorClave("205-V001")
 						if(c.tipo=='SEGUROS Y FIANZAS'){
-							cuenta=CuentaContable.buscarPorClave("203-$fac.proveedor.subCuentaOperativa")
+							cuenta=CuentaContable.buscarPorClave("205-$fac.proveedor.subCuentaOperativa")
 						 monto=det.total
 						 ietu=det.ietu
 						 iva=det.impuestos
@@ -360,7 +364,7 @@ class PolizaDeEgresosController {
 						,origen:fac.id)
 						//Cargo al iva de gasto
 						poliza.addToPartidas(						
-							cuenta:CuentaContable.buscarPorClave("117-0001"),
+							cuenta:CuentaContable.buscarPorClave("118-0001"),
 							debe:iva,
 							haber:0.0,
 							asiento:asiento,
@@ -372,7 +376,7 @@ class PolizaDeEgresosController {
 							,origen:fac.id)
 						//Abono al iva pendiente  de gasto
 						poliza.addToPartidas(
-							cuenta:CuentaContable.buscarPorClave("117-0005"),
+							cuenta:CuentaContable.buscarPorClave("118-0005"),
 							debe:0.0,
 							haber:iva,
 							asiento:asiento,
@@ -425,7 +429,7 @@ class PolizaDeEgresosController {
 		   }
 			
 			if(c!=null && c.tipo!='HONORARIOS AL CONSEJO ADMON'){
-				//IETU
+				/*IETU
 				poliza.addToPartidas(
 					cuenta:cuentaCargo,
 					debe:ietu,
@@ -449,6 +453,7 @@ class PolizaDeEgresosController {
 					,tipo:poliza.tipo
 					,entidad:'MovimientoDeCuenta'
 					,origen:egreso.id)
+				*/
 			}
 			
 			
@@ -505,7 +510,10 @@ class PolizaDeEgresosController {
 			def req=pago.requisicion
 			def descripcion="$fp-$egreso.referenciaBancaria $req.proveedor ($req.concepto) id:$egreso.id"
 			Poliza poliza=new Poliza(tipo:'EGRESO', fecha:dia,descripcion:descripcion,partidas:[])
-			
+			poliza.ejercicio = session.periodoContable.ejercicio
+			poliza.mes = session.periodoContable.mes
+			poliza.subTipo= 'EGRESO'
+
 			def clave="201-$req.proveedor.subCuentaOperativa"
 			def asiento='ANTICIPO IMPORTACION'
 			
@@ -527,7 +535,7 @@ class PolizaDeEgresosController {
 			
 			//Cargo a proveedor
 			def proveedor=pago.requisicion.proveedor
-			clave="109-$proveedor.subCuentaOperativa"
+			clave="107-$proveedor.subCuentaOperativa"
 			def cuenta=CuentaContable.findByClave(clave)
 			if(!cuenta) throw new RuntimeException("No existe la cuenta para el proveedor: "+proveedor.nombre+ 'Clave: '+clave)
 			def requisicion=pago.requisicion
@@ -566,6 +574,9 @@ class PolizaDeEgresosController {
 			def req=pago.requisicion
 			def descripcion="$fp-$egreso.referenciaBancaria $req.proveedor ($req.concepto) id:$egreso.id"
 			Poliza poliza=new Poliza(tipo:'EGRESO', fecha:dia,descripcion:descripcion,partidas:[])
+			poliza.ejercicio = session.periodoContable.ejercicio
+			poliza.mes = session.periodoContable.mes
+			poliza.subTipo= 'EGRESO'
 			
 			def clave="201-$req.proveedor.subCuentaOperativa"
 			def asiento='ANTICIPO_COMPRA'
@@ -588,7 +599,7 @@ class PolizaDeEgresosController {
 			
 			//Cargo a proveedor
 			def proveedor=pago.requisicion.proveedor
-			clave="111-$proveedor.subCuentaOperativa"
+			clave="120-$proveedor.subCuentaOperativa"
 			def cuenta=CuentaContable.findByClave(clave)
 			if(!cuenta) throw new RuntimeException("No existe la cuenta para el proveedor: "+proveedor.nombre+ 'Clave: '+clave)
 			def requisicion=pago.requisicion
@@ -605,7 +616,7 @@ class PolizaDeEgresosController {
 					,entidad:'PagoProveedor'
 					,origen:pago.id)				
 
-				//IETU
+				/*IETU
 				poliza.addToPartidas(
 					cuenta:CuentaContable.buscarPorClave("900-0002"),
 					debe:egreso.importe.abs()*egreso.tc,
@@ -629,6 +640,7 @@ class PolizaDeEgresosController {
 					,tipo:poliza.tipo
 					,entidad:'MovimientoDeCuenta'
 					,origen:egreso.id)
+				*/
 		
 			}
 			
@@ -642,7 +654,7 @@ class PolizaDeEgresosController {
 		}
 	}
 	
-	def private procesarChequesCancelados(Date dia){
+	private procesarChequesCancelados(Date dia){
 		def cheques=Cheque.executeQuery("from Cheque c where date(c.egreso.fecha)=? and c.egreso.comentario='CANCELADO' ",[dia])
 		cheques.each{pago ->
 			
@@ -652,7 +664,10 @@ class PolizaDeEgresosController {
 			
 			def descripcion="CH-$egreso.referenciaBancaria $egreso.comentario id:$egreso.id"
 			Poliza poliza=new Poliza(tipo:'EGRESO', fecha:dia,descripcion:descripcion,partidas:[])
-			
+			poliza.ejercicio = session.periodoContable.ejercicio
+			poliza.mes = session.periodoContable.mes
+			poliza.subTipo= 'EGRESO'
+
 			poliza.debe=poliza.partidas.sum (0.0,{it.debe})
 			poliza.haber=poliza.partidas.sum(0.0,{it.haber})
 			poliza=polizaService.salvarPoliza(poliza)
@@ -672,6 +687,10 @@ class PolizaDeEgresosController {
 			def req=pago.requisicion
 			def descripcion="$fp-$egreso.referenciaBancaria $req.proveedor ($req.concepto) id:$egreso.id"
 			Poliza poliza=new Poliza(tipo:'EGRESO', fecha:dia,descripcion:descripcion,partidas:[])
+			poliza.ejercicio = session.periodoContable.ejercicio
+			poliza.mes = session.periodoContable.mes
+			poliza.subTipo= 'EGRESO'
+			
 			def asiento='PAGO_FLETE'
 			
 			//Abono a bancos
@@ -693,7 +712,7 @@ class PolizaDeEgresosController {
 			//Cargo a proveedor
 			def proveedor=pago.requisicion.proveedor
 			
-			def clave="203-$proveedor.subCuentaOperativa"
+			def clave="205-$proveedor.subCuentaOperativa"
 			println 'Localizando cuenta operativa contable para Proveedor: '+proveedor
 			def cuenta=CuentaContable.buscarPorClave(clave)
 			def requisicion=pago.requisicion

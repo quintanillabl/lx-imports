@@ -5,6 +5,8 @@ import com.luxsoft.impapx.Proveedor;
 import com.luxsoft.impapx.Requisicion;
 import com.luxsoft.impapx.cxp.Pago;
 
+import com.luxsoft.lx.sat.BancoSat
+
 import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 
@@ -16,8 +18,14 @@ class PagoProveedor {
 	CuentaBancaria cuenta
 	Requisicion requisicion
 	String comentario
+
 	MovimientoDeCuenta egreso
 	BigDecimal tipoDeCambio
+
+	BancoSat bancoDestino
+	String cuentaDestino
+	String bancoDestinoExt
+	String referencia
 	
 	Date dateCreated
 	Date lastUpdated
@@ -31,14 +39,17 @@ class PagoProveedor {
 			if(val.moneda!=obj.requisicion.moneda)
 				return "tipoDeMonedaError"
 		})
-		
+		bancoDestino nullable:true
+    	cuentaDestino nullable:true
+    	referencia nullable:true
+    	bancoDestinoExt nullable:true
 		
     }
 	
 	static mapping ={
-		requisicion fetch:'join'
-		egreso fetch:'join'
-		pago fetch:'join'
+		//requisicion fetch:'join'
+		//egreso fetch:'join'
+		//pago fetch:'join'
 	}
 	
 	String toString(){

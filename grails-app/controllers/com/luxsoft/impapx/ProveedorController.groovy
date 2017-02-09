@@ -15,7 +15,7 @@ class ProveedorController {
     static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 
     def index(Integer max) {
-        params.max = Math.min(max ?: 40, 100)
+        params.max = 1000
         params.sort=params.sort?:'lastUpdated'
         params.order='desc'
         respond Proveedor.list(params), model:[proveedorInstanceCount: Proveedor.count()]
@@ -53,7 +53,8 @@ class ProveedorController {
     }
 
     def edit(Proveedor proveedorInstance) {
-        respond proveedorInstance
+        def tab = params.tab?:'propiedades'
+        respond proveedorInstance,model:[tab:tab]
     }
 
     @Transactional
@@ -151,6 +152,7 @@ class ProveedorController {
         render provProducto as JSON
     }
     
+     @Transactional
     def actualizarCostoUnitarioEnProductos(){
         println 'Actualizar costo unitario de productos params:'+params
         JSONArray jsonArray=JSON.parse(params.partidas);
@@ -183,6 +185,7 @@ class ProveedorController {
         [productos:res,productosTotal:res.size(),proveedor:p]
     }
 
+     @Transactional
     def registrarProductos(){
         def data=[:]
         def proveedor = Proveedor.findById(params.proveedorId,[fetch:[productos:'eager']])
@@ -192,6 +195,38 @@ class ProveedorController {
             proveedor.addToProductos(producto:prod,costoUnitario:0.0,gramos:prod.gramos)
         }
         proveedor.save(failOnError:true)
+        flash.message="Nuevos productos asignados "
         render data as JSON
     }
+
+    @Transactional
+    def agregarAgenteAduanal(Proveedor proveedorInstance){
+        def agente = params.agente
+        log.info 'Agregando agente aduanal: '+agente
+        flash.message="Agente asignado: "+agente
+        proveedorInstance.agentes.add(agente)
+        proveedorInstance.save flush:true
+        forward action:'edit',id:proveedorInstance.id,params:[tab:'agentes']
+
+    }
+
+    @Transactional
+    def eliminarAgenteAduanal(Proveedor proveedorInstance){
+        def agente = params.agente
+        log.info 'Eliminando agente aduanal: '+agente
+        flash.message="Agente eliminado: "+agente
+        proveedorInstance.agentes.remove(agente)
+        proveedorInstance.save failOnError:true,flush:true
+        forward action:'edit',id:proveedorInstance.id,params:[tab:'agentes']
+
+    }
+
+    def buscarAgentesAduanales(Proveedor proveedorInstance){
+        def data =  []
+        proveedorInstance.agentes.each{
+            data.add([nombre:it])
+        }
+        render data as JSON
+    }
+
 }

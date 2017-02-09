@@ -1,15 +1,16 @@
 package com.luxsoft.impapx.cxc
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang.exception.ExceptionUtils
 
-import util.MonedaUtils;
+import util.MonedaUtils
 
-import com.luxsoft.impapx.Requisicion;
-import com.luxsoft.impapx.Venta;
-import com.luxsoft.impapx.tesoreria.MovimientoDeCuenta;
+import com.luxsoft.impapx.Requisicion
+import com.luxsoft.impapx.Venta
+import com.luxsoft.impapx.tesoreria.MovimientoDeCuenta
+import com.luxsoft.impapx.TipoDeCambio
 
 
-import grails.validation.ValidationException;
+import grails.validation.ValidationException
 
 class CobranzaService {
 
@@ -17,15 +18,33 @@ class CobranzaService {
 		
 		try {
 			pago.impuestoTasa=16.00
-			pago.moneda=pago.cuenta.moneda
-			if(pago.cuenta.moneda==MonedaUtils.PESOS)
-				pago.tc=1
-			pago.actualizarImportes()
-			def res=pago.save(failOnError:true)
-			if(res.instanceOf(CXCPago)){
-				if(res.formaDePago=='TRANSFERENCIA'){
-					println 'Registrando ingreos en tesoreria'
-					
+			pago.importe=MonedaUtils.calcularImporteDelTotal(pago.total)
+			pago.impuesto=MonedaUtils.calcularImpuesto(pago.importe)
+			//pago.actualizarImportes()
+			def cuenta=pago.cuenta
+			pago.moneda=cuenta?.moneda
+			pago.tc=1
+			pago.validate()
+
+			if(cuenta.moneda!=MonedaUtils.PESOS){
+				def dia=pago.fecha-1
+				def tc=TipoDeCambio.find("from TipoDeCambio t where date(t.fecha)=? and t.monedaFuente=?",[dia,cuenta.moneda])
+				
+				if(!tc){
+					log.error "No existe Tipo de cambio  en ${pago.cuenta.moneda} para el ${dia.format('dd/MM/yyyy')} "
+					throw new CobranzaEnPagoException(
+						pago:pago,
+						message:"No existe Tipo de cambio  en ${pago.cuenta.moneda} para el ${dia.format('dd/MM/yyyy')} "
+						)
+				}
+				pago.tc=tc.factor
+			}
+			
+			
+			if(pago.instanceOf(CXCPago)){
+
+				if(pago.formaDePago=='TRANSFERENCIA'){
+					//Generamos el ingreso en tesoreria
 					MovimientoDeCuenta ingreso = new MovimientoDeCuenta(
 						 cuenta:pago.cuenta
 						,fecha:pago.fecha
@@ -40,30 +59,37 @@ class CobranzaService {
 						,referenciaBancaria:pago.referenciaBancaria)
 					ingreso.save(failOnError:true)
 					pago.ingreso=ingreso
-					
+					log.info 'Ingreso registrado: '+ingreso
 				}
+
+				pago.save(failOnError:true)
+				log.info 'Cobro generado: '+pago
 			}
-			return res
+			return pago
 		} catch (ValidationException e) {
-			throw new CobranzaEnPagoException(pago:pago,message:ExceptionUtils.getRootCauseMessage(e));
+			throw new CobranzaEnPagoException(pago:pago,message:ExceptionUtils.getRootCauseMessage(e))
 		}
     }
 	
 	def asignarFacturas(CXCAbono abono,def facturas) {
 		
 		def disponible=abono.getDisponibleMN()
+
 		
 		facturas.each {
 			def fac=Venta.get(it.toLong())
 			
-			def saldo=fac.saldoActual
+			def saldo=fac.saldoActual*fac.tc
+
 			def importe=0
 			if(disponible>=saldo)
 				importe=saldo
 			else
 				importe=disponible
 			disponible-=importe
+			
 			println "Aplicando $importe Saldo: $saldo Disponible:$disponible"
+			
 			def ap=new CXCAplicacion(
 				fecha:new Date()
 				,total:importe
@@ -89,7 +115,7 @@ class CobranzaService {
 			if(found){
 				
 				boolean ok=abono.removeFromAplicaciones(found)
-				println 'Eliminando: '+found+ 'Res: '+ok
+				//println 'Eliminando: '+found+ 'Res: '+ok
 			}
 		}
 		def res=abono.save(failOnError:true)
@@ -124,16 +150,7 @@ class CobranzaService {
 		nota.actualizarImportes()		
 		nota.save(flush:true)
 		return nota
-		/*
-		try {
-			nota.impuestoTasa=16.00
-			nota.total=0
-			nota.actualizarImportes()
-			def res=nota.save(failOnError:true)
-			return res
-		} catch (Exception e) {
-			throw new CobranzaEnPagoException(pago:nota,message:ExceptionUtils.getRootCauseMessage(e));
-		}*/
+		
 	}
 	
 	def asignarPartidasParaNota(CXCNota nota,def facturas) {
@@ -159,6 +176,38 @@ class CobranzaService {
 		
 	}
 	
+	def generarAplicacionesDeNota(Long id,def facturas) {
+		
+		CXCNota abono=CXCNota.get(id)
+		
+		def disponible=abono.getDisponibleMN()
+		
+		facturas.each {
+			def fac=Venta.get(it.toLong())
+			
+			def saldo=fac.saldoActual
+			def importe=0
+			if(disponible>=saldo)
+				importe=saldo
+			else
+				importe=disponible
+			disponible-=importe
+			println "Aplicando $importe Saldo: $saldo Disponible:$disponible"
+			def ap=new CXCAplicacion(
+				fecha:new Date()
+				,total:importe
+				,impuestoTasa:abono.impuestoTasa?:0.0
+				,importe:0.0
+				,impuesto:0.0
+				,factura:fac)
+			abono.addToAplicaciones(ap)
+		}
+		def res=abono.save(failOnError:true)
+		abono.actualizarAplicado()
+		return res
+	}
+
+
 	def aplicarFacturas(CXCAbono abono,def facturas) {
 		
 		def disponible=abono.getDisponibleMN()
@@ -187,6 +236,27 @@ class CobranzaService {
 		}
 		def res=abono.save(failOnError:true)
 		abono.actualizarAplicado()
+		return res
+	}
+
+	def eliminarAplicacionDeNota(Long id,def partidas){
+
+		CXCNota nota=CXCNota.get(id)
+		log.info 'Eliminando aplicaciones: '+partidas + ' De Nota: '+nota
+		partidas.each {
+			log.info 'Buscando aplicacion: '+it
+			def found=nota.aplicaciones.find{ det->
+				det.id==it.toLong()
+			}
+			if(found){
+				boolean ok=nota.removeFromAplicaciones(found)
+				log.info 'Eliminando aplicacion: '+found+ 'Res: '+ok
+			}else{
+				log.info 'No existe la aplicaicon: '+it
+			}
+
+		}
+		def res=nota.save(failOnError:true)
 		return res
 	}
 	

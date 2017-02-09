@@ -6,6 +6,7 @@ grails.project.work.dir = "target/work"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
+grails.project.war.file = "target/paperx2.war"
 
 grails.project.fork = [
     // configure settings for compilation JVM, note that if you alter the Groovy version forked compilation is required
@@ -44,6 +45,7 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
         //mavenRepo "http://repository.jboss.com/maven2/"
+        mavenRepo "http://dl.bintray.com/rcancino/econta" 
     }
 
     dependencies {
@@ -67,6 +69,9 @@ grails.project.dependency.resolution = {
         // build('org.grails:grails-docs:2.4.3') {
         //     excludes 'itext'
         // }
+        compile 'econta:catalogos:1.0.0'
+        compile 'econta:balanzas:1.0.0'
+        compile 'econta:polizas:1.0.0'
     }
 
     plugins {
@@ -84,15 +89,15 @@ grails.project.dependency.resolution = {
         runtime ':hibernate4:4.3.8.1' // or ':hibernate:3.6.10.19'
         //runtime ":hibernate4:4.3.5.4" // or ":hibernate:3.6.10.16"
         runtime ":database-migration:1.4.0"
-        runtime ":jquery:1.11.1"
+        //runtime ":jquery:1.11.1"
 
 
         //compile ":build-test-data:2.2.2"
         compile ":build-test-data:2.4.0"
 
         // UI Front
-        runtime ":twitter-bootstrap:3.3.4"
-        runtime ":font-awesome-resources:4.3.0.2"
+        //runtime ":twitter-bootstrap:3.3.4"
+        //runtime ":font-awesome-resources:4.3.0.2"
         compile ":platform-core:1.0.0"
         compile ":fields:1.5.1"
 
@@ -103,6 +108,8 @@ grails.project.dependency.resolution = {
         compile ":jasper:1.11.0"
         
         compile ":filterpane:2.4.7"
+        compile ":audit-logging:1.0.5"
+        compile ":cxf-client:2.0"
 
         // Uncomment these to enable additional asset-pipeline capabilities
         //compile ":sass-asset-pipeline:1.9.0"

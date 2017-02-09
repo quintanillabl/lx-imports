@@ -5,7 +5,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 class VentaDet {
-	
+		
+	static auditable = true
 	
 	Producto producto
 	BigDecimal cantidad

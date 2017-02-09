@@ -1,140 +1,118 @@
-
 <%@ page import="com.luxsoft.impapx.Requisicion" %>
 <!doctype html>
 <html>
-	<head>
-		<meta name="layout" content="luxor">
-		<g:set var="entityName" value="${message(code: 'requisicion.label', default: 'Requisicion')}" />
-		<title><g:message code="default.show.label" args="[entityName]" /></title>
-	</head>
-	<body>
-		<div class="row-fluid">
-			<div class="span3">
-				<div class="well">
-					<ul class="nav nav-list">
-						<li class="nav-header">${entityName}</li>
-						<li>
-							<g:link class="list" action="list">
-								<i class="icon-list"></i>
-								<g:message code="default.list.label" args="[entityName]" />
-							</g:link>
-						</li>
-						<li>
-							<g:link class="create" action="create">
-								<i class="icon-plus"></i>
-								<g:message code="default.create.label" args="[entityName]" />
-							</g:link>
-						</li>
-					</ul>
-				</div>
-			</div>
+<head>
+	
+	<title>Requisición ${requisicionInstance.id}</title>
+</head>
+<body>
+
+	<div class="row wrapper border-bottom white-bg page-heading">
+       <div class="col-lg-10">
+           <h2>Requisición ${requisicionInstance}</h2>
+           <ol class="breadcrumb">
+           		<li><g:link action="index">Requisiciones</g:link></li>
+           		<li><g:link action="create">Alta</g:link></li>
+           		<li class="active"><strong>Consulta</strong></li>
+           		<g:if test="${!requisicionInstance.pagoProveedor}">
+           			<li><g:link action="edit" id="${requisicionInstance.id}">Edición</g:link></li>
+           		</g:if>
+           </ol>
+       </div>
+       <div class="col-lg-2">
 			
-			<div class="span9">
-
-				<div class="page-header">
-					<h3><g:message code="default.show.label" args="[entityName]" /></h3>
-				</div>
-
-				<g:if test="${flash.message}">
-				<bootstrap:alert class="alert-info">${flash.message}</bootstrap:alert>
-				</g:if>
-
-				<dl>
-				
-					<g:if test="${requisicionInstance?.proveedor}">
-						<dt><g:message code="requisicion.proveedor.label" default="Proveedor" /></dt>
-						
-							<dd><g:link controller="proveedor" action="show" id="${requisicionInstance?.proveedor?.id}">${requisicionInstance?.proveedor?.encodeAsHTML()}</g:link></dd>
-						
-					</g:if>
-				
-					<g:if test="${requisicionInstance?.concepto}">
-						<dt><g:message code="requisicion.concepto.label" default="Concepto" /></dt>
-						
-							<dd><g:fieldValue bean="${requisicionInstance}" field="concepto"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${requisicionInstance?.fecha}">
-						<dt><g:message code="requisicion.fecha.label" default="Fecha" /></dt>
-						
-							<dd><g:formatDate date="${requisicionInstance?.fecha}" /></dd>
-						
-					</g:if>
-				
-					<g:if test="${requisicionInstance?.fechaDelPago}">
-						<dt><g:message code="requisicion.fechaDelPago.label" default="Fecha Del Pago" /></dt>
-						
-							<dd><g:formatDate date="${requisicionInstance?.fechaDelPago}" /></dd>
-						
-					</g:if>
-				
-					<g:if test="${requisicionInstance?.moneda}">
-						<dt><g:message code="requisicion.moneda.label" default="Moneda" /></dt>
-						
-							<dd><g:fieldValue bean="${requisicionInstance}" field="moneda"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${requisicionInstance?.tc}">
-						<dt><g:message code="requisicion.tc.label" default="Tc" /></dt>
-							<dd><g:formatNumber number="${requisicionInstance.tc}" format="####.######"/>
-					</g:if>
-				
-					<g:if test="${requisicionInstance?.descuentoFinanciero}">
-						<dt><g:message code="requisicion.descuentoFinanciero.label" default="Descuento Financiero" /></dt>
-							<dd><g:formatNumber number="${requisicionInstance.descuentoFinanciero}" format="####.######"/>
-						
-					</g:if>
-				
-					<g:if test="${requisicionInstance?.importe}">
-						<dt><g:message code="requisicion.importe.label" default="Importe" /></dt>
-						
-							<dd><g:fieldValue bean="${requisicionInstance}" field="importe"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${requisicionInstance?.impuestos}">
-						<dt><g:message code="requisicion.impuestos.label" default="Impuestos" /></dt>
-						
-							<dd><g:fieldValue bean="${requisicionInstance}" field="impuestos"/></dd>
-						
-					</g:if>
-				
-					<g:if test="${requisicionInstance?.total}">
-						<dt><g:message code="requisicion.total.label" default="Total" /></dt>
-						
-							<dd><g:fieldValue bean="${requisicionInstance}" field="total"/></dd>
-						
-					</g:if>
-				
-				</dl>
-				
-				<g:jasperReport jasper="Requisicion" format="PDF,HTML" name="Imprimir">
-					<g:hiddenField name="ID" value="${requisicionInstance.id}"/>
-					<g:hiddenField name="MONEDA" value="${requisicionInstance.moneda}"/>
-				</g:jasperReport>
-
-				<g:form>
-					<g:hiddenField name="id" value="${requisicionInstance?.id}" />
-					<div class="form-actions">
-						<g:if test="${!requisicionInstance.pagoProveedor}">
-							<g:link class="btn" action="edit" id="${requisicionInstance?.id}">
-								<i class="icon-pencil"></i>
-								<g:message code="default.button.edit.label" default="Edit" />
-							</g:link>
-							<button class="btn btn-danger" type="submit" name="_action_delete">
-								<i class="icon-trash icon-white"></i>
-								<g:message code="default.button.delete.label" default="Delete" />
-							</button>
-						</g:if>
-						
+       </div>
+	</div>
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="ibox float-e-margins">
+					<lx:iboxTitle title="Folio: ${requisicionInstance.id}"/>
+					<g:form name="editForm" action="save" class="form-horizontal" method="POST">	
+					<f:with bean="requisicionInstance">
+					<div class="ibox-content">
+						<lx:errorsHeader bean="${requisicionInstance}"/>
+						<div class="btn-group">
+							<lx:backButton label="Requisiciones"/>
+							<lx:printButton id="${requisicionInstance.id}"/>
+						</div>
+						<div class="row">
+							<div class="col-lg-6">
+								<f:display property="id" wrapper="bootstrap3" label="Folio"/>
+								<f:display property="concepto" 
+									widget-class="form-control chosen-select" wrapper="bootstrap3"
+									widget-tabindex="2"/>
+								<f:display property="fecha" wrapper="bootstrap3" />
+								<f:display property="fechaDelPago" widget-class="form-control" wrapper="bootstrap3"/>
+								<f:display property="formaDePago" 
+									wrapper="bootstrap3"  widget-class="form-control chosen-select"/>
+								<f:display property="moneda" wrapper="bootstrap3"/>
+								<f:display property="tc" widget-class="form-control tc" wrapper="bootstrap3" widget-type="text"/>
+								<f:display property="descuentoFinanciero" 
+									widget-class="form-control porcentaje" wrapper="bootstrap3" widget-type="text"/>
+								<f:display property="comentario" widget-class="form-control" wrapper="bootstrap3"/>
+								<f:display property="pagoProveedor" wrapper="bootstrap3" />
+							</div>
+							<div class="col-lg-6">
+								<f:display property="importe" wrapper="bootstrap3" widget="money"/>
+								<f:display property="impuestos" wrapper="bootstrap3" widget="money"/>
+								<f:display property="impuestos" wrapper="bootstrap3" widget="money"/>
+								<f:display property="retencionHonorarios" wrapper="bootstrap3" widget="money"/>
+								<f:display property="retencionFlete" wrapper="bootstrap3" widget="money"/>
+								<f:display property="retencionISR" wrapper="bootstrap3" widget="money"/>
+								<f:display property="total" wrapper="bootstrap3" widget="money"/>
+							</div>
+						</div>
 						
 					</div>
-				</g:form>
-
+					</f:with>
+					</g:form>
+				</div> <!-- End ibox 1 -->
 			</div>
-
 		</div>
-	</body>
+
+		<div class="ibox float-e-margins">
+			<lx:iboxTitle title="Partidas"/>
+			<div class="ibox-content">
+				<table class=" grid table  table-hover table-bordered table-condensed">
+					<thead>
+						<tr>
+							<th class="header">Documento</th>
+							<th class="header">Fecha</th>
+							<th>Total Dcto</th>
+							<th class="header">A Pagar</th>
+							<th class="header">Embarque</th>
+							<th>Vto</th>
+						</tr>
+					</thead>
+					<tbody>
+						<g:each in="${requisicionInstance.partidas}" var="row">
+							<tr id="${row.id}">
+								<td>
+									<g:link controller="requisicionDet" action="edit" id="${row.id}">
+										${fieldValue(bean: row, field: "documento")}</td>
+									</g:link>
+								</td>
+							    <td>
+
+							    
+								<td><lx:shortDate date="${row.fechaDocumento}" /></td>
+								<td><lx:moneyFormat number="${row.totalDocumento }" /></td>
+								<td><lx:moneyFormat number="${row.total }" /></td>
+								<td>${fieldValue(bean: row, field: "embarque.id")}</td>
+								<td><lx:shortDate date="${row?.factura?.vencimiento}" /></td>
+							</tr>
+						</g:each>
+					</tbody>
+				</table>
+			</div>
+		</div> <!-- End ibox 2 Partidas -->
+	</div>
+	<script type="text/javascript">
+		$(function(){
+			$('.chosen-select').chosen();
+		});
+	</script>
+	
+</body>
 </html>

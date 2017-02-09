@@ -19,33 +19,32 @@ import com.luxsoft.impapx.tesoreria.PagoProveedor
 import com.luxsoft.impapx.tesoreria.SaldoDeCuenta
 import com.luxsoft.impapx.tesoreria.Traspaso
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeDiarioFleteController {
 
 	def polizaService
-	
-     def index() {
-	   redirect action: 'list', params: params
-    }
-	 
-	def mostrarPoliza(long id){
-		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
-		render (view:'poliza' ,model:[poliza:poliza,partidas:poliza.partidas])
-	}
-	 
-	def list() {
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
+
+	def index() {
 		def sort=params.sort?:'fecha'
 		def order=params.order?:'desc'
+		def periodo=session.periodoContable
 		
-		//def polizas=Poliza.findAllByTipoAndDescripcionFechaBetween('DIARIO',periodo.inicio,periodo.fin,[sort:sort,order:order])
-		def polizas=Poliza.findAllByTipoAndDescripcionIlikeAndFechaBetween('DIARIO','%Flete%',periodo.inicio,periodo.fin,[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+		def q = Poliza.where {
+			subTipo == 'DIARIO_FLETE' && ejercicio == periodo.ejercicio && mes == periodo.mes 
+
+		}
+		respond q.list(params)
+		
 	}
+
+	def mostrarPoliza(long id){
+		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
+		render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
+	}
+	 
+	
 	
 	def generarPoliza(String fecha){
 		Date dia=Date.parse("dd/MM/yyyy",fecha)
@@ -56,7 +55,10 @@ class PolizaDeDiarioFleteController {
 		
 		//Prepara la poliza
 		Poliza poliza=new Poliza(tipo:'DIARIO',folio:1, fecha:dia,descripcion:'Poliza (Flete)'+dia.text(),partidas:[])
-		
+		poliza.ejercicio = session.periodoContable.ejercicio
+		poliza.mes = session.periodoContable.mes
+		poliza.subTipo= 'DIARIO_FLETE'
+
 		procesarGastosChoferes(poliza ,dia)
 		
 		//Salvar la poliza
@@ -105,7 +107,7 @@ class PolizaDeDiarioFleteController {
 				
 				if(c.descuento>0){
 					poliza.addToPartidas(
-						cuenta:CuentaContable.buscarPorClave("203-P004"),
+						cuenta:CuentaContable.buscarPorClave("205-P004"),
 						debe:0.0,
 						haber:c.descuento,
 						asiento:asiento,
@@ -119,7 +121,7 @@ class PolizaDeDiarioFleteController {
 				
 				if(c.rembolso>0){
 					poliza.addToPartidas(
-						cuenta:CuentaContable.buscarPorClave("203-P004"),
+						cuenta:CuentaContable.buscarPorClave("205-P004"),
 						debe:0.0,
 						haber:c.rembolso,
 						asiento:asiento,
@@ -133,7 +135,7 @@ class PolizaDeDiarioFleteController {
 				
 				if(c.otros>0){
 					poliza.addToPartidas(
-						cuenta:CuentaContable.buscarPorClave("203-P004"),
+						cuenta:CuentaContable.buscarPorClave("205-P004"),
 						debe:0.0,
 						haber:c.otros,
 						asiento:asiento,
@@ -149,7 +151,7 @@ class PolizaDeDiarioFleteController {
 			}
 			//Cargo a IVA Gasto
 			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave("117-0001"),
+				cuenta:CuentaContable.buscarPorClave("118-0001"),
 				debe:fac.impuestos-fac.retImp,
 				haber:0.0,
 				asiento:asiento,
@@ -162,7 +164,7 @@ class PolizaDeDiarioFleteController {
 			
 			//Cargo a Retencion Flete
 			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave("117-0009"),
+				cuenta:CuentaContable.buscarPorClave("119-0003"),
 				debe:fac.retImp,
 				haber:0.0,
 				asiento:asiento,
@@ -175,7 +177,7 @@ class PolizaDeDiarioFleteController {
 			
 			//Abono a Retencion Flete
 			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave("205-0002"),
+				cuenta:CuentaContable.buscarPorClave("216-0001"),
 				debe:0.0,
 				haber:fac.retImp,
 				asiento:asiento,
@@ -188,7 +190,7 @@ class PolizaDeDiarioFleteController {
 			
 			//Abono a Acredores
 			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave("203-F001"),
+				cuenta:CuentaContable.buscarPorClave("205-F001"),
 				debe:0.0,
 				haber:fac.total-(fac.descuento?:0.0)-(fac.rembolso?:0.0)-(fac.otros?:0.0),
 				asiento:asiento,
@@ -201,30 +203,7 @@ class PolizaDeDiarioFleteController {
 			
 			 
 			 
-			//IETUs
-			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave("900-0003"),
-				debe:fac.importe,
-				haber:0.0,
-				asiento:asiento,
-				descripcion:"$fac.documento "+fac.fecha.text(),
-				referencia:"$fac.documento"
-				,fecha:poliza.fecha
-				,tipo:poliza.tipo
-				,entidad:'FacturaDeGasto'
-				,origen:fac.id)
 			
-			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave("901-0003"),
-				debe:0.0,
-				haber:fac.importe,
-				asiento:asiento,
-				descripcion:"$fac.documento "+fac.fecha.text(),
-				referencia:"$fac.documento"
-				,fecha:poliza.fecha
-				,tipo:poliza.tipo
-				,entidad:'FacturaDeGasto'
-				,origen:fac.id)
 		}
 	}
 	

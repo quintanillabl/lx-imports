@@ -19,7 +19,7 @@
 
 <div id="embarquesGrid">
 	
-	<table id="embarquesDetGrid" class="simpleGrid table table-striped table-bordered table-condensed">
+	<table id="embarquesDetGrid" class="simpleGrid table  table-bordered table-condensed">
 	<thead>
 		<tr>
 			<th>Id</th>
@@ -61,16 +61,11 @@
 <div class="modal fade" id="agregarContendorDialog" tabindex="-1">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<g:formRemote name="agregar" class="form-horizontal" id="${pedimentoInstance.id}"
-				url="[controller:'pedimento',action:'agregarEmbarquesPorContenedor']"
-				onSuccess=" reload(data)"
-				onFailure="showError(XMLHttpRequest,textStatus,errorThrown)">
-
+			<form name="agregarForm" >
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 					<h4 class="myModalLabel">Agregar contenedor</h4>
 				</div>
-
 				<div class="modal-body ui-front">
 					<g:hiddenField name="pedimentoId" value="${pedimentoInstance.id}"/>
 					<g:hiddenField name="contenedorId" value=""/>
@@ -86,7 +81,7 @@
 					</button>
 				</div>
 
-			</g:formRemote>	
+			</form>	
 		</div>
 			
 	</div>
@@ -97,64 +92,37 @@
 
 <script>
 
-function reload(data){
-	console.log('Reloading...');
-	var table=$("#embarquesDetGrid").DataTable();
-	table.ajax.reload();
-	//$("#embarquesDetGrid").dataTable().fnReloadAjax();
-	$('#agregarContendorDialog').val("");
-}
+
 
 $(function(){
-	
-	
-	$(".simpleGrid tbody tr").on('hover',function(){
-		$(this).toggleClass("info");
-	});
-	
-	$(".simpleGrid tbody tr").on('click',function(){
-		$(this).toggleClass("success selected");
-	});
-	
-	$(document).on("keydown",function(event){
-		var keycode = (event.keyCode ? event.keyCode : event.which);
-		if(event.ctrlKey ){
-			if(keycode==65){
-				//console.log('detecting under ctrl');
-				$(".simpleGrid tbody tr").addClass("success selected");
-			}else if(keycode==67){
-				$(".simpleGrid tbody tr").removeClass("success selected");
-			}
-		}
-	});
-	
-	function selectAllRows(){
-		$(".simpleGrid tbody tr").addClass("success selected");
+
+
+	function reload(data){
+		console.log('Reloading...');
+		var table=$("#embarquesDetGrid").DataTable();
+		table.ajax.reload();
+		//$("#embarquesDetGrid").dataTable().fnReloadAjax();
+		$('#agregarContendorDialog').val("");
 	}
-	
-	function clearAllRows(){
-		$(".simpleGrid tbody tr").removeClass("success selected");
-	}
-	
-	function selectedRows(){
-		var res=[];
-		var data=$(".simpleGrid .selected").each(function(){
-			var tr=$(this);
-			res.push(tr.attr("id"));
-		});
-		return res;
-	}
-	
-	$('#agregarContendorDialog').on('show', function(){
-		$("#contenedor").val("");
+	/*
+	$('#grid').dataTable({
+	    responsive: true,
+	    aLengthMenu: [[20, 40, 60, 100, -1], [20, 40,60, 100, "Todos"]],
+	    "language": {
+	        "url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
+	    },
+	    "dom": 'T<"clear">lfrtip',
+	    "tableTools": {
+	        "sSwfPath": "${assetPath(src: 'plugins/dataTables/swf/copy_csv_xls_pdf.swf')}"
+	    },
+	    "order": []
 	});
-		
+	*/
+
 	var oTable=$("#embarquesDetGrid").dataTable({
-		
-		"sDom": "<'row'<'span12'f>r>t<'row'<'span6'i><'span6'p>>",
-        "oLanguage": {
-      		"sUrl":"<g:resource dir="js" file="dataTables.spanish.txt" />"
-    	},
+        "language": {
+	        "url": "${assetPath(src: 'datatables/dataTables.spanish.txt')}"
+	    },
     	bProcessing: true,
 		bServerSide:false,
 		"fnServerParams":function(aoData){
@@ -181,6 +149,42 @@ $(function(){
     	"bInfo": false,
     	iDisplayLength: 100
 	});
+	
+
+	$(".simpleGrid tbody").on('hover','tr',function(){
+		$(this).toggleClass("info");
+	});
+	
+	$(".simpleGrid tbody ").on('click','tr',function(){
+		$(this).toggleClass("success selected");
+	});
+	
+	$(document).on("keydown",function(event){
+		var keycode = (event.keyCode ? event.keyCode : event.which);
+		if(event.ctrlKey ){
+			if(keycode==65){
+				//console.log('detecting under ctrl');
+				$(".simpleGrid tbody tr").addClass("success selected");
+			}else if(keycode==67){
+				$(".simpleGrid tbody tr").removeClass("success selected");
+			}
+		}
+	});
+	
+	function selectAllRows(){
+		$(".simpleGrid tbody tr").addClass("success selected");
+	}
+	
+	function clearAllRows(){
+		$(".simpleGrid tbody tr").removeClass("success selected");
+	}
+	
+	
+	$('#agregarContendorDialog').on('show', function(){
+		$("#contenedor").val("");
+	});
+		
+	
 	
 	$("#refreshBtn").on('click',function(e){
 		//oTable.fnReloadAjax();
@@ -214,23 +218,36 @@ $(function(){
 			if(!ok)
 				return;
 			console.log('Cancelando facturas: '+res);
-			$.ajax({
-				url:"${createLink(controller:'pedimento',action:'eliminarAsignacionDeEmbarques')}",
-				data:{
+			$.post(
+				"${createLink(controller:'pedimento',action:'eliminarAsignacionDeEmbarques')}",
+				{
 					pedimentoId:${pedimentoInstance.id},
 					partidas:JSON.stringify(res)
-				},
-				success:function(response){
-					//$("#embarquesGrid").html(response);
-					oTable.fnReloadAjax();
-				},
-				error:function(request,status,error){
-					alert("Error: "+status);
-				},
-				complete:function(){
-					$('#agregarContendorDialog').val("");
 				}
+			).done(function(data){
+				reload();
+
+			}).fail(function(jqXHR, textStatus, errorThrown){
+				ert("Error: "+status);
 			});
+
+			// $.ajax({
+			// 	url:"${createLink(controller:'pedimento',action:'eliminarAsignacionDeEmbarques')}",
+			// 	data:{
+			// 		pedimentoId:${pedimentoInstance.id},
+			// 		partidas:JSON.stringify(res)
+			// 	},
+			// 	success:function(response){
+			// 		//$("#embarquesGrid").html(response);
+			// 		oTable.fnReloadAjax();
+			// 	},
+			// 	error:function(request,status,error){
+			// 		alert("Error: "+status);
+			// 	},
+			// 	complete:function(){
+			// 		$('#agregarContendorDialog').val("");
+			// 	}
+			// });
 	}
 	
 	$("#contenedor").autocomplete(
@@ -241,13 +258,24 @@ $(function(){
 		   		$("#contenedorId").val(ui.item.id);
 		}
 	});
+
+	$('form[name=agregarForm]').submit(function(e){
+	    
+	    e.preventDefault(); 
+	    var data=$(this).serialize();
+	    console.log("Agregando contenedor: "+data);
+	    $.post("${createLink(action:'agregarEmbarquesPorContenedor') }",data
+	    ).done(function(){
+	    	reload();
+	    }).fail(function( jqXHR, textStatus, errorThrown){
+	    	alert("Error agregando contenedor: "+errorThrown);
+	    });
+	    return true;
+	});
 	
 	
 });	
 		
-function showError(XMLHttpRequest,textStatus,errorThrown){
-	console.log('Error: '+errorThrown);
-	
-}		
+		
 </script>
 

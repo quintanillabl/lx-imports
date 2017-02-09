@@ -9,8 +9,14 @@ import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 
 import util.Rounding;
+//import groovy.transform.ToString
+import groovy.transform.EqualsAndHashCode
 
+//@ToString(includes='nombre',includeNames=true,includePackage=false)
+@EqualsAndHashCode(includes='id')
 class Requisicion {
+
+	static auditable = true
 	
 	Proveedor proveedor
 	String concepto
@@ -49,7 +55,7 @@ class Requisicion {
 
     static constraints = {
 		proveedor(nullable:false)
-		concepto(blank:false,inList:['PAGO','ANTICIPO','ANTICIPO_COMPLEMENTO','ANTICIPO_COMPRA','ANTICIPO_GASTO','PARCIALIDAD','COMPRA_MONEDA','FLETE'])
+		concepto(blank:false,inList:['PAGO','ANTICIPO','ANTICIPO_COMPLEMENTO','ANTICIPO_COMPRA','ANTICIPO_GASTO','PARCIALIDAD','COMPRA_MONEDA','FLETE','DEPOSITO_EN_GARANTIA','PENDIENTE','REEMBOLSO CHOFERES','PAGO_USD', 'COMISION','PRESTAMO'])
 		formaDePago(blank:false,inList:['TRANSFERENCIA','CHEQUE'])
 		tc(nullable:false,scale:6,validator:{ val,obj ->
 			if(obj.moneda!=Currency.getInstance('MXN') && val<=1.0)
@@ -67,7 +73,7 @@ class Requisicion {
     }
 	
 	static mapping ={
-		proveedor fetch:'join'
+		//proveedor fetch:'join'
 		//pagoProveedor fetch:'join'
 		partidas cascade: "all-delete-orphan"
 	}
@@ -97,21 +103,6 @@ class Requisicion {
 		return "Id: ${id}  $proveedor $total ($moneda) $formaDePago"
 	}
 	
-	boolean equals(Object obj){
-		if(!obj.instanceOf(Requisicion))
-			return false
-		if(this.is(obj))
-			return true
-		def eb=new EqualsBuilder()
-		eb.append(id, obj.id)
-		return eb.isEquals()
-	}
-	
-	int hashCode(){
-		def hb=new HashCodeBuilder(17,35)
-		hb.append(id)
-		return hb.toHashCode()
-	}
 	
 	
 

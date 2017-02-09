@@ -8,127 +8,88 @@ import org.springframework.dao.DataIntegrityViolationException
 
 import com.luxsoft.impapx.CuentaPorPagar;
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasRole('COMPRAS')"])
 class NotaDeCreditoController {
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    //static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
 	
 	def notaDeCreditoService
 
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    def list() {
-		
-        params.max = Math.min(params.max ? params.int('max') : 50, 100)
-		params.sort="id"
-		params.order='desc'
-        [notaDeCreditoInstanceList: NotaDeCredito.list(params), notaDeCreditoInstanceTotal: NotaDeCredito.count()]
+    	def periodo=session.periodo
+    	def tipo=params.tipo?:'PENDIENTES'
+        def query=NotaDeCredito.where{
+        	fecha>=periodo.fechaInicial && fecha<=periodo.fechaFinal
+        }
+        if(tipo=='APLICADOS'){
+        	query=query.where{
+        		disponible<=0.0
+        	}
+        }
+        if(tipo=='PENDIENTES'){
+        	query=query.where{
+        		aplicado<=0.0
+        	}
+        }
+        [notaDeCreditoInstanceList:query.list([sort:'fecha',order:'desc']),tipo:tipo]
+        
     }
 
     def create() {
-		switch (request.method) {
-		case 'GET':
-        	[notaDeCreditoInstance: new NotaDeCredito(params)]
-			break
-		case 'POST':
-		    println 'Generando nota: '+params
-	        def notaDeCreditoInstance = new NotaDeCredito(params)
-	        if (!notaDeCreditoInstance.save(flush: true)) {
-	            render view: 'create', model: [notaDeCreditoInstance: notaDeCreditoInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.created.message', args: [message(code: 'notaDeCredito.label', default: 'NotaDeCredito'), notaDeCreditoInstance.id])
-	        redirect action: 'show', id: notaDeCreditoInstance.id
-			break
-		}
+    	[notaDeCreditoInstance: new NotaDeCredito(fecha:new Date())]
     }
 
-    def show() {
-        def notaDeCreditoInstance = NotaDeCredito.get(params.id)
-        if (!notaDeCreditoInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'notaDeCredito.label', default: 'NotaDeCredito'), params.id])
-            redirect action: 'list'
+    def save(NotaDeCredito notaDeCreditoInstance){
+    	if (!notaDeCreditoInstance) {
+			flash.message = 
+            redirect action: 'index'
             return
         }
+    	if(notaDeCreditoInstance.hasErrors()){
+    		render view:'create',model:[notaDeCreditoInstance:notaDeCreditoInstance]
+    		return
+    	}
+    	notaDeCreditoInstance.save flush:true
+    	flash.message=message(code: 'default.not.found.message', args: [message(code: 'notaDeCredito.label', default: 'NotaDeCredito'), params.id])
+    	redirect action:'edit',id:notaDeCreditoInstance.id
+    }
 
+    def show(NotaDeCredito notaDeCreditoInstance) {
         [notaDeCreditoInstance: notaDeCreditoInstance]
     }
 
-    def edit() {
-		switch (request.method) {
-		case 'GET':
-	        def notaDeCreditoInstance = NotaDeCredito.findById(params.id,[fetch:[aplicaciones:'eager']])
-	        if (!notaDeCreditoInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'notaDeCredito.label', default: 'NotaDeCredito'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-	        [notaDeCreditoInstance: notaDeCreditoInstance]
-			break
-		case 'POST':
-	        def notaDeCreditoInstance = NotaDeCredito.findById(params.id,[fetch:[aplicaciones:'eager']])
-	        if (!notaDeCreditoInstance) {
-	            flash.message = message(code: 'default.not.found.message', args: [message(code: 'notaDeCredito.label', default: 'NotaDeCredito'), params.id])
-	            redirect action: 'list'
-	            return
-	        }
-			
-	        if (params.version) {
-	            def version = params.version.toLong()
-	            if (notaDeCreditoInstance.version > version) {
-	                notaDeCreditoInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-	                          [message(code: 'notaDeCredito.label', default: 'NotaDeCredito')] as Object[],
-	                          "Another user has updated this NotaDeCredito while you were editing")
-	                render view: 'edit', model: [notaDeCreditoInstance: notaDeCreditoInstance]
-	                return
-	            }
-	        }
-			/*
-			if(notaDeCreditoInstance.aplicado>0.0){
-				flash.message = "Nota de crédito con aplicaciones no se puede modificar "
-				redirect action: 'show', id: notaDeCreditoInstance.id
-				return
-			}*/
-			
-	        notaDeCreditoInstance.properties = params
-
-	        if (!notaDeCreditoInstance.save(flush: true)) {
-	            render view: 'edit', model: [notaDeCreditoInstance: notaDeCreditoInstance]
-	            return
-	        }
-
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'notaDeCredito.label', default: 'NotaDeCredito'), notaDeCreditoInstance.id])
-	        redirect action: 'edit', id: notaDeCreditoInstance.id
-			break
-		}
+    def edit(NotaDeCredito notaDeCreditoInstance){
+    	[notaDeCreditoInstance: notaDeCreditoInstance]
     }
 
-    def delete() {
-		println 'Eliminando la nota de credito: '+params
-        def notaDeCreditoInstance = NotaDeCredito.get(params.id)
+    def update(NotaDeCredito notaDeCreditoInstance){
+    	if(notaDeCreditoInstance.hasErrors()){
+    		render view:'edit',model:[notaDeCreditoInstance:notaDeCreditoInstance]
+    		return
+    	}
+    	notaDeCreditoInstance.save flush:true
+    	flash.message="Nota de credito ${notaDeCreditoInstance.id} actualizada"
+    	redirect action:'edit',id:notaDeCreditoInstance.id
+    }
+
+    
+
+    def delete(NotaDeCredito notaDeCreditoInstance) {
         if (!notaDeCreditoInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'notaDeCredito.label', default: 'NotaDeCredito'), params.id])
-            redirect action: 'list'
+            redirect action: 'index'
             return
         }
-
-        try {
-            notaDeCreditoInstance.delete(flush: true)
-			flash.message = message(code: 'default.deleted.message', args: [message(code: 'notaDeCredito.label', default: 'NotaDeCredito'), params.id])
-            redirect action: 'list'
-        }
-        catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'notaDeCredito.label', default: 'NotaDeCredito'), params.id])
-            redirect action: 'show', id: params.id
-        }
+        notaDeCreditoInstance.delete(flush: true)
+		flash.message = message(code: 'default.deleted.message', args: [message(code: 'notaDeCredito.label', default: 'NotaDeCredito'), params.id])
+		redirect action: 'index'
     }
 	
 	def selectorDeFacturas(){
-		//println 'Selector de factoras para aplicaciones: '+params
 		def nota = NotaDeCredito.get(params.id)
-		
 		def facturas=CuentaPorPagar
 			.findAll("from CuentaPorPagar p where p.proveedor=? and p.moneda=? and p.total-p.pagosAplicados>0"
 				,[nota.proveedor,nota.moneda])

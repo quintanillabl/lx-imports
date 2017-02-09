@@ -7,6 +7,9 @@ import grails.transaction.Transactional
 import grails.converters.JSON
 import org.codehaus.groovy.grails.web.json.JSONArray
 import grails.plugin.springsecurity.annotation.Secured
+import com.luxsoft.impapx.cxp.ComprobanteFiscalException
+import com.luxsoft.impapx.cxp.*
+import com.luxsoft.impapx.*
 
 @Secured(["hasAnyRole('COMRAS','TESORERIA')"])
 @Transactional(readOnly = true)
@@ -16,11 +19,14 @@ class FacturaDeGastosController {
 
     def facturaDeGastosService
 
+     def comprobanteFiscalService
+
     def index(Integer max) {
-        params.max = Math.min(max ?: 40, 100)
-        params.sort=params.sort?:'lastUpdated'
-        params.order='desc'
-        respond FacturaDeGastos.list(params), model:[facturaDeGastosInstanceCount: FacturaDeGastos.count()]
+        def periodo=session.periodo
+        def list=FacturaDeGastos.findAll(
+            "from FacturaDeGastos c  where date(c.fecha) between ? and ? order by c.lastUpdated desc",
+            [periodo.fechaInicial,periodo.fechaFinal])
+        [facturaDeGastosInstanceList:list]
     }
 
     def show(FacturaDeGastos facturaDeGastosInstance) {
@@ -42,8 +48,8 @@ class FacturaDeGastosController {
             return
         }
         facturaDeGastosInstance.save flush:true
-        flash.message = message(code: 'default.created.message', args: [message(code: 'facturaDeGastos.label', default: 'FacturaDeGastos'), facturaDeGastosInstance.id])
-        redirect facturaDeGastosInstance
+        flash.message = "Factura/Gasto registrado ${facturaDeGastosInstance.id}"
+        redirect action:'edit',id:facturaDeGastosInstance.id
     }
 
     def edit(FacturaDeGastos facturaDeGastosInstance) {
@@ -90,7 +96,7 @@ class FacturaDeGastosController {
         //log.info 'Concepto: '+command
         def concepto=command.toGasto()
         def fac=facturaDeGastosService.agregarPartida(command)
-        render view:'edit', model: [facturaDeGastosInstance: fac]
+        redirect action:'edit', id:fac.id
     }
 
     @Transactional
@@ -109,12 +115,71 @@ class FacturaDeGastosController {
             data.res="ERROR"
             data.error=ExceptionUtils.getRootCauseMessage(e)
         }
+        flash.message="Concepto eliminado"
         render data as JSON
     }
 
     def consultarGasto(ConceptoDeGasto concepto){
         //println 'Consultando gasto:'+params
         render(template:"conceptoShowForm",bean:concepto)
+        
+    }
+
+    def search(){
+        def term='%'+params.term.trim()+'%'
+        def query=FacturaDeGastos.where{
+            (id.toString()=~term || documento=~term || proveedor.nombre=~term ) 
+        }
+        def cuentas=query.list(max:30, sort:"id",order:'desc')
+        def cuentasList=cuentas.collect { cuenta ->
+            def label="Id: ${cuenta.id} Docto:${cuenta.documento} ${cuenta.proveedor} ${cuenta.fecha.format('dd/MM/yyyy')} ${cuenta.total} "
+            [id:cuenta.id,label:label,value:label]
+        }
+        render cuentasList as JSON
+    }
+
+    @Transactional
+    def importarCfdi(FacturaDeGastos facturaDeGastosInstance){
+
+        def xml=request.getFile('xmlFile')
+        if(xml==null){
+            flash.message="Archivo XML no localizado"
+            redirect(uri: request.getHeader('referer') )
+            return
+        }
+        try {
+            if(facturaDeGastosInstance.id!=null){
+                comprobanteFiscalService.actualizar(facturaDeGastosInstance,xml)
+                log.info 'CFDI actualizado para cxp: '+facturaDeGastosInstance.id
+                redirect action:'edit',id:facturaDeGastosInstance.id
+                return
+            }else{
+                try {
+                    def cxp=comprobanteFiscalService.importar(xml,new FacturaDeGastos())
+                    flash.message="Cuenta por pagar generada para el CFDI:  ${xml.getOriginalFilename()}"
+                    redirect action:'edit',id:cxp.id
+                    return
+                }
+                catch(ComprobanteExistenteException ex) {
+                    log.info 'Cfdi ta importado: '+ex.comprobante.uuid
+                    def cfdi = ex.comprobante
+                    def cxp = cfdi.cxp
+                    flash.message="CFDI YA IMPORTADO en la factura Id:${cxp.id} Docto:${cxp.documento}"+ex.message
+                    if(cxp.instanceOf(FacturaDeGastos)){
+                        redirect action:'show',id:cxp.id
+                        return
+                    }else if(cxp.instanceOf(GastosDeImportacion)){
+                        redirect controller:'gastosDeImportacion',action:'show',id:cxp.id
+                        return
+                    }
+                }
+            }
+        }
+        catch(ComprobanteFiscalException e) {
+            flash.message="Errores en la importación"
+            flash.error=e.message
+            redirect action:'index'
+        }
         
     }
 }

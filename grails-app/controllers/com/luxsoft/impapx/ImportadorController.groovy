@@ -1,8 +1,11 @@
 package com.luxsoft.impapx
 
 import com.luxsoft.impapx.contabilidad.CuentaContable;
-
 import groovy.sql.Sql
+import org.springframework.jdbc.datasource.SingleConnectionDataSource
+import org.apache.commons.lang.RandomStringUtils
+import org.apache.commons.lang.exception.ExceptionUtils
+import grails.plugin.springsecurity.annotation.Secured
 
 /**
  * Controlador para la importacion de datos desde otras versiones del sistema
@@ -10,8 +13,6 @@ import groovy.sql.Sql
  * @author Ruben Cancino
  *
  */
- import grails.plugin.springsecurity.annotation.Secured
- 
  @Secured(["hasRole('COMPRAS')"])
 class ImportadorController {
 	
@@ -133,10 +134,10 @@ class ImportadorController {
 	}
 
 
-	
+	/*	
 	def importarCompras(){
-		def db=new Sql(dataSource_importacion)
-		def res=db.eachRow("select * from SX_COMPRAS2  where PROVEEDOR_ID=60 and DEPURACION is null and fecha>=? ",[new Date().parse('dd/MM/yyyy','01/02/2012')]) { row ->
+		def sql=sql()
+		def res=sql.eachRow("select * from SX_COMPRAS2  where PROVEEDOR_ID=60 and DEPURACION is null and fecha>=? ",[new Date().parse('dd/MM/yyyy','01/02/2012')]) { row ->
 			Compra c=Compra.findOrCreateByOrigen(row.COMPRA_ID)
 			Proveedor p=Proveedor.findOrSaveByNombre(row.nombre)
 			c.proveedor=p
@@ -175,17 +176,75 @@ class ImportadorController {
 		}
 		redirect (controller:'compra', action:'list',params:[max:20])
 	}
+	*/
 	
 	def importarCompra(long folio){
 		def proveedorOrigenParaCompras=grailsApplication.config.proveedorOrigenParaCompras
-		Compra found=Compra.findByFolio(folio,[fetch:['partidas']])
+		assert proveedorOrigenParaCompras,'No hay proveedor origen de compras para importacion'
+		Compra found=Compra.findByFolio(folio)
+
 		if(found){
 			throw new RuntimeException("Compra $folio ya importada, borrar si se requiere re importar");
 		}
-		def db=new Sql(dataSource_importacion)
-		def res=db.eachRow("select * from SX_COMPRAS2  where PROVEEDOR_ID=?  and folio=? and fecha>'2012-01-01' "
+		log.info 'Importando compra: '+folio +" Proveedor origen ID: "+proveedorOrigenParaCompras
+		
+		SingleConnectionDataSource ds=new SingleConnectionDataSource(
+
+		        driverClassName:'com.mysql.jdbc.Driver',
+		        url:'jdbc:mysql://10.10.1.228/produccion',
+		        username:'root',
+		        password:'sys',
+		        suppressClose:true)
+		Sql sql=new Sql(ds)
+
+		//def sql= new Sql(dataSource_importacion)
+
+		def row=sql.firstRow("select * from SX_COMPRAS2  where PROVEEDOR_ID=?  and folio=? and fecha>'2012-01-01' ",
+			,[proveedorOrigenParaCompras,folio])
+		log.info 'Importando :'+row
+		
+		Compra c=Compra.findOrCreateByOrigen(row.COMPRA_ID)
+		Proveedor p=Proveedor.findOrSaveByNombre(row.nombre)
+		c.proveedor=p
+		c.fecha=row.fecha
+		c.comentario=row.comentario
+		c.origen=row.compra_id
+		c.depuracion=row.depuracion
+		c.folio=row.folio
+		c.entrega=row.entrega
+		c.moneda=Currency.getInstance(row.moneda)
+		c.tc=row.tc
+		c.importe=row.importe_bruto
+		c.descuentos=row.importe_desc
+		c.subtotal=row.importe_neto
+		c.impuestos=row.impuestos
+		c.total=row.total
+		c.partidas=[]
+		log.info 'Importando partidas '+row.compra_id
+		//def rows=sql().rows('select * from sx_compras2_det where compra_id=:id',[id:row.compra_id] )
+		//def sql2=sql()
+		
+		sql.eachRow('select * from sx_compras2_det where compra_id=?',[c.origen]) {
+			CompraDet cd=new CompraDet()
+			Producto prod=Producto.findByClave(it.clave)
+			cd.producto=prod
+			cd.solicitado=it.solicitado
+			cd.precio=0
+			cd.descuento=0
+			cd.importeDescuento=0
+			cd.importe=0
+			cd.compra=c
+			c.partidas.add(cd)
+			//c.addToPartidas(cd)
+		}
+		
+		def comp=c.save(failOnError:true,flush:true)
+		log.info 'Compra generada: '+comp
+		redirect (controller:'compra', action:'edit',id:comp.id)
+		/*
+		def res=sql.eachRow("select * from SX_COMPRAS2  where PROVEEDOR_ID=?  and folio=? and fecha>'2012-01-01' "
 			,[proveedorOrigenParaCompras,folio]) { row ->
-			println 'Procesando: '+row
+			log.info 'Importando compra: '+row.folio +" Prov: "+row.nombre
 			Compra c=Compra.findOrCreateByOrigen(row.COMPRA_ID)
 			Proveedor p=Proveedor.findOrSaveByNombre(row.nombre)
 			c.proveedor=p
@@ -204,7 +263,7 @@ class ImportadorController {
 			c.total=row.total
 			c.partidas=[]
 			
-			def dets=db.eachRow("select * from sx_compras2_det where compra_id=?",[row.compra_id]) {
+			def dets=sql.eachRow("select * from sx_compras2_det where compra_id=?",[row.compra_id]) {
 				  
 				CompraDet cd=new CompraDet()
 				Producto prod=Producto.findByClave(it.clave)
@@ -223,7 +282,8 @@ class ImportadorController {
 			def comp=c.save(failOnError:true)
 			log.info 'Compra generada: '+comp
 		}
-		redirect (controller:'compra', action:'list',params:[max:20])
+		redirect (controller:'compra', action:'index')
+		*/
 	}
 	
 	/**
@@ -244,7 +304,7 @@ class ImportadorController {
 		def db = new Sql(dataSource_importacion)
 		
 		
-		def rows=db.rows("""
+	/*	def rows=db.rows("""
 			select a.clave,a.descripcion,precioContado,precioCredito,b.nombre as linea,c.nombre as marca,d.nombre as clase,e.unidad as unidad
 				   ,a.kilos,a.gramos,a.largo,a.ancho,a.calibre,a.caras,a.acabado,a.color,a.M2MILLAR as m2
 						 from sx_productos a 
@@ -254,7 +314,7 @@ class ImportadorController {
 						 left join sx_unidades e on(a.unidad=e.unidad)
 						 where a.clave=?
 			""",[params.clave]
-			)
+			)*/
 		 
 		//println 'Productos a importar: '+rows
 		def res=db.eachRow("""
@@ -290,7 +350,8 @@ class ImportadorController {
 			Producto pp=producto.save(failOnError:true)
 			log.info 'Producto importado'+pp.properties
 		}
-		redirect (controller:'producto', action:'list',params:[max:20])
+		db.close()
+		redirect (controller:'producto', action:'index',params:[max:20])
 	}
 	
 	
@@ -324,4 +385,15 @@ class ImportadorController {
 		redirect (action:'list',params:[max:100])
 	}
 	*/
+
+	private sql(){
+    	//def db=grailsApplication.config.luxor.empleadosDb
+    	SingleConnectionDataSource ds=new SingleConnectionDataSource(
+            driverClassName:'com.mysql.jdbc.Driver',
+            url:"jdbc:mysql://10.10.1.228/produccion",
+            username:"root",
+            password:"sys")
+        Sql sql=new Sql(ds)
+        return sql
+    }
 }

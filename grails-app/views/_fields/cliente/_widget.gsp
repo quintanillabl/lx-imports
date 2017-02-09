@@ -1,4 +1,4 @@
-<%@page expressionCodec="none" %>
+%{-- <%@page expressionCodec="none" %>
 <asset:stylesheet src="jquery-ui.css"/>
 <asset:javascript src="jquery-ui/autocomplete.js"/>
 <g:hiddenField id="clienteId" name="${property}.id" value="${value?.id}" />
@@ -26,3 +26,13 @@ $(function(){
 
 
 
+ --}%
+ <%@page expressionCodec="none" %>
+ <g:select class="form-control chosen-select"  
+ 	name="${property}" 
+ 	value="${value?.id}"
+ 	from="${com.luxsoft.impapx.Cliente.findAll()}" 
+ 	optionKey="id" 
+ 	optionValue="nombre"
+ 	
+ 	/>

@@ -21,34 +21,55 @@ import com.luxsoft.impapx.tesoreria.PagoProveedor
 import com.luxsoft.impapx.tesoreria.SaldoDeCuenta
 import com.luxsoft.impapx.tesoreria.Traspaso
 
+import grails.plugin.springsecurity.annotation.Secured
+
+@Secured(["hasRole('CONTABILIDAD')"])
 class PolizaDeDiarioController {
 
 	def polizaService
 	
-     def index() {
-	   redirect action: 'list', params: params
-    }
-	 
-	def mostrarPoliza(long id){
-		def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
-		render (view:'poliza' ,model:[poliza:poliza,partidas:poliza.partidas])
-	}
-	 
-	def list() {
-		if(!session.periodoContable){
-			PeriodoContable periodo=new PeriodoContable()
-			periodo.actualizarConFecha()
-			session.periodoContable=periodo
-		}
-		PeriodoContable periodo=session.periodoContable
+	def index() {
 		def sort=params.sort?:'fecha'
 		def order=params.order?:'desc'
+		def periodo=session.periodoContable
 		
-		def polizas=Poliza.findAllByTipoAndFechaBetween('DIARIO',periodo.inicio,periodo.fin,[sort:sort,order:order])
-		[polizaInstanceList: polizas, polizaInstanceTotal: polizas.size()]
+		def q = Poliza.where {
+			subTipo == 'DIARIO' && ejercicio == periodo.ejercicio && mes == periodo.mes
+
+		}
+		respond q.list(params)
+		
 	}
+
+	def update(Poliza polizaInstance){
+		if (polizaInstance == null) {
+		    notFound()
+		    return
+		}
+		log.info 'Actualizando propiedades de la poliza: '+polizaInstance
+		
+		if (polizaInstance.hasErrors()) {
+		    respond polizaInstance.errors, view:'create'
+		    return
+		}
+		if(polizaInstance.cierre){
+			flash.message = "Periodo contable cerrado no se puede modificar esta poliza"
+			redirect controller:'poliza',action:'edit',id:polizaInstance.id
+			return
+		}
+		//polizaInstance = polizaService.salvarPoliza polizaInstance 
+		flash.message = "Poliza ${polizaInstance.folio} generada"
+		redirect controller:'poliza',action:'edit',id:polizaInstance.id
+	}
+	 
 	
+	// def mostrarPoliza(long id){
+	// 	def poliza=Poliza.findById(id,[fetch:[partidas:'eager']])
+	// 	render (view:'/poliza/poliza2' ,model:[poliza:poliza,partidas:poliza.partidas])
+	// }
+
 	def generarPoliza(String fecha){
+		
 		Date dia=Date.parse("dd/MM/yyyy",fecha)
 		
 		params.dia=dia
@@ -57,6 +78,9 @@ class PolizaDeDiarioController {
 		
 		//Prepara la poliza
 		Poliza poliza=new Poliza(tipo:'DIARIO',folio:1, fecha:dia,descripcion:'Poliza '+dia.text(),partidas:[])
+		poliza.ejercicio = session.periodoContable.ejercicio
+		poliza.mes = session.periodoContable.mes
+		poliza.subTipo= 'DIARIO'
 		
 		//Collecciones usadas mas de una vez
 		def facturas=[]
@@ -73,31 +97,28 @@ class PolizaDeDiarioController {
 			if(venta.clase=='generica')
 				servicios.add(venta)
 		}
-		println 'Facturas de importacion: '+facturas.size()
-		println 'Facturas de servicios: '+servicios.size()
-		//def facturas=Venta.findAll("from Venta v  where date(v.fechaFactura)=? and v.tipo=? and (v.clase is null or v.clase='IMPORTACION') ",[dia,'VENTA'])
-		
-		//Collecciones usadas mas de una vez
-		
-		
-		//def servicios=Venta.findAll("from Venta v  where date(v.fechaFactura)=? and v.tipo=? and v.clase='generica' ",[dia,'VENTA'])
 		
 		
 		// Procesadores
 		
-		procesarFacturacion(poliza, dia, facturas)
-		procesarFacturasServicios(poliza, dia, servicios)
-		procesarCostoDeVentas(poliza, dia, facturas)		
+		//procesarFacturacion(poliza, dia, facturas) /** Se migro a service 22-02-2016*/
+		//procesarFacturasServicios(poliza, dia, servicios) /** Se migro a service 22-02-2016*/
+		//procesarCostoDeVentas(poliza, dia, facturas)	/** Se migro a service 22-02-2016*/	
+		
 		//procesarAltaDeAnticipos(poliza, dia)
+		
 		procesarCobroSaldoDeudor(poliza, dia)
 		procesarCompraDeMonedaExtranjera(poliza, dia)
-		procesarComisionesBancarias(poliza, dia)
 		
-		procesarTraspasosBancarios(poliza, dia)
+		//procesarComisionesBancarias(poliza, dia) /** Se migro a service 22-02-2016*/
+		
+		//procesarTraspasosBancarios(poliza, dia) /** Se migro a service 22-02-2016*/
+		
 		//procesarInversionesAlta(poliza, dia)
 		//procesarInversionesRetorno(poliza, dia)
-		procesarVariacionCambiariaBancos(poliza, dia)
-		procesarVariacionCambiariaProveedores(poliza, dia)
+		
+		//procesarVariacionCambiariaBancos(poliza, dia) /** Se migro a service 23-02-2016*/
+		//procesarVariacionCambiariaProveedores(poliza, dia) /** Se migro a service 23-02-2016*/
 		
 		procesarDescuentosCxP(poliza, dia)
 		procesarNotasDeCreditoCxC(poliza, dia)
@@ -109,9 +130,8 @@ class PolizaDeDiarioController {
 		poliza.debe=poliza.partidas.sum (0.0,{it.debe})
 		poliza.haber=poliza.partidas.sum(0.0,{it.haber})
 		poliza=polizaService.salvarPolizaDiario(poliza)
-		//poliza.folio=polizaService.nextFolio(poliza)
-		//poliza.save(failOnError:true)
-		redirect action: 'mostrarPoliza', params: [id:poliza.id]
+		
+		redirect controller:'poliza',action: 'edit', id:poliza.id
 	}
 	
 	private procesarFacturacion(def poliza,def dia,def facturas){
@@ -120,7 +140,7 @@ class PolizaDeDiarioController {
 		facturas.each{ fac->
 			
 			//Cargo a clientes
-			def clave="106-$fac.cliente.subCuentaOperativa"
+			def clave="105-$fac.cliente.subCuentaOperativa"
 			def cuenta=CuentaContable.findByClave(clave)
 			//println 'Cuenta localizada: '+cuenta
 			if(!cuenta) throw new RuntimeException("No existe la cuenta para el cliente: "+fac.cliente+ 'Clave: '+clave)
@@ -155,7 +175,7 @@ class PolizaDeDiarioController {
 			
 			//Abono a iva por trasladar
 			poliza.addToPartidas(
-				cuenta:CuentaContable.findByClave('206-0002'),
+				cuenta:CuentaContable.findByClave('209-0001'),
 				debe:0.0,
 				haber:fac.impuestos,
 				asiento:asiento,
@@ -180,7 +200,7 @@ class PolizaDeDiarioController {
 		servicios.each{ srv->
 			
 			//Cargo a clientes
-			def clave="106-$srv.cliente.subCuentaOperativa"
+			def clave="105-$srv.cliente.subCuentaOperativa"
 			def cuenta=CuentaContable.findByClave(clave)
 			//println 'Cuenta localizada: '+cuenta
 			if(!cuenta) throw new RuntimeException("No existe la cuenta para el cliente: "+srv.cliente+ 'Clave: '+clave)
@@ -214,7 +234,7 @@ class PolizaDeDiarioController {
 			
 			//Abono a iva por trasladar
 			poliza.addToPartidas(
-				cuenta:CuentaContable.findByClave('206-0002'),
+				cuenta:CuentaContable.findByClave('209-0001'),
 				debe:0.0,
 				haber:srv.impuestos,
 				asiento:asientos,
@@ -241,7 +261,7 @@ class PolizaDeDiarioController {
 			
 			//Abono al inventario
 			poliza.addToPartidas(
-				cuenta:CuentaContable.findByClave('119-0001'),
+				cuenta:CuentaContable.findByClave('115-0001'),
 				debe:0.0,
 				haber:costoNeto,
 				asiento:asiento,
@@ -380,9 +400,9 @@ class PolizaDeDiarioController {
 				,origen:comision.id)
 			
 			// 2. Cargo a IVA acreditable
-			cuenta=CuentaContable.findByClave('117-0001')
+			cuenta=CuentaContable.findByClave('118-0001')
 			if(cuenta==null)
-				throw new RuntimeException("No existe la cuenta contable 117-0001")
+				throw new RuntimeException("No existe la cuenta contable 118-0001")
 			poliza.addToPartidas(
 				cuenta:cuenta,
 				debe:comision.impuesto.abs()*comision.tc,
@@ -425,7 +445,7 @@ class PolizaDeDiarioController {
 				,entidad:'Comision'
 				,origen:comision.id)
 			
-			// 5. Cargo al IETU Deducible
+			/* 5. Cargo al IETU Deducible
 			cuenta=CuentaContable.findByClave('900-0003')
 			if(cuenta==null)
 				throw new RuntimeException("No existe la cuenta contable 900-0003")
@@ -456,7 +476,7 @@ class PolizaDeDiarioController {
 				,tipo:poliza.tipo
 				,entidad:'Comision'
 				,origen:comision.id)
-		
+			*/
 		}
 		
 		
@@ -624,7 +644,7 @@ class PolizaDeDiarioController {
 			//Abono a Intereses bancarios
 			def res=inversion.importeIsr+inversion.rendimientoReal
 			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave('701-0001'),
+				cuenta:CuentaContable.buscarPorClave('702-0001'),
 				debe:0.0,
 				haber:res,
 				asiento:asiento,
@@ -648,7 +668,7 @@ class PolizaDeDiarioController {
 			
 			
 			def importe=nota.total*nota.tc
-			def clave="701-$nota.proveedor.subCuentaOperativa"
+			def clave="702-$nota.proveedor.subCuentaOperativa"
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave(clave),
 				debe:0.0,
@@ -687,7 +707,7 @@ class PolizaDeDiarioController {
 			
 			//Abono a cliente
 			//def importe=nota.total
-			def clave="106-$nota.cliente.subCuentaOperativa"
+			def clave="105-$nota.cliente.subCuentaOperativa"
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave(clave),
 				debe:0.0,
@@ -700,7 +720,7 @@ class PolizaDeDiarioController {
 				,entidad:'CXCNota'
 				,origen:nota.id)
 			//Cargo a descuentos y rebajas
-			clave="406-$nota.cliente.subCuentaOperativa"
+			clave="402-$nota.cliente.subCuentaOperativa"
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave(clave),
 				debe:nota.importe,
@@ -713,7 +733,7 @@ class PolizaDeDiarioController {
 				,entidad:'NotaDeCredito'
 				,origen:nota.id)
 			//Cargo a IVA Pendiente por trasladar (descuentos y rebajas)
-			clave="206-0002"
+			clave="209-0001"
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave(clave),
 				debe:nota.impuesto,
@@ -782,7 +802,7 @@ class PolizaDeDiarioController {
 				,entidad:'NA'
 				,origen:0)
 			
-			def clave=diferencia>0?"701-0002":"705-0002"
+			def clave=diferencia>0?"703-002":"701-0002"
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave(clave),
 				debe:diferencia<0?diferencia.abs():0.0,
@@ -868,7 +888,7 @@ class PolizaDeDiarioController {
 					,entidad:'NA'
 					,origen:0)
 				
-				def clave=diferencia>0?"701-0002":"705-0002"
+				def clave=diferencia>0?"703-002":"701-0002"
 				poliza.addToPartidas(
 					cuenta:CuentaContable.buscarPorClave(clave),
 					debe:diferencia<0?diferencia.abs():0.0,
@@ -895,7 +915,7 @@ class PolizaDeDiarioController {
 			
 			//Cargo a cliente
 			
-			def clave="106-$nota.cliente.subCuentaOperativa"
+			def clave="105-$nota.cliente.subCuentaOperativa"
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave(clave),
 				debe:nota.total,
@@ -909,7 +929,7 @@ class PolizaDeDiarioController {
 				,origen:nota.id)
 			
 			//Abono a productos financieros
-			clave="701-0003"
+			clave="702-0003"
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave(clave),
 				debe:0.0,
@@ -923,7 +943,7 @@ class PolizaDeDiarioController {
 				,origen:nota.id)
 			
 			//Abono a IVA Pendiente por trasladar (productos financieros)
-			clave="206-0002"
+			clave="209-0001"
 			poliza.addToPartidas(
 				cuenta:CuentaContable.buscarPorClave(clave),
 				debe:0.0,
@@ -983,7 +1003,7 @@ class PolizaDeDiarioController {
 				
 				//Cargo al iva de gasto
 				poliza.addToPartidas(
-					cuenta:CuentaContable.buscarPorClave("117-0004"),
+					cuenta:CuentaContable.buscarPorClave("118-0004"),
 					debe:c.impuesto,
 					haber:0.0,
 					asiento:asiento,
@@ -994,9 +1014,9 @@ class PolizaDeDiarioController {
 					,entidad:'FacturaDeGasto'
 					,origen:fac.id)
 				//Abono a acredores diversos
-				def cuenta=CuentaContable.buscarPorClave("203-V001")
+				def cuenta=CuentaContable.buscarPorClave("205-V001")
 				if(c.tipo=='SEGUROS Y FIANZAS'){
-					cuenta=CuentaContable.buscarPorClave("203-$fac.proveedor.subCuentaOperativa")
+					cuenta=CuentaContable.buscarPorClave("205-$fac.proveedor.subCuentaOperativa")
 				}
 				poliza.addToPartidas(
 					cuenta:cuenta,
@@ -1012,7 +1032,7 @@ class PolizaDeDiarioController {
 				
 				if(c.retension>0){
 					poliza.addToPartidas(
-						cuenta:CuentaContable.buscarPorClave("117-0008"),
+						cuenta:CuentaContable.buscarPorClave("118-0008"),
 						debe:c.retension,
 						haber:0.0,
 						asiento:asiento,
@@ -1026,7 +1046,7 @@ class PolizaDeDiarioController {
 				
 				if(c.retensionIsr){
 					poliza.addToPartidas(
-						cuenta:CuentaContable.buscarPorClave("205-0006"),
+						cuenta:CuentaContable.buscarPorClave("213-0007"),
 						debe:c.retensionIsr,
 						haber:0.0,
 						asiento:asiento,
@@ -1051,7 +1071,7 @@ class PolizaDeDiarioController {
 		
 		egresos.each{ egreso ->
 			poliza.addToPartidas(
-				cuenta:CuentaContable.buscarPorClave("205-0001"),
+				cuenta:CuentaContable.buscarPorClave("213-0001"),
 				debe:egreso.importe.abs(),
 				haber:0.0,
 				asiento:asiento,

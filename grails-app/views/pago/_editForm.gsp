@@ -1,75 +1,93 @@
 
-<fieldset>
-	<g:form class="form-horizontal" action="create" >
-		<fieldset>
-			<f:with bean="pagoInstance">
-				<g:hiddenField name="version" value="${pagoInstance.version}"/>
-				
-				
-				
-				<f:field property="moneda" input-readOnly="true">
-					<g:field type="text" value="${pagoInstance.moneda}" name="moneda" readOnly="true"/>
-				</f:field>
-				<f:field property="tc"/>
-				
-				<f:field property="fecha"/>
-				<%--
-				<g:if test="pagoInstance.aplicado">
-					<f:field property="importe" input-class="autoCalculate moneyField" />
-					<f:field property="impuestoTasa" input-class="autoCalculate"/>
-					<f:field property="impuestos" input-class="autoCalculate moneyField"/>
-					<f:field property="total" input-class="autoCalculate moneyField"/>
-				</g:if>
-				--%>
-				<f:field property="aplicado"  value="${pagoInstance.aplicado?:0.0}" input-readOnly="true"/>
-				<f:field property="disponible" value="${pagoInstance.disponible}" input-readOnly="true"/>
-				<f:field property="comentario" input-class="input-xxlarge"/>
-			</f:with>
-					
-			<div class="form-actions">
-				<button type="submit" class="btn btn-primary">
-					<i class="icon-ok icon-white"></i>
-					<g:message code="default.button.update.label" default="Update" />
-				</button>
-				<button type="submit" class="btn btn-danger" name="_action_delete" formnovalidate>
-					<i class="icon-trash icon-white"></i>
-					<g:message code="default.button.delete.label" default="Delete" />
-				</button>
-			</div>
-		</fieldset>
-	</g:form>
-</fieldset>
-<r:script>
-$(function(){
+<br>
+<g:form name="updateForm" class="form-horizontal autocalculate" action="update" method="PUT">
 	
-	$('#moneda').bind('change',function(e){
-		var selected=$(this).val();
-		if(selected=="MXN"){
-			$("#tc").attr("disabled",true);//.val(1.0);
-			$("#tc").autoNumericSet(1.0);
-		}else
-			$("#tc").attr("disabled",false);
+	<f:with bean="pagoInstance">
+		<g:hiddenField name="id" value="${pagoInstance.id}"/>
+		<g:hiddenField name="version" value="${pagoInstance.version}"/>
 		
-	});
-	
-	$(".moneyField").autoNumeric({vMin:'0.00',wEmpty:'zero',mRound:'B'});
- 	$("#tc").autoNumeric({vMin:'0.0000'});
-	$("#fecha").mask("99/99/9999");
-	$("#impuestoTasa").autoNumeric({aSign: ' %', pSign: 's', vMin:'0.00',vMax: '100.00',wEmpty:'zero'} );
-	
-	//$('#importe').autoNumeric();
-	//$('#impuestos').autoNumeric();
-	//$('#total').autoNumeric();
+		<f:display property="moneda" wrapper="bootstrap3"/>
 		
-	$('.autoCalculate').blur(function(){
-		var importe=$("#importe").autoNumericGet();
-		var tasa=$("#impuestoTasa").autoNumericGet();
-		var impuestos=importe*(tasa/100);
-		var total=(+importe)+(+impuestos);
-		console.log('Importe : '+importe+ 'Impuestos:'+impuestos+' Total:'+total);
-		$('#impuestos').autoNumericSet(impuestos);
-		$('#total').autoNumericSet(total);
-	});
+		<f:field property="tc" widget="tc" wrapper="bootstrap3"/>
+		<f:field property="fecha" wrapper="bootstrap3"/>
+		<f:display property="aplicado"  widget="money" wrapper="bootstrap3"/>
+		<f:field property="disponible" widget="money" wrapper="bootstrap3"/>
+		<f:field property="comentario" widget-class="form-control" wrapper="bootstrap3"/>
+	</f:with>
+	<div class="form-group">
+	    <div class="col-lg-offset-3 col-lg-9">
+	    	<lx:backButton/>
+	        <button id="saveBtn" class="btn btn-primary ">
+	            <i class="fa fa-floppy-o"></i> Actualizar
+	        </button>
+	        <a href="" class="btn btn-danger " data-toggle="modal" data-target="#deleteDialog"><i class="fa fa-trash"></i> Eliminar</a> 
+	    </div>
+	</div>
 	
-});
-</r:script>
+</g:form>
+
+<div class="modal fade" id="deleteDialog" tabindex="-1">
+	<div class="modal-dialog ">
+		<div class="modal-content">
+			<g:form action="delete" class="form-horizontal" method="DELETE">
+				<g:hiddenField name="id" value="${pagoInstance.id}"/>
+
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">Eliminar el registro ${pagoInstance.id}</h4>
+				</div>
+				<div class="modal-body">
+					<p><small>${pagoInstance}</small></p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+					<g:submitButton class="btn btn-danger" name="aceptar" value="Eliminar" />
+				</div>
+			</g:form>
+		</div><!-- moda-content -->
+		
+	</div><!-- modal-di -->
+	
+</div>
+<script type="text/javascript">
+	$(function(){
+		$('.date').bootstrapDP({
+		    format: 'dd/mm/yyyy',
+		    keyboardNavigation: false,
+		    forceParse: false,
+		    autoclose: true,
+		    todayHighlight: true
+		});
+		$('.chosen-select').chosen();
+		$(".numeric").autoNumeric('init',{vMin:'0'},{vMax:'9999'});
+		$(".money").autoNumeric('init',{wEmpty:'zero',mRound:'B',aSign: '$'});
+		$(".tc").autoNumeric('init',{vMin:'0.0000'});
+		$(".porcentaje").autoNumeric('init',{altDec: '%', vMax: '99.99'});
+
+		$('form[name=updateForm]').submit(function(e){
+		    var button=$("#saveBtn");
+		    button.attr('disabled','disabled')
+		    .html('Procesando...');
+		    $(".money,.porcentaje,.numeric,.tc",this).each(function(index,element){
+		      var val=$(element).val();
+		      var name=$(this).attr('name');
+		      var newVal=$(this).autoNumeric('get');
+		      $(this).val(newVal);
+		    });
+		    //e.preventDefault(); 
+		    return true;
+		});
+
+		$('.autoCalculate').blur(function(){
+			var importe=$("#importe").autoNumericGet();
+			var tasa=$("#impuestoTasa").autoNumericGet();
+			var impuestos=importe*(tasa/100);
+			var total=(+importe)+(+impuestos);
+			console.log('Importe : '+importe+ 'Impuestos:'+impuestos+' Total:'+total);
+			$('#impuestos').autoNumeric('set',impuestos);
+			$('#total').autoNumeric('set',total);
+		});
+	});
+</script>
+

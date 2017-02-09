@@ -4,7 +4,7 @@
 	<div class="${cols?:'col-sm-10' }">
 		 ${widget}
 		<g:if test="${invalid}">
-			<span class="help-block">${errors.join('<br>')}</span>
+			<span class="help-block m-b-none">${errors.join('<br>')}</span>
 			<span class="glyphicon glyphicon-remove form-control-feedback"></span>
 		</g:if>
 	</div>
