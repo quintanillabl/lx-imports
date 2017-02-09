@@ -46,14 +46,16 @@ class ComprobanteFiscalService {
         def receptorNode=xml.breadthFirst().find { it.name() == 'Receptor'}
         def receptorRfc=receptorNode.attributes()['rfc']
         
-       
-        if(empresa.rfc!=receptorRfc){
-            throw new ComprobanteFiscalException(
-                message:"Em el CFDI ${cfdiFile.getOriginalFilename()} el receptor (${receptorRfc}) no es para esta empresa (${empresa.rfc})")
-        }
         def emisorNode= xml.breadthFirst().find { it.name() == 'Emisor'}
+        
         def nombre=emisorNode.attributes()['nombre']
-        def rfc=emisorNode.attributes()['rfc']
+        def rfc = emisorNode.attributes()['rfc']
+
+        if(empresa.rfc!=receptorRfc && empresa.rfc!= rfc){
+            throw new ComprobanteFiscalException(
+                message:"El CFDI ${cfdiFile.getOriginalFilename()} no  pertenece a ${empresa.nombre}")
+        }
+
         def proveedor=Proveedor.findByRfc(rfc)
         
         if(!proveedor){
@@ -170,14 +172,18 @@ class ComprobanteFiscalService {
         def empresa=Empresa.first()
         def receptorNode=xml.breadthFirst().find { it.name() == 'Receptor'}
         def receptorRfc=receptorNode.attributes()['rfc']
-        println 'Receptor: '+receptorRfc
-        if(empresa.rfc!=receptorRfc){
-            throw new ComprobanteFiscalException(
-                message:"Em el CFDI ${cfdiFile.getOriginalFilename()} el receptor (${receptorRfc}) no es para esta empresa (${empresa.rfc})")
-        }
+
+        
+        
         def emisorNode= xml.breadthFirst().find { it.name() == 'Emisor'}
         def nombre=emisorNode.attributes()['nombre']
         def rfc=emisorNode.attributes()['rfc']
+
+        if(empresa.rfc!=receptorRfc && empresa.rfc!= rfc){
+            throw new ComprobanteFiscalException(
+                message:"Em el CFDI ${cfdiFile.getOriginalFilename()} el receptor (${receptorRfc}) no es para esta empresa (${empresa.rfc})")
+        }
+
         def proveedor=Proveedor.findByRfc(rfc)
             
         if(!proveedor){

@@ -23,29 +23,36 @@
 	<import value="net.sf.jasperreports.engine.*" />
 	<import value="net.sf.jasperreports.engine.data.*" />
 
-	<parameter name="EMPRESA" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="COMPANY" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="CUENTA" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="FECHA_INI" isForPrompting="false" class="java.util.Date"/>
 	<parameter name="FECHA_FIN" isForPrompting="false" class="java.util.Date"/>
 	<parameter name="YEAR" isForPrompting="true" class="java.lang.String"/>
 	<parameter name="MES" isForPrompting="true" class="java.lang.String"/>
-	<queryString><![CDATA[SELECT c.id,S.YEAR as YEAR,S.MES,'ENERO' AS MES_NOMBRE,C.TIPO,C.SUB_TIPO,C.DE_RESULTADO,C.DESCRIPCION,CASE WHEN C.TIPO='ACTIVO' THEN '1' ELSE '2'  END AS GRUPO,(S.SALDO_FINAL) AS SALDO
+	<queryString><![CDATA[SELECT c.id,C.CLAVE,S.YEAR as YEAR,S.MES,'ENERO' AS MES_NOMBRE,C.TIPO,C.SUB_TIPO,C.DE_RESULTADO,'PAGOS ANTICIPADOS' AS DESCRIPCION,CASE WHEN C.TIPO='ACTIVO' THEN '1' ELSE '2'  END AS GRUPO,(S.SALDO_FINAL) AS SALDO
+FROM cuenta_contable C
+JOIN saldo_por_cuenta_contable S ON(S.CUENTA_ID=C.ID)
+WHERE S.YEAR=$P{YEAR} AND S.mes=$P{MES} AND C.TIPO<>'ORDEN' AND C.PADRE_ID IN(16)
+UNION
+SELECT c.id,C.CLAVE,S.YEAR as YEAR,S.MES,'ENERO' AS MES_NOMBRE,C.TIPO,C.SUB_TIPO,C.DE_RESULTADO,'MOBILIARIO Y EQUIPO DE OFICINA' AS DESCRIPCION,CASE WHEN C.TIPO='ACTIVO' THEN '1' ELSE '2'  END AS GRUPO,SUM(S.SALDO_FINAL) AS SALDO
+FROM cuenta_contable C
+JOIN saldo_por_cuenta_contable S ON(S.CUENTA_ID=C.ID)
+WHERE S.YEAR=$P{YEAR} AND S.mes=$P{MES} AND C.TIPO<>'ORDEN' AND C.PADRE_ID IN(15)
+GROUP BY C.PADRE_ID
+UNION
+SELECT c.id,C.CLAVE,S.YEAR as YEAR,S.MES,'ENERO' AS MES_NOMBRE,C.TIPO,C.SUB_TIPO,C.DE_RESULTADO,C.DESCRIPCION,CASE WHEN C.TIPO='ACTIVO' THEN '1' ELSE '2'  END AS GRUPO,(S.SALDO_FINAL) AS SALDO
 FROM cuenta_contable C
 JOIN saldo_por_cuenta_contable S ON(S.CUENTA_ID=C.ID)
 WHERE S.YEAR=$P{YEAR} AND S.mes=$P{MES} AND C.TIPO<>'ORDEN' AND C.PADRE_ID IS NULL AND C.ID NOT IN(15,16) AND C.de_resultado IS FALSE
 UNION
-SELECT c.id,S.YEAR as YEAR,S.MES,'ENERO' AS MES_NOMBRE,C.TIPO,C.SUB_TIPO,C.DE_RESULTADO,C.DESCRIPCION,CASE WHEN C.TIPO='ACTIVO' THEN '1' ELSE '2'  END AS GRUPO,(S.SALDO_FINAL) AS SALDO
-FROM cuenta_contable C
-JOIN saldo_por_cuenta_contable S ON(S.CUENTA_ID=C.ID)
-WHERE S.YEAR=$P{YEAR} AND S.mes=$P{MES} AND C.TIPO<>'ORDEN' AND C.PADRE_ID IN(15,16)
-UNION
-SELECT C.id,YEAR(P.FECHA) AS YEAR,MONTH(P.FECHA) AS MES,'ENERO' AS MES_NOMBRE,C.TIPO,C.SUB_TIPO,C.de_resultado,'RESULTADO DEL EJERCICIO' AS DESCRIPCION,(CASE WHEN C.TIPO='ACTIVO' THEN '1' ELSE '2'  END) AS GRUPO ,IFNULL(SUM(D.DEBE-D.HABER),0) AS SALDO
+SELECT C.id,C.CLAVE,YEAR(P.FECHA) AS YEAR,MONTH(P.FECHA) AS MES,'ENERO' AS MES_NOMBRE,C.TIPO,C.SUB_TIPO,C.de_resultado,'RESULTADO DEL EJERCICIO' AS DESCRIPCION,(CASE WHEN C.TIPO='ACTIVO' THEN '1' ELSE '2'  END) AS GRUPO ,IFNULL(SUM(D.DEBE-D.HABER),0) AS SALDO
 FROM poliza_det d JOIN poliza P ON(P.id=D.poliza_id) JOIN cuenta_contable C ON(C.ID=D.cuenta_id) 
 where   YEAR(P.FECHA)=$P{YEAR} AND MONTH(P.FECHA)<=$P{MES}  AND P.TIPO<>'CIERRE_ANUAL'
  AND C.TIPO<>'ORDEN' 
  AND C.de_resultado is true]]></queryString>
 
 	<field name="id" class="java.lang.Long"/>
+	<field name="CLAVE" class="java.lang.String"/>
 	<field name="YEAR" class="java.lang.Long"/>
 	<field name="MES" class="java.lang.Long"/>
 	<field name="MES_NOMBRE" class="java.lang.String"/>
@@ -59,6 +66,7 @@ where   YEAR(P.FECHA)=$P{YEAR} AND MONTH(P.FECHA)<=$P{MES}  AND P.TIPO<>'CIERRE_
 	<sortField name="GRUPO" />
 	<sortField name="TIPO" order="Descending" />
 	<sortField name="SUB_TIPO" />
+	<sortField name="CLAVE" />
 
 	<variable name="SUB_TIPO_ACT" class="java.math.BigDecimal" resetType="Group" resetGroup="SUB_TIPO" calculation="Sum">
 		<variableExpression><![CDATA[$F{SALDO}]]></variableExpression>
@@ -256,7 +264,7 @@ $F{GRUPO}.equals( "2" ) ? "PASIVO Y CAPITAL" :
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font fontName="Arial Black" pdfFontName="Helvetica-BoldOblique" size="12" isBold="true" isItalic="true" isUnderline="false"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{EMPRESA}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{COMPANY}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
