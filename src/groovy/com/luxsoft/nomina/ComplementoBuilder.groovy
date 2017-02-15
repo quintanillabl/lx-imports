@@ -71,7 +71,7 @@ class ComplementoBuilder {
         receptor.tipoRegimen = CTipoRegimen.Enum.forString('09') 
         receptor.numEmpleado = empleado.id.toString()
         
-        receptor.setPeriodicidadPago(CPeriodicidadPago.X_05)
+        receptor.setPeriodicidadPago(CPeriodicidadPago.X_99)
         
         if(empleado.formaDePago == 'TRANSFERENCIA'){
         	def bancoClave = empleado.bancoSat.clave.toString().padLeft(3,'0')
