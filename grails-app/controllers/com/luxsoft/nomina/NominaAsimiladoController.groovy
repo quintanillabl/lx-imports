@@ -111,6 +111,13 @@ class NominaAsimiladoController {
         redirect action:'show', id: ne.id
     }
 
+    def descargarXml(Cfdi cfdi){
+        response.setContentType("application/octet-stream")
+        response.setHeader("Content-disposition", "filename=${cfdi.serie}_${cfdi.folio}_${cfdi.receptor}")
+        response.outputStream << cfdi.xml
+        return
+    }
+
     protected void notFound() {
         request.withFormat {
             form multipartForm {

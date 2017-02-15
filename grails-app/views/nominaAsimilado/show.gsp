@@ -64,7 +64,12 @@
 	                    </g:if>
 	                    <g:if test="${entity.cfdi}">
 	                    	<g:link class="btn btn-default btn-outline" 
-  								action="mostrarXml" id="${entity.cfdi.id}">XML</g:link>
+  								action="mostrarXml" id="${entity.cfdi.id}">XML
+  							</g:link>
+  							<g:link class="btn btn-default btn-outline" action="descargarXml" id="${entity.cfdi.id}" >
+								<span class="glyphicon glyphicon-cloud-download"> Descargar XML</span>
+							</g:link>
+  							
 	                    </g:if>
 	                    <g:if test="${entity.cfdi && !entity.cfdi.uuid}">
 	                    	<div class="btn-group">
