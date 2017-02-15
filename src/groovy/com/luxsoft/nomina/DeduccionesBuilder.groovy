@@ -17,7 +17,7 @@ class DeduccionesBuilder {
 
 		def deducciones = nominaEmpleado.getDeducciones()
 		//ded.totalOtrasDeducciones = 1.0 //nominaEmpleado.getDeducciones()
-		ded.setTotalOtrasDeducciones(0.0)
+		
 		def isr = nominaEmpleado.getDeducciones()
 		ded.totalImpuestosRetenidos = isr
 		
