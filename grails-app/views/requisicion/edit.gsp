@@ -44,6 +44,7 @@
 						</div>
 						<div class="row">
 							<div class="col-lg-6">
+								<f:field property="aFavor" wrapper="bootstrap3" widget-class="form-control"/>
 								<f:field property="concepto" 
 									widget-class="form-control" widget-class="form-control chosen-select" wrapper="bootstrap3"/>
 								<f:field property="fecha" 
