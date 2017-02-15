@@ -44,7 +44,7 @@ class ComplementoBuilder {
 		nomina.fechaInicialPago = NominaUtils.toISO8601(nominaEmpleado.pago)
 		nomina.fechaFinalPago = NominaUtils.toISO8601(nominaEmpleado.pago)
 		
-		registrarEmisor(nomina, empresa)
+		//registrarEmisor(nomina, empresa)
 		
 		registrarReceptor(nomina, nominaEmpleado)
 		
