@@ -58,7 +58,7 @@ class ComplementoBuilder {
 
 	def registrarEmisor(Nomina nomina, Empresa empresa) {
 		Emisor emisor = nomina.addNewEmisor()
-		emisor.setRegistroPatronal(empresa.registroPatronal)
+		//emisor.setRegistroPatronal(empresa.registroPatronal)
 	}
 
 	def registrarReceptor(Nomina nomina, NominaAsimilado nominaEmpleado){
