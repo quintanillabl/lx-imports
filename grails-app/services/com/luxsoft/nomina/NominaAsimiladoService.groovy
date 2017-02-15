@@ -35,7 +35,7 @@ class NominaAsimiladoService {
 	    	nomina.addToPartidas(
 				clave:'P036', 
 				claveSat:'016', 
-				descripcion: 'HONORARIOS AL CONSEJO ENERO 2017', 
+				descripcion: nomina.concepto, 
 				tipo: 'PERCEPCION',
 				importeGravado: nomina.percepciones
 				)
