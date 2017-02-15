@@ -254,4 +254,25 @@ class CoreTagLib {
         out << body()
         out << "</div>"
     }
+
+    def header = { attrs, body ->
+        out << "<div class='row wrapper border-bottom white-bg page-heading' >"
+        out << body()
+        out << "</div>"
+
+    }
+
+    /**
+     * Html Div decorado para contenido
+     *
+     * @attrs animated  Animar el div al presentarlo
+     * @attrs animatedType  Tipo de anima
+     */
+    def wrapper = { attrs, body ->
+        def animated = attrs.animated ? 'animated' : ''
+        def animatedType = attrs.animatedType ?: 'fadeInRight'
+        out << "<div class=\"row wrapper wrapper-content white-bg ${animated} ${animatedType}\" >"
+        out << body()
+        out << "</div>"
+    }
 }

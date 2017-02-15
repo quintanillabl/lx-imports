@@ -1,6 +1,6 @@
 
 <g:set var="cxpMenu" 
-    value="${['facturaDeImportacion','gastosDeImportacion','pago','requisicion','notaDeCredito','facturaDeImportacion','facturaDeGastos','cuentaDeGastosGenerica','cuentaPorPagar']}" />
+    value="${['facturaDeImportacion','gastosDeImportacion','pago','requisicion','notaDeCredito','facturaDeImportacion','facturaDeGastos','cuentaDeGastosGenerica','cuentaPorPagar','nominaAsimilado']}" />
 
 <li class="${cxpMenu.contains(webRequest.controllerName)?'active':''}">
     <a href="#"><i class="fa fa-calendar"></i>
@@ -45,6 +45,12 @@
             <li>
                 <g:link controller="cuentaDeGastosGenerica" action="list">
                     <g:message code="cuentaDeGastosGenerica.list.label" default="Cuenta de Gastos (Genérica)"/>
+                </g:link>
+            </li>
+
+            <li>
+                <g:link controller="nominaAsimilado" >
+                    Nómina asimilados
                 </g:link>
             </li>
             

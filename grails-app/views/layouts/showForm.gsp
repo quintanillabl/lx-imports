@@ -38,15 +38,21 @@
                                 <g:pageProperty name="page.formFields"/>
                                 <div class="form-group">
                                     <div class="col-lg-offset-3 col-lg-9">
-                                        <div class="btn-group">
-                                            <lx:backButton/>
-                                            <lx:createButton/>
-                                            <lx:editButton id="${entity?.id}"/>
-                                            <lx:printButton/>
-                                        </div>
+                                        
                                     </div>
                                 </div>
                             </form>
+                        </div>
+                        <div class="ibox-footer">
+                            <div class="btn-group">
+                                <lx:backButton/>
+                                <lx:createButton/>
+                                <lx:editButton id="${entity?.id}"/>
+                                <lx:printButton/>
+                                <g:if test="${pageProperty(name:'page.deleteButton')}">
+                                    <g:pageProperty name="page.deleteButton"/>
+                                </g:if>
+                            </div>
                         </div>
                     </div>
                 </div>
