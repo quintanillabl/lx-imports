@@ -20,31 +20,31 @@
  		<thead>
  			<tr>
  				<td>Id</td>
- 				<td>Proveedor</td>
+ 				<td>Nombre</td>
  				<td>Fecha</td>
- 				<td>Mon</td>
- 				<td>Documento</td>
+ 				
+ 				
  				<td>Concepto</td>
- 				<td>Total</td>
- 				<td>Aplicado</td>
- 				<td>Disponible</td>		
+ 				<td>Percepciones</td>
+ 				<td>Deducciones</td>
+ 				
  			</tr>
  		</thead>
  		<tbody>
- 			<g:each in="${notaDeCreditoInstanceList}" var="row">
+ 			<g:each in="${nominaAsimiladoInstanceList}" var="row">
  				<tr>
  					<td><g:link action="edit" id="${row.id}">
  						${fieldValue(bean: row, field: "id")}
  						</g:link>
  					</td>
- 					<td>${fieldValue(bean: row, field: "proveedor.nombre")}</td>
+ 					<td>${fieldValue(bean: row, field: "asimilado.nombre")}</td>
  					<td><lx:shortDate date="${row.fecha }"/></td>
- 					<td>${fieldValue(bean: row, field: "moneda")}</td>
- 					<td>${fieldValue(bean: row, field: "documento")}</td>
+ 					
+ 					
  					<td>${fieldValue(bean: row, field: "concepto")}</td>
- 					<td><lx:moneyFormat number="${row.total }"/></td>
- 					<td><lx:moneyFormat number="${row.aplicado }"/></td>
- 					<td><lx:moneyFormat number="${row.disponible }"/></td>
+ 					<td><lx:moneyFormat number="${row.percepciones }"/></td>
+ 					<td><lx:moneyFormat number="${row.deducciones }"/></td>
+ 					
  				</tr>
  			</g:each>
  		</tbody>
