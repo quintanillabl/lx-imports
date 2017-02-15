@@ -78,7 +78,7 @@ class NominaCfdiBuilder {
 
 	private registrarReceptor(Comprobante comprobante, def empleado){
 		Receptor receptor=comprobante.addNewReceptor()
-		receptor.setNombre(empleado.toString())
+		receptor.setNombre(empleado.nombre)
 		receptor.setRfc(empleado.rfc)
 		return this
 	}
