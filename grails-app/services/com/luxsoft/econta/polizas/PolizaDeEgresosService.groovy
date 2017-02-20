@@ -5,6 +5,7 @@ import com.luxsoft.impapx.contabilidad.Poliza
 import com.luxsoft.impapx.contabilidad.*
 import com.luxsoft.impapx.tesoreria.*
 import com.luxsoft.impapx.Venta
+import com.luxsoft.impapx.Proveedor
 import com.luxsoft.cfdi.*
 import com.luxsoft.impapx.EmbarqueDet
 import com.luxsoft.impapx.FacturaDeGastos
@@ -216,7 +217,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     		def egreso=pago.egreso
     		
     		def req=pago.requisicion
-    		def descripcion="$fp-${egreso.referenciaBancaria?:''} $req.proveedor ($req.comentario) "
+    		def descripcion="$fp-${egreso.referenciaBancaria?:''} $req.aFavor ($req.comentario) "
     		Poliza poliza=build(dia,descripcion)
     		log.info 'Procesando pago: '+pago
     		log.info 'Poliza: '+poliza
@@ -243,15 +244,19 @@ class PolizaDeEgresosService extends ProcesadorService{
     				
     				if(c.tipo=='HONORARIOS AL CONSEJO ADMON'){
     					//Cargo a gasto concepto
-                        assert fac.proveedor.subCuentaOperativa,"El proveedor ${fac.proveedor} no tiene sub tuenta operativa"
+                        //assert fac.proveedor.subCuentaOperativa,"El proveedor ${fac.proveedor} no tiene sub cuenta operativa"
+                        assert fac.comprobante , " El documento no tiene CFDI asociado"
+                        def proveedor = Proveedor.findByRfc(fac.comprobante.receptorRfc)
+                        def subCuentaOperativa =  proveedor.subCuentaOperativa
+                        
 
-                        def cta = CuentaContable.buscarPorClave("205-"+fac.proveedor.subCuentaOperativa)
+                        def cta = CuentaContable.buscarPorClave("205-" + subCuentaOperativa)
     					poliza.addToPartidas(
     						cuenta:cta,
     						debe:c.total,
     						haber:0.0,
     						asiento:asiento,
-    						descripcion:"Fac:$fac.documento ($fechaFac) $c.descripcion",
+    						descripcion:"Fac:$fac.documento ($fechaFac) $proveedor.nombre",
     						referencia:"$fac.documento"
     						,fecha:poliza.fecha
     						,tipo:poliza.tipo
@@ -404,7 +409,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     				haber:egreso.importe.abs()*egreso.tc,
     				asiento:asiento,
     				//descripcion:"$fp-$egreso.referenciaBancaria $req.proveedor",
-                    descripcion:"$fp-${egreso.referenciaBancaria?:'FALTA'} $req.proveedor",
+                    descripcion:"$fp-${egreso.referenciaBancaria?:'FALTA'} $req.aFavor",
     				referencia:"$egreso.referenciaBancaria"
     				,fecha:poliza.fecha
     				,tipo:poliza.tipo

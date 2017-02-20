@@ -23,7 +23,7 @@ class PagoProveedorService {
 			,origen:'CXP'
 			//,concepto:'PAGO_PROVEEDOR'
 			,referenciaBancaria: pago.referencia
-			,concepto:"Pago: $requisicion.proveedor.nombre  $requisicion.concepto" 
+			,concepto:"Pago: $requisicion.aFavor  $requisicion.concepto" 
 			,comentario:'PAGO REQUISICION:'+requisicion.id)
 		if(pago.requisicion.proveedor.tipo == 'FLETES'){
 			egreso.grupo = true
