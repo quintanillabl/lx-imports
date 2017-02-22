@@ -74,9 +74,9 @@ class ComplementoBuilder {
         receptor.setPeriodicidadPago(CPeriodicidadPago.X_99)
         
         if(empleado.formaDePago == 'TRANSFERENCIA'){
-        	def bancoClave = empleado.bancoSat.clave.toString().padLeft(3,'0')
-			receptor.setBanco(CBanco.Enum.forString(bancoClave))
-			receptor.cuentaBancaria = new BigInteger(empleado.clabe ?: empleado.numeroDeCuenta)	
+        	//def bancoClave = empleado.bancoSat.clave.toString().padLeft(3,'0')
+			//receptor.setBanco(CBanco.Enum.forString(bancoClave))
+			//receptor.cuentaBancaria = new BigInteger(empleado.clabe ?: empleado.numeroDeCuenta)	
         }
 
         receptor.setClaveEntFed(CEstado.DIF) 
