@@ -51,9 +51,11 @@
 	                    <div class="btn-group">
 	                        <lx:backButton/>
 	                        <lx:createButton/>
-	                        <lx:editButton id="${entity?.id}" />
-	                        <lx:printButton/>
-	                        <lx:deleteButton bean="${entity}"/>
+	                        <g:if test="${!entity.cfdi}">
+	                        	<lx:editButton id="${entity?.id}" />
+	                        	<lx:deleteButton bean="${entity}"/>
+	                        </g:if>
+	                        
 	                    </div>
 	                    <g:if test="${!entity.cfdi}">
 	                    	<div class="btn-group">
@@ -78,6 +80,12 @@
 	                    	    </g:link>
 	                    	</div>
 	                    </g:if>
+	                    <g:if test="${entity.cfdi && entity.cfdi.uuid}">
+	                    	<div class="btn-group">
+    		                    <lx:printButton label="Imprimir CFDI" action="print" id="${entity.id}"/>
+	                    	</div>
+	                    </g:if>
+	                    
 	                </div>
 	            </div>
 	        </div>
