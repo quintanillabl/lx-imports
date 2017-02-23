@@ -43,8 +43,8 @@
 	                        	<f:display property="pago" widget-class="form-control chosen-select" wrapper="bootstrap3"/>
 	                        	<f:display property="concepto" widget-class="form-control" wrapper="bootstrap3"/>
 	                        	<f:display property="percepciones" widget="money" wrapper="bootstrap3"/>
-	                        	<f:display property="cfdi.id" wrapper="bootstrap3"/>
-	                        	<f:display property="cfdi.uuid" wrapper="bootstrap3"/>
+	                        	<f:display property="cfdi.id" wrapper="bootstrap3" label="CFDI"/>
+	                        	<f:display property="cfdi.uuid" wrapper="bootstrap3" label="UUID"/>
 	                        </f:with>
 	                        
 	                    </form>
