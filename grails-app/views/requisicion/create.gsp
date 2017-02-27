@@ -44,9 +44,11 @@
 							<f:with bean="requisicionInstance">
 								<f:field property="proveedor" 
 									wrapper="bootstrap3" widget-tabindex="2"/>
+								<f:field property="aFavor" wrapper="bootstrap3" widget-class="form-control"/>
 								<f:field property="concepto" 
 									widget-class="form-control chosen-select" wrapper="bootstrap3"
 									widget-tabindex="2"/>
+
 								<f:field property="fecha" wrapper="bootstrap3" />
 								<f:field property="fechaDelPago" widget-class="form-control" wrapper="bootstrap3"/>
 								<f:field property="formaDePago" 

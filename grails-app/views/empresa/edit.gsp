@@ -29,7 +29,9 @@
 		        	<f:with bean="${empresaInstance }">
 		        		<f:field property="nombre" widget-class="form-control uppercase-field " widget-autofocus="on"/>
 		        		<f:field property="rfc" widget-class="form-control uppercase-field"/>
+		        		<f:field property="registroPatronal" widget-class="form-control "/>
 		        		<g:render template="/common/direccion" bean="${empresaInstance}"/> 
+		        		
 		        		<legend>Timbrado</legend>
 		        		<f:field property="passwordPfx" widget-class="form-control" cols="col-sm-4"/>
 		        	</f:with>

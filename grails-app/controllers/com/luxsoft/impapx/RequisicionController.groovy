@@ -53,14 +53,17 @@ class RequisicionController {
 
     @Transactional
     def save(Requisicion requisicionInstance) {
+        
         if (requisicionInstance == null) {
             notFound()
             return
         }
+
         if (requisicionInstance.hasErrors()) {
             respond requisicionInstance.errors, view:'create'
             return
         }
+
         if(requisicionInstance.concepto.startsWith('ANTICIPO')){
             def embarque=Embarque.get(params.long('embarque.id'))
             requisicionService.generarAnticipo(requisicionInstance, embarque)
@@ -69,7 +72,7 @@ class RequisicionController {
             return
         }
 
-
+        requisicionInstance.aFavor = requisicionInstance.proveedor.nombre
         requisicionInstance.save flush:true
         flash.message = message(code: 'default.created.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), requisicionInstance.id])
         redirect action:'edit',id:requisicionInstance.id

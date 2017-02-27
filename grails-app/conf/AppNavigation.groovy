@@ -16,6 +16,7 @@ navigation={
 			clientes(controller:'cliente',action:'index')
 			aduana(controller:'aduana',action:'index')
 			paises(controller:'paisDeOrigen',action:'index')
+			asimilados(controller: 'asimilado', action: 'index')
 		}
 		operaciones(){
 			compras(controller:'compra',action:'index')

@@ -19,6 +19,9 @@ class Requisicion {
 	static auditable = true
 	
 	Proveedor proveedor
+
+	String aFavor
+
 	String concepto
 	Date fecha
 	Date fechaDelPago
@@ -68,6 +71,7 @@ class Requisicion {
 		total(scale:2)
 		comentario(maxSize:200)
 		pagoProveedor(nullable:true)
+		aFavor nullable:true
 		//anticipo(nullable:true)
 		
     }

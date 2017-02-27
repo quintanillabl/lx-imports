@@ -22,6 +22,8 @@ class Empresa {
 	
 	X509Certificate certificado
 	PrivateKey privateKey
+
+	String registroPatronal
 	
 	static embedded = ['direccion']
 
@@ -34,6 +36,7 @@ class Empresa {
 		certificadoDigital(nullable:true,maxSize:1024*1024*2)
 		certificadoDigitalPfx(nullable:true,maxSize:1024*1024*2)
 		llavePrivada(nullable:true,maxSize:1024*1024*2)
+		registroPatronal(nullable:true, minSize:1, maxSize:20)
 		
     }
 	
