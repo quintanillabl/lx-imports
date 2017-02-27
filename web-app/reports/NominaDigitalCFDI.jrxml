@@ -696,7 +696,7 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font pdfFontName="Times-Roman" size="7"/>
 					</textElement>
-				<text><![CDATA[                  RFC                  /      REGISTRO PATRONAL]]></text>
+				<text><![CDATA[ RFC]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
@@ -843,7 +843,7 @@
 				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="210"
-						y="19"
+						y="48"
 						width="184"
 						height="15"
 						key="textField-113"/>
@@ -863,70 +863,18 @@
 						x="210"
 						y="4"
 						width="184"
-						height="15"
+						height="44"
 						key="staticText-187"/>
 					<box>					<topPen lineWidth="0.5"/>
 					<leftPen lineWidth="0.5"/>
 					<bottomPen lineWidth="0.5"/>
 					<rightPen lineWidth="0.5"/>
 </box>
-					<textElement textAlignment="Center" verticalAlignment="Middle">
+					<textElement textAlignment="Center" verticalAlignment="Bottom">
 						<font pdfFontName="Times-Roman"/>
 					</textElement>
-				<text><![CDATA[NOMBRE DEL TRABAJADOR]]></text>
+				<text><![CDATA[NOMBRE]]></text>
 				</staticText>
-				<staticText>
-					<reportElement
-						mode="Transparent"
-						x="210"
-						y="34"
-						width="184"
-						height="13"
-						key="staticText-188"/>
-					<box>					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
-</box>
-					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font pdfFontName="Times-Roman" size="7"/>
-					</textElement>
-				<text><![CDATA[ No. DE EMPLEADO  /     No. SEGURIDAD SOCIAL        ]]></text>
-				</staticText>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
-					<reportElement
-						x="280"
-						y="47"
-						width="114"
-						height="16"
-						key="textField-114"/>
-					<box>					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
-</box>
-					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="SansSerif" pdfFontName="Helvetica-Bold" size="8" isBold="true" isItalic="false" isUnderline="false"/>
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{NUMERO_IMSS}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
-					<reportElement
-						x="210"
-						y="47"
-						width="70"
-						height="16"
-						key="textField-116"/>
-					<box>					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
-</box>
-					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="SansSerif" pdfFontName="Helvetica-Bold" size="8" isBold="true" isItalic="false" isUnderline="false"/>
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{NUMERO_EMPLEADO}]]></textFieldExpression>
-				</textField>
 				<staticText>
 					<reportElement
 						mode="Transparent"
@@ -1275,26 +1223,9 @@
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="107"
-						y="89"
-						width="97"
-						height="15"
-						key="textField-146"/>
-					<box>					<topPen lineWidth="0.5"/>
-					<leftPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
-					<rightPen lineWidth="0.5"/>
-</box>
-					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="SansSerif" pdfFontName="Helvetica-Bold" size="8" isBold="true" isItalic="false" isUnderline="false"/>
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{REGISTRO_PATRONAL}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
-					<reportElement
 						x="10"
 						y="89"
-						width="97"
+						width="194"
 						height="15"
 						key="textField-147"/>
 					<box>					<topPen lineWidth="0.5"/>

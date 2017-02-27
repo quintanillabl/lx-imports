@@ -41,7 +41,7 @@
 	<parameter name="TESORERIA" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="AUTORIZADO" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="ID" isForPrompting="true" class="java.lang.String"/>
-	<queryString><![CDATA[SELECT R.ID,P.NOMBRE AS AFAVOR,R.FECHA,R.FECHA_DEL_PAGO AS FECHADEPAGO,R.MONEDA,R.TC
+	<queryString><![CDATA[SELECT R.ID,R.A_FAVOR AS AFAVOR,R.FECHA,R.FECHA_DEL_PAGO AS FECHADEPAGO,R.MONEDA,R.TC
 ,R.FORMA_DE_PAGO AS FORMADEPAGO,R.COMENTARIO,D.DOCUMENTO,D.FECHA_DOCUMENTO,R.CONCEPTO
 ,D.TOTAL,D.TOTAL_DOCUMENTO,R.DESCUENTO_FINANCIERO
 ,ifnull((SELECT c.acuse_estado FROM comprobante_fiscal c where c.cxp_id=d.factura_id),'') as ACUSE_ESTADO
@@ -895,7 +895,7 @@ $P{MONEDA}.equals( "MXN" ) ? $F{TOTAL}.multiply( new BigDecimal($F{TC}.doubleVal
 						mode="Transparent"
 						x="2"
 						y="14"
-						width="71"
+						width="95"
 						height="12"
 						forecolor="#999999"
 						backcolor="#FFFFFF"
@@ -908,7 +908,7 @@ $P{MONEDA}.equals( "MXN" ) ? $F{TOTAL}.multiply( new BigDecimal($F{TC}.doubleVal
 					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[SIIPAP WIN EX]]></text>
+				<text><![CDATA[IMPORTADORA EX]]></text>
 				</staticText>
 				<line direction="TopDown">
 					<reportElement
@@ -1021,7 +1021,7 @@ $P{MONEDA}.equals( "MXN" ) ? $F{TOTAL}.multiply( new BigDecimal($F{TC}.doubleVal
 						mode="Transparent"
 						x="2"
 						y="14"
-						width="71"
+						width="95"
 						height="12"
 						forecolor="#999999"
 						backcolor="#FFFFFF"
@@ -1034,7 +1034,7 @@ $P{MONEDA}.equals( "MXN" ) ? $F{TOTAL}.multiply( new BigDecimal($F{TC}.doubleVal
 					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[SIIPAP WIN EX]]></text>
+				<text><![CDATA[IMPORTADORA EX]]></text>
 				</staticText>
 				<line direction="TopDown">
 					<reportElement

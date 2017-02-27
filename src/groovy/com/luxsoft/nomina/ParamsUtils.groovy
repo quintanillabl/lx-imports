@@ -44,21 +44,21 @@ class ParamsUtils {
 		parametros.put("NUM_CERTIFICADO", 	comprobante.getNoCertificado())
 		parametros.put("SELLO_DIGITAL", 	comprobante.getSello())
 		parametros.put("IMP_CON_LETRA", 	ImporteALetra.aLetra(comprobante.getTotal()))
-		//parametros['REGISTRO_PATRONAL'] = nomina.emisor.registroPatronal
+		parametros['REGISTRO_PATRONAL'] = ''
 		parametros.put("NFISCAL", 			comprobante.getSerie() + " - " +comprobante.getFolio())
 		
 		//parametros['RIESGO_PUESTO'] = ''+nomina.receptor.riesgoPuesto
-		parametros['TIPO_JORNADA'] = nomina.receptor.tipoJornada.toString()
+		parametros['TIPO_JORNADA'] = ''
 		
 		parametros['FECHA_INGRESO_LABORAL'] = nomina.receptor.fechaInicioRelLaboral?.format("yyyy-MM-dd")
-		parametros['ANTIGUEDAD'] = '' + nomina.receptor.antigüedad
+		parametros['ANTIGUEDAD'] = ''
 		parametros['TIPO_CONTRATO'] = nomina.receptor.tipoContrato.toString()
 		
 		parametros['FECHA_INICIAL']=nomina.fechaInicialPago?.format("yyyy-MM-dd")
 		parametros['FECHA_FINAL']=nomina.fechaFinalPago?.format("yyyy-MM-dd")
 		
-		parametros['CLABE'] = nomina.receptor.cuentaBancaria?.toString()
-		parametros['BANCO'] = nominaPorEmpleado.asimilado?.bancoSat?.clave
+		parametros['CLABE'] = ''  
+		parametros['BANCO'] = ''  
 		parametros['TOTAL'] = comprobante.getTotal() //as String
 		parametros['COMENTARIO_NOM'] = 'Nómina'
 		def img = QRCodeUtils.generarQR(comprobante)
