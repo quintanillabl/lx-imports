@@ -20,8 +20,8 @@ dataSource_importacion{
   driverClassName = 'com.mysql.jdbc.Driver'
   username = 'root'
   password = 'sys'
-  //url = 'jdbc:mysql://10.10.1.228/produccion'
-  url = 'jdbc:mysql://localhost/produccion'
+  url = 'jdbc:mysql://10.10.1.228/produccion'
+  //url = 'jdbc:mysql://localhost/produccion'
   dbCreate = ''
   readOnly=true
   properties {
@@ -176,8 +176,8 @@ environments {
       dataSource {
         pooled = true
         dbCreate="update"
-      //  url="jdbc:mysql://10.10.1.228/impapx2?autoReconnect=true"
-        url="jdbc:mysql://localhost/impapx2?autoReconnect=true"
+       url="jdbc:mysql://10.10.1.228/impapx2?autoReconnect=true"
+       // url="jdbc:mysql://localhost/impapx2?autoReconnect=true"
         driverClassName = "com.mysql.jdbc.Driver"
         dialect = org.hibernate.dialect.MySQL5InnoDBDialect
         username = "root"

@@ -34,7 +34,11 @@
 	                <div class="ibox-title">
 	                    <h5>Propiedades</h5>
 	                </div>
+	                
 	                <div class="ibox-content">
+	                	<g:if test="${entity?.cfdi?.cancelacion}">
+	                		<div class="alert alert-danger">CANCELADO</div>
+	                	</g:if>
 	                    <form class="form-horizontal" >  
 	                        <f:with bean="${entity}" >
 	                        	<f:display property="asimilado" widget-class="form-control chosen-select" wrapper="bootstrap3"/>

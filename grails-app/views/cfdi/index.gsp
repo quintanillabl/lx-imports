@@ -35,7 +35,7 @@
 		</thead>
 		<tbody>
 			<g:each in="${cfdiInstanceList}" status="i" var="cfdiInstance">
-				<tr>
+				<tr class="${cfdiInstance.cancelacion?'danger':''}">
 					<td>${fieldValue(bean: cfdiInstance, field: "serie")}</td>
 					<td><g:link action="show" id="${cfdiInstance.id}">${fieldValue(bean: cfdiInstance, field: "folio")}</g:link></td>
 					<td><g:formatDate date="${cfdiInstance.fecha}" /></td>

@@ -18,7 +18,7 @@
  <content tag="grid">
  	<table id="grid" class="table table-striped table-hover table-bordered table-condensed">
  		<thead>
- 			<tr>
+ 			<tr >
  				<td>Id</td>
  				<td>Nombre</td>
  				<td>Fecha</td>
@@ -34,7 +34,7 @@
  		</thead>
  		<tbody>
  			<g:each in="${nominaAsimiladoInstanceList}" var="row">
- 				<tr>
+ 				<tr class="${row?.cfdi?.cancelacion?'danger':''}">
  					<td><g:link action="show" id="${row.id}">
  						${fieldValue(bean: row, field: "id")}
  						</g:link>

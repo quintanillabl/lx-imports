@@ -20,6 +20,8 @@ class NominaAsimiladoController {
 
     def index(Integer max) {
         params.max = Math.min(max ?: 40, 100)
+        params.sort = 'lastUpdated'
+        params.order = 'desc'
         respond NominaAsimilado.list(params), model:[nominaAsimiladoInstanceCount: NominaAsimilado.count()]
     }
 
