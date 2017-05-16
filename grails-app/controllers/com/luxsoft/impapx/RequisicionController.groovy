@@ -66,6 +66,7 @@ class RequisicionController {
 
         if(requisicionInstance.concepto.startsWith('ANTICIPO')){
             def embarque=Embarque.get(params.long('embarque.id'))
+            requisicionInstance.aFavor = requisicionInstance.proveedor.nombre
             requisicionService.generarAnticipo(requisicionInstance, embarque)
             flash.message = message(code: 'default.created.message', args: [message(code: 'requisicion.label', default: 'Requisicion'), requisicionInstance.id])
             redirect action: 'edit', id: requisicionInstance.id

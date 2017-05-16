@@ -567,7 +567,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     		requisicion.partidas.each{ reqDet ->
     			poliza.addToPartidas(
     				cuenta:cuenta,
-    				debe:reqDet.importe.abs()*pago.egreso.tc,
+    				debe:reqDet.total.abs()*pago.egreso.tc,
     				haber:0.0,
     				asiento:asiento,
     				descripcion:"$pago.egreso.cuenta Ref:$reqDet.documento REq: $requisicion.id "+egreso.importe.abs()+" * $egreso.tc",
@@ -621,6 +621,7 @@ class PolizaDeEgresosService extends ProcesadorService{
     		
     		//Cargo a proveedor
             def abono = pago.pago
+            def aFavor = pago.requisicion.proveedor.nombre
             if(abono){
                 abono.aplicaciones.each { aplicacion ->
 
@@ -662,7 +663,31 @@ class PolizaDeEgresosService extends ProcesadorService{
                         ,origen:aplicacion.id)
 
                     poliza.addToPartidas(polizaDet2)
-                    registrarComplementoChoferes(egreso,aplicacion,polizaDet2)
+
+                    
+                    if(egreso.tipo.toString()=='CHEQUE'){
+                        if(egreso.cuenta.banco.nacional){
+                            log.info('Generando transaccion CHEQUE NACIONAL')
+                    
+                            def cheque=new TransaccionCheque(
+                            polizaDet:polizaDet,
+                            numero:egreso.referenciaBancaria,
+                            bancoEmisorNacional:egreso.cuenta.banco.bancoSat,
+                            cuentaOrigen:egreso.cuenta.numero,
+                            fecha:egreso.fecha,
+                            beneficiario:aFavor,
+                            rfc:proveedor.rfc,
+                            monto:egreso.importe.abs(),
+                            moneda:  egreso.moneda.getCurrencyCode(),
+                            tipoDeCambio: egreso.tc
+                            )
+                        polizaDet.transaccionCheque=cheque
+                        }
+                        }else{
+                             registrarComplementoChoferes(egreso,aplicacion,polizaDet2)
+                        }
+
+                   
                     
                 }
             }
@@ -857,7 +882,7 @@ class PolizaDeEgresosService extends ProcesadorService{
                 if(egreso.tipo == 'CHEQUE'){
                     if(egreso.cuenta.banco.nacional){
                         log.info('Generando transaccion CHEQUE NACIONAL')
-
+                            
                         def cheque=new TransaccionCheque(
                             polizaDet:polizaDet,
                             numero:egreso.referenciaBancaria,

@@ -44,6 +44,7 @@
 	            				<th>Saldo</th>
 	            				<th>Requisitado</th>
 	            				<th>Ej-Sem</th>
+	            				<th>UUID</th>
 	            				%{-- <th>Pendiente</th> --}%
 	            			</tr>
 	            		</thead>
@@ -60,7 +61,7 @@
 	            				<td><lx:moneyFormat number="${row.saldoActual }"/></td>
 	            				<td><lx:moneyFormat number="${row.requisitado }"/></td>
 	            				<td>${row.fecha[Calendar.YEAR]} - S${row.fecha[Calendar.WEEK_OF_YEAR]}</td>
-	            				
+	            				<td>${fieldValue(bean: row, field: "comprobante.uuid")}</td>
 	            				%{-- <td><lx:moneyFormat number="${row.pendienteRequisitar }"/></td> --}%
 	            			</tr>
 	            			</g:each> 

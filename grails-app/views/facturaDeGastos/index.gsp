@@ -80,7 +80,7 @@
 	<g:render template="/comprobanteFiscal/uploadXmlFile"/>
 </content>
 <content tag="searchService">
-	<g:createLink action="search"/>
+	<g:createLink action="search"/> 
 </content>
  	
 	
