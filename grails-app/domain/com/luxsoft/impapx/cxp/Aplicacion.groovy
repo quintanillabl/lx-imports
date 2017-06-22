@@ -5,7 +5,8 @@ package com.luxsoft.impapx.cxp
 import org.apache.commons.lang.builder.EqualsBuilder
 import org.apache.commons.lang.builder.HashCodeBuilder
 
-import com.luxsoft.impapx.CuentaPorPagar;
+import com.luxsoft.impapx.CuentaPorPagar
+import com.luxsoft.impapx.cxp.ComprobanteFiscal
 
 class Aplicacion {
 	
@@ -19,6 +20,8 @@ class Aplicacion {
 	
 	Date dateCreated
 	Date lastUpdated
+
+	
 	
 	static belongsTo = [abono:Abono,factura:CuentaPorPagar]
 
@@ -26,9 +29,9 @@ class Aplicacion {
 		importe(scale:2)
 		impuesto(scale:2)
 		total(scale:2)
-		
 		impuestoTasa(scale:2)
 		comentario(nullable:true,maxSize:200)
+		
     }
 	
 	/*

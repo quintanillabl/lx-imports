@@ -251,7 +251,7 @@ beans {
   }
 }
 
-grails.plugin.databasemigration.updateOnStart = false
+grails.plugin.databasemigration.updateOnStart = true
 grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
 
 

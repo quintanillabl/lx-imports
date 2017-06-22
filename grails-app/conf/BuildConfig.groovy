@@ -73,6 +73,10 @@ grails.project.dependency.resolution = {
         compile 'econta:balanzas:1.0.0'
         compile 'econta:polizas:1.0.0'
         //compile 'lx.cfdi.v32:cfdi-v32:1.0.0'
+        
+        // Nueva implementacion de CFDI
+        compile 'lx.cfdi:v32:1.0.1'
+        compile 'lx.cfdi:v33:1.0.3'
     }
 
     plugins {

@@ -97,6 +97,7 @@
 									<th class="header">Documento</th>
 									<th class="header">Fecha(Docto)</th>			
 									<th class="header">Pagado</th>
+									<th>CFDI R. Pago</th>
 									<th class="header">Comentario</th>
 									
 								</tr>
@@ -113,6 +114,13 @@
 										<td>${fieldValue(bean: row, field: "factura.id")}</td>
 										<td>${fieldValue(bean: row, field: "factura.fecha")}</td>				
 										<td><lx:moneyFormat number="${row.total }" /></td>
+										<td>
+											<g:if test="${row.factura.getCfdi() != null }">
+												<g:link controller="CXCAplicacion" action="generarCfdi" id="${row.id}">
+													Generar
+												</g:link>
+											</g:if>
+										</td>
 										<td>${fieldValue(bean: row, field: "comentario")}</td>				
 									</tr>
 								</g:each>

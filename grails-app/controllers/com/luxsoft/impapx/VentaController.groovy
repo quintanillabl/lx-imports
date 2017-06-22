@@ -145,17 +145,6 @@ class VentaController {
 		render "OK"
 	}
 	
-	def facturar(long id){
-		try {
-			def res=ventaService.facturar(id)
-			render view:"factura",model:[ventaInstance:res['venta']]
-		} catch (VentaException e) {
-			flash.message=e.message
-			render view: 'edit', model: [ventaInstance: e.venta]
-		}
-		
-		
-	}
 	
 	def showFactura(long id){
 		def cfd=ComprobanteFiscal.get(id)
@@ -203,7 +192,6 @@ class VentaController {
 	}
 	
 	def cancelar() {
-		println 'Cancelando venta: '+params
 		def ventaInstance=Venta.findById(params.id,[fetch:[partidas:'eager']])
 		
 		if (!ventaInstance) { 
@@ -237,7 +225,6 @@ class VentaController {
 				[ventaInstance:venta,ventaDetInstance:ventaDet]
 				break
 			case 'POST':
-				println 'Agrgando partida: '+params
 				params.kilos=0
 				
 				def ventaDetInstance=new VentaDet()

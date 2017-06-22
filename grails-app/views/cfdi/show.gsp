@@ -68,7 +68,11 @@
 								</button>
 							</g:else>
 							
-							
+							<g:if test="${cfdiInstance.versionCfdi == '3.3' && cfdiInstance.uuid == null}">
+								<g:link  action="timbrar" id="${cfdiInstance.id}" class="btn btn-default btn-outline" >
+									<i class="fa fa-wifi"></i> Timbrar
+								</g:link>
+							</g:if>
 							
 							
 							<g:jasperReport

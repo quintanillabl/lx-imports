@@ -26,6 +26,10 @@ class Producto {
 	
 	BigDecimal precioCredito
 	BigDecimal precioContado
+
+	String claveProdServ
+    String claveUnidadSat
+    String unidadSat
 	
 	Date dateCreated
 	Date lastUpdated
@@ -39,6 +43,9 @@ class Producto {
 		clase(nullable:true)
 		acabado(nullable:true)
 		color(nullable:true)
+		claveProdServ nullable:true
+        claveUnidadSat nullable:true
+        unidadSat nullable: true
     }
 	
 	static mapping ={

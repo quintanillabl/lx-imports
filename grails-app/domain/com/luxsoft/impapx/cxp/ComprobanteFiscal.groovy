@@ -10,6 +10,7 @@ class ComprobanteFiscal {
 
 	static auditable = true	
 
+	String versionCfdi
 	byte[] cfdi
 	String cfdiFileName
 	String uuid
@@ -38,7 +39,7 @@ class ComprobanteFiscal {
 		acuse nullable:true,maxSize:(1024*256)
 		acuseEstado nullable:true,maxSize:100
 		acuseCodigoEstatus nullable:true,maxSize:100
-		
+		versionCfdi nullable:true,maxSize:10
     }
 
     static mapping ={

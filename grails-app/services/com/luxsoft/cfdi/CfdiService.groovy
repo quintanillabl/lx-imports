@@ -29,13 +29,18 @@ class CfdiService implements InitializingBean{
 	
 	def cfdiSellador
 	
-	
 	def cfdiTimbrador
+
+	def cfdiV33Service
 	
     def Cfdi generarCfdi(def source) {
 		
 		def empresa=Empresa.last()
 		assert empresa,"Debe existir la empresa"
+
+		if(empresa.versionDeCfdi == '3.3'){
+    		return cfdiV33Service.generar(source)
+    	}
 		
 		def serie=null
 		if(source instanceof Venta){
@@ -85,6 +90,15 @@ class CfdiService implements InitializingBean{
 		cfdi.save(failOnError:true)
 		cfdiFolio.save(flush:true)
 		return cfdi
+    }
+
+    def Cfdi timbrar(Cfdi cfdi){
+    	log.info('Timbrando: '+ cfdi.id)
+    	cfdi = cfdiTimbrador.timbrar(cfdi,"PAP830101CR3", "yqjvqfofb")
+    	log.info('Timbrado: '+cfdi)
+    	//cfdi.save failOnError: true
+    	cfdi.save(failOnError:true, flush:true)
+    	return cfdi
     }
 	
 	void validarDocumento(ComprobanteDocument document) {
