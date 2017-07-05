@@ -8,6 +8,7 @@ import lx.cfdi.v33.Comprobante
 import lx.cfdi.v33.CfdiUtils
 import com.luxsoft.impapx.Venta
 import com.luxsoft.impapx.Empresa
+import com.luxsoft.nomina.NominaAsimilado
 
 @Transactional
 public class CfdiV33Service {
@@ -48,6 +49,38 @@ public class CfdiV33Service {
 		cfdi.save(failOnError:true)
 		return cfdi
 
+	}
+
+	def generarCfdiNomina(NominaAsimilado ne){
+
+		Cfdi33NominaBuilder builder = new Cfdi33NominaBuilder()
+		CfdiSellador33 sellador = new CfdiSellador33()
+		def empresa = Empresa.first()
+
+		Comprobante comprobante = builder.build(venta, 'NOMINA12')
+		comprobante = sellador.sellar(comprobante, empresa)
+
+		def cfdi=new Cfdi(
+			tipo: 'CRE',
+			tipoDeCfdi: 'N' ,
+			fecha: ne.fecha,
+			serie: comprobante.serie,
+			folio: comprobante.folio,
+			origen: ne.id.toString(),
+			emisor: comprobante.getEmisor().nombre,
+			receptor: comprobante.receptor.nombre,
+			rfc: comprobante.receptor.rfc,
+			importe: comprobante.total,
+			descuentos: 0,
+			subtotal: comprobante.subTotal,
+			impuesto: 0.0,
+			total: comprobante.total,
+		)
+
+		cfdi.xml = CfdiUtils.toXmlByteArray(comprobante)
+		cfdi.setXmlName("$cfdi.receptorRfc-${'CFDIV33'}-$cfdi.serie-$cfdi.folio"+".xml")
+		cfdi.save(failOnError:true)
+		return cfdi
 	}
 
 

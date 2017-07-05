@@ -43,9 +43,9 @@
               </f:field>
               <f:field property="receptorRfc" wrapper="bootstrap3" widget-class="form-control"/>
               <f:field property="receptorCurp" wrapper="bootstrap3" widget-class="form-control"/>
-              <f:field property="nacional" wrapper="bootstrap3" >
+              <!-- <f:field property="nacional" wrapper="bootstrap3" >
                 <g:checkBox id="nacional" name="${property}" value="${value}"   class="form-control"/>
-              </f:field>
+              </f:field> -->
               <f:field property="registroTributario" wrapper="bootstrap3" widget-class="form-control"/>
               <f:field property="tipoDeRetencion" wrapper="bootstrap3">
                 <g:select class="form-control chosen-select"  
@@ -141,8 +141,8 @@
 			select:function(e,ui){
 				console.log('Valor seleccionado: '+ui.item.nombre+ " Nacional: "+ui.item.nacional);
 				$("#receptorRfc").val(ui.item.rfc);
-				$("#nacional").val(ui.item.nacional);
-				$( "#nacional" ).prop("checked",  ui.item.nacional);
+				//$("#nacional").val(ui.item.nacional);
+				//$( "#nacional" ).prop("checked",  ui.item.nacional);
 				
 			}
 		});

@@ -97,6 +97,8 @@ class V33PdfGenerator {
 		return params;
 	}
 
+	
+
 	static String format(def d){
 		return """${d.calle}, ${d.noExterior}, ${d.noInterior?:''}, ${d.colonia},${d.codigoPostal}, ${d.municipio}, ${d.localidad},${d.estado}, ${d.pais} """;
 	}

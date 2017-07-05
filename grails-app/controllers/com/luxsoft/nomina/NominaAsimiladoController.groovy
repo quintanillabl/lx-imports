@@ -8,6 +8,7 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
 import com.luxsoft.cfdi.Cfdi
+import com.luxsoft.cfdix.CFDIXUtils
 
 @Secured(["hasAnyRole('COMPRAS','ADMIN')"])
 @Transactional(readOnly = true)
@@ -102,10 +103,12 @@ class NominaAsimiladoController {
         redirect action:'show', id: ne.id
     }
 
+   
     def mostrarXml(Cfdi cfdi){
-        render(text: cfdi.comprobanteDocument.xmlText(), contentType: "text/xml", encoding: "UTF-8")
+        def res = CFDIXUtils.parse(cfdi.xml)
+        render(text: res, contentType: "text/xml", encoding: "UTF-8")
     }
-    
+
     @Transactional
     def timbrar(NominaAsimilado ne){
         nominaAsimiladoService.timbrar(ne)
