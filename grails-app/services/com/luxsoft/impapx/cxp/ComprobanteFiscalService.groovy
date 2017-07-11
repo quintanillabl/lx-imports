@@ -13,7 +13,7 @@ import com.luxsoft.impapx.*
 import com.luxsoft.cfdi.Acuse
 import com.luxsoft.lx.utils.MonedaUtils
 import com.luxsoft.impapx.contabilidad.CuentaContable
-
+import com.luxsoft.cfdix.v33.ImportadorDeCfdiV33
 
 
 
@@ -33,13 +33,18 @@ class ComprobanteFiscalService {
 
         def xml = new XmlSlurper().parse(xmlFile)
         SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-        if(xml.name()!='Comprobante')
-            throw new ComprobanteFiscalException(message:"${cfdiFile.getOriginalFilename()} no es un CFDI valido")
-
-        
         def data=xml.attributes()
         log.debug 'Comprobante:  '+xml.attributes()  
-
+        if(xml.name()!='Comprobante')
+            throw new ComprobanteFiscalException(message:"${cfdiFile.getOriginalFilename()} no es un CFDI valido")
+        def version = data.version
+        
+        if(version == null){
+            version = data.Version
+        }
+        if(version == '3.3'){
+            return new ImportadorDeCfdiV33().build(xml, cfdiFile, cxp)
+        }
         
         def empresa=Empresa.first()
         
@@ -284,6 +289,14 @@ class ComprobanteFiscalService {
             def xml=getXml(cf)
             def data=xml.attributes()
             def total=data['total']
+            def version = data.version
+            
+            if(version==null){
+                version = data.Version
+                total = data.Total
+                log.info('Validando CFDI version: '+version);
+            } 
+
             Acuse acuse=buscarAcuse(cf.emisorRfc,cf.receptorRfc,total,cf.uuid)
             
             JAXBContext context = JAXBContext.newInstance(Acuse.class);

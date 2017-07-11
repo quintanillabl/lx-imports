@@ -77,7 +77,7 @@ grails.project.dependency.resolution = {
         
         // Nueva implementacion de CFDI
         compile 'lx.cfdi:v32:1.0.1'
-        compile 'lx.cfdi:v33:1.0.4'
+        compile 'lx.cfdi:v33:1.0.5'
     }
 
     plugins {
