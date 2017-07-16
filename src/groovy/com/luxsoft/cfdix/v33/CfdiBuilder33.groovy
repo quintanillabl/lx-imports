@@ -95,7 +95,7 @@ class CfdiBuilder33 {
             Comprobante.Conceptos.Concepto concepto = factory.createComprobanteConceptosConcepto()
             concepto.with { 
                 String desc = det.producto.descripcion
-                claveProdServ = det.producto.claveProdServ ?: "80131500" // Tomarlo del producto
+                claveProdServ = det.producto?.productoSat?.claveProdServ ?: "80131500" // Tomarlo del producto
                 noIdentificacion = det.producto.clave
                 cantidad = det.cantidad
                 claveUnidad = det.producto.claveUnidadSat ?: 'EA'

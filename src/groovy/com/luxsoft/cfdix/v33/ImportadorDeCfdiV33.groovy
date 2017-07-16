@@ -177,7 +177,7 @@ class ImportadorDeCfdiV33 {
                     valorUnitario:model['ValorUnitario'],
                     importe:model['Importe']
                 )
-                det.impuestoTasa=cxp.tasaDeImpuesto
+                det.impuestoTasa=cxp.tasaDeImpuesto * 100
                 det.impuesto=MonedaUtils.calcularImpuesto(det.importe,det.impuestoTasa/100)
                 det.total=det.importe+det.impuesto
                 if(!cxp.conceptos){
@@ -186,10 +186,12 @@ class ImportadorDeCfdiV33 {
                 	    if(retencion.Impuesto == '001'){
                 	        det.retencionIsr = retencion.Importe as BigDecimal
                 	        det.retensionTasa = retencion.TasaOCuota as BigDecimal
+                            det.retensionTasa *= 100
                 	    }
                 	    if(retencion.Impuesto == '002'){
                 	        det.retension = retencion.Importe as BigDecimal
                 	        det.retensionTasa = retencion.TasaOCuota as BigDecimal
+                            det.retensionTasa *= 100
                 	    }
                 	}
                 	
