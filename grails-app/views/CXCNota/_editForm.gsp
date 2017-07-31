@@ -11,6 +11,16 @@
 				<f:display property="aplicado" />
 				<f:display property="disponible" />
 				<f:display property="comentario"/>
+				<f:display property="ventaRelacionada.facturaFolio" label="Factura"/>
+				<g:if test="${CXCNotaInstance.ventaRelacionada}">
+					<f:display property="ventaRelacionada.cfdi">
+						<g:link controller="cfdi" action="show" id="${CXCNotaInstance.ventaRelacionada.getCfdi()}">
+							${CXCNotaInstance.ventaRelacionada.getCfdi()}
+						</g:link>
+						
+					</f:display>	
+				</g:if>
+					
 			</f:with>
 		</form>
 		<div class="col-md-6 col-md-offset-2">

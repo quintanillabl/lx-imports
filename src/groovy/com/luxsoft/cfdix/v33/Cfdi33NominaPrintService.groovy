@@ -1,6 +1,4 @@
-package com.luxsoft.nomina
-
-import org.apache.xmlbeans.XmlObject
+package com.luxsoft.cfdix.v33
 
 import net.sf.jasperreports.engine.JRExporterParameter
 import net.sf.jasperreports.engine.JasperCompileManager
@@ -16,33 +14,25 @@ import org.codehaus.groovy.grails.plugins.jasper.JasperExportFormat
 import org.codehaus.groovy.grails.plugins.jasper.JasperReportDef
 import org.springframework.core.io.Resource
 
-
-import mx.gob.sat.cfd.x3.ComprobanteDocument.Comprobante
-import mx.gob.sat.nomina12.NominaDocument
-import mx.gob.sat.nomina12.NominaDocument.Nomina
+import com.luxsoft.nomina.NominaAsimilado
+import lx.cfdi.v33.nomina.Nomina
 
 import java.io.ByteArrayInputStream
-import mx.gob.sat.cfd.x3.ComprobanteDocument
-import mx.gob.sat.cfd.x3.ComprobanteDocument.Comprobante
 
 import com.luxsoft.cfdi.Cfdi
 
+import com.luxsoft.cfdix.v33.V33CfdiUtils
 
-	
-class NominaPrintService {
+class Cfdi33NominaPrintService {
 
-	def getComprobante(Cfdi cfdi ){
-		ByteArrayInputStream is=new ByteArrayInputStream(cfdi.getXml())
-		return ComprobanteDocument.Factory.parse(is).getComprobante()
-	}
 
 	def imprimir(NominaAsimilado ne, def params = [:]){
-		
+		/*
 		Cfdi cfdi = ne.cfdi
 		assert cfdi, 'Debe generar el cfdi para la nomina asimilado ' + ne.id
 		assert cfdi.uuid, 'No se ha timbrado el cfdi: ' + ne.cfdi.id
 
-		Comprobante comprobante = getComprobante(cfdi)
+		def comprobante = V33CfdiUtils.toComprobante(cfdi)
 		Nomina nomina = getComplemento(cfdi)
 		def modelData = []
 		registrarDeducciones(nomina, modelData)
@@ -57,7 +47,7 @@ class NominaPrintService {
 		params.FECHA = comprobante.fecha.getTime().format("yyyy-MM-dd'T'HH:mm:ss")
 		params << repParams
 
-		params['RECIBO_NOMINA']=ne.id as String
+		params['RECIBO_NOMINA'=]ne.id as String
 		params[PdfExporterConfiguration.PROPERTY_PDF_JAVASCRIPT]="this.print();"
 
 		def reportDef=new JasperReportDef(
@@ -78,54 +68,10 @@ class NominaPrintService {
 		exporter.exportReport();
 
 		return pdfStream
+		*/
 	}
-
-	def generarReportDef(NominaAsimilado ne, def params = [:]){
-		Cfdi cfdi = ne.cfdi
-		Comprobante comprobante=cfdi.comprobante
-		Nomina nomina = getComplemento(cfdi)
-		def modelData = []
-		registrarDeducciones(nomina, modelData)
-		registrarPercepciones(nomina, modelData)
-		registrarOtrosPagos(nomina, modelData)
-
-		modelData.sort{
-			it.clave
-		}
-
-		def repParams = ParamsUtils.getParametros(cfdi.comprobante, nomina, ne)
-		params << repParams
-
-		params['RECIBO_NOMINA']=ne.id as String
-		params[PdfExporterConfiguration.PROPERTY_PDF_JAVASCRIPT]="this.print();"
-
-		def reportDef=new JasperReportDef(
-			name: 'NominaDigitalCFDI'
-			,fileFormat: JasperExportFormat.PDF_FORMAT
-			,reportData: modelData,
-			,parameters: params
-			)
-		log.info( "Reporte Def generado: ${ne.empleado}")
-		return reportDef
-	}
-
-
-	Nomina getComplemento(Cfdi cfdi){
-		def complemento = getComprobante(cfdi).getComplemento()
-		if(complemento){
-	        String queryExpression ="declare namespace nomina12='http://www.sat.gob.mx/nomina12';" +
-						"\$this/nomina12:Nomina"
-	        XmlObject[] res=complemento.selectPath(queryExpression);
-	        if(res.length>0){
-				XmlObject n1=res[0];
-				def nominaDocument = NominaDocument.Factory.parse(n1.domNode)
-				return nominaDocument.getNomina()
-	            
-			}
-		} 
-		return null
-	}
-
+	
+	/*
 	def registrarDeducciones(Nomina nomina, def modelData){
 		def deducciones = nomina?.deducciones?.deduccionArray
 		deducciones.each { cc ->
@@ -172,4 +118,5 @@ class NominaPrintService {
 			}
 		}
 	}
+	*/
 }

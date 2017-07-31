@@ -1,4 +1,5 @@
 <%@ page import="com.luxsoft.impapx.cxc.CXCNota" %>
+<%@ page import="com.luxsoft.cfdix.v32.V32CfdiUtils" %>
 <!doctype html>
 <html>
 <head>
@@ -20,6 +21,30 @@
 		<f:field property="descuento" widget="porcentaje" wrapper="bootstrap3"/>
 		<f:field property="importe" widget="money" wrapper="bootstrap3"/>
 		<f:field property="comentario" wrapper="bootstrap3" widget-class="form-control"/>
+		<f:field property="usoCfdi" wrapper="bootstrap3" widget-class="form-control">
+			%{-- <g:select class="form-control chosen-select"  
+			 	name="usoCfdi" 
+			 	from="${['G01','G02']}" 
+			 /> --}%
+			 <g:select class="form-control chosen-select"  
+				name="${property}" 
+				value="${'G02'}"
+				from="${V32CfdiUtils.getUsosDeCfdi()}" 
+				optionKey="clave" 
+				optionValue="descripcion"
+				required='required'
+			/>
+		</f:field>
+		<f:field property="ventaRelacionada" wrapper="bootstrap3">
+			<g:hiddenField id="ventaRelacionada" name="ventaRelacionada.id" value="${value}" />
+			<input 
+				id="ventaRelacionadaField" 
+				type="text" 
+				class="form-control" 
+				value="${value}" 
+				placeholder="Seleccione la venta o nota de cargo relacionada" required>
+			</input>
+		</f:field>
 			
 	</f:with>
 
@@ -82,6 +107,17 @@
 					.attr("readonly",true);
 				}else{
 					$("#tc").attr("readonly",false);
+				}
+			});
+
+			$("#ventaRelacionadaField").autocomplete({
+				source:'<g:createLink   action="ventasAsJSONList"/>',
+				minLength:1,
+				select:function(e,ui){
+					console.log('Valor seleccionado: '+ui.item.id);
+					$("#ventaRelacionada").val(ui.item.id);
+
+					
 				}
 			});
 		});

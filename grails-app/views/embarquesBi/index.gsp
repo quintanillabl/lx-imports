@@ -19,6 +19,7 @@
 			<th>Embarque</th>
 			<th>BL</th>
 			<th>Nombre</th>
+			<th>Compra</th>
 			<th>Proveedor</th>
 			<th>Aduana</th>
 			<th>Producto</th>
@@ -41,6 +42,7 @@
 						</g:link>
 					</td>
 					<td>${row.embarque.nombre}</td>
+					<td>${row.compraDet.compra.folio}</td>
 					<td>${row.embarque.proveedor}</td>
 					<td>${row.embarque.aduana}</td>
 					<td>${row.producto.clave}</td>
@@ -78,6 +80,7 @@
 				<g:form action="search" class="form-horizontal" >
 					<div class="modal-body">
 						<f:with bean="searchCommand">
+							<f:field property="compra" widget-class="form-control"/>
 							<f:field property="bl" widget-class="form-control"/>
 							<f:field property="pedimento" widget-class="form-control"/>
 							<f:field property="contenedor" widget-class="form-control"/>

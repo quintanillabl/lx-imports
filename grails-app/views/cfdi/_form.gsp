@@ -3,6 +3,15 @@
 
 	<fieldset>
 		<div class="form-group">
+			<label for="socio" class="col-sm-2 control-label">Version</label>
+			<div class="col-sm-4">
+				<p class="form-control-static">
+					<g:fieldValue bean="${cfdiInstance}" field="versionCfdi"/> 
+				</p>
+			</div>
+		</div>
+
+		<div class="form-group">
 			<label for="socio" class="col-sm-2 control-label">Serie</label>
 			<div class="col-sm-4">
 				<p class="form-control-static"><g:fieldValue bean="${cfdiInstance}" field="serie"/> </p>

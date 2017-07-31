@@ -182,8 +182,13 @@ class CfdiService implements InitializingBean{
 
 		CancelacionDeCfdi cancel=new CancelacionDeCfdi()
 		cancel.cfdi=cfdi
-
-		def rfc=cfdi.getComprobante().emisor.rfc
+		def rfc = null
+		if(cfdi.versionCfdi == '3.3'){
+			rfc = cfdi.rfc
+		} else {
+			rfc = cfdi.getComprobante().emisor.rfc
+		}
+		
 
 		def empresa=Empresa.findByRfc(rfc)
 		if(!empresa){

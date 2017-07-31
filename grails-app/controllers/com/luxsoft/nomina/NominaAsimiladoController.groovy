@@ -9,6 +9,7 @@ import grails.plugin.springsecurity.annotation.Secured
 
 import com.luxsoft.cfdi.Cfdi
 import com.luxsoft.cfdix.CFDIXUtils
+import com.luxsoft.cfdix.v33.Cfdi33NominaPrintService
 
 @Secured(["hasAnyRole('COMPRAS','ADMIN')"])
 @Transactional(readOnly = true)
@@ -125,9 +126,16 @@ class NominaAsimiladoController {
 
     def print(NominaAsimilado ne) {
         def cfdi = ne.cfdi
-        ByteArrayOutputStream  pdfStream = new NominaPrintService().imprimir(ne, params)
-        def fileName="cfdi_${cfdi.folio}_${cfdi.receptor}.pdf"
-        render(file: pdfStream.toByteArray(), contentType: 'application/pdf',fileName:fileName)
+        if(cfdi.versionCfdi == '3.3'){
+            ByteArrayOutputStream  pdfStream = new Cfdi33NominaPrintService().imprimir(ne, params)
+            def fileName="cfdi_${cfdi.folio}_${cfdi.receptor}.pdf"
+            render(file: pdfStream.toByteArray(), contentType: 'application/pdf',fileName:fileName)
+        } else {
+            ByteArrayOutputStream  pdfStream = new NominaPrintService().imprimir(ne, params)
+            def fileName="cfdi_${cfdi.folio}_${cfdi.receptor}.pdf"
+            render(file: pdfStream.toByteArray(), contentType: 'application/pdf',fileName:fileName)
+        }
+        
     }
 
     protected void notFound() {

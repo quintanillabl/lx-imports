@@ -97,10 +97,11 @@ class NominaAsimiladoService {
 		assert !ne.cfdi , "Ya se genero el cfdi para la nomina de asimilado ${ne.id} "
 
 		def empresa = Empresa.first()
+		/*
 		if(empresa.versionDeCfdi == '3.3'){
 			return cfdiV33Service.generarCfdiNomina(ne)
 		}
-
+		*/
 		ComprobanteDocument document = generarXml(ne)
 		Comprobante comprobante = document.getComprobante()
 
@@ -113,6 +114,7 @@ class NominaAsimiladoService {
 			origen: ne.id.toString(),
 			emisor: comprobante.getEmisor().nombre,
 			receptor: comprobante.receptor.nombre,
+			receptorRfc: comprobante.receptor.rfc,
 			rfc: comprobante.receptor.rfc,
 			importe: comprobante.total,
 			descuentos: 0,

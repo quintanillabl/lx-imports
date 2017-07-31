@@ -10,14 +10,11 @@ import mx.gob.sat.cfd.x3.TUbicacion;
 
 import org.apache.commons.lang.StringUtils;
 
-
-
-
-
 class CfdiPrintUtils {
 	
-	static resolverParametros(Cfdi cfdi){
-		Comprobante comprobante=cfdi.getComprobante()
+	static resolverParametros(Cfdi cfdi, Comprobante comprobante){
+		
+		//Comprobante comprobante=cfdi.getComprobante()
 		def parametros=[:]
 		// Datos tomados del Comprobante fiscal digital XML
 		
@@ -93,11 +90,11 @@ class CfdiPrintUtils {
 		if(cfdi.uuid!=null){
 			
 			//println 'Imagen generada: '+img
-			def img=QRCodeUtils.generarQR(cfdi.getComprobante())
-			println 'Imagen generada: '+img
+			def img=QRCodeUtils.generarQR(comprobante)
+			//println 'Imagen generada: '+img
 			parametros.put("QR_CODE",img);
 			//parametros.put("QR_CODE",QRCodeUtils.getQCode(cfdi.getComprobante()))
-			TimbreFiscal timbre=new TimbreFiscal(cfdi.getComprobante())
+			TimbreFiscal timbre=new TimbreFiscal(comprobante)
 			parametros.put("FECHA_TIMBRADO", timbre.FechaTimbrado);
 			parametros.put("FOLIO_FISCAL", timbre.UUID);
 			parametros.put("SELLO_DIGITAL_SAT", timbre.selloSAT);

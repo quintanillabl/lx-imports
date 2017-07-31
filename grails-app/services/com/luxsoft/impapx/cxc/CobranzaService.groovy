@@ -133,13 +133,21 @@ class CobranzaService {
 		}
 		nota.partidas=[]
 		if(nota.tipo=='BONIFICACION'){
+			def desc = nota.comentario?:nota.tipo
+			if(nota.ventaRelacionada){
+				def venta = nota.ventaRelacionada
+				desc = " ${venta.getFacturaFolio()}, ${venta.fecha.text()} " + desc
+			}
 			nota.addToPartidas(
 				cantidad:1
 				,unidad:'NO APLICA'
 				,numeroDeIdentificacion:'BON'
-				,descripcion:nota.comentario?:'BONIFICACION'
+				,descripcion: desc
 				,valorUnitario:nota.importe
 				,importe:nota.importe
+				,claveUnidadSat: 'ZZ'
+				,unidadSat: 'NO APLICA'
+				,claveProdServ: '80141629'
 				,comentario:nota.comentario)
 			println 'Concepto agregado'
 		}else{
@@ -259,6 +267,8 @@ class CobranzaService {
 		def res=nota.save(failOnError:true)
 		return res
 	}
+
+	
 	
 }
 

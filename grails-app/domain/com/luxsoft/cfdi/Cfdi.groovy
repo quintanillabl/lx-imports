@@ -2,6 +2,8 @@ package com.luxsoft.cfdi
 
 import groovy.transform.ToString;
 
+import mx.gob.sat.cfd.x3.ComprobanteDocument
+import mx.gob.sat.cfd.x3.ComprobanteDocument.Comprobante
 import java.io.ByteArrayInputStream
 
 
@@ -38,6 +40,9 @@ class Cfdi {
 	Date dateCreated
 	Date lastUpdated
 
+	ComprobanteDocument comprobanteDocument
+	TimbreFiscal timbreFiscal
+
     static constraints = {
 		serie blannk:false,maxSize:15 
 		tipo inList:['FACTURA','NOTA_CREDITO','NOTA_CARGO','PAGO','FAC','CRE','CAR']
@@ -62,8 +67,25 @@ class Cfdi {
 
     static hasOne = [cancelacion: CancelacionDeCfdi]
 	
-	//static transients = ['comprobanteDocument','timbreFiscal']
+	static transients = ['comprobanteDocument','timbreFiscal']
 	
+	Comprobante getComprobante(){
+		getComprobanteDocument().getComprobante()
+	}
+	
+	public ComprobanteDocument getComprobanteDocument(){
+		if(this.comprobanteDocument==null){
+			loadComprobante()
+		}
+		return this.comprobanteDocument
+	}
+	
+	void loadComprobante(){
+		ByteArrayInputStream is=new ByteArrayInputStream(getXml())
+		this.comprobanteDocument=ComprobanteDocument.Factory.parse(is)
+		
+		
+	}
 	
 	
 	String toString(){

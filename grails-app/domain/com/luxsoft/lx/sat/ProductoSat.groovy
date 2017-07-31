@@ -15,7 +15,7 @@ class ProductoSat {
     }
 	
 	String toString(){
-		return "${clave} - ${descripcion}"
+		return "${claveProdServ} - ${descripcion}"
 	}
 	
 }

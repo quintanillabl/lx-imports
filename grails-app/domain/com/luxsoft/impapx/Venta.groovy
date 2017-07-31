@@ -42,6 +42,7 @@ class Venta {
 	
 	String tipo="VENTA";
 	String clase="IMPORTACION"
+	String usoCfdi = 'G01'
 	
 	static hasMany = [partidas:VentaDet]
 
@@ -66,6 +67,7 @@ class Venta {
 		saldo(nullable:true)
 		tipo(inList:['VENTA','NOTA_DE_CARGO'])
 		clase(nullable:true,maxSize:40)
+		usoCfdi nullable: true, maxSize:3
     }
 	
 	static mapping = {

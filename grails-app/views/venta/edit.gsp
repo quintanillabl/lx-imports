@@ -19,7 +19,7 @@
 
 <content tag="document">
 	<div class="ibox float-e-margins">
-		<lx:iboxTitle title="Cuenta de gastos"/>
+		
 	    <div class="ibox-content">
 
 			<ul class="nav nav-tabs" id="myTab">

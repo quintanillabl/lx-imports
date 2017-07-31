@@ -2,6 +2,7 @@ package com.luxsoft.impapx.cxc
 
 
 import com.luxsoft.cfdi.Cfdi
+import com.luxsoft.impapx.Venta
 
 class CXCNota extends CXCAbono{
 	
@@ -9,6 +10,9 @@ class CXCNota extends CXCAbono{
 	List partidas
 	String tipo
 	BigDecimal descuento=0.0
+	String usoCfdi = 'G01'
+
+	Venta ventaRelacionada
 	
 	static hasMany =[partidas:CXCNotaDet]
 
@@ -19,10 +23,13 @@ class CXCNota extends CXCAbono{
 				if(obj.tipo=='DESCUENTO' && val<=0.0){return 'descuentoRequerido'}
 			}
 		)
+		usoCfdi nullable:true, maxSize: 3
+		ventaRelacionada nullable:true
     }
 	
 	static mapping ={
 		partidas cascade:"all-delete-orphan"
+
 	}
 	
 	static transients = ['cfdi','comprobanteFiscal']

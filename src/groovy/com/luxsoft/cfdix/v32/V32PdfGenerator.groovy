@@ -89,6 +89,7 @@ class V32PdfGenerator {
 			params.put("SELLO_DIGITAL_SAT", timbre.selloSAT);
 			params.put("CERTIFICADO_SAT", timbre.noCertificadoSAT);
 			params.put("CADENA_ORIGINAL_SAT", timbre.cadenaOriginal());
+			
 		}
 		params.FECHA = cfdi.fecha.format("yyyy-MM-dd'T'HH:mm:ss")
 		//params.IMPORTE = params.IMPORTE as String

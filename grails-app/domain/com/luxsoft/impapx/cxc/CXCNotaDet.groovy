@@ -14,6 +14,10 @@ class CXCNotaDet {
 	BigDecimal importe
 	String comentario
 	Venta venta
+
+	String claveUnidadSat
+    String unidadSat
+    String claveProdServ
 	
 	static belongsTo =[nota:CXCNota]
 
@@ -26,7 +30,9 @@ class CXCNotaDet {
 		importe(nullable:false,scale:2)
 		comentario(nullable:false,maxSize:300)
 		venta(nullable:true)
-		
+		unidadSat nullable: true
+        claveUnidadSat nullable:true
+        claveProdServ nullable: true
     }
 	
 	static mapping ={

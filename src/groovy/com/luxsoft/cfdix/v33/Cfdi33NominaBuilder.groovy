@@ -22,6 +22,7 @@ import lx.cfdi.v33.CMetodoPago
 import lx.cfdi.v33.CTipoDeComprobante
 import lx.cfdi.v33.CMoneda
 import lx.cfdi.v33.CTipoFactor
+import lx.cfdi.v33.CEstado
 
 
 class Cfdi33NominaBuilder {
@@ -39,29 +40,29 @@ class Cfdi33NominaBuilder {
 
         buildComprobante(serie)
         .buildComplemento()
-        /*
         .buildEmisor()
         .buildReceptor()
         .buildFormaDePago()
         .buildConceptos()
-        .buildImpuestos()
+        //.buildImpuestos()
         .buildTotales()
         .buildCertificado()
-        */
+        
         return comprobante
     }
 
     def buildComplemento(){
         Nomina nomina = factory.createNomina()
-        nomina.version = '1.0'
+        nomina.version = '1.2'
         nomina.tipoNomina = CTipoNomina.E
         nomina.numDiasPagados = 1
         nomina.fechaPago = NominaUtils.toDate(nominaAsimilado.pago)
         nomina.fechaInicialPago = NominaUtils.toDate(nominaAsimilado.pago)
         nomina.fechaFinalPago = NominaUtils.toDate(nominaAsimilado.pago)
-
-        // Emisor
-        Asimilado empleado = nominaEmpleado.asimilado
+        nomina.setTotalPercepciones(nominaAsimilado.percepciones)
+        nomina.setTotalDeducciones(nominaAsimilado.deducciones)
+        
+        Asimilado empleado = nominaAsimilado.asimilado
         Nomina.Receptor receptor = factory.createNominaReceptor()
         receptor.curp = empleado.curp
         receptor.tipoContrato = '99'  
@@ -70,6 +71,39 @@ class Cfdi33NominaBuilder {
         receptor.periodicidadPago = '99'
         receptor.setClaveEntFed(CEstado.DIF)
         nomina.receptor = receptor
+
+        // Percepciones
+        Nomina.Percepciones percepciones = factory.createNominaPercepciones()
+        percepciones.totalSueldos = nominaAsimilado.percepciones
+        percepciones.totalGravado = nominaAsimilado.percepciones
+        percepciones.totalExento = 0.0
+        
+        Nomina.Percepciones.Percepcion pp = factory.createNominaPercepcionesPercepcion()
+        def clave = '046' // Ingresos asimilados a salarios
+        pp.setTipoPercepcion(clave)
+        pp.setClave('P046')  
+        pp.setConcepto(nominaAsimilado.concepto)
+        pp.setImporteGravado(nominaAsimilado.percepciones)
+        pp.setImporteExento(0.0)
+        percepciones.percepcion.add(pp)
+        nomina.percepciones = percepciones
+
+        /// End Percepciones ///
+        
+        /** Deducciones */
+        Nomina.Deducciones deducciones = factory.createNominaDeducciones()
+        
+        def isr = nominaAsimilado.getDeducciones()
+        deducciones.totalImpuestosRetenidos = isr
+        
+        Nomina.Deducciones.Deduccion dd = factory.createNominaDeduccionesDeduccion()
+        
+        dd.setTipoDeduccion('002')
+        dd.setClave('ISR')
+        dd.setConcepto('ISR')
+        dd.setImporte(isr)
+        deducciones.deduccion.add(dd)
+        nomina.deducciones = deducciones
 
         Comprobante.Complemento complemento = factory.createComprobanteComplemento()
         complemento.any.add(nomina)
@@ -88,7 +122,7 @@ class Cfdi33NominaBuilder {
         comprobante.tipoDeComprobante = CTipoDeComprobante.N
         comprobante.serie = serie
         comprobante.folio = nominaAsimilado.id.toString()
-        comprobante.setFecha(DateUtils.getCfdiDate(nominaAsimilado.fecha))
+        comprobante.setFecha(DateUtils.getCfdiDate(new Date()))
         comprobante.moneda = CMoneda.MXN
         comprobante.lugarExpedicion = empresa.direccion.codigoPostal
         return this
@@ -107,9 +141,9 @@ class Cfdi33NominaBuilder {
     def buildReceptor(){
         /** Receptor ***/
         Comprobante.Receptor receptor = factory.createComprobanteReceptor()
-        receptor.rfc = nomina.asimilado.rfc
-        receptor.nombre = nomia.asimilado.nombre
-        receptor.usoCFDI = CUsoCFDI.P01 
+        receptor.rfc = nominaAsimilado.asimilado.rfc
+        receptor.nombre = nominaAsimilado.asimilado.nombre
+        receptor.usoCFDI = CUsoCFDI.P_01 
         comprobante.receptor = receptor
         return this
     }
@@ -117,7 +151,7 @@ class Cfdi33NominaBuilder {
     def buildFormaDePago(){
         comprobante.formaPago = '99'
         //comprobante.condicionesDePago = 'Credito 30 días'
-        comprobante.metodoPago = CMetodoPago.PPD
+        comprobante.metodoPago = CMetodoPago.PUE
         return this
     }
 
@@ -127,17 +161,14 @@ class Cfdi33NominaBuilder {
         Comprobante.Conceptos.Concepto concepto = factory.createComprobanteConceptosConcepto()
         concepto.with { 
             claveProdServ = "84111505" 
-            noIdentificacion = "84111505" 
             cantidad = 1
             claveUnidad = 'ACT'
-            unidad = 'ACT'
             descripcion = 'Pago de nómina'
-            
-            def totalPercepciones = nominaEmpleado.percepciones?:0.0
+            def totalPercepciones = nominaAsimilado.percepciones?:0.0
             def totalOtrosPagos = 0.0
             valorUnitario = totalPercepciones + totalOtrosPagos
             importe = totalPercepciones + totalOtrosPagos
-
+            descuento = nominaAsimilado.getDeducciones()
             conceptos.concepto.add(concepto)
             
         }
@@ -147,15 +178,15 @@ class Cfdi33NominaBuilder {
     }
 
     def buildTotales(){
-        def totalPercepciones = nominaEmpleado.percepciones?:0.0
+        def totalPercepciones = nominaAsimilado.percepciones?:0.0
         def totalOtrosPagos = 0.0
-        def totalDeducciones = nominaEmpleado.deducciones?: 0.0
+        def totalDeducciones = nominaAsimilado.deducciones?: 0.0
         comprobante.subTotal = totalPercepciones + totalOtrosPagos
         comprobante.descuento = totalDeducciones
         comprobante.total = totalPercepciones + totalOtrosPagos - totalDeducciones
         return this
     }
-    
+
 
     def buildCertificado(){
         comprobante.setNoCertificado(empresa.numeroDeCertificado)

@@ -17,7 +17,7 @@
             <li><g:link action="index">${entityName}(s)</g:link></li>
             <li><g:link action="show" id="${entity.id}">Consulta</g:link></li>
             <g:if test="${CXCNotaInstance.cfdi}">
-            	<li><g:link controller="cfdi" action="show" id="${entity.cfdi}"><strong>CFDI</strong></g:link></li>
+            	<li><g:link controller="cfdi" action="show" id="${CXCNotaInstance.getCfdiId()}"><strong>CFDI</strong></g:link></li>
             </g:if>
             <li><g:link action="edit" id="${entity.id}"><strong>Edición</strong></g:link></li>
             
@@ -28,7 +28,7 @@
  		<div class="ibox float-e-margins">
  			<div class="ibox-title">
 				<g:if test="${CXCNotaInstance.cfdi}">
-					<g:link controller="cfdi" action="show" id="${entity.id}"><strong>CFDI</strong></g:link>
+					<g:link controller="cfdi" action="show" id="${CXCNotaInstance.getCfdiId()}"><strong>CFDI</strong></g:link>
 				</g:if>
  			</div>
  		    <div class="ibox-content">

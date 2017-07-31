@@ -22,4 +22,14 @@ class V32CfdiUtils {
 		return comprobante
 	}
 
+	public static List getUsosDeCfdi(){
+		def usos = []
+		usos.add([clave:'G01', descripcion: 'Adquisición de mercancias (G01)'])
+		usos.add([clave:'G02', descripcion: 'Devoluciones, descuentos o bonificaciones (G02)'])
+		usos.add([clave:'G03', descripcion: 'Gastos en general (G03)'])
+		
+		
+		return usos
+	}
+
 }

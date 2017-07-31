@@ -16,6 +16,7 @@ class CfdiTimbre {
 	String selloCFD
 	String selloSAT
 	String noCertificadoSAT
+	String rfcProvCertif
 	
 	CfdiTimbre(Cfdi cfdi){
 		build(cfdi)
@@ -33,6 +34,7 @@ class CfdiTimbre {
 		this.selloCFD = timbre.attributes()['SelloCFD']
 		this.selloSAT = timbre.attributes()['SelloSAT']
 		this.noCertificadoSAT = timbre.attributes()['NoCertificadoSAT']
+		this.rfcProvCertif = timbre.attributes()['RfcProvCertif']
 	    
 	}
 	

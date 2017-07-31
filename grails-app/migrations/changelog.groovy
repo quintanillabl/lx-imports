@@ -6,9 +6,11 @@ databaseChangeLog = {
 
 	include file: 'cfdi33-patch-001.groovy'
 
-	
-
 	//include file: 'cfdi33.patch-002.groovy'
 
 	include file: 'cfdi33-patch-002.groovy'
+
+	include file: 'cfdi33-patch-003.groovy'
+
+	include file: 'cfdi33-patch-004.groovy'
 }
