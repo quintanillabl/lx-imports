@@ -44,7 +44,9 @@ class Venta {
 	String clase="IMPORTACION"
 	String usoCfdi = 'G01'
 	
-	static hasMany = [partidas:VentaDet]
+	List conceptos
+	
+	static hasMany = [partidas:VentaDet, conceptos: CargoDet]
 
     static constraints = {
 		
