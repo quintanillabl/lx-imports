@@ -19,8 +19,8 @@ class CargoDet {
     unidad(nullable:false,maxSize:100)
     numeroDeIdentificacion(nullable:false,maxSize:50)
     descripcion(nullable:false,maxSize:200)
-    valorUnitario(nullable:false,scale:2)
-    importe(nullable:false,scale:2)
+    //valorUnitario(nullable:false,scale:2)
+    //importe(nullable:false,scale:2)
     comentario(nullable:false,maxSize:300)
   }
   

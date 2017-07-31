@@ -19,7 +19,7 @@ dataSource_importacion{
   dialect = org.hibernate.dialect.MySQL5InnoDBDialect
   driverClassName = 'com.mysql.jdbc.Driver'
   username = 'root'
-  password = 'sys'
+  password = 'sys1'
   // url = 'jdbc:mysql://10.10.1.228/produccion'
   url = 'jdbc:mysql://localhost/sw2'
   dbCreate = ''
@@ -47,7 +47,7 @@ environments {
             driverClassName = "com.mysql.jdbc.Driver"
             dialect = org.hibernate.dialect.MySQL5InnoDBDialect
             username = "root"
-            password = "sys"
+            password = "sys1"
             properties {
                 maxActive = 10
                 maxIdle = 10
