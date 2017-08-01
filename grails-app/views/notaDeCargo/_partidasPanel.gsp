@@ -13,10 +13,16 @@
         <th>Cantidad</th>
         <th>Clave SAT</th>
         <th>Factura</th>
+        <th>Vto</th>
+        <th>Corte</th>
+        <th>Atraso</th>
+        <th>M.Mes</th>
+        <th>D.Pena</th>
+        <th>Pena</th>
         <th>Valor U</th>
         <th>Importe</th>
         <th>Unidad SAT</th>
-        <th>Comentario</th>
+        %{-- <th>Comentario</th> --}%
       </tr>
     </thead>
     <tbody>
@@ -24,8 +30,14 @@
         <tr id="${row.id}">
           <td>${fieldValue(bean: row, field: "cantidad")}</td>
           <td>${fieldValue(bean: row, field: "numeroDeIdentificacion")}</td>
-          <td>${row?.cfdi?.serie} ${row.cfdi.folio}</td>
-          
+          <td>${fieldValue(bean: row, field: "documento")}</td>
+          <td><lx:shortDate date="${row.vto}" /></td>
+          <td><lx:shortDate date="${row.corte}" /></td>
+          <td><g:formatNumber number="${row.atraso }" /></td>
+          <th>${row.mismoMes ? 'SI' : 'NO'}</th>
+          <td><g:formatNumber number="${row.diasPena }" /></td>
+          <td><lx:moneyFormat number="${row.penaPorDia }" /></td>
+
           <td><lx:moneyFormat number="${row.valorUnitario }" /></td>
           <td><lx:moneyFormat number="${row.importe }" /></td>
           %{-- <td><lx:shortDate date="${rowfechaDocumento}" /></td>
@@ -35,7 +47,7 @@
           <td><lx:shortDate date="${row?.factura?.vencimiento}" /></td>
         --}%
           <td>${fieldValue(bean: row, field: "unidad")}</td>
-          <td>${fieldValue(bean: row, field: "comentario")}</td>
+          %{-- <td>${fieldValue(bean: row, field: "comentario")}</td> --}%
         </tr>
       </g:each>
     </tbody>

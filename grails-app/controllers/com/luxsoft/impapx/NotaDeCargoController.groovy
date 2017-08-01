@@ -190,7 +190,8 @@ class NotaDeCargoController {
     }
     
     def agregarConceptos(long id){
-        Venta venta = Venta.get(id)
+        Venta notaDeCargo = Venta.get(id)
+        
     	def dataToRender=[:]
         JSONArray jsonArray=JSON.parse(params.conceptos);
         
@@ -203,7 +204,7 @@ class NotaDeCargoController {
             
             def saldo = origen.total - origen.pagosAplicados
              
-            def corte = Date.parse('dd/MM/yyyy','31/07/2017')
+            def corte = notaDeCargo.fecha
             def vto = origen.vencimiento
             def atraso = corte - vto
             def mismoMes = isSameMonth(corte, vto)
@@ -213,13 +214,21 @@ class NotaDeCargoController {
             def importe = penaPorDia * diasPena
 
             CargoDet det = new CargoDet()
+            det.corte = corte
+            det.vto = vto
+            det.atraso = atraso
+            det.mismoMes = mismoMes
+            det.diasPena = diasPena
+            det.tasaCetes = tasaCetes
+            det.penaPorDia = penaPorDia
             det.valorUnitario = importe
+            det.documento = "FAC ${cfdi.folio}"
             det.importe = importe
             det.comentario = "Vto: ${origen.vencimiento.text() } Dias pena: ${diasPena}"
             det.cfdi = cfdi
-            venta.addToConceptos(det)
+            notaDeCargo.addToConceptos(det)
         }
-        venta.save failOnError: true, flush:true
+        notaDeCargo.save failOnError: true, flush:true
         render dataToRender as JSON
     }
 
