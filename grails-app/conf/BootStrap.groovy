@@ -20,6 +20,10 @@ class BootStrap {
     		c2.putAt(Calendar.DATE,c2.getActualMaximum(Calendar.DATE))
     		return c2.getTime().clearTime()
     	}
+
+        Date.metaClass.isSameMonth{ fecha ->
+            return  ( delegate.getAt(Calendar.YEAR)==fecha.getAt(Calendar.YEAR) ) && (delegate.getAt(Calendar.MONTH)==fecha.getAt(Calendar.MONTH))
+        }
     	
     	Date.metaClass.text{ ->
     		return delegate.format('dd/MM/yyyy')

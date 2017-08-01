@@ -32,6 +32,10 @@ databaseChangeLog = {
 				constraints(nullable: "false")
 			}
 
+			column(name: "clave_prod_serv", type: "varchar(50)") {
+				constraints(nullable: "false")
+			}
+
 			column(name: "unidad", type: "varchar(100)") {
 				constraints(nullable: "false")
 			}

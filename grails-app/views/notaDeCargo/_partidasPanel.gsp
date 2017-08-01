@@ -13,9 +13,6 @@
         <th>Cantidad</th>
         <th>Clave SAT</th>
         <th>Factura</th>
-        %{-- <th>A Pagar</th>
-        <th>Embarque</th>
-        <th>Vto</th> --}%
         <th>Valor U</th>
         <th>Importe</th>
         <th>Unidad SAT</th>
@@ -27,7 +24,7 @@
         <tr id="${row.id}">
           <td>${fieldValue(bean: row, field: "cantidad")}</td>
           <td>${fieldValue(bean: row, field: "numeroDeIdentificacion")}</td>
-          <td>${row.comentario}</td>
+          <td>${row?.cfdi?.serie} ${row.cfdi.folio}</td>
           
           <td><lx:moneyFormat number="${row.valorUnitario }" /></td>
           <td><lx:moneyFormat number="${row.importe }" /></td>
@@ -38,7 +35,7 @@
           <td><lx:shortDate date="${row?.factura?.vencimiento}" /></td>
         --}%
           <td>${fieldValue(bean: row, field: "unidad")}</td>
-          <td>${fieldValue(bean: row, field: "descripcion")}</td>
+          <td>${fieldValue(bean: row, field: "comentario")}</td>
         </tr>
       </g:each>
     </tbody>

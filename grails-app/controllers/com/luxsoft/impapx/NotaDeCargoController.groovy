@@ -177,9 +177,14 @@ class NotaDeCargoController {
     
     def selectorDeFacturas(Venta venta){
         def hql="from Venta p where p.cliente.id=?  and p.total-p.pagosAplicados>0 order by p.fecha desc"
-        def res=Venta.findAll(hql,[venta.cliente.id])
+        def res = Venta.findAll(hql,[venta.cliente.id])
+        def fecha = new Date() - 1
+        res = res.findAll { 
+            def saldo = it.total - it.pagosAplicados
+            it.getCfdi() && (it.vencimiento < fecha) && saldo > 1.0
+        }
         def saldo = res.sum 0, {
-            it.total - it.pagosAplicados
+            return (it.total - it.pagosAplicados)
         }
         [venta:venta, facturas:res, saldoTotal:saldo ]
     }
@@ -195,15 +200,22 @@ class NotaDeCargoController {
             Cfdi cfdi= Cfdi.findBySerieAndOrigen('FAC',origen.id)
             assert cfdi, "No existe el CFDI para la factura ${origen.id}"
             
-            def importe = 10.00
+            
+            def saldo = origen.total - origen.pagosAplicados
+             
+            def corte = Date.parse('dd/MM/yyyy','31/07/2017')
+            def vto = origen.vencimiento
+            def atraso = corte - vto
+            def mismoMes = isSameMonth(corte, vto)
+            def diasPena = mismoMes ? atraso : ((corte.finDeMes() - corte.inicioDeMes() + 1))   
+            def tasaCetes = 0.0699 
+            def penaPorDia = ( (tasaCetes + 0.05) / 360 ) * saldo
+            def importe = penaPorDia * diasPena
+
             CargoDet det = new CargoDet()
-            det.cantidad = 1
-            det.unidad = 'test'
-            det.numeroDeIdentificacion = '60121135'
-            det.descripcion = 'Cargo moratorio'
             det.valorUnitario = importe
             det.importe = importe
-            det.comentario = "FAC ${cfdi.folio}"
+            det.comentario = "Vto: ${origen.vencimiento.text() } Dias pena: ${diasPena}"
             det.cfdi = cfdi
             venta.addToConceptos(det)
         }
@@ -227,6 +239,11 @@ class NotaDeCargoController {
             [id:venta.id,label:label,value:label]
         }
         render ventasList as JSON
+    }
+
+    private boolean isSameMonth(Date delegate, Date fecha){
+        return  ( delegate.getAt(Calendar.YEAR)==fecha.getAt(Calendar.YEAR) ) && (delegate.getAt(Calendar.MONTH)==fecha.getAt(Calendar.MONTH))
+        
     }
 	
 }

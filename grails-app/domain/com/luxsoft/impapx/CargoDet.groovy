@@ -8,13 +8,25 @@ import com.luxsoft.cfdi.Cfdi
 
 class CargoDet {
   
-  BigDecimal cantidad
-  String unidad
-  String numeroDeIdentificacion
-  String descripcion
-  BigDecimal valorUnitario
-  BigDecimal importe
-  String comentario
+  BigDecimal cantidad = 1.0
+  String unidad = 'P1'
+  String numeroDeIdentificacion = 'CARGOS'
+  String claveProdServ = '01010101'
+  String descripcion = 'Cargo moratorio'
+  BigDecimal valorUnitario = 0.0
+  BigDecimal importe = 0.0
+  String comentario = ''
+
+  String documento 
+  BigDecimal saldo = 0.0
+  Date corte
+  Date vto
+  Integer atraso
+  Boolean mismoMes = true
+  Integer diasPena = 0  
+  BigDecimal tasaCetes = 0.0699 
+  BigDecimal penaPorDia = 0.0
+  
   Cfdi cfdi
   
   static belongsTo = [venta:Venta]
