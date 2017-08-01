@@ -228,7 +228,26 @@ class NotaDeCargoController {
             det.cfdi = cfdi
             notaDeCargo.addToConceptos(det)
         }
+        actualizarImportes notaDeCargo
         notaDeCargo.save failOnError: true, flush:true
+        render dataToRender as JSON
+    }
+
+    def eliminarConceptos(){
+        def dataToRender=[:]
+        def notaDeCargo = Venta.findById(params.notaDeCargoId,[fetch:[partidas:'select']])
+        JSONArray jsonArray = JSON.parse(params.partidas);
+        jsonArray.each { row ->
+            def found = notaDeCargo.conceptos.find {
+                return it.id == row.toLong()
+            }
+            if (found) {
+                notaDeCargo.removeFromConceptos(found)
+            }
+        }
+        actualizarImportes notaDeCargo
+        notaDeCargo.save flush: true
+        dataToRender.notaDeCargoId = notaDeCargo.id
         render dataToRender as JSON
     }
 
@@ -244,10 +263,15 @@ class NotaDeCargoController {
 
         def ventasList=ventas.collect { venta ->
             def label="Id: ${venta.id}  ${venta.cliente.nombre} ${venta.fecha.text()} ${venta.total}"
-            
             [id:venta.id,label:label,value:label]
         }
         render ventasList as JSON
+    }
+
+    private actualizarImportes(Venta venta){
+        venta.importe = venta.conceptos.sum 0, {it.importe}
+        venta.impuestos = venta.importe * 0.16
+        venta.total = venta.importe + venta.impuestos
     }
 
     private boolean isSameMonth(Date delegate, Date fecha){

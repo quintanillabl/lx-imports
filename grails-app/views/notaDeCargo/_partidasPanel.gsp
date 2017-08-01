@@ -5,6 +5,7 @@
           class="btn btn-primary btn-outline " id="${ventaInstance.id}">
             <i class="fa fa-cart-plus"></i> Agregar facturas
         </g:link> 
+        <a id="eliminarPartidas" class="btn btn-danger"><i class="fa fa-trash"></i> Eliminar partidas</a> 
       </g:if> 
   </div>
   <table class=" grid table  table-hover table-bordered table-condensed">
@@ -18,7 +19,7 @@
         <th>Atraso</th>
         <th>M.Mes</th>
         <th>D.Pena</th>
-        <th>Pena</th>
+        <th>Pena x D</th>
         <th>Valor U</th>
         <th>Importe</th>
         <th>Unidad SAT</th>

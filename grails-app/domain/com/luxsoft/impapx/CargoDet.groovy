@@ -48,13 +48,12 @@ class CargoDet {
 
   @Override
   public boolean equals(Object obj) {
-    if(! (obj.instanceOf(VentaDet)) )
+    if(! (obj.instanceOf(CargoDet)) )
       return false
     if(this.is(obj))
       return true
     def eb=new EqualsBuilder()
     eb.append(cantidad, obj.id)
-    eb.append(numeroDeIdentificacion, obj.numeroDeIdentificacion)
     eb.append(cfdi, obj.cfdi)
     return eb.isEquals()
   }
@@ -63,7 +62,6 @@ class CargoDet {
   public int hashCode() {
     def hcb=new HashCodeBuilder(17,35)
     hcb.append(id)
-    hcb.append(numeroDeIdentificacion)
     hcb.append(cfdi)
     return hcb.toHashCode()
   }

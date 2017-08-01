@@ -43,6 +43,7 @@
     </div>
 	</div>
 
+	%{-- <g:render template="/common/deleteDialog" bean="${ventaInstance}"/> --}%
 
 	<script type="text/javascript">
 		$(function(){
@@ -61,6 +62,43 @@
 			        "sSwfPath": "${assetPath(src: 'plugins/dataTables/swf/copy_csv_xls_pdf.swf')}"
 			    },
 			    "order": []
+			});
+
+			$(".grid tbody tr").click(function(){
+        $(this).toggleClass("success selected");
+      });
+
+			var selectRows=function(){
+				var res=[];
+				var data=$(".grid .selected").each(function(){
+					var tr=$(this);
+					res.push(tr.attr("id"));
+				});
+				return res;
+			};
+
+
+
+			$("#eliminarPartidas").click(function(e){
+				var res=selectRows();
+				if(res.length==0){
+					alert('Debe seleccionar al menos un registro');
+					return;
+				}
+				var ok=confirm('Eliminar  ' + res.length+' partida(s)?');
+				if(!ok)
+					return;
+				console.log('Cancelando facturas: '+res);
+				$.post(
+					"${createLink(action:'eliminarConceptos')}",
+					{notaDeCargoId:${ventaInstance.id},partidas:JSON.stringify(res)})
+				.done(function(data){
+					location.reload();
+				})
+				.fail(function(jqXHR, textStatus, errorThrown){
+					alert("Error: "+textStatus);
+				});	
+				
 			});
 		});
 	</script>
