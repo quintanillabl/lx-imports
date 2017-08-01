@@ -39,6 +39,7 @@ class V32PdfGenerator {
 
 		def data = [:]
 		data['CONCEPTOS'] = modelData
+		println 'Conceptos: ' + data
 		data['PARAMETROS'] = params
 		return data
 	}

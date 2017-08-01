@@ -33,7 +33,7 @@ public class CfdiV33Service {
 		CfdiBuilder33  builder = new CfdiBuilder33()
 		CfdiSellador33 sellador = new CfdiSellador33()
 		
-		def serie = 'FAC'
+		def serie = venta.tipo =='VENTA' ? 'FAC' : 'CAR'
 		Comprobante comprobante = builder.build(venta, serie)
 		def empresa = Empresa.first()
 		def cfdiFolio=CfdiFolio.findByEmisorAndSerie(empresa.rfc,serie)

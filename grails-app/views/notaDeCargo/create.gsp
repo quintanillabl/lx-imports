@@ -1,4 +1,5 @@
 <%@ page import="com.luxsoft.impapx.Venta" %>
+<%@ page import="com.luxsoft.cfdix.v32.V32CfdiUtils" %>
 <!doctype html>
 <html>
 <head>
@@ -31,6 +32,20 @@
 		%{-- <f:display property="importe" wrapper="bootstrap3" widget="money"/>
 		<f:display property="impuestos" wrapper="bootstrap3" widget="money"/>
 		<f:display property="total" wrapper="bootstrap3" widget="money"/> --}%
+		<f:field property="usoCfdi" wrapper="bootstrap3" widget-class="form-control">
+			%{-- <g:select class="form-control chosen-select"  
+			 	name="usoCfdi" 
+			 	from="${['G01','G02']}" 
+			 /> --}%
+			 <g:select class="form-control chosen-select"  
+				name="${property}" 
+				value="${'G02'}"
+				from="${V32CfdiUtils.getUsosDeCfdi()}" 
+				optionKey="clave" 
+				optionValue="descripcion"
+				required='required'
+			/>
+		</f:field>
 		<f:field property="comentario" wrapper="bootstrap3" widget-class="form-control"/>
 		
 		

@@ -113,6 +113,7 @@ class CfdiController {
 	}
 
 	def generarPdfV32(Cfdi cfdi){
+		println 'Generando PDF para CFDI 3.3 ' + cfdi
 		def cfd= toComprobante(cfdi)
 		def conceptos=cfd.getConceptos().getConceptoArray()
 		

@@ -17,12 +17,11 @@ class NotaDeCargoController {
 	static allowedMethods = [create: 'GET', edit:'GET',save:'POST',update:'PUT',delete: 'DELETE']
 
     def index() {
-		
-		def periodo=session.periodo
-		def args=[periodo.fechaInicial,periodo.fechaFinal,'NOTA_CARGO']
-		def list=Venta.findAll(
-			"from Venta v where date(v.fecha) between ? and ? and v.tipo=? order by v.lastUpdated desc",
-			args)
+        def periodo=session.periodo
+        def args=[periodo.fechaInicial,periodo.fechaFinal,'NOTA_DE_CARGO']
+        def list=Venta.findAll(
+            "from Venta v where date(v.fecha) between ? and ? and v.tipo=? order by v.lastUpdated desc",
+            args)
         [ventaInstanceList:list]
     }
 
@@ -73,7 +72,7 @@ class NotaDeCargoController {
     }
 	
     def edit(Venta ventaInstance) {
-    	def cfdi=Cfdi.findBySerieAndOrigen('NOTA_CARGO',params.id)
+    	def cfdi=Cfdi.findBySerieAndOrigen('CAR',params.id)
 	    [ventaInstance: ventaInstance,cfdi:cfdi]
     } 
 
@@ -109,17 +108,7 @@ class NotaDeCargoController {
     	render "OK"
     }
     
-    def facturar(long id){
-    	try {
-    		def res=ventaService.facturar(id)
-    		render view:"factura",model:[ventaInstance:res['venta']]
-    	} catch (VentaException e) {
-    		flash.message=e.message
-    		render view: 'edit', model: [ventaInstance: e.venta]
-    	}
-    	
-    	
-    }
+    
     
     def imprimirCfd(){
     	
@@ -170,9 +159,9 @@ class NotaDeCargoController {
     	}
     }
     
-    def refacturar(long id){
-    	ventaService.refacturar(id)
-    }
+    // def refacturar(long id){
+    // 	ventaService.refacturar(id)
+    // }
 
     
     def selectorDeFacturas(Venta venta){

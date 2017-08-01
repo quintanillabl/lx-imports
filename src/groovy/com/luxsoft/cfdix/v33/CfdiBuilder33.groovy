@@ -30,6 +30,7 @@ class CfdiBuilder33 {
     private Empresa empresa
     private Venta venta;
 
+    private BigDecimal subTotal = 0.0
     private BigDecimal totalImpuestosTrasladados
 
     def build(Venta venta, String serie = 'FAC'){
@@ -40,6 +41,7 @@ class CfdiBuilder33 {
         .buildConceptos()
         .buildImpuestos()
         .buildTotales()
+        .buildRelacionados()
         .buildCertificado()
         
         return comprobante
@@ -91,6 +93,11 @@ class CfdiBuilder33 {
 
     def buildConceptos(){
         /** Conceptos ***/
+
+        if(this.venta.tipo == 'NOTA_DE_CARGO'){
+            
+            return buildConceptosDeNotaDeCargo()
+        }
         this.totalImpuestosTrasladados = 0.0
         Comprobante.Conceptos conceptos = factory.createComprobanteConceptos()
         this.venta.partidas.each { det ->
@@ -135,11 +142,65 @@ class CfdiBuilder33 {
                 }
                 comprobante.conceptos = conceptos
             }
-            
-            
-            
         }
         
+        return this
+    }
+
+    def buildConceptosDeNotaDeCargo(){
+
+        this.totalImpuestosTrasladados = 0.0
+        Comprobante.Conceptos conceptos = factory.createComprobanteConceptos()
+        
+        this.venta.conceptos.each { det ->
+            
+            Comprobante.Conceptos.Concepto concepto = factory.createComprobanteConceptosConcepto()
+            
+            concepto.with { 
+                
+                String desc = det.descripcion
+                claveProdServ = det.claveProdServ
+                noIdentificacion = det.numeroDeIdentificacion
+                cantidad = MonedaUtils.round(det.cantidad)
+                claveUnidad = det.unidad
+                unidad = det.unidad
+                descripcion = desc
+                valorUnitario = det.valorUnitario
+                importe = det.importe
+                this.subTotal += det.importe
+                // Impuestos del concepto
+                
+                concepto.impuestos = factory.createComprobanteConceptosConceptoImpuestos()
+                concepto.impuestos.traslados = factory.createComprobanteConceptosConceptoImpuestosTraslados()
+                Comprobante.Conceptos.Concepto.Impuestos.Traslados.Traslado traslado1 
+                traslado1 = factory.createComprobanteConceptosConceptoImpuestosTrasladosTraslado()
+                traslado1.base =  det.importe
+                traslado1.impuesto = '002'
+                traslado1.tipoFactor = CTipoFactor.TASA
+                traslado1.tasaOCuota = '0.160000'
+                traslado1.importe = MonedaUtils.round(det.importe * 0.16)
+                this.totalImpuestosTrasladados += traslado1.importe
+                concepto.impuestos.traslados.traslado.add(traslado1)
+                conceptos.concepto.add(concepto)
+                comprobante.conceptos = conceptos
+            }
+        }
+        
+        return this
+    }
+
+    def buildRelacionados(){
+        if(this.venta.tipo == 'NOTA_DE_CARGO'){
+            Comprobante.CfdiRelacionados relacionados = factory.createComprobanteCfdiRelacionados()
+            relacionados.tipoRelacion = '01'
+            venta.conceptos.each {
+                Comprobante.CfdiRelacionados.CfdiRelacionado relacionado = factory.createComprobanteCfdiRelacionadosCfdiRelacionado()
+                def cfdi = it.cfdi
+                relacionado.UUID = cfdi.uuid
+                relacionados.cfdiRelacionado.add(relacionado) // .add(relacionado)
+            }
+            comprobante.cfdiRelacionados = relacionados
+        }
         return this
     }
 
@@ -165,8 +226,13 @@ class CfdiBuilder33 {
     }
 
     def buildTotales(){
-        comprobante.subTotal = venta.subtotal
-        comprobante.total = venta.importe + this.totalImpuestosTrasladados
+        if(this.venta.tipo == 'NOTA_DE_CARGO'){
+            comprobante.subTotal = this.subTotal
+            comprobante.total = venta.importe + this.totalImpuestosTrasladados    
+        } else {
+            comprobante.subTotal = venta.subtotal
+            comprobante.total = venta.importe + this.totalImpuestosTrasladados    
+        }
         return this
     }
 
