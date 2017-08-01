@@ -13,25 +13,27 @@
 				<f:display property="tc" widget="tc" widget-disabled="true" wrapper="bootstrap3"/>
 
 				<g:if test="${ventaInstance.cfdi}">
+					<f:display property="fecha" wrapper="bootstrap3"/>
+					<f:display property="formaDePago" wrapper="bootstrap3"/>
 					<f:display property="importe" wrapper="bootstrap3" widget="money"/>
 					<f:display property="impuestos" wrapper="bootstrap3" widget="money"/>
 					<f:display property="total" wrapper="bootstrap3" widget="money"/>
-					<f:display property="fecha" wrapper="bootstrap3"/>
-					<f:display property="formaDePago" wrapper="bootstrap3"/>
+					
 					<f:display property="comentario" wrapper="bootstrap3"/>
 				</g:if>
 				<g:else>
-					<f:field property="importe" wrapper="bootstrap3" widget="money"/>
-					<f:field property="impuestos" wrapper="bootstrap3" widget="money"/>
-					<f:field property="total" wrapper="bootstrap3" widget="money"/>
 					<f:field property="fecha" wrapper="bootstrap3"/>
-					<f:field property="formaDePago" wrapper="bootstrap3">
-						<g:select class="form-control "  
-							name="${property}" 
-							value="${value}"
-							from="${['CHEQUE','TRANSFERENCIA','EFECTIVO','TARJETA','DEPOSITO']}"/>
-						
+						<f:field property="formaDePago" wrapper="bootstrap3">
+							<g:select class="form-control "  
+								name="${property}" 
+								value="${value}"
+								from="${['CHEQUE','TRANSFERENCIA','EFECTIVO','TARJETA','DEPOSITO']}"/>
+							
 					</f:field>
+					<f:display property="importe" wrapper="bootstrap3" widget="money"/>
+					<f:display property="impuestos" wrapper="bootstrap3" widget="money"/>
+					<f:display property="total" wrapper="bootstrap3" widget="money"/>
+					
 					<f:field property="comentario" wrapper="bootstrap3" widget-class="form-control"/>
 				</g:else>
 				

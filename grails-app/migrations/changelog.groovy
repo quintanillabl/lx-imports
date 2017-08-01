@@ -14,5 +14,7 @@ databaseChangeLog = {
 
 	include file: 'cfdi33-patch-004.groovy'
 
-	include file: 'cfdi33-patch-005.groovy'
+  include file: 'cfdi33-patch-006.groovy'
+
+	
 }

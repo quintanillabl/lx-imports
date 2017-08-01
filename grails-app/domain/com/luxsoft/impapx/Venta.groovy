@@ -76,6 +76,7 @@ class Venta {
 		partidas lazy:false
 		cliente fetch:'join'
 		partidas cascade: "all-delete-orphan"
+		conceptos cascade: 'all-delete-orphan'
 		sort "id"
 		pagosAplicados formula:'(select ifnull(sum(x.total),0) from CXCAplicacion x where x.factura_id=id)'
 		saldoActual formula:'(select total-ifnull(sum(x.total),0) from CXCAplicacion x where x.factura_id=id)'

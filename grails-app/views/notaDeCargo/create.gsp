@@ -28,9 +28,9 @@
 				from="${['CHEQUE','TRANSFERENCIA','EFECTIVO','TARJETA','DEPOSITO']}"/>
 			
 		</f:field>
-		<f:field property="importe" wrapper="bootstrap3" widget="money"/>
-		<f:field property="impuestos" wrapper="bootstrap3" widget="money"/>
-		<f:field property="total" wrapper="bootstrap3" widget="money"/>
+		%{-- <f:display property="importe" wrapper="bootstrap3" widget="money"/>
+		<f:display property="impuestos" wrapper="bootstrap3" widget="money"/>
+		<f:display property="total" wrapper="bootstrap3" widget="money"/> --}%
 		<f:field property="comentario" wrapper="bootstrap3" widget-class="form-control"/>
 		
 		
@@ -55,7 +55,7 @@
 	 	// $('#importe').autoNumeric();
 	 	// $('#impuestos').autoNumeric();
 	 	// $('#total').autoNumeric();
-	 		
+	 	/*	
 	 	$('#importe').blur(function(){
 	 		var importe=$(this).autoNumeric('get');
 	 		var impuestos=importe*.16;
@@ -63,7 +63,7 @@
 	 		$('#impuestos').autoNumeric('set',impuestos);
 	 		$('#total').autoNumeric('set',total);
 	 	});
-
+		*/
 	 });
 	</script>
 

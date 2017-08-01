@@ -27,7 +27,12 @@ class NotaDeCargoController {
     }
 
     def create() {
-    	respond new Venta(fecha:new Date(),cuentaDePago:'0000',clase:params.clase,formaDePago:'TRANSFERENCIA',tipo:'NOTA_CARGO')
+    	respond new Venta(
+            fecha:new Date(),
+            cuentaDePago:'0000',
+            clase:params.clase,
+            formaDePago:'TRANSFERENCIA',
+            tipo:'NOTA_CARGO')
     }
 
     def save(Venta ventaInstance){
@@ -168,33 +173,42 @@ class NotaDeCargoController {
     def refacturar(long id){
     	ventaService.refacturar(id)
     }
+
     
-    def agregarConcepto(long id){
-    	def venta=Venta.findById(id,[fetch:[partidas:'eager']])
-    	switch (request.method) {
-    		case 'GET': 
-    			def ventaDet=new VentaDet()
-    			[ventaInstance:venta,ventaDetInstance:ventaDet]
-    			break
-    		case 'POST':
-    			println 'Agrgando partida: '+params
-    			params.kilos=0
-    			
-    			def ventaDetInstance=new VentaDet()
-    			bindData(ventaDetInstance,params,[includes:['producto','cantidad','precio','descuentos','comentarios']])
-    			ventaDetInstance.actualizarImportes()
-    			ventaDetInstance.costo=0
-    			venta.addToPartidas(ventaDetInstance)
-    			if (!venta.save(flush: true)) {
-    				render view: 'agregarConcepto', model: ['ventaInstance':venta,ventaDetInstance:ventaDetInstance]
-    				//render view: 'edit', model: ['ventaInstance': venta]
-    				return
-    			}
+    def selectorDeFacturas(Venta venta){
+        def hql="from Venta p where p.cliente.id=?  and p.total-p.pagosAplicados>0 order by p.fecha desc"
+        def res=Venta.findAll(hql,[venta.cliente.id])
+        def saldo = res.sum 0, {
+            it.total - it.pagosAplicados
+        }
+        [venta:venta, facturas:res, saldoTotal:saldo ]
+    }
     
-    			flash.message = 'Partida agregada'
-    			redirect action: 'edit', id: venta.id
-    			break
-    		}
+    def agregarConceptos(long id){
+        Venta venta = Venta.get(id)
+    	def dataToRender=[:]
+        JSONArray jsonArray=JSON.parse(params.conceptos);
+        
+        jsonArray.each {
+            def origen = Venta.get(it)
+            assert origen, ' No existe la venta ' + it
+            Cfdi cfdi= Cfdi.findBySerieAndOrigen('FAC',origen.id)
+            assert cfdi, "No existe el CFDI para la factura ${origen.id}"
+            
+            def importe = 10.00
+            CargoDet det = new CargoDet()
+            det.cantidad = 1
+            det.unidad = 'test'
+            det.numeroDeIdentificacion = '60121135'
+            det.descripcion = 'Cargo moratorio'
+            det.valorUnitario = importe
+            det.importe = importe
+            det.comentario = "FAC ${cfdi.folio}"
+            det.cfdi = cfdi
+            venta.addToConceptos(det)
+        }
+        venta.save failOnError: true, flush:true
+        render dataToRender as JSON
     }
 
     def search(){
