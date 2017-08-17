@@ -64,7 +64,7 @@ databaseChangeLog = {
 				constraints(nullable: "false")
 			}
 
-			column(name: "tasa_cetes", type: "decimal(19,2)") {
+			column(name: "tasa_cetes", type: "decimal(19,4)") {
 				constraints(nullable: "false")
 			}
 

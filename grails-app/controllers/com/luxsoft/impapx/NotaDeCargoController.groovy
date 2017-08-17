@@ -199,22 +199,26 @@ class NotaDeCargoController {
             def mismoMes = isSameMonth(corte, vto)
             def diasPena = mismoMes ? atraso : ((corte.finDeMes() - corte.inicioDeMes() + 1))   
             def tasaCetes = 0.0699 
-            def penaPorDia = ( (tasaCetes + 0.05) / 360 ) * saldo
+            //def penaPorDia = ( (tasaCetes + 0.05) / 360 ) * saldo
+            def factorCetes = ( (tasaCetes + 0.05) / 360 ) 
             def importe = penaPorDia * diasPena
 
             CargoDet det = new CargoDet()
+            det.saldo = saldo
             det.corte = corte
             det.vto = vto
             det.atraso = atraso
             det.mismoMes = mismoMes
             det.diasPena = diasPena
             det.tasaCetes = tasaCetes
-            det.penaPorDia = penaPorDia
-            det.valorUnitario = importe
+            //det.penaPorDia = penaPorDia
+            det.cantidad = saldo
+            det.valorUnitario = factorCetes * diasPena
             det.documento = "FAC ${cfdi.folio}"
-            det.importe = importe
+            det.importe = saldo * factorCetes
             det.comentario = "Vto: ${origen.vencimiento.text() } Dias pena: ${diasPena}"
             det.cfdi = cfdi
+                        
             notaDeCargo.addToConceptos(det)
         }
         actualizarImportes notaDeCargo

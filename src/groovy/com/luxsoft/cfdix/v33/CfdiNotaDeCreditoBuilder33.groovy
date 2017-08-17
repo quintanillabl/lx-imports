@@ -90,10 +90,13 @@ class CfdiNotaDeCreditoBuilder33 {
         switch(nota.usoCfdi) {
             case 'G01':
                 receptor.usoCFDI = CUsoCFDI.G_01
+                break
             case 'G02':
                 receptor.usoCFDI = CUsoCFDI.G_02
+                break
             case 'G03':
                 receptor.usoCFDI = CUsoCFDI.G_03
+                break
             default:
                 receptor.usoCFDI = CUsoCFDI.G_02
             break

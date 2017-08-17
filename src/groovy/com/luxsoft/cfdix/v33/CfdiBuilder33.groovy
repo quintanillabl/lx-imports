@@ -79,7 +79,20 @@ class CfdiBuilder33 {
         Comprobante.Receptor receptor = factory.createComprobanteReceptor()
         receptor.rfc = venta.cliente.rfc
         receptor.nombre = venta.cliente.nombre
-        receptor.usoCFDI = CUsoCFDI.G_01 // Adquisicion de mercancías
+        switch(venta.usoCfdi) {
+            case 'G01':
+                receptor.usoCFDI = CUsoCFDI.G_01
+                break
+            case 'G02':
+                receptor.usoCFDI = CUsoCFDI.G_02
+                break
+            case 'G03':
+                receptor.usoCFDI = CUsoCFDI.G_03
+                break
+            default:
+                receptor.usoCFDI = CUsoCFDI.G_01
+            break
+        }
         comprobante.receptor = receptor
         return this
     }
@@ -139,6 +152,7 @@ class CfdiBuilder33 {
                         factory.createComprobanteConceptosConceptoInformacionAduanera()
                     aduana.numeroPedimento = pedimento.pedimento
                     concepto.informacionAduanera.add(aduana)
+                    descripcion = "${desc} ${pedimento.fecha.text()}"
                 }
                 comprobante.conceptos = conceptos
             }
@@ -189,10 +203,10 @@ class CfdiBuilder33 {
         return this
     }
 
-    def buildRelacionados(){
+    def buildRelacionados(){    
         if(this.venta.tipo == 'NOTA_DE_CARGO'){
             Comprobante.CfdiRelacionados relacionados = factory.createComprobanteCfdiRelacionados()
-            relacionados.tipoRelacion = '01'
+            relacionados.tipoRelacion = '02'
             venta.conceptos.each {
                 Comprobante.CfdiRelacionados.CfdiRelacionado relacionado = factory.createComprobanteCfdiRelacionadosCfdiRelacionado()
                 def cfdi = it.cfdi

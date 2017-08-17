@@ -8,11 +8,11 @@ import com.luxsoft.cfdi.Cfdi
 
 class CargoDet {
   
-  BigDecimal cantidad = 1.0
+  BigDecimal cantidad = 0.0
   String unidad = 'P1'
   String numeroDeIdentificacion = 'CARGOS'
   String claveProdServ = '01010101'
-  String descripcion = 'Cargo moratorio'
+  String descripcion = 'INTERESES MORATORIOS DEL MES DE JULIO DEL 2017'
   BigDecimal valorUnitario = 0.0
   BigDecimal importe = 0.0
   String comentario = ''
@@ -40,6 +40,7 @@ class CargoDet {
     //importe(nullable:false,scale:2)
     cfdi nullable: true
     comentario(nullable:false,maxSize:300)
+    tasaCetes(scale:4)
   }
   
   String toString(){

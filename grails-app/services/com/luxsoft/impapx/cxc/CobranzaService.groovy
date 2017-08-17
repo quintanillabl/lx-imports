@@ -140,13 +140,13 @@ class CobranzaService {
 			}
 			nota.addToPartidas(
 				cantidad:1
-				,unidad:'NO APLICA'
+				,unidad:'NA'
 				,numeroDeIdentificacion:'BON'
 				,descripcion: desc
 				,valorUnitario:nota.importe
 				,importe:nota.importe
 				,claveUnidadSat: 'ZZ'
-				,unidadSat: 'NO APLICA'
+				,unidadSat: 'NA'
 				,claveProdServ: '80141629'
 				,comentario:nota.comentario)
 			println 'Concepto agregado'
@@ -170,7 +170,7 @@ class CobranzaService {
 				def desc="Descuento del $nota.descuento % en la factura: $documento"
 				nota.addToPartidas(
 					cantidad:1
-					,unidad:'NO APLICA'
+					,unidad:'NA'
 					,numeroDeIdentificacion:'DESCUENTO'
 					,descripcion:desc
 					,valorUnitario:importe
