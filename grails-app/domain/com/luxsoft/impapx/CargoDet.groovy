@@ -9,10 +9,10 @@ import com.luxsoft.cfdi.Cfdi
 class CargoDet {
   
   BigDecimal cantidad = 0.0
-  String unidad = 'P1'
+  String unidad = 'SRV'
   String numeroDeIdentificacion = 'CARGOS'
-  String claveProdServ = '01010101'
-  String descripcion = 'INTERESES MORATORIOS DEL MES DE JULIO DEL 2017'
+  String claveProdServ = '84101501'
+  String descripcion = 'INTERESES  '
   BigDecimal valorUnitario = 0.0
   BigDecimal importe = 0.0
   String comentario = ''

@@ -182,6 +182,8 @@ class CfdiService implements InitializingBean{
 
 		CancelacionDeCfdi cancel=new CancelacionDeCfdi()
 		cancel.cfdi=cfdi
+		cancel.tipo = cfdi.tipo
+		cancel.origen = cfdi.origen
 		def rfc = null
 		if(cfdi.versionCfdi == '3.3'){
 			rfc = cfdi.rfc
@@ -196,6 +198,8 @@ class CfdiService implements InitializingBean{
 		}
 		
 		if(cfdi.uuid.contains('-7E57-')){
+			cancel.aka = 'TEST'.getBytes()
+			cancel.save failOnError: true, flush:true
 			cancelarDePrueba(cfdi,comentario)
 			return 
 		}
@@ -242,7 +246,7 @@ class CfdiService implements InitializingBean{
 	def cancelarDePrueba(Cfdi cfdi,String comentario){
 		cfdi.comentario="CANCELADO ORIGEN: "+cfdi.origen
 		cfdi.origen='CANCELACION'
-		cfdi.save(flush:true)
+		cfdi.save(failOnError: true, flush:true)
 		return cfdi
 	}
 

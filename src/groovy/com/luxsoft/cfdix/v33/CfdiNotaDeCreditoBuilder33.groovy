@@ -107,8 +107,8 @@ class CfdiNotaDeCreditoBuilder33 {
 
     def buildFormaDePago(){
         comprobante.formaPago = '99'
-        comprobante.condicionesDePago = nota.tipo
-        comprobante.metodoPago = CMetodoPago.PPD
+        comprobante.condicionesDePago = 'Credito 30 Días'
+        comprobante.metodoPago = CMetodoPago.PUE
         return this
     }
 

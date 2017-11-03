@@ -23,7 +23,7 @@
 				<div class="col-md-2">
 					<g:select class="form-control chosen-select"  id="sucursal"
 						name="sucursal"
-						from="${['CALLE 4','TACUBA','BOLIVAR','ANDRADE','QUERETARO','TRANSITO','CF5FEBRERO','VERTIZ 176','ALESA','PROMASA NORTE','PROMASA SUR','GACELA','PROGRESO','INTERCARTON+','SOLIS']}" />
+						from="${['CALLE 4','TACUBA','BOLIVAR','ANDRADE','QUERETARO','TRANSITO','CF5FEBRERO','VERTIZ 176','ALESA','PROMASA NORTE','PROMASA SUR','GACELA','PROGRESO','INTERCARTON','SOLIS','BELLAVISTA']}" />
 				</div>
 				<div class="btn-group">
 					<button id="asignar" class="btn btn-success" >

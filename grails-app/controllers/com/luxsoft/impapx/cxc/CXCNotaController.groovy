@@ -150,11 +150,7 @@ class CXCNotaController {
 		render dataToRender as JSON
 	}
 	
-	/*
-	def generarCFD(long id){
-		
-	}
-	*/
+	
 	
 	def generarCFDI(long id){
 		println 'Generando CFD para nota: '+params

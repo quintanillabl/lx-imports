@@ -1,4 +1,5 @@
 <%@ page import="com.luxsoft.impapx.Venta" %>
+<%@ page import="com.luxsoft.cfdix.v32.V32CfdiUtils" %>
 <!doctype html>
 <html>
 <head>
@@ -30,6 +31,17 @@
 				value="${value}"
 				from="${['CHEQUE','TRANSFERENCIA','EFECTIVO','TARJETA','DEPOSITO']}"/>
 			
+		</f:field>
+		<f:field property="usoCfdi" wrapper="bootstrap3" widget-class="form-control">
+			
+			 <g:select class="form-control chosen-select"  
+				name="${property}" 
+				value="${'G01'}"
+				from="${V32CfdiUtils.getUsosDeCfdi()}" 
+				optionKey="clave" 
+				optionValue="descripcion"
+				required='required'
+			/>
 		</f:field>
 		<f:field property="comentario" wrapper="bootstrap3" widget-class="form-control"/>
 	</f:with>

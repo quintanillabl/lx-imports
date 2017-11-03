@@ -5,6 +5,7 @@ import org.bouncycastle.util.encoders.Base64
 
 import com.luxsoft.impapx.Empresa
 import com.luxsoft.impapx.Venta
+import com.luxsoft.cfdi.CancelacionDeCfdi
 
 import com.luxsoft.lx.utils.MonedaUtils
 import lx.cfdi.utils.DateUtils
@@ -124,6 +125,9 @@ class CfdiBuilder33 {
                 assert det.producto.unidad.unidadSat, 
                 "No hay una unidadSat definida para el producto ${det.producto} SE REQUIERE PARA EL CFDI 3.3"
                 String desc = det.producto.descripcion
+                if(det.producto.clave == 'SRV0001'){
+                    desc+= ' ' + venta.comentario
+                }
                 claveProdServ = det.producto.productoSat.claveProdServ
                 noIdentificacion = det.producto.clave
                 cantidad = MonedaUtils.round(det.cantidad / det.producto.unidad.factor,3)
@@ -170,13 +174,16 @@ class CfdiBuilder33 {
             
             Comprobante.Conceptos.Concepto concepto = factory.createComprobanteConceptosConcepto()
             
-            concepto.with { 
-                
-                String desc = det.descripcion
+            concepto.with {
+
+                def cfdi = det.cfdi
+                 
+
+                def desc = "${venta.comentario} Fac: ${cfdi?.folio} ${cfdi?.fecha?.text()}"
                 claveProdServ = det.claveProdServ
                 noIdentificacion = det.numeroDeIdentificacion
                 cantidad = MonedaUtils.round(det.cantidad)
-                claveUnidad = det.unidad
+                claveUnidad = 'E48'
                 unidad = det.unidad
                 descripcion = desc
                 valorUnitario = det.valorUnitario
@@ -215,6 +222,25 @@ class CfdiBuilder33 {
             }
             comprobante.cfdiRelacionados = relacionados
         }
+/*
+
+        fix temporal para liberar version y la cancelacion se haga con la cancelacion normal
+
+        if(this.venta.tipo == 'VENTA'){
+            
+            def cancelado = CancelacionDeCfdi.findByTipoAndOrigen('FAC',this.venta.id.toString())
+            
+            if(cancelado) {
+                Comprobante.CfdiRelacionados relacionados = factory.createComprobanteCfdiRelacionados()
+                relacionados.tipoRelacion = '04'
+                Comprobante.CfdiRelacionados.CfdiRelacionado relacionado = factory.createComprobanteCfdiRelacionadosCfdiRelacionado()
+                def cfdi = cancelado.cfdi
+                relacionado.UUID = cfdi.uuid
+                relacionados.cfdiRelacionado.add(relacionado) // .add(relacionado)
+                comprobante.cfdiRelacionados = relacionados
+            }
+        }
+        */
         return this
     }
 

@@ -24,7 +24,7 @@ class Venta {
 	BigDecimal total=0
 	
 	int plazo=0
-	Date vencimiento=new Date()+1
+	Date vencimiento=new Date()+30
 	String formaDePago
 	String cuentaDePago="0000"
 	

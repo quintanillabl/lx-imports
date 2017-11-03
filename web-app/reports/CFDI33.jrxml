@@ -328,26 +328,6 @@
 				<staticText>
 					<reportElement
 						mode="Transparent"
-						x="254"
-						y="97"
-						width="49"
-						height="10"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-200"/>
-					<box>					<topPen lineWidth="0.0"/>
-					<leftPen lineWidth="0.0"/>
-					<bottomPen lineWidth="0.0"/>
-					<rightPen lineWidth="0.0"/>
-</box>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None">
-						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[INGRESO]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						mode="Transparent"
 						x="146"
 						y="110"
 						width="108"
@@ -624,6 +604,26 @@
 						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{Moneda}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="254"
+						y="97"
+						width="120"
+						height="10"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-200"/>
+					<box>					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None">
+						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{SERIE}.equals( "CRE" ) ? "EGRESO" : "INGRESO"]]></textFieldExpression>
 				</textField>
 			</band>
 			</groupFooter>

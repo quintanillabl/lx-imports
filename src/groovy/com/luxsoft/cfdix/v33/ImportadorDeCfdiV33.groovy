@@ -184,7 +184,7 @@ class ImportadorDeCfdiV33 {
                 	if(it.Impuestos?.Retenciones?.Retencion[0]){
                 	    def retencion = it.Impuestos.Retenciones.Retencion[0].attributes()
                 	    if(retencion.Impuesto == '001'){
-                	        det.retencionIsr = retencion.Importe as BigDecimal
+                	        det.retensionIsr = retencion.Importe as BigDecimal
                 	        det.retensionTasa = retencion.TasaOCuota as BigDecimal
                             det.retensionTasa *= 100
                 	    }
