@@ -17,6 +17,7 @@
 		<div class="col-md-6">
 			<f:with bean="${pedimentoInstance}" >
 				<f:display property="id" input-disabled="true" wrapper="bootstrap3"/>
+				<f:field widget-id="ppp" property="pedimento"  widget-class="form-control " wrapper="bootstrap3"/>
 				<f:field property="fecha" wrapper="bootstrap3"/>
 				
 				<f:field property="proveedor" wrapper="bootstrap3"  label="Agencia">
@@ -64,6 +65,7 @@
 
 <script type="text/javascript">
 	$(function(){
+
 		$(".numeric").autoNumeric({vMin:'0.00',wEmpty:'zero'}); 	
 		$(".tc").autoNumeric({vMin:'0.00000',wEmpty:'zero'}); 	
 		$(".iva").autoNumeric({altDec: '%', vMax: '20.00'});
@@ -80,7 +82,7 @@
     		//e.preventDefault(); 
     		return true;
 		});
-
+		$("#ppp").mask("99  99  9999  9999999");
 		$("#proveedor").on('change',function(){
 			var proveedor=$(this).val();
 			console.log('Seleccion: '+proveedor);

@@ -18,9 +18,11 @@
 </content>
 
 <content tag="document">
+
+
 	<div class="ibox float-e-margins">
-		<lx:iboxTitle title="Cuenta de gastos"/>
-	    <div class="ibox-content">
+		<lx:iboxTitle title="N.Cargo ${ventaInstance.id}"/>
+    <div class="ibox-content">
 
 			<ul class="nav nav-tabs" id="myTab">
 				
@@ -28,19 +30,21 @@
 				<li class=""><a href="#partidas" data-toggle="tab"><i class="fa fa-th-list"></i>  Partidas</a></li>
 			</ul>
 
-	  		<div class="tab-content"> <!-- Tab Content -->
-	  			
-				<div class="tab-pane active" id="venta">
-					<br>
-					<g:render template="editForm" bean="${ventaInstance}"/>
-				</div>
-				<div class="tab-pane" id="partidas">
-					<br>
-					%{-- <g:render template="partidasPanel" bean="${ventaInstance}"/> --}%
-				</div>			
-	  		</div>	<!-- End Tab Content -->
-	    </div>
+  		<div class="tab-content"> <!-- Tab Content -->
+  			
+			<div class="tab-pane active" id="venta">
+				<br>
+				<g:render template="editForm" bean="${ventaInstance}"/>
+			</div>
+			<div class="tab-pane" id="partidas">
+				<g:render template="partidasPanel" bean="${ventaInstance}"/>
+			</div>			
+  		</div>	<!-- End Tab Content -->
+    </div>
 	</div>
+
+	%{-- <g:render template="/common/deleteDialog" bean="${ventaInstance}"/> --}%
+
 	<script type="text/javascript">
 		$(function(){
 			//$('.chosen-select').chosen();
@@ -58,6 +62,43 @@
 			        "sSwfPath": "${assetPath(src: 'plugins/dataTables/swf/copy_csv_xls_pdf.swf')}"
 			    },
 			    "order": []
+			});
+
+			$(".grid tbody tr").click(function(){
+        $(this).toggleClass("success selected");
+      });
+
+			var selectRows=function(){
+				var res=[];
+				var data=$(".grid .selected").each(function(){
+					var tr=$(this);
+					res.push(tr.attr("id"));
+				});
+				return res;
+			};
+
+
+
+			$("#eliminarPartidas").click(function(e){
+				var res=selectRows();
+				if(res.length==0){
+					alert('Debe seleccionar al menos un registro');
+					return;
+				}
+				var ok=confirm('Eliminar  ' + res.length+' partida(s)?');
+				if(!ok)
+					return;
+				console.log('Cancelando facturas: '+res);
+				$.post(
+					"${createLink(action:'eliminarConceptos')}",
+					{notaDeCargoId:${ventaInstance.id},partidas:JSON.stringify(res)})
+				.done(function(data){
+					location.reload();
+				})
+				.fail(function(jqXHR, textStatus, errorThrown){
+					alert("Error: "+textStatus);
+				});	
+				
 			});
 		});
 	</script>

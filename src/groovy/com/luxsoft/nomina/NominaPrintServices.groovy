@@ -21,11 +21,20 @@ import mx.gob.sat.cfd.x3.ComprobanteDocument.Comprobante
 import mx.gob.sat.nomina12.NominaDocument
 import mx.gob.sat.nomina12.NominaDocument.Nomina
 
+import java.io.ByteArrayInputStream
+import mx.gob.sat.cfd.x3.ComprobanteDocument
+import mx.gob.sat.cfd.x3.ComprobanteDocument.Comprobante
 
 import com.luxsoft.cfdi.Cfdi
 
 
+	
 class NominaPrintService {
+
+	def getComprobante(Cfdi cfdi ){
+		ByteArrayInputStream is=new ByteArrayInputStream(cfdi.getXml())
+		return ComprobanteDocument.Factory.parse(is).getComprobante()
+	}
 
 	def imprimir(NominaAsimilado ne, def params = [:]){
 		
@@ -33,7 +42,7 @@ class NominaPrintService {
 		assert cfdi, 'Debe generar el cfdi para la nomina asimilado ' + ne.id
 		assert cfdi.uuid, 'No se ha timbrado el cfdi: ' + ne.cfdi.id
 
-		Comprobante comprobante=cfdi.comprobante
+		Comprobante comprobante = getComprobante(cfdi)
 		Nomina nomina = getComplemento(cfdi)
 		def modelData = []
 		registrarDeducciones(nomina, modelData)
@@ -102,7 +111,7 @@ class NominaPrintService {
 
 
 	Nomina getComplemento(Cfdi cfdi){
-		def complemento=cfdi.comprobante.getComplemento()
+		def complemento = getComprobante(cfdi).getComplemento()
 		if(complemento){
 	        String queryExpression ="declare namespace nomina12='http://www.sat.gob.mx/nomina12';" +
 						"\$this/nomina12:Nomina"

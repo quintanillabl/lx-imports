@@ -133,15 +133,23 @@ class CobranzaService {
 		}
 		nota.partidas=[]
 		if(nota.tipo=='BONIFICACION'){
+			def desc = 'Bonificación' + nota.comentario?:nota.tipo
+			if(nota.ventaRelacionada){
+				def venta = nota.ventaRelacionada
+				desc = "${venta.getFacturaFolio()}, ${venta.fecha.text()} " + desc
+			}
 			nota.addToPartidas(
 				cantidad:1
-				,unidad:'NO APLICA'
+				,unidad:'ACT'
 				,numeroDeIdentificacion:'BON'
-				,descripcion:nota.comentario?:'BONIFICACION'
+				,descripcion: desc
 				,valorUnitario:nota.importe
 				,importe:nota.importe
+				,claveUnidadSat: 'ACT'
+				,unidadSat: 'ACT'
+				,claveProdServ: '84111506'
 				,comentario:nota.comentario)
-			println 'Concepto agregado'
+			
 		}else{
 			nota.importe=0
 			nota.impuesto=0
@@ -162,7 +170,7 @@ class CobranzaService {
 				def desc="Descuento del $nota.descuento % en la factura: $documento"
 				nota.addToPartidas(
 					cantidad:1
-					,unidad:'NO APLICA'
+					,unidad:'NA'
 					,numeroDeIdentificacion:'DESCUENTO'
 					,descripcion:desc
 					,valorUnitario:importe
@@ -259,6 +267,8 @@ class CobranzaService {
 		def res=nota.save(failOnError:true)
 		return res
 	}
+
+	
 	
 }
 

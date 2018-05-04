@@ -85,7 +85,7 @@
 									<f:display property="receptor" wrapper="bootstrap3"/>
 									<f:field property="receptorRfc" wrapper="bootstrap3" widget-class="form-control"/>
 									<f:field property="receptorCurp" wrapper="bootstrap3" widget-class="form-control"/>
-									<f:field property="receptorNacionalidad" wrapper="bootstrap3" 
+									<f:display property="receptorNacionalidad" wrapper="bootstrap3" 
 									widget-class="form-control" label="Nacionalidad"/>
 									<f:field property="receptorRegistroTributario" wrapper="bootstrap3" widget-class="form-control" label="Registro tributario"/>
 

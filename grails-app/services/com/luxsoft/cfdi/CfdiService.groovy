@@ -29,13 +29,18 @@ class CfdiService implements InitializingBean{
 	
 	def cfdiSellador
 	
-	
 	def cfdiTimbrador
+
+	def cfdiV33Service
 	
     def Cfdi generarCfdi(def source) {
 		
 		def empresa=Empresa.last()
 		assert empresa,"Debe existir la empresa"
+
+		if(empresa.versionDeCfdi == '3.3'){
+    		return cfdiV33Service.generar(source)
+    	}
 		
 		def serie=null
 		if(source instanceof Venta){
@@ -85,6 +90,15 @@ class CfdiService implements InitializingBean{
 		cfdi.save(failOnError:true)
 		cfdiFolio.save(flush:true)
 		return cfdi
+    }
+
+    def Cfdi timbrar(Cfdi cfdi){
+    	log.info('Timbrando: '+ cfdi.id)
+    	cfdi = cfdiTimbrador.timbrar(cfdi,"PAP830101CR3", "yqjvqfofb")
+    	log.info('Timbrado: '+cfdi)
+    	//cfdi.save failOnError: true
+    	cfdi.save(failOnError:true, flush:true)
+    	return cfdi
     }
 	
 	void validarDocumento(ComprobanteDocument document) {
@@ -168,8 +182,15 @@ class CfdiService implements InitializingBean{
 
 		CancelacionDeCfdi cancel=new CancelacionDeCfdi()
 		cancel.cfdi=cfdi
-
-		def rfc=cfdi.getComprobante().emisor.rfc
+		cancel.tipo = cfdi.tipo
+		cancel.origen = cfdi.origen
+		def rfc = null
+		if(cfdi.versionCfdi == '3.3'){
+			rfc = cfdi.rfc
+		} else {
+			rfc = cfdi.getComprobante().emisor.rfc
+		}
+		
 
 		def empresa=Empresa.findByRfc(rfc)
 		if(!empresa){
@@ -177,6 +198,8 @@ class CfdiService implements InitializingBean{
 		}
 		
 		if(cfdi.uuid.contains('-7E57-')){
+			cancel.aka = 'TEST'.getBytes()
+			cancel.save failOnError: true, flush:true
 			cancelarDePrueba(cfdi,comentario)
 			return 
 		}
@@ -223,7 +246,7 @@ class CfdiService implements InitializingBean{
 	def cancelarDePrueba(Cfdi cfdi,String comentario){
 		cfdi.comentario="CANCELADO ORIGEN: "+cfdi.origen
 		cfdi.origen='CANCELACION'
-		cfdi.save(flush:true)
+		cfdi.save(failOnError: true, flush:true)
 		return cfdi
 	}
 

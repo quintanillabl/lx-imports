@@ -30,6 +30,7 @@
 				<th>Fecha</th>
 				<th>Receptor</th>
 				<th>UUID</th>
+				<th>Versión</th>
 				<th>Timbrado</th>
 			</tr>
 		</thead>
@@ -41,6 +42,7 @@
 					<td><g:formatDate date="${cfdiInstance.fecha}" /></td>
 					<td>${fieldValue(bean: cfdiInstance, field: "receptor")}</td>
 					<td>${fieldValue(bean: cfdiInstance, field: "uuid")}</td>
+					<td>${fieldValue(bean: cfdiInstance, field: "versionCfdi")}</td>
 					<td><g:formatDate date="${cfdiInstance.timbrado}" /></td>
 				</tr>
 			</g:each>

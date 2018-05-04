@@ -6,10 +6,20 @@ import static org.springframework.http.HttpStatus.*
 import groovy.sql.Sql
 import javax.sound.midi.SysexMessage
 import com.luxsoft.impapx.Venta
+
+import java.io.ByteArrayInputStream
+import mx.gob.sat.cfd.x3.ComprobanteDocument
 import mx.gob.sat.cfd.x3.ComprobanteDocument.Comprobante
+
 
 import grails.plugin.springsecurity.annotation.Secured
 import com.luxsoft.lx.bi.ReportCommand
+
+import com.luxsoft.cfdix.CFDIXUtils
+import com.luxsoft.cfdix.v33.V33PdfGenerator
+import com.luxsoft.cfdix.v32.V32CfdiUtils
+import org.codehaus.groovy.grails.plugins.jasper.JasperReportDef
+import org.codehaus.groovy.grails.plugins.jasper.JasperExportFormat
 
 @Secured(["hasRole('VENTAS')"])
 class CfdiController {
@@ -40,13 +50,13 @@ class CfdiController {
 		[cfdiInstance:cfdi,origen:uri]
     }
 	
-	def mostrarXml(Cfdi cfdi){
-		// if(cfdi==null){
-		// 	flash.message = message(code: 'default.not.found.message', args: [message(code: 'cfdiInstance.label', default: 'Cfdi'), params.id])
-  //           redirect action: "index", method: "GET"
-		// }
-		// render view:'cfdiXml',model:[cfdi:cfdi,xml:cfdi.getComprobanteDocument().xmlText()]
-		render(text: cfdi.comprobanteDocument.xmlText(), contentType: "text/xml", encoding: "UTF-8")
+	// def mostrarXml(Cfdi cfdi){
+	// 	render(text: cfdi.comprobanteDocument.xmlText(), contentType: "text/xml", encoding: "UTF-8")
+	// }
+	def mostrarXml(long id){
+		def cfdi=Cfdi.findById(id)
+		def res = CFDIXUtils.parse(cfdi.xml)
+		render(text: res, contentType: "text/xml", encoding: "UTF-8")
 	}
 	
 	
@@ -67,23 +77,44 @@ class CfdiController {
 			redirect controller:'venta',action:'edit',params:params
 		}
 		def cfdi=cfdiService.generarCfdi(venta)
-		render view:'/cfdi/show',model:[cfdiInstance:cfdi]
+		//render view:'/cfdi/show',model:[cfdiInstance:cfdi]
+		redirect action:'show', id: cfdi.id
 	}
 	
-	def timbrar(){
-		def cfdi=Cfdi.findById(params.id)
+	def timbrar(Cfdi cfdi){
 		if(cfdi==null){
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'cfdiInstance.label', default: 'Cfdi'), params.id])
 			redirect action: "index", method: "GET"
 		}
-		println "Timbrando en ${cfdiTimbrador.timbradoDePrueba? 'En modo de prueba':'En modo real'} el cfdi: $cfdi "
+		//log.info "Timbrando en ${cfdiTimbrador.timbradoDePrueba? 'En modo de prueba':'En modo real'} el cfdi: $cfdi "
 		
-		cfdi=cfdiTimbrador.timbrar(cfdi,"PAP830101CR3", "yqjvqfofb")
-		render view:'/cfdi/show',model:[cfdiInstance:cfdi]
+		//cfdi = cfdiTimbrador.timbrar(cfdi,"PAP830101CR3", "yqjvqfofb")
+		cfdi = cfdiService.timbrar(cfdi)
+		redirect action:'show', controller:'cfdi', id: cfdi.id //model:[cfdiInstance:cfdi]
 	}
 
 	def print(Cfdi cfdi){
-		Comprobante cfd=cfdi.getComprobante()
+		
+		if( cfdi.versionCfdi == '3.3') {
+			generarPdfV33(cfdi)
+			return
+			//render(file: pdfStream.toByteArray(), contentType: 'application/pdf',fileName:cfdi.xmlName.replace('.xml','.pdf'))	
+		}
+		else {
+			//generarPdfV32(cfdi)
+			//imprimirCfdi()
+			
+			return 
+			//render(file: pdfStream.toByteArray(), contentType: 'application/pdf',fileName:cfdi.xmlName.replace('.xml','.pdf'))
+		}
+		flash.message = "No esta disponible el reporte de CFDI para esta versión" 
+		redirect action:'show',params:[id:cfdi.id]
+		
+	}
+
+	def generarPdfV32(Cfdi cfdi){
+		println 'Generando PDF para CFDI 3.3 ' + cfdi
+		def cfd= toComprobante(cfdi)
 		def conceptos=cfd.getConceptos().getConceptoArray()
 		
 		def modelData=conceptos.collect { cc ->
@@ -124,6 +155,27 @@ class CfdiController {
 		
 		//chain(controller:'jasper',action:'index',model:[data:modelData],params:params)
 	}
+
+	private generarPdfV33(Cfdi cfdi){
+		def data = V33PdfGenerator.getReportData(cfdi)
+		//log.info('Parametros: ')
+		//log.info(data)
+		def modelData = data['CONCEPTOS']
+		def repParams = data['PARAMETROS']
+		params<<repParams
+		
+		def command=new ReportCommand()
+        command.reportName="CFDI33"
+        command.empresa=session.empresa
+        params.EMPRESA=session.empresa.nombre
+        params.COMPANY=session.empresa.nombre
+        def stream = reportService.build(command,params,modelData)
+        def file="${cfdi.serie}-${cfdi.folio}.pdf"
+        render(
+            file: stream.toByteArray(), 
+            contentType: 'application/pdf',
+            fileName:file)
+	}
 	
 	def imprimirCfdi(){
 		
@@ -132,7 +184,8 @@ class CfdiController {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'cfdiInstance.label', default: 'Cfdi'), params.id])
             redirect action: "show", params:[id:id]
 		}
-		Comprobante cfd=cfdi.getComprobante()
+		//Comprobante cfd=cfdi.getComprobante()
+		def cfd= toComprobante(cfdi)
 		def conceptos=cfd.getConceptos().getConceptoArray()
 		
 		def modelData=conceptos.collect { cc ->
@@ -155,11 +208,16 @@ class CfdiController {
 			}
 			return res
 		}
-		def repParams=CfdiPrintUtils.resolverParametros(cfdi)
+		def repParams=CfdiPrintUtils.resolverParametros(cfdi, cfd)
 		params<<repParams
 		params.FECHA=cfd.fecha.getTime().format("yyyy-MM-dd'T'HH:mm:ss")
 		println 'Imprimiendo CFDI: '+params
 		chain(controller:'jasper',action:'index',model:[data:modelData],params:params)
+	}
+
+	def toComprobante(Cfdi cfdi ){
+		ByteArrayInputStream is=new ByteArrayInputStream(cfdi.getXml())
+		return ComprobanteDocument.Factory.parse(is).getComprobante()
 	}
 	
 	def descargarXml(){

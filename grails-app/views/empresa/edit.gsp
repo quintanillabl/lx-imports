@@ -33,7 +33,8 @@
 		        		<g:render template="/common/direccion" bean="${empresaInstance}"/> 
 		        		
 		        		<legend>Timbrado</legend>
-		        		<f:field property="passwordPfx" widget-class="form-control" cols="col-sm-4"/>
+		        		<f:field property="versionDeCfdi" widget-class="form-control" cols="col-sm-4"/>
+		        		<f:field property="regimenClaveSat" widget-class="form-control" cols="col-sm-4"/>
 		        	</f:with>
 		        	
 		        	<div class="form-group">

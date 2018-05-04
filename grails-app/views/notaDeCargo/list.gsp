@@ -43,6 +43,7 @@
 					<thead>
 						<tr>
 							<g:sortableColumn property="id" title="${message(code: 'venta.fecha.label', default: 'Folio')}" />
+							<th>Tipo</th>
 							<g:sortableColumn property="cliente" title="${message(code: 'venta.fecha.label', default: 'Cliente')}" />
 							<g:sortableColumn property="fecha" title="${message(code: 'venta.fecha.label', default: 'Fecha')}" />
 							<g:sortableColumn property="importe" title="${message(code: 'venta.importe.label', default: 'Importe')}" />
@@ -63,6 +64,7 @@
 										id="${ventaInstance.id}">${fieldValue(bean: ventaInstance, field: "id")}
 									</g:link>
 								</td>
+								<td>${fieldValue(bean: ventaInstance, field: "tipo")}</td>
 								<td>${fieldValue(bean: ventaInstance, field: "cliente")}</td>
 								<td><lx:shortDate date="${ventaInstance.fecha}" /></td>
 								<td>${fieldValue(bean: ventaInstance, field: "importe")}</td>

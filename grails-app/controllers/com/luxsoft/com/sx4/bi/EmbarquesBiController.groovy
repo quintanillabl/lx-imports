@@ -34,7 +34,11 @@ class EmbarquesBiController {
 
     	def q
     	def list = [] 
-    	if(command.bl){
+        if (command.compra) {
+            q = EmbarqueDet.where { compraDet.compra.folio =~ command.compra}
+            list = q.list(params)
+        }
+    	else if(command.bl){
     		q = EmbarqueDet.where {
     			embarque.bl =~ command.bl
     		}
@@ -80,6 +84,7 @@ class SearchEmbarques {
 	String contenedor
 	String factura
 	String descripcion
+    String compra
 	
 
 	static constraints={
@@ -88,6 +93,7 @@ class SearchEmbarques {
 		contenedor nullable:true
 		factura nullable:true
 		descripcion nullable:true
+        compra nullable: true
 	}
 
 

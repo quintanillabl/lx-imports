@@ -20,6 +20,8 @@ class NominaAsimiladoService {
 
 	def cfdiTimbrador
 
+	def cfdiV33Service
+
     NominaAsimilado save(NominaAsimilado nomina){
     	if(nomina.id && nomina.partidas){
     		nomina.partidas.clear()
@@ -91,8 +93,15 @@ class NominaAsimiladoService {
 
 	def generarCfdi(NominaAsimilado ne){
 
+
 		assert !ne.cfdi , "Ya se genero el cfdi para la nomina de asimilado ${ne.id} "
 
+		def empresa = Empresa.first()
+		/*
+		if(empresa.versionDeCfdi == '3.3'){
+			return cfdiV33Service.generarCfdiNomina(ne)
+		}
+		*/
 		ComprobanteDocument document = generarXml(ne)
 		Comprobante comprobante = document.getComprobante()
 
@@ -105,6 +114,7 @@ class NominaAsimiladoService {
 			origen: ne.id.toString(),
 			emisor: comprobante.getEmisor().nombre,
 			receptor: comprobante.receptor.nombre,
+			receptorRfc: comprobante.receptor.rfc,
 			rfc: comprobante.receptor.rfc,
 			importe: comprobante.total,
 			descuentos: 0,
@@ -113,7 +123,7 @@ class NominaAsimiladoService {
 			total: comprobante.total,
 		)
 
-		def empresa = Empresa.first()
+		
 
 		comprobante.setSello(cfdiSellador.sellar(empresa.privateKey,document))
 		byte[] encodedCert=Base64.encode(empresa.getCertificado().getEncoded())

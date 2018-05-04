@@ -41,7 +41,7 @@
 
 <script type="text/javascript">
 	$(function(){
-		$("#pedimento").mask("99-99-9999-9999999");
+		$("#pedimento").mask("99  99  9999  9999999");
 		$("#proveedor").on('change',function(){
 			var proveedor=$(this).val();
 			console.log('Seleccion: '+proveedor);

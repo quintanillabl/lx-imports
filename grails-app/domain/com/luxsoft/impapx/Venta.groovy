@@ -24,7 +24,7 @@ class Venta {
 	BigDecimal total=0
 	
 	int plazo=0
-	Date vencimiento=new Date()+1
+	Date vencimiento=new Date()+30
 	String formaDePago
 	String cuentaDePago="0000"
 	
@@ -42,8 +42,11 @@ class Venta {
 	
 	String tipo="VENTA";
 	String clase="IMPORTACION"
+	String usoCfdi = 'G01'
 	
-	static hasMany = [partidas:VentaDet]
+	List conceptos
+	
+	static hasMany = [partidas:VentaDet, conceptos: CargoDet]
 
     static constraints = {
 		
@@ -66,12 +69,14 @@ class Venta {
 		saldo(nullable:true)
 		tipo(inList:['VENTA','NOTA_DE_CARGO'])
 		clase(nullable:true,maxSize:40)
+		usoCfdi nullable: true, maxSize:3
     }
 	
 	static mapping = {
 		partidas lazy:false
 		cliente fetch:'join'
 		partidas cascade: "all-delete-orphan"
+		conceptos cascade: 'all-delete-orphan'
 		sort "id"
 		pagosAplicados formula:'(select ifnull(sum(x.total),0) from CXCAplicacion x where x.factura_id=id)'
 		saldoActual formula:'(select total-ifnull(sum(x.total),0) from CXCAplicacion x where x.factura_id=id)'

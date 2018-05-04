@@ -24,6 +24,7 @@
 		<thead>
 			<tr>
 				<th>Id</th>
+				<th>Tipo</th>
 				<th>Cliente</th>
 				<th>Fecha</th>
 				<th>Total</th>
@@ -35,8 +36,9 @@
 			<g:each in="${ventaInstanceList}" var="row">
 				<tr class="${row.cfdi?'':'warning'}">
 					<td>
-						<g:link action="show" id="${row.id}">${fieldValue(bean: row, field: "id")}</g:link>
+						<g:link action="edit" id="${row.id}">${fieldValue(bean: row, field: "id")}</g:link>
 					</td>
+					<td>${fieldValue(bean: row, field: "tipo")}</td>
 					<td>${fieldValue(bean: row, field: "cliente")}</td>
 					<td><lx:shortDate date="${row.fecha}" /></td>
 					<td><lx:moneyFormat number="${row.total}"/></td>

@@ -9,6 +9,7 @@
 			<f:with bean="ventaInstance" >
 				<f:display property="cliente" wrapper="bootstrap3"/>
 				<f:display property="clase" wrapper="bootstrap3" widget-class="form-control"/>
+				<f:display property="tipo" wrapper="bootstrap3" widget-class="form-control"/>
 				<f:display property="moneda" wrapper="bootstrap3"/>
 				<f:display property="tc" widget="tc" widget-disabled="true" wrapper="bootstrap3"/>
 				<g:if test="${ventaInstance.cfdi}">

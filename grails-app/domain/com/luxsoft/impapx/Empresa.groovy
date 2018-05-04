@@ -24,6 +24,9 @@ class Empresa {
 	PrivateKey privateKey
 
 	String registroPatronal
+
+	String versionDeCfdi
+	String regimenClaveSat
 	
 	static embedded = ['direccion']
 
@@ -37,6 +40,8 @@ class Empresa {
 		certificadoDigitalPfx(nullable:true,maxSize:1024*1024*2)
 		llavePrivada(nullable:true,maxSize:1024*1024*2)
 		registroPatronal(nullable:true, minSize:1, maxSize:20)
+		versionDeCfdi inList:['3.2','3.3']
+		regimenClaveSat nullable:true
 		
     }
 	

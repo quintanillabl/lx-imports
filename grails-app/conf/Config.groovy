@@ -217,7 +217,7 @@ grails.plugin.springsecurity.failureHandler.exceptionMappings = [
 ]
 grails.plugin.springsecurity.apf.storeLastUsername=true
 
-proveedorOrigenParaCompras=42
+proveedorOrigenParaCompras='402880fc5e52dc07015e52e59dd302cc'
 environments{
     
   development{
@@ -242,7 +242,7 @@ environments{
     }
   }
   impapx2{
-    proveedorOrigenParaCompras=60
+    proveedorOrigenParaCompras='402880fc5e52dc07015e52e5b69202ee'
   }
 }
 beans {
@@ -251,7 +251,7 @@ beans {
   }
 }
 
-grails.plugin.databasemigration.updateOnStart = false
+grails.plugin.databasemigration.updateOnStart = true
 grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
 
 
@@ -300,7 +300,7 @@ auditLog {
   stampLastUpdatedBy = 'lastUpdatedBy' // fieldname
 
 }
-cxf{
+cxf{          
   client{
     consultaService{
       wsdl="https://consultaqr.facturaelectronica.sat.gob.mx/ConsultaCFDIService.svc?singleWsdl"

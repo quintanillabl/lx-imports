@@ -8,6 +8,7 @@ import org.apache.commons.lang.exception.ExceptionUtils
 import com.edicom.ediwinws.cfdi.client.CfdiClient
 import com.edicom.ediwinws.cfdi.utils.ZipUtils
 
+import com.luxsoft.cfdix.CfdiTimbre
 
 class CfdiTimbrador {
 	
@@ -38,11 +39,17 @@ class CfdiTimbrador {
 			
 			cfdi.xmlName=entry.getKey()
 			cfdi.xml=entry.getValue()
+
+			CfdiTimbre timbre = new CfdiTimbre(cfdi)
+			cfdi.uuid = timbre.uuid
+			cfdi.timbrado = timbre.convertFechaTimbraro()
+			/*
 			cfdi.loadComprobante()
 			cfdi.timbreFiscal=new TimbreFiscal(cfdi.getComprobante())
 			cfdi.uuid=cfdi.timbreFiscal.UUID
 			cfdi.timbrado=df.parse(cfdi.timbreFiscal.FechaTimbrado)
-			//cfdi.save(failOnError:true)
+			//
+			*/
 			return cfdi
 		} catch (Exception e) {
 			//e.printStackTrace()

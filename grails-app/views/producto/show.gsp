@@ -12,7 +12,7 @@
 		<div class="container">
 			
 			<div class="row row-header">
-				<div class="col-md-8 col-sm-offset-2 toolbar-panel">
+				<div class="col-md-10  toolbar-panel">
 					<div class="btn-group">
 					    <lx:backButton/>
 					    <lx:createButton/>
@@ -22,7 +22,7 @@
 				</div>
 			</div> <!-- End .row 1 -->
 			<div class="row">
-			    <div class="col-md-8 col-sm-offset-2">
+			    <div class="col-md-10 ">
 					<div class="panel panel-primary">
 						<div class="panel-heading"> ${entityName}: ${productoInstance} </div>
 						<g:if test="${flash.message}">
@@ -105,7 +105,10 @@
 					  			
 					  					
 					  			<f:display property="precioCredito" bean="productoInstance"/>
-					  					
+
+					  			<f:display property="claveProdServ" bean="productoInstance"/>
+					  			<f:display property="claveUnidadSat" bean="productoInstance"/>
+					  			<f:display property="unidadSat" bean="productoInstance"/>
 					  			
 					  		</g:form>
 					  </div>

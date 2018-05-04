@@ -26,11 +26,25 @@
  			<div class="ibox-title">
 				<g:if test="${!CXCNotaInstance.cfdi}">
 					
+					
+					<g:link  action="selectorDeVenta" class="btn btn-primary btn-outline" 
+						id="${CXCNotaInstance.id}">
+			 				Asignar venta (CFDI)
+					</g:link>
+					<g:if test="${CXCNotaInstance.ventaRelacionada}">
+						<g:link  action="quitarAsignacionDeFactura" class="btn btn-warning btn-outline" 
+							id="${CXCNotaInstance.id}">
+				 				Quitar venta (CFDI)
+						</g:link>
+					</g:if>
+					
+
 					<g:link  action="generarCFDI" class="btn btn-info btn-outline" 
 						onclick="return confirm('Generar comprobante fiscal: ${CXCNotaInstance.id}');"
 						id="${CXCNotaInstance.id}">
 			 				Generar CFDI
-						</g:link>
+					</g:link>
+
 					<lx:deleteButton bean="${CXCNotaInstance}"/>
 				</g:if>
 				<g:else>

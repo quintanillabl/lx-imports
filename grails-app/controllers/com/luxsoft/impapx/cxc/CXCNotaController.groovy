@@ -8,6 +8,7 @@ import org.codehaus.groovy.grails.web.json.JSONArray
 
 import org.springframework.dao.DataIntegrityViolationException
 import com.luxsoft.impapx.Venta
+import com.luxsoft.cfdi.Cfdi
 import grails.converters.JSON
 import util.MonedaUtils
 
@@ -35,7 +36,7 @@ class CXCNotaController {
     }
 
     def create(){
-    	[CXCNotaInstance: new CXCNota(fecha:new Date(),moneda:MonedaUtils.PESOS,tc:1,tipo:'DESCUENTO')]
+    	[CXCNotaInstance: new CXCNota(fecha:new Date(),moneda:MonedaUtils.PESOS,tc:1,tipo:'BONIFICACION')]
     }
 
     def save(CXCNota CXCNotaInstance){
@@ -82,14 +83,46 @@ class CXCNotaController {
         redirect action: 'index'
         
     }
+
+    /**
+     * Endpoint para seleccionar la factura con la que se relaciona la nota de credito
+     * (Requerido para generar CFDI 3.3)
+     * @param  abono [description]
+     * @return       [description]
+     */
+    def selectorDeVenta(CXCNota abono){
+		def hql="from Venta p where p.cliente.id=?  and year(p.fecha)>=2017 and p.id not in (select x.id from CXCNota x where x.ventaRelacionada !=null) order by p.id desc"
+		def res=Venta.findAll(hql,[abono.cliente.id])
+		[pago:abono,facturas:res,facturasTotal:res.size()]
+	}
+
+	/**
+	 * Endpoint para asignar la factura a la nota de credito (Requerido para CFDI 3.3)
+	 * @param  id [description]
+	 * @return    [description]
+	 */
+	def asignarFactura(CXCNota nota){
+		
+		JSONArray jsonArray=JSON.parse(params.facturas);
+		def ventaId = jsonArray[0]
+		def venta = Venta.get(ventaId)
+		nota.ventaRelacionada = venta
+		nota.save flush:true, failOnError:true
+
+		def dataToRender=[:]
+		log.info('Asignando factura ' + venta.id + ' a la nota: ' + nota.id)
+		dataToRender.pagoId = nota.id
+		render dataToRender as JSON
+	}
+
+	def quitarAsignacionDeFactura(CXCNota nota){
+		nota.ventaRelacionada = null
+		nota.save flush:true, failOnError:true
+		redirect action:'edit', id:nota.id
+
+	}
 	
-	// def selectorDeFacturas(CXCAbono abono){
-	// 	def hql="from Venta p where p.cliente.id=?  and p.total-p.pagosAplicados>0 order by id desc"
-	// 	def max=Math.min(params.int('max')?:10, 100)
-	// 	def offset=params.int('offset')?:0
-	// 	def res = Venta.findAllByClienteAndMoneda(abono.cliente,abono.moneda,[sort:'id',order:'desc',max:max,offset:offset])
-	// 	[pago:abono,facturas:res,facturasTotal:Venta.count()]
-	// }
+	
 	def selectorDeFacturas(CXCNota abono){
 		if(abono.disponible<=0.0){
 			flash.message="Cobro sin disponible para aplicar"
@@ -117,11 +150,7 @@ class CXCNotaController {
 		render dataToRender as JSON
 	}
 	
-	/*
-	def generarCFD(long id){
-		
-	}
-	*/
+	
 	
 	def generarCFDI(long id){
 		println 'Generando CFD para nota: '+params
@@ -181,5 +210,35 @@ class CXCNotaController {
 		}
 		
 		render data as JSON
+	}
+
+	def ventasAsJSONList(){
+		
+		//def ventas = Venta.findAll("from Venta r  where  str(r.id) like ? order by r.id desc",['%'+params.term+'%'],[max:20])
+		def ventas = Venta.executeQuery("select r from Venta r, Cfdi c  where r.id = c.origen  and c.folio like ? order by c.id desc",['%'+params.term+'%'],[max:20])
+		def ventasList = ventas.collect { req ->
+			def desc="Cfdi: ${req.getFacturaFolio()} Id: ${req.id} ${req.cliente.nombre} (${req.fecha.text()}) ${req.total} ${req.moneda}"
+			[id:req.id,
+			label:desc,
+			value:desc,
+            formaDePago:req.formaDePago.toString()
+			]
+		}
+		render ventasList as JSON
+		
+	}
+
+	def cfdisAsJSONList(){
+		
+		def cfdis = Cfdi.findAll("from Cfdi r  where  str(r.folio) like ? order by r.id desc",['%'+params.term+'%'],[max:20])
+		def list = cfdis.collect { req ->
+			def desc="Folio: ${req.folio} Serie: ${req.serie} ${req.receptor} (${req.fecha.text()}) ${req.total}"
+			[id:req.id,
+			label:desc,
+			value:desc
+			]
+		}
+		render list as JSON
+		
 	}
 }

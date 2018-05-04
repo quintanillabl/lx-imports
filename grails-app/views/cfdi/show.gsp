@@ -36,10 +36,12 @@
 							</g:link>
 
 							
-  						
-  							<g:link class="btn btn-default btn-outline" action="print" id="${cfdiInstance.id}">
+  							<g:if test="${cfdiInstance.versionCfdi == '3.3'}">
+  								<g:link class="btn btn-default btn-outline" action="print" id="${cfdiInstance.id}">
 								<span class="glyphicon glyphicon-print"> Imprimir</span>
-							</g:link>
+								</g:link>
+  							</g:if>
+  							
   						
   							<g:link class="btn btn-default btn-outline" 
   								action="mostrarXml" id="${cfdiInstance.id}">XML</g:link>
@@ -68,17 +70,23 @@
 								</button>
 							</g:else>
 							
+							<g:if test="${cfdiInstance.versionCfdi == '3.3' && cfdiInstance.uuid == null}">
+								<g:link  action="timbrar" id="${cfdiInstance.id}" class="btn btn-default btn-outline" >
+									<i class="fa fa-wifi"></i> Timbrar
+								</g:link>
+							</g:if>
 							
-							
-							
-							<g:jasperReport
+							<g:if test="${cfdiInstance.versionCfdi != '3.3'}">
+								<g:jasperReport
 										controller="cfdi"
 										action="imprimirCfdi"
 										jasper="CFDI" 
 										format="PDF" 
 										name="${cfdiInstance.serie}-${cfdiInstance.folio}">
 								<g:hiddenField name="id" value="${cfdiInstance.id}"/>
-							</g:jasperReport>
+
+								</g:jasperReport> 
+							</g:if>
   						</div>
 						
 					</div>

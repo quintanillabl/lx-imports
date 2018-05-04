@@ -1,5 +1,6 @@
 <%@ page import="com.luxsoft.impapx.Venta"%>
 <%@ page import="com.luxsoft.cfdi.Cfdi"%>
+<%@ page import="com.luxsoft.cfdix.v32.V32CfdiUtils" %>
 <g:set var="mnEnabled" value="${ventaInstance.moneda.currencyCode=='MXN'}"/>
 <div class="row">
 	<div class="col-md-8">
@@ -13,24 +14,39 @@
 				<f:display property="tc" widget="tc" widget-disabled="true" wrapper="bootstrap3"/>
 
 				<g:if test="${ventaInstance.cfdi}">
+					<f:display property="fecha" wrapper="bootstrap3"/>
+					<f:display property="formaDePago" wrapper="bootstrap3"/>
 					<f:display property="importe" wrapper="bootstrap3" widget="money"/>
 					<f:display property="impuestos" wrapper="bootstrap3" widget="money"/>
 					<f:display property="total" wrapper="bootstrap3" widget="money"/>
-					<f:display property="fecha" wrapper="bootstrap3"/>
-					<f:display property="formaDePago" wrapper="bootstrap3"/>
+					
 					<f:display property="comentario" wrapper="bootstrap3"/>
 				</g:if>
 				<g:else>
-					<f:field property="importe" wrapper="bootstrap3" widget="money"/>
-					<f:field property="impuestos" wrapper="bootstrap3" widget="money"/>
-					<f:field property="total" wrapper="bootstrap3" widget="money"/>
 					<f:field property="fecha" wrapper="bootstrap3"/>
-					<f:field property="formaDePago" wrapper="bootstrap3">
-						<g:select class="form-control "  
+						<f:field property="formaDePago" wrapper="bootstrap3">
+							<g:select class="form-control "  
+								name="${property}" 
+								value="${value}"
+								from="${['CHEQUE','TRANSFERENCIA','EFECTIVO','TARJETA','DEPOSITO']}"/>
+							
+					</f:field>
+					<f:display property="importe" wrapper="bootstrap3" widget="money"/>
+					<f:display property="impuestos" wrapper="bootstrap3" widget="money"/>
+					<f:display property="total" wrapper="bootstrap3" widget="money"/>
+					<f:field property="usoCfdi" wrapper="bootstrap3" widget-class="form-control">
+						%{-- <g:select class="form-control chosen-select"  
+						 	name="usoCfdi" 
+						 	from="${['G01','G02']}" 
+						 /> --}%
+						 <g:select class="form-control chosen-select"  
 							name="${property}" 
 							value="${value}"
-							from="${['CHEQUE','TRANSFERENCIA','EFECTIVO','TARJETA','DEPOSITO']}"/>
-						
+							from="${V32CfdiUtils.getUsosDeCfdi()}" 
+							optionKey="clave" 
+							optionValue="descripcion"
+							required='required'
+						/>
 					</f:field>
 					<f:field property="comentario" wrapper="bootstrap3" widget-class="form-control"/>
 				</g:else>
@@ -42,7 +58,7 @@
 						<i class="icon-ok icon-white"></i>
 						<g:message code="default.button.update.label" default="Actualizar" />
 					</button>
-					<g:if test="${cfdi}" >
+					<g:if test="${ventaInstance.getCfdi()}" >
 						<g:link controller="cfdi" action="show" class="btn  btn-success" id="${cfdi?.id}">
 							CFDI :${cfdi.id}   UUID: ${cfdi.uuid?:'Por Timbrar' }
 						</g:link>

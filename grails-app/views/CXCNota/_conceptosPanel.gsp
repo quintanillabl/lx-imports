@@ -20,7 +20,10 @@
 		<tr>
 			<th class="header">Cantidad</th>
 			<th class="header">Unidad</th>
+			<th class="header">ClaveUnidadSat</th>
 			<th class="header">Clave</th>
+			<th class="header">ClaveProdServ</th>
+			
 			<th class="header">Descripción</th>
 			<th class="header">Venta</th>
 			<th class="header">Valor U</th>
@@ -34,7 +37,9 @@
 			    
 				<td>${fieldValue(bean: row, field: "cantidad")}</td>
 				<td>${fieldValue(bean: row, field: "unidad")}</td>
+				<td>${fieldValue(bean: row, field: "claveUnidadSat")}</td>
 				<td>${fieldValue(bean: row, field: "numeroDeIdentificacion")}</td>
+				<td>${fieldValue(bean: row, field: "claveProdServ")}</td>
 				<td>${fieldValue(bean: row, field: "descripcion")}</td>
 				<td><g:link  action="showCargo" id="${row.venta?.id}">
 					${fieldValue(bean: row, field: "venta.id")}</g:link>
@@ -51,6 +56,8 @@
 			<td></td>
 			<td></td>
 			<td></td>
+			<td></td>
+			<td></td>
 			<td><label class="pull-right" >Importe: </label></td>
 			<td><lx:moneyFormat number="${CXCAbonoInstance.importe}" />
 			</td>
@@ -62,12 +69,16 @@
 			<td></td>
 			<td></td>
 			<td></td>
+			<td></td>
+			<td></td>
 			<td><label class="pull-right" >Impuesto: </label></td>
 			<td><lx:moneyFormat number="${CXCAbonoInstance.impuesto}" />
 			</td>
 			
 		</tr>
 		<tr>
+			<td></td>
+			<td></td>
 			<td></td>
 			<td></td>
 			<td></td>

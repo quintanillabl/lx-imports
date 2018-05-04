@@ -3,6 +3,8 @@ package com.luxsoft.impapx
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.luxsoft.lx.sat.ProductoSat
+
 class Producto {
 	
 	String clave
@@ -26,6 +28,12 @@ class Producto {
 	
 	BigDecimal precioCredito
 	BigDecimal precioContado
+
+	String claveProdServ
+    String claveUnidadSat
+    String unidadSat
+
+    ProductoSat productoSat
 	
 	Date dateCreated
 	Date lastUpdated
@@ -39,13 +47,31 @@ class Producto {
 		clase(nullable:true)
 		acabado(nullable:true)
 		color(nullable:true)
+		//claveProdServ nullable:true
+        //claveUnidadSat nullable:true
+        //unidadSat nullable: true
+        productoSat nullable:true
     }
 	
 	static mapping ={
 		sort "clave"
 		unidad fetch:'join'
 	}
+
+	static transients = ['claveProdServ','claveUnidadSat','unidadSat']
 	
+	
+	String getClaveProdServ(){
+		return productoSat.claveProdServ
+	}
+	String getClaveUnidadSat(){
+		return unidad.claveUnidadSat
+	}
+	String getUnidadSat(){
+		return unidad.unidadSat
+	}
+	
+
 	String toString(){
 		return "${clave} - ${descripcion}"
 	}
