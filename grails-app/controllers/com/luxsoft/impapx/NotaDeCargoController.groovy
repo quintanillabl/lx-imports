@@ -168,7 +168,8 @@ class NotaDeCargoController {
     def selectorDeFacturas(Venta venta){
         def hql="from Venta p where p.cliente.id=?  and p.total-p.pagosAplicados>0 order by p.fecha desc"
         def res = Venta.findAll(hql,[venta.cliente.id])
-        def fecha = new Date() - 1
+        //def fecha = new Date() - 1
+        def fecha = new Date() + 8
         res = res.findAll { 
             def saldo = it.total - it.pagosAplicados
             it.getCfdi() && (it.vencimiento < fecha) && saldo > 1.0
@@ -197,9 +198,13 @@ class NotaDeCargoController {
             def corte = notaDeCargo.fecha
             def vto = origen.vencimiento
             def atraso = corte - vto
+            if(atraso < 0){
+                atraso = 0
+            }
             def mismoMes = isSameMonth(corte, vto)
             def diasPena = mismoMes ? atraso : ((corte.finDeMes() - corte.inicioDeMes() + 1))   
-            def tasaCetes = 0.0701
+
+            def tasaCetes = 0.0745
             def penaPorDia = ( (tasaCetes + 0.05) / 360 ) * saldo
             def validacion=((tasaCetes + 0.05) / 360 )
             println("Pena por dia  "+validacion+ "  -- pena: "+penaPorDia)

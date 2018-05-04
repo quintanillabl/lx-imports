@@ -174,6 +174,20 @@ class ComprobanteFiscalService {
         SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
 
         def data=xml.attributes()
+        log.debug 'Comprobante:  '+xml.attributes()  
+        if(xml.name()!='Comprobante')
+            throw new ComprobanteFiscalException(message:"${cfdiFile.getOriginalFilename()} no es un CFDI valido")
+        def version = data.version
+        if(version == null){
+            version = data.Version
+        }
+
+         if(version == '3.3'){
+            //return new ImportadorDeCfdiV33().build(xml, cfdiFile, cxp)
+            return new ImportadorDeCfdiV33().update(xml, cfdiFile, cxp)
+        }
+
+        //def data=xml.attributes()
         def empresa=Empresa.first()
         def receptorNode=xml.breadthFirst().find { it.name() == 'Receptor'}
         def receptorRfc=receptorNode.attributes()['rfc']

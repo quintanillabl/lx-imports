@@ -191,7 +191,7 @@ class ImportadorController {
 		SingleConnectionDataSource ds=new SingleConnectionDataSource(
 
 		        driverClassName:'com.mysql.jdbc.Driver',
-		        url:'jdbc:mysql://10.10.1.228/produccion',
+		        url:'jdbc:mysql://10.10.1.229/siipapx',
 		        username:'root',
 		        password:'sys',
 		        suppressClose:true)
@@ -199,32 +199,33 @@ class ImportadorController {
 
 		//def sql= new Sql(dataSource_importacion)
 
-		def row=sql.firstRow("select * from SX_COMPRAS2  where PROVEEDOR_ID=?  and folio=? and fecha>'2012-01-01' ",
+		def row=sql.firstRow("SELECT c.*,p.nombre FROM compra c join proveedor p on (p.id=c.proveedor_id)  where PROVEEDOR_ID=?  and folio=? and fecha>'2017-01-01' ",
 			,[proveedorOrigenParaCompras,folio])
 		log.info 'Importando :'+row
 		
-		Compra c=Compra.findOrCreateByOrigen(row.COMPRA_ID)
+		Compra c=Compra.findOrCreateByOrigen(row.id)
 		Proveedor p=Proveedor.findOrSaveByNombre(row.nombre)
+
 		c.proveedor=p
 		c.fecha=row.fecha
 		c.comentario=row.comentario
-		c.origen=row.compra_id
-		c.depuracion=row.depuracion
+		c.origen=row.id
+		c.depuracion=row.ultima_depuracion
 		c.folio=row.folio
 		c.entrega=row.entrega
 		c.moneda=Currency.getInstance(row.moneda)
-		c.tc=row.tc
+		c.tc=row.tipo_de_cambio
 		c.importe=row.importe_bruto
-		c.descuentos=row.importe_desc
+		c.descuentos=row.importe_descuento
 		c.subtotal=row.importe_neto
 		c.impuestos=row.impuestos
 		c.total=row.total
 		c.partidas=[]
-		log.info 'Importando partidas '+row.compra_id
+		log.info 'Importando partidas '+row.id
 		//def rows=sql().rows('select * from sx_compras2_det where compra_id=:id',[id:row.compra_id] )
 		//def sql2=sql()
 		
-		sql.eachRow('select * from sx_compras2_det where compra_id=?',[c.origen]) {
+		sql.eachRow('select d.*,p.clave from compra_det d join producto p on (p.id=d.producto_id) where compra_id=?',[c.origen]) {
 			CompraDet cd=new CompraDet()
 			Producto prod=Producto.findByClave(it.clave)
 			cd.producto=prod
