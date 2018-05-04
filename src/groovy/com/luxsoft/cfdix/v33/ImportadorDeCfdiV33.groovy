@@ -155,6 +155,11 @@ class ImportadorDeCfdiV33 {
         */
         registrarConceptos(cxp,comprobante)
         
+        println "------------------"+cxp
+
+        println "------------------"+comprobante
+        
+
         cxp.comprobante = comprobanteFiscal
         cxp.save flush:true,failOnError:true
         log.info 'Cuenta por pogar importada: '+cxp
@@ -200,6 +205,55 @@ class ImportadorDeCfdiV33 {
             }
             
         }
+    }
+
+    def update(def comprobante, def cfdiFile, def cxp){
+
+
+        assert comprobante.name() == 'Comprobante'
+        assert comprobante.attributes()['Version'] == '3.3', 'No es la version de cfdi 3.3'        
+
+        def receptor = comprobante.breadthFirst().find { it.name() == 'Receptor'}
+        def receptorRfc = receptor.attributes().Rfc
+
+        def emisor= comprobante.breadthFirst().find { it.name() == 'Emisor'}
+        def timbre=comprobante.breadthFirst().find { it.name() == 'TimbreFiscalDigital'}
+
+        
+        def empresa=Empresa.first()
+        
+        def nombre = emisor.attributes()['Nombre']
+        def rfc = emisor.attributes()['Rfc']
+
+        if(empresa.rfc!=receptorRfc && empresa.rfc!= rfc){
+            throw new ComprobanteFiscalException(
+                message:"El el receptor del CFDI: ${cfdiFile.getOriginalFilename()} no corresponde  a ${empresa.nombre} Emprea RFC: ${empresa.rfc}  Receptor del CFDI: ${receptorRfc}")
+        }
+
+        def proveedor=Proveedor.findByRfc(rfc)
+        assert proveedor, 'No se ha registrado el proveedor ' + rfc
+       
+        
+            def comprobanteFiscal=new ComprobanteFiscal(cxp:cxp,receptorRfc:receptorRfc)
+         
+
+            comprobanteFiscal.with{
+            fecha=Date.parse("yyyy-MM-dd'T'HH:mm:ss",comprobante.attributes()['Fecha'])
+            cfdi=cfdiFile.getBytes()
+            cfdiFileName=cfdiFile.getOriginalFilename()
+            uuid=timbre.attributes()['UUID']
+            serie=comprobante.attributes()['Serie']
+            folio=comprobante.attributes()['Folio']
+            emisorRfc=rfc
+            total=comprobante.attributes()['Total'] as BigDecimal
+        }
+        
+        log.info 'Actualizando CFDI: '+comprobante
+
+        cxp.comprobante=comprobanteFiscal
+  
+        cxp.save(failOnError:true,flush:true)
+
     }
 
 }
