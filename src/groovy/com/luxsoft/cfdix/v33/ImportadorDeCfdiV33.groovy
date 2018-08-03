@@ -22,9 +22,13 @@ import com.luxsoft.lx.utils.MonedaUtils
 class ImportadorDeCfdiV33 {
 
 	def build(def comprobante, def cfdiFile, def cxp){
+
+
+        println "---------------%%%%%%%%%%%%%-"+comprobante
     	
     	assert comprobante.name() == 'Comprobante'
         assert comprobante.attributes()['Version'] == '3.3', 'No es la version de cfdi 3.3'        
+        println  'Importando version 3.3'
 
         def receptor = comprobante.breadthFirst().find { it.name() == 'Receptor'}
         def receptorRfc = receptor.attributes().Rfc
@@ -91,7 +95,9 @@ class ImportadorDeCfdiV33 {
 
         // Impuestos trasladados
         def traslados = comprobante.breadthFirst().find { it.name() == 'Traslados'}
+        println  'traslados --------- '+traslados
         if(traslados){
+             println  'Si hay traslados --------- '
             traslados.children().each{ t->
                if(t.attributes()['Impuesto']=='002'){ // IVA
                    
@@ -155,23 +161,32 @@ class ImportadorDeCfdiV33 {
         */
         registrarConceptos(cxp,comprobante)
         
-        println "------------------"+cxp
+        println "-----------------///////////////-"+cxp
 
-        println "------------------"+comprobante
+        
         
 
         cxp.comprobante = comprobanteFiscal
-        cxp.save flush:true,failOnError:true
+
+         println "-------------********************************-----"+cxp.comprobante
+
+         cxp.save failOnError:true
+        //cxp.save flush:true,failOnError:true
         log.info 'Cuenta por pogar importada: '+cxp
         return cxp
     }
 
     def registrarConceptos(def cxp,def xml){
+ println  '----- Registrando conceptos'
+
         if(cxp.instanceOf(FacturaDeGastos)){
+
+            println  '----- es facturas de  gastos'
         	if(cxp.conceptos) cxp.conceptos.clear()
             def concepto=CuentaContable.buscarPorClave('600-0000')
             def conceptos=xml.breadthFirst().find { it.name() == 'Conceptos'}
             conceptos.children().each{
+                println  '----- concepto'
                 def model=it.attributes()
                 def det=new ConceptoDeGasto(
                     concepto:concepto,
@@ -201,6 +216,8 @@ class ImportadorDeCfdiV33 {
                 	}
                 	
                 }
+
+                println  '----- ecxp det'+det
                 cxp.addToConceptos(det)
             }
             

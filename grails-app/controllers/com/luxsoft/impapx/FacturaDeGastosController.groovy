@@ -155,6 +155,7 @@ class FacturaDeGastosController {
                 return
             }else{
                 try {
+                    println '-----------Comprobante: ------------------------- '+xml
                     def cxp=comprobanteFiscalService.importar(xml,new FacturaDeGastos())
                     flash.message="Cuenta por pagar generada para el CFDI:  ${xml.getOriginalFilename()}"
                     redirect action:'edit',id:cxp.id
