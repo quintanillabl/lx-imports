@@ -226,6 +226,8 @@ class ImportadorController {
 		//def sql2=sql()
 		
 		sql.eachRow('select d.*,p.clave from compra_det d join producto p on (p.id=d.producto_id) where compra_id=?',[c.origen]) {
+
+			println "***************************"+it.clave
 			CompraDet cd=new CompraDet()
 			Producto prod=Producto.findByClave(it.clave)
 			cd.producto=prod
@@ -235,6 +237,9 @@ class ImportadorController {
 			cd.importeDescuento=0
 			cd.importe=0
 			cd.compra=c
+			
+					println "***************************"+it.clave
+			
 			c.partidas.add(cd)
 			//c.addToPartidas(cd)
 		}

@@ -27,14 +27,20 @@ class ComprobanteFiscalService {
     def  consultaService
 
     def importar(def cfdiFile,def cxp){
+
+           
+
     	
     	File xmlFile = File.createTempFile(cfdiFile.getName(),".temp");
+
         cfdiFile.transferTo(xmlFile)
 
         def xml = new XmlSlurper().parse(xmlFile)
         SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
         def data=xml.attributes()
-        log.debug 'Comprobante:  '+xml.attributes()  
+
+        
+         
         if(xml.name()!='Comprobante')
             throw new ComprobanteFiscalException(message:"${cfdiFile.getOriginalFilename()} no es un CFDI valido")
         def version = data.version
@@ -43,6 +49,7 @@ class ComprobanteFiscalService {
             version = data.Version
         }
         if(version == '3.3'){
+
             return new ImportadorDeCfdiV33().build(xml, cfdiFile, cxp)
         }
         
@@ -129,7 +136,10 @@ class ComprobanteFiscalService {
         def traslados=xml.breadthFirst().find { it.name() == 'Traslados'}
         if(traslados){
             traslados.children().each{ t->
+
+                println "Encontre trasalados"
                 if(t.attributes()['impuesto']=='IVA'){
+                    println "El impouest es iva"
                     def tasa=t.attributes()['tasa'] as BigDecimal
                     cxp.impuestos=t.attributes()['importe'] as BigDecimal
                     cxp.tasaDeImpuesto=tasa
@@ -259,10 +269,13 @@ class ComprobanteFiscalService {
     }
 
     def registrarConceptos(def cxp,def xml){
+
+        println  'registran do conceptos'
         if(cxp.instanceOf(FacturaDeGastos)){
             def concepto=CuentaContable.buscarPorClave('600-0000')
             def conceptos=xml.breadthFirst().find { it.name() == 'Conceptos'}
             conceptos.children().each{
+                println  'concepto'+it
                 def model=it.attributes()
                 def det=new ConceptoDeGasto(
                     concepto:concepto,

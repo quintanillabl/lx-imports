@@ -180,10 +180,10 @@ class CfdiBuilder33 {
                  
 
                 def desc = "${venta.comentario} Fac: ${cfdi?.folio} ${cfdi?.fecha?.text()}"
-                claveProdServ = det.claveProdServ
+                claveProdServ = '84101700'
                 noIdentificacion = det.numeroDeIdentificacion
                 cantidad = MonedaUtils.round(det.cantidad)
-                claveUnidad = 'E48'
+                claveUnidad = 'ACT'
                 unidad = det.unidad
                 descripcion = desc
                 valorUnitario = det.valorUnitario
