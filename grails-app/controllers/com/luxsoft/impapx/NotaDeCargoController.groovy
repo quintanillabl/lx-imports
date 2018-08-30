@@ -7,6 +7,7 @@ import org.codehaus.groovy.grails.web.json.JSONArray
 import org.springframework.dao.DataIntegrityViolationException
 import com.luxsoft.cfdi.Cfdi
 
+import com.luxsoft.lx.utils.MonedaUtils
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(["hasAnyRole('VENTAS','COMPRAS')"])
@@ -203,6 +204,7 @@ class NotaDeCargoController {
             def mismoMes = isSameMonth(corte, vto)
             def diasPena = mismoMes ? atraso : ((corte.finDeMes() - corte.inicioDeMes() + 1))   
             def tasaCetes = 0.0772
+            
             def penaPorDia = ( (tasaCetes + 0.05) / 360 ) * saldo
             def validacion=((tasaCetes + 0.05) / 360 )
             println("Pena por dia  "+validacion+ "  -- pena: "+penaPorDia)
@@ -219,9 +221,9 @@ class NotaDeCargoController {
             det.tasaCetes = tasaCetes
             det.penaPorDia = penaPorDia
             det.cantidad = 1
-            det.valorUnitario = factorCetes * saldo * diasPena
+            det.valorUnitario = MonedaUtils.round(factorCetes * saldo * diasPena, 2)
             det.documento = "FAC ${cfdi.folio}"
-            det.importe = det.valorUnitario *det.cantidad
+            det.importe = MonedaUtils.round(det.valorUnitario *det.cantidad,2)
             det.comentario = "Vto: ${origen.vencimiento.text() } Dias pena: ${diasPena}"
             det.cfdi = cfdi
                         
