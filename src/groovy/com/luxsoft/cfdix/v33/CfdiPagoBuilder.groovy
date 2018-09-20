@@ -121,7 +121,14 @@ class CfdiPagoBuilder {
         Pagos.Pago pago = factory.createPagosPago()
         pago.fechaPago =  DateUtils.getCfdiDate(this.cobro.fecha)
         pago.formaDePagoP = getFormaDePago()
-        pago.monedaP = CMoneda.MXN
+
+        pago.monedaP = cobro.moneda.currencyCode
+        println 'MONEDA: ' + this.cobro.moneda
+        if(this.cobro.moneda.currencyCode != 'MXN') {
+            println 'TC: ' + this.cobro.ingreso.tc
+            pago.tipoCambioP = this.cobro.ingreso.tc
+        }
+
         pago.monto = this.cobro.aplicado
         pago.numOperacion = this.cobro.ingreso.referenciaBancaria
         boolean varios = this.cobro.aplicaciones.size() > 1
@@ -131,7 +138,10 @@ class CfdiPagoBuilder {
             docto.idDocumento = cfdi.uuid
             docto.serie = cfdi.serie
             docto.folio = cfdi.folio
-            docto.monedaDR = CMoneda.MXN
+            docto.monedaDR = it.factura.moneda.currencyCode
+            if(this.cobro.moneda.currencyCode != it.factura.moneda.currencyCode) {
+                docto.tipoCambioDR = this.cobro.ingreso.tc
+            }
             docto.metodoDePagoDR = CMetodoPago.PPD
             docto.numParcialidad = 1
             docto.impSaldoAnt = it.factura.total
