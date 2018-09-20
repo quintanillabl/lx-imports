@@ -7,6 +7,8 @@ import org.springframework.dao.DataIntegrityViolationException
 import com.luxsoft.impapx.Venta
 import util.MonedaUtils
 
+import org.apache.commons.lang.exception.ExceptionUtils
+
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(["hasRole('VENTAS')"])
@@ -17,6 +19,8 @@ class CXCPagoController {
 	def cobranzaService
 
 	def filterPaneService
+
+	def cfdiPagosService
 
 	def beforeInterceptor = {
     	if(!session.periodoTesoreria){
@@ -168,8 +172,27 @@ class CXCPagoController {
 	}
 
 	def mostrarIngreso(CXCPago cobro){
-		println cobro
 		render(template:'ingresoForm',bean:cobro.ingreso)
+	}
+
+	def generarReciboDePago(CXCPago cobro) {
+		flash.message = 'Recibo CFDI En desarrollo'
+		if (cobro == null) {
+            notFound()
+            return
+        }
+        try {
+        	cobro = cfdiPagosService.generarCfdi(cobro)
+        	flash.message = "CFDI de comprobante de pago para el cobro ${cobro.id} generado "
+            // redirect action:'show', controller:'cfdi', id:cobro.cfdi.id
+            redirect action: 'show', id: cobro.id
+        }
+        catch(Exception e) {
+            flash.message="Error al tratar de generar CFDI de comprobante de pago"
+            flash.error=ExceptionUtils.getRootCauseMessage(e)
+            redirect action:'show',id:cobro.id
+        }
+		// render(view: "show", model: [CXCPagoInstance: cobro])
 	}
 
 	

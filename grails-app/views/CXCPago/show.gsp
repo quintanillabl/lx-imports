@@ -38,13 +38,27 @@
 								<f:display property="comentario" wrapper="bootstrap3"/>
 								<div class="form-group">
 									<label for="ingreso" class="control-label col-sm-3">Ingreso</label>
-									<div class="col-sm-9">
+									<div class="col-sm-2">
 										<p class="form-control-static">
 											<a data-toggle="modal" data-target="#ingresoForm">${CXCPagoInstance?.ingreso?.id}</a>
 										</p>
-										%{-- <input name="ingreso" class="form-control" value="${CXCPagoInstance.ingreso}"> --}%
-										
 									</div>
+									<div class="col-sm-6">
+										<g:if test="${CXCPagoInstance.cfdi}">
+											<g:link controller="cfdi" action="show" id="${CXCPagoInstance.cfdi.id}"
+				    						class="	btn btn-default btn-outline"  >
+									    	<i class="fa fa-file-text"></i>  Recibo CFDI ${CXCPagoInstance.cfdi.id}
+											</g:link> 
+										</g:if>
+										<g:if test="${CXCPagoInstance?.ingreso?.id && !CXCPagoInstance.cfdi}">
+											<g:link action="generarReciboDePago" id="${CXCPagoInstance.id}"
+				    						class="	btn btn-default btn-outline"  >
+									    	  <i class="fa fa-pencil"></i> Generar Recibo (CFDI)
+											</g:link> 
+										</g:if>
+									</div>
+									
+									
 								</div>
 				    		</f:with>
 				    		<div class="form-group">
@@ -52,7 +66,6 @@
 				    				<lx:backButton label="Cobros"/>
 				    				<lx:createButton/>
 				    				<lx:editButton id="${CXCPagoInstance.id}"/>
-				    				
 				    			</div>
 				    		</div>
 				    	</form>

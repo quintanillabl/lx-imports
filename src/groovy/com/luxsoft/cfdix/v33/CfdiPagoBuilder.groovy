@@ -4,9 +4,10 @@ import org.apache.commons.logging.LogFactory
 import org.bouncycastle.util.encoders.Base64
 
 import com.luxsoft.impapx.Empresa
+import com.luxsoft.impapx.cxc.CXCPago
 import com.luxsoft.lx.utils.MonedaUtils
-import com.luxsoft.impapx.cxp.Pago
 
+import com.luxsoft.cfdi.Cfdi
 
 import lx.cfdi.utils.DateUtils
 import lx.cfdi.v33.ObjectFactory
@@ -30,10 +31,10 @@ class CfdiPagoBuilder {
     private factory = new ObjectFactory()
 	private Comprobante comprobante
     private Empresa empresa
-    private Pago cobro
+    private CXCPago cobro
     private CfdiSellador33 sellador = new CfdiSellador33()
 
-    def build(Pago cobro, String serie = 'PAGOS'){
+    def build(CXCPago cobro, String serie = 'PAGOS'){
         buildComprobante(cobro, serie)
         .buildEmisor()
         .buildReceptor()
@@ -45,12 +46,12 @@ class CfdiPagoBuilder {
     }
     
 
-	def buildComprobante(Pago cobro, String serie){
+	def buildComprobante(CXCPago cobro, String serie){
 		log.info("Generando CFDI de comprobante de pago para Cobro: ${cobro.id}")
 
 		this.comprobante = factory.createComprobante()
         this.cobro = cobro;
-        this.empresa = cobro.empresa
+        this.empresa = Empresa.first()
         comprobante.version = "3.3"
         comprobante.tipoDeComprobante = CTipoDeComprobante.P
         comprobante.serie = serie
@@ -122,23 +123,19 @@ class CfdiPagoBuilder {
         pago.formaDePagoP = getFormaDePago()
         pago.monedaP = CMoneda.MXN
         pago.monto = this.cobro.aplicado
-        pago.numOperacion = this.cobro.referencia
+        pago.numOperacion = this.cobro.ingreso.referenciaBancaria
         boolean varios = this.cobro.aplicaciones.size() > 1
         this.cobro.aplicaciones.each {
             Pagos.Pago.DoctoRelacionado docto = factory.createPagosPagoDoctoRelacionado()
-            docto.idDocumento = '6E9122AA-7E57-49F4-A5D0-417ED2583A9C'
-            docto.serie = it.cuentaPorCobrar.cfdi.serie
-            docto.folio = it.cuentaPorCobrar.cfdi.folio
+            Cfdi cfdi = it.factura.loadCfdi()
+            docto.idDocumento = cfdi.uuid
+            docto.serie = cfdi.serie
+            docto.folio = cfdi.folio
             docto.monedaDR = CMoneda.MXN
             docto.metodoDePagoDR = CMetodoPago.PPD
             docto.numParcialidad = 1
-            docto.impSaldoAnt = it.cuentaPorCobrar.total
-            //docto.impSaldoInsoluto = MonedaUtils.round(docto.impSaldoAnt - pago.monto)
-            // if(varios){
-            //     docto.impPagado = it.importe
-            //     docto.impSaldoInsoluto = MonedaUtils.round(docto.impSaldoAnt - docto.impPagado)
-            // }
-            docto.impPagado = it.importe
+            docto.impSaldoAnt = it.factura.total
+            docto.impPagado = it.total
             docto.impSaldoInsoluto = MonedaUtils.round(docto.impSaldoAnt - docto.impPagado)
             
             pago.doctoRelacionado.add(docto)
@@ -163,9 +160,9 @@ class CfdiPagoBuilder {
 
     String getFormaDePago(){
         switch(this.cobro.formaDePago) {
-            case FormaDePago.TRANSFERENCIA:
+            case 'TRANSFERENCIA':
                 return '03'
-            case FormaDePago.CHEQUE:
+            case 'CHEQUE':
                 return '02'
             break
             default:

@@ -18,5 +18,5 @@ databaseChangeLog = {
 
   	include file: 'cfdi33-patch-008.groovy'
 
-	
+	include file: 'add-cfdi-to-cxcpago.groovy'
 }

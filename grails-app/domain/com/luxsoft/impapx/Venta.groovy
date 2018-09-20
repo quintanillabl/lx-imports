@@ -138,5 +138,12 @@ class Venta {
 	Date getPedimentoFecha(){
 		return null;
 	}
+
+	def loadCfdi(){
+		def serie='FAC'
+		if(tipo=='NOTA_DE_CARGO')
+			serie='CAR'
+		return Cfdi.findBySerieAndOrigen(serie,id)
+	}
 	
 }

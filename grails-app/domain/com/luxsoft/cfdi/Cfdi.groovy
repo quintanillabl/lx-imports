@@ -57,7 +57,7 @@ class Cfdi {
 		xml maxSize:(1024 * 512)  // 50kb para almacenar el xml
 		cadenaOriginal maxSize:1024*64, nullable:true //@Column(name="CADENA_ORIGINAL",length=1048576,nullable=true)
 		origen blank:false,maxSize:255
-		tipoDeCfdi inList:['I','E','N']
+		tipoDeCfdi inList:['I','E','T','P','N']
 		comentario nullable:true
 		url nullable:true,url:true
 		cancelacion nullable:true

@@ -47,12 +47,14 @@
 	            				<td>Total</td>
 	            				<td>Disponible MN</td>
 	            				<td>Ingreso</td>		
+	            				<td>Recibo</td>		
 	            			</tr>
 	            		</thead>
 	            		<tbody>
 	            			<g:each in="${cobros}" var="row">
             				<tr>
-            					<td><g:link action="show" id="${row.id}">
+            					<td>
+            						<g:link action="show" id="${row.id}">
             						${fieldValue(bean: row, field: "id")}
             						</g:link>
             					</td>
@@ -65,6 +67,11 @@
             					<td><lx:moneyFormat number="${row.total }"/></td>
             					<td><lx:moneyFormat number="${row.disponible }"/></td>	
             					<td>${row?.ingreso?.id}</td>
+            					<td>
+            						<g:link controller='cfdi' action="show" id="${row?.cfdi?.id}">
+            						${fieldValue(bean: row, field: "cfdi.id")}
+            						</g:link>
+            					</td>
             				
             				</tr>
 	            			</g:each>

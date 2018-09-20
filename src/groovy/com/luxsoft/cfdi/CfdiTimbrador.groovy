@@ -1,5 +1,6 @@
 package com.luxsoft.cfdi
 
+import grails.util.Environment
 
 import java.text.SimpleDateFormat;
 
@@ -27,7 +28,7 @@ class CfdiTimbrador {
 			byte[] zipFile=zipUtils.comprimeArchivo(nombre, xml)
 			//byte[] res=cfdiClient.getCfdiTest(user, password, zipFile)
 			byte[] res
-			if(timbradoDePrueba){
+			if(isTimbradoDePrueba()){
 				log.info 'Timbrando de prueba: '+cfdi
 				res=cfdiClient.getCfdiTest(user, password, zipFile)
 			}else{
@@ -58,5 +59,9 @@ class CfdiTimbrador {
 			throw new CfdiException(message:msg,cfdi:cfdi)
 		}
 	}
+
+	Boolean isTimbradoDePrueba() {
+        return Environment.current != Environment.PRODUCTION
+    }
 
 }

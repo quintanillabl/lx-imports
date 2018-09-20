@@ -18,6 +18,8 @@ import com.luxsoft.lx.bi.ReportCommand
 import com.luxsoft.cfdix.CFDIXUtils
 import com.luxsoft.cfdix.v33.V33PdfGenerator
 import com.luxsoft.cfdix.v32.V32CfdiUtils
+import com.luxsoft.cfdix.v33.ReciboDePagoPdfGenerator
+
 import org.codehaus.groovy.grails.plugins.jasper.JasperReportDef
 import org.codehaus.groovy.grails.plugins.jasper.JasperExportFormat
 
@@ -157,18 +159,29 @@ class CfdiController {
 	}
 
 	private generarPdfV33(Cfdi cfdi){
-		def data = V33PdfGenerator.getReportData(cfdi)
-		//log.info('Parametros: ')
-		//log.info(data)
+
+		log.info("Impresion de CFDI: ${cfdi.id}")
+		def data 
+		def reportName
+		if(cfdi.tipo == 'PAGO') {
+			data = ReciboDePagoPdfGenerator.getReportData(cfdi)
+			log.info("CfdiPrint Data: ${data}")
+			reportName = 'ReciboDePagoCFDI33.jrxml'
+		} else {
+			reportName = 'CFDI33'
+			data = V33PdfGenerator.getReportData(cfdi)
+		}
 		def modelData = data['CONCEPTOS']
 		def repParams = data['PARAMETROS']
 		params<<repParams
 		
 		def command=new ReportCommand()
-        command.reportName="CFDI33"
+        command.reportName = reportName
         command.empresa=session.empresa
+
         params.EMPRESA=session.empresa.nombre
         params.COMPANY=session.empresa.nombre
+        
         def stream = reportService.build(command,params,modelData)
         def file="${cfdi.serie}-${cfdi.folio}.pdf"
         render(
