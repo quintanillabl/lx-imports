@@ -14,6 +14,7 @@ import com.luxsoft.impapx.contabilidad.*
 import grails.transaction.Transactional
 import com.luxsoft.lx.utils.MonedaUtils
 import util.Rounding
+import org.apache.commons.lang.StringUtils
 
 @Transactional
 class PolizaDeComprasService extends ProcesadorService{
@@ -144,7 +145,7 @@ class PolizaDeComprasService extends ProcesadorService{
                 debe:factura.importe*pedimento.tipoDeCambio,
                 haber:0.0,
                 asiento:asiento,
-                descripcion:"$factura.proveedor ($fechaF) $factura.importe  Pedimentos:$pedimentos ",
+                descripcion:StringUtils.substring("$factura.proveedor ($fechaF) $factura.importe  Pedimentos:$pedimentos ",0,255),
                 //descripcion:"$factura.proveedor ($fechaF) $factura.importe  T.C. $pedimento.tipoDeCambio Ped:$pedimento.pedimento ",
                 referencia:"$factura.documento",
                 ,fecha:poliza.fecha
@@ -164,7 +165,7 @@ class PolizaDeComprasService extends ProcesadorService{
                 haber:factura.importe*pedimento.tipoDeCambio,
                 asiento:asiento,
                 //descripcion:"$factura.proveedor ($fechaF) $factura.importe  T.C. $pedimento.tipoDeCambio Ped:$pedimento.pedimento ",
-                descripcion:"$factura.proveedor ($fechaF) $factura.importe  Pedimentos:$pedimentos ",
+                descripcion:StringUtils.substring("$factura.proveedor ($fechaF) $factura.importe  Pedimentos:$pedimentos ",0,255),
                 referencia:"$factura.documento",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -178,7 +179,7 @@ class PolizaDeComprasService extends ProcesadorService{
                 debe:factura.importe*pedimento.tipoDeCambio,
                 haber:0.0,
                 asiento:asiento,
-                descripcion:"$factura.proveedor ($fechaF) $factura.importe  Pedimentos:$pedimentos ",
+                descripcion:StringUtils.substring("$factura.proveedor ($fechaF) $factura.importe  Pedimentos:$pedimentos ",0,255),
                 referencia:"$factura.documento",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -190,7 +191,7 @@ class PolizaDeComprasService extends ProcesadorService{
                 debe:0.0,
                 haber:factura.importe*pedimento.tipoDeCambio,
                 asiento:asiento,
-                descripcion:"$factura.proveedor ($fechaF) $factura.importe  Pedimentos:$pedimentos ",
+                descripcion:StringUtils.substring("$factura.proveedor ($fechaF) $factura.importe  Pedimentos:$pedimentos ",0,255),
                 referencia:"$factura.documento",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -222,7 +223,7 @@ class PolizaDeComprasService extends ProcesadorService{
                 debe:pedimento.dta,
                 haber:0.0,
                 asiento:asiento,
-                descripcion:"Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",
+                descripcion:StringUtils.substring("Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",0,255),
                 referencia:"$pedimento.pedimento",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -245,7 +246,7 @@ class PolizaDeComprasService extends ProcesadorService{
                 debe:contraPrestacion,
                 haber:0.0,
                 asiento:asiento,
-                descripcion:"Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",
+                descripcion:StringUtils.substring("Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",0,255),
                 referencia:"$pedimento.pedimento",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -273,7 +274,7 @@ class PolizaDeComprasService extends ProcesadorService{
                 debe:imp,
                 haber:0.0,
                 asiento:asiento,
-                descripcion:"Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",
+                descripcion:StringUtils.substring("Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",0,255),
                 referencia:"$pedimento.pedimento",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -304,7 +305,7 @@ class PolizaDeComprasService extends ProcesadorService{
                 debe:imp2,
                 haber:0.0,
                 asiento:asiento,
-                descripcion:"Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",
+                descripcion:StringUtils.substring("Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",0,255),
                 referencia:"$pedimento.pedimento",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -330,7 +331,7 @@ class PolizaDeComprasService extends ProcesadorService{
                 debe:pedimento.arancel,
                 haber:0.0,
                 asiento:asiento,
-                descripcion:"Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",
+                descripcion:StringUtils.substring("Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",0,255),
                 referencia:"$pedimento.pedimento",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
@@ -349,7 +350,7 @@ class PolizaDeComprasService extends ProcesadorService{
                     debe:Rounding.round(pedimento.incrementable1.importe*pedimento.tipoDeCambio,0),
                     haber:0.0,
                     asiento:asiento,
-                    descripcion:"Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",
+                    descripcion:StringUtils.substring("Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",0,255),
                     referencia:"$pedimento.pedimento",
                     ,fecha:poliza.fecha
                     ,tipo:poliza.tipo
@@ -382,7 +383,7 @@ class PolizaDeComprasService extends ProcesadorService{
                 debe:0.0,
                 haber:haber,
                 asiento:asiento,
-                descripcion:"Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",
+                descripcion:StringUtils.substring("Ped:$pedimento.pedimento ${pedimento.fecha.text()} Ref:$pedimento.referenciacg Prov:$provImp",0,255),
                 referencia:"$pedimento.pedimento",
                 ,fecha:poliza.fecha
                 ,tipo:poliza.tipo
