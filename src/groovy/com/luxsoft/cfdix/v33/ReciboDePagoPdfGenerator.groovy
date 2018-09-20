@@ -93,6 +93,7 @@ class ReciboDePagoPdfGenerator {
 		params["EMISOR_DIRECCION"] = ' '
 		params["REGIMEN"] = comprobante.emisor.regimenFiscal
 		params["LUGAR_EXPEDICION"] = comprobante.lugarExpedicion
+		params["TIPO_DE_COMPROBANTE"] = "P (Pago)"
 		
 		if(cfdi.uuid!=null){
 			def img = generarQR(cfdi)
