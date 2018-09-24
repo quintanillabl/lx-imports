@@ -56,7 +56,7 @@ class CfdiPagoBuilder {
         comprobante.tipoDeComprobante = CTipoDeComprobante.P
         comprobante.serie = serie
         comprobante.folio = cobro.id
-        comprobante.setFecha(DateUtils.getCfdiDate(cobro.fecha))
+        comprobante.setFecha(DateUtils.getCfdiDate(new Date()))
         comprobante.moneda = CMoneda.MXN
         comprobante.lugarExpedicion = empresa.direccion.codigoPostal
         comprobante.subTotal = 0
