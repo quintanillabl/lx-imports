@@ -61,7 +61,7 @@ class CfdiTimbrador {
 	}
 
 	Boolean isTimbradoDePrueba() {
-        return Environment.current != Environment.PRODUCTION
+        return (Environment.current == Environment.DEVELOPMENT )
     }
 
 }
