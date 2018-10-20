@@ -250,7 +250,7 @@ class ImportadorDeCfdiV33 {
         def proveedor=Proveedor.findByRfc(rfc)
         assert proveedor, 'No se ha registrado el proveedor ' + rfc
        
-        
+    
             def comprobanteFiscal=new ComprobanteFiscal(cxp:cxp,receptorRfc:receptorRfc)
          
 
@@ -259,15 +259,32 @@ class ImportadorDeCfdiV33 {
             cfdi=cfdiFile.getBytes()
             cfdiFileName=cfdiFile.getOriginalFilename()
             uuid=timbre.attributes()['UUID']
+                  
             serie=comprobante.attributes()['Serie']
+
+
             folio=comprobante.attributes()['Folio']
+        
+
             emisorRfc=rfc
+         
             total=comprobante.attributes()['Total'] as BigDecimal
         }
-        
+         
+            
+
         log.info 'Actualizando CFDI: '+comprobante
 
-        cxp.comprobante=comprobanteFiscal
+            
+
+       //cxp.comprobante=comprobanteFiscal
+
+        println "Porperties cxp"
+        cxp.properties.each{
+                println it
+            }
+
+ 
   
         cxp.save(failOnError:true,flush:true)
 
