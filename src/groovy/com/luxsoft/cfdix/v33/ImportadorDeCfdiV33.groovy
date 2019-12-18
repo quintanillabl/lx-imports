@@ -23,12 +23,9 @@ class ImportadorDeCfdiV33 {
 
 	def build(def comprobante, def cfdiFile, def cxp){
 
-
-        println "---------------%%%%%%%%%%%%%-"+comprobante
-    	
     	assert comprobante.name() == 'Comprobante'
         assert comprobante.attributes()['Version'] == '3.3', 'No es la version de cfdi 3.3'        
-        println  'Importando version 3.3'
+     
 
         def receptor = comprobante.breadthFirst().find { it.name() == 'Receptor'}
         def receptorRfc = receptor.attributes().Rfc
@@ -63,6 +60,8 @@ class ImportadorDeCfdiV33 {
         def comprobanteFiscal=ComprobanteFiscal.findByUuid(uuid)
         if(comprobanteFiscal){
         	throw new ComprobanteExistenteException(comprobanteFiscal);
+        }else{
+            println "El comprobante fiscal no existen procedo a crearlo"
         }
 
     	comprobanteFiscal=new ComprobanteFiscal(
@@ -95,9 +94,8 @@ class ImportadorDeCfdiV33 {
 
         // Impuestos trasladados
         def traslados = comprobante.breadthFirst().find { it.name() == 'Traslados'}
-        println  'traslados --------- '+traslados
         if(traslados){
-             println  'Si hay traslados --------- '
+           
             traslados.children().each{ t->
                if(t.attributes()['Impuesto']=='002'){ // IVA
                    
@@ -160,12 +158,12 @@ class ImportadorDeCfdiV33 {
         }
         */
         registrarConceptos(cxp,comprobante)
-        
-        println "-----------------///////////////-"+cxp
 
         
-        
-
+        if(!comprobanteFiscal.validate()){
+            log.error 'Errores de validacion: '+comprobanteFiscal.errors
+        }
+        cxp
         cxp.comprobante = comprobanteFiscal
 
          println "-------------********************************-----"+cxp.comprobante
@@ -177,16 +175,16 @@ class ImportadorDeCfdiV33 {
     }
 
     def registrarConceptos(def cxp,def xml){
- println  '----- Registrando conceptos'
+
 
         if(cxp.instanceOf(FacturaDeGastos)){
 
-            println  '----- es facturas de  gastos'
+            
         	if(cxp.conceptos) cxp.conceptos.clear()
             def concepto=CuentaContable.buscarPorClave('600-0000')
             def conceptos=xml.breadthFirst().find { it.name() == 'Conceptos'}
             conceptos.children().each{
-                println  '----- concepto'
+                println  '----- concepto'+it
                 def model=it.attributes()
                 def det=new ConceptoDeGasto(
                     concepto:concepto,
@@ -217,7 +215,6 @@ class ImportadorDeCfdiV33 {
                 	
                 }
 
-                println  '----- ecxp det'+det
                 cxp.addToConceptos(det)
             }
             

@@ -132,6 +132,9 @@ class UsuarioController {
             return [usuarioInstance:usuarioInstance,passwordCommand:new CambioDePassword()]
         }
         
+        println "************************************************************************************************************"
+
+
         command.validate()
         if(command.hasErrors()){
             

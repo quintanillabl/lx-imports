@@ -223,7 +223,7 @@ environments{
   development{
     luxor{
         empleadosDb{
-          url = 'jdbc:mysql://10.10.1.228:3306/rh'
+          url = 'jdbc:mysql://10.10.1.229:3306/sx_rh'
           username = "root"
           password = "sys"
         }
@@ -235,7 +235,7 @@ environments{
   production{
     luxor{
         empleadosDb{
-          url = 'jdbc:mysql://10.10.1.228:3306/rh'
+          url = 'jdbc:mysql://10.10.1.229:3306/sx_rh'
           username = "root"
           password = "sys"
         }

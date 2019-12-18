@@ -976,9 +976,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="245"
+						x="80"
 						y="20"
-						width="164"
+						width="495"
 						height="8"
 						key="textField-198"/>
 					<box>					<pen lineWidth="0.0" lineStyle="Solid"/>
@@ -994,7 +994,7 @@
 				</textField>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="169"
+						x="4"
 						y="20"
 						width="77"
 						height="8"

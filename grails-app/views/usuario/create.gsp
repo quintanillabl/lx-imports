@@ -7,7 +7,7 @@
 <body>
 
 	<content tag="header">
-		<h3>${"Usuario nuevo"}</h3>
+		<h3>Usuario nuevo</h3>
 	</content>
 	
 	<content tag="operaciones">

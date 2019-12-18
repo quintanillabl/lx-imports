@@ -50,7 +50,7 @@ class Poliza {
 
     static constraints = {
 		//referencia(maxSize:30)
-		ejercicio inList:(2013..2018)
+		ejercicio inList:(2013..2030)
 		mes inList:(1..13)
 		tipo(inList:['INGRESO','EGRESO','DIARIO','COMPRAS','GENERICA','CIERRE_ANUAL'])
 		//tipo(inList:['INGRESO','EGRESO','DIARIO'])

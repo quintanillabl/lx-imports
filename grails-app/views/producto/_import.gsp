@@ -4,7 +4,7 @@
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal"
 					aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">Importar PRODUCTO por clave</h4>
+				<h4 class="modal-title" id="myModalLabel">Importar PRODUCTO por clave 1</h4>
 			</div>
 			<g:form controller="importador" action="importarProducto" class="form-horizontal" >
 				<div class="modal-body">
