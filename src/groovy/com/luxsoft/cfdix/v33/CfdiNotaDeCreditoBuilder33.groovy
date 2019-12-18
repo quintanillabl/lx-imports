@@ -19,6 +19,7 @@ import lx.cfdi.v33.CMetodoPago
 import lx.cfdi.v33.CTipoDeComprobante
 import lx.cfdi.v33.CMoneda
 import lx.cfdi.v33.CTipoFactor
+import lx.cfdi.v33.*
 
 /**
  * TODO: Parametrizar el regimenFiscal de
@@ -41,7 +42,9 @@ class CfdiNotaDeCreditoBuilder33 {
         .buildImpuestos()
         .buildTotales()
         .buildCertificado()
-        .buildRelacionados()
+        //.buildRelacionados()
+        .buildRelacionados2()
+        // println CfdiUtils.serialize(comprobante)
         return comprobante
     }
     
@@ -190,6 +193,21 @@ class CfdiNotaDeCreditoBuilder33 {
         relacionado.UUID = cfdi.uuid
         relacionados.cfdiRelacionado.add(relacionado) // .add(relacionado)
 
+        comprobante.cfdiRelacionados = relacionados
+        return this
+    }
+
+    def buildRelacionados2(){
+        Comprobante.CfdiRelacionados relacionados = factory.createComprobanteCfdiRelacionados()
+        relacionados.tipoRelacion = '01'
+
+        def det = nota.partidas[0]
+        def rows = det.comentario.split(',')
+        rows.each {
+            Comprobante.CfdiRelacionados.CfdiRelacionado relacionado = factory.createComprobanteCfdiRelacionadosCfdiRelacionado()
+            relacionado.UUID = it
+            relacionados.cfdiRelacionado.add(relacionado) // .add(relacionado)
+        }
         comprobante.cfdiRelacionados = relacionados
         return this
     }
