@@ -269,7 +269,7 @@ class PolizaDeFacturacionService extends ProcesadorService{
             def serie = polizaDet.entidad == 'Venta' && polizaDet.asiento != 'NOTAS DE CARGO CXC'  ? 'FAC' : 'CAR'
             def row = polizaDet.origen
             
-
+            println "*******************"+ row
             def cfdi = Cfdi.where {serie == serie && origen == row && origen!='CANCELACION' }.find()
 
                

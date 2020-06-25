@@ -39,6 +39,8 @@ class CfdiService implements InitializingBean{
 		assert empresa,"Debe existir la empresa"
 
 		if(empresa.versionDeCfdi == '3.3'){
+
+			println "generar Cfdi 3.3"
     		return cfdiV33Service.generar(source)
     	}
 		

@@ -29,6 +29,8 @@ public class CfdiV33Service {
 	}
 
 	def generarFactura(Venta venta){
+
+		println "Generando Factura " +venta
 		
 		CfdiBuilder33  builder = new CfdiBuilder33()
 		CfdiSellador33 sellador = new CfdiSellador33()
@@ -40,6 +42,7 @@ public class CfdiV33Service {
 		comprobante.folio = cfdiFolio.next()
 		comprobante = sellador.sellar(comprobante, empresa)
 
+			println "Voy a generar el cfdi"
 		def cfdi = new Cfdi()
 		cfdi.tipo = serie
 		cfdi.tipoDeCfdi = 'I'
@@ -59,8 +62,10 @@ public class CfdiV33Service {
 		cfdi.impuesto = 0.0
 
 		cfdi.origen = venta.id
+		println "Voy a generar el xml del cfdi"
 		cfdi.xml = CfdiUtils.toXmlByteArray(comprobante)
 		cfdi.setXmlName("$cfdi.receptorRfc-${'CFDIV33'}-$cfdi.serie-$cfdi.folio"+".xml")
+		println "Voy a salvar el xml del cfdi " +cfdi
 		cfdi.save(failOnError:true)
 		cfdiFolio.save(flush:true)
 		return cfdi

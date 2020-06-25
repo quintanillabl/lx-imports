@@ -34,7 +34,11 @@ class CfdiBuilder33 {
     private BigDecimal subTotal = 0.0
     private BigDecimal totalImpuestosTrasladados
 
+
+
     def build(Venta venta, String serie = 'FAC'){
+
+         println "Construyendo venta"
         buildComprobante(venta, serie)
         .buildEmisor()
         .buildReceptor()

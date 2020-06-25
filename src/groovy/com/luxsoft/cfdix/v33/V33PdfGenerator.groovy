@@ -97,7 +97,7 @@ class V33PdfGenerator {
 		//params["EXPEDIDO_DIRECCION"] = comprobante.lugarExpedicion
 		params["LUGAR_EXPEDICION"] = comprobante.lugarExpedicion
 
-		def relacionados = comprobante.cfdiRelacionados.cfdiRelacionado.collect{it.UUID}.join(',')
+		def relacionados =comprobante.cfdiRelacionados ? comprobante.cfdiRelacionados.cfdiRelacionado.collect{it.UUID}.join(','): null
 		
 		// def relacionados = comprobante.cfdiRelacionados
 
