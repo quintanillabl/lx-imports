@@ -27,9 +27,6 @@ class ComprobanteFiscalService {
     def  consultaService
 
     def importar(def cfdiFile,def cxp){
-
-           
-
     	
     	File xmlFile = File.createTempFile(cfdiFile.getName(),".temp");
 

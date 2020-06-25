@@ -35,16 +35,16 @@ class ComprobanteFiscal {
     	serie nullable:true,maxSize:20
     	folio nullable:true,maxSize:50
     	cfdiFileName nullable:true,maxSize:200
-		cfdi maxSize:(1024 * 512)  // 50kb para almacenar el xml
-		acuse nullable:true,maxSize:(1024*256)
-		acuseEstado nullable:true,maxSize:100
-		acuseCodigoEstatus nullable:true,maxSize:100
-		versionCfdi nullable:true,maxSize:10
+		  cfdi maxSize:(1024 * 512)  // 50kb para almacenar el xml
+		  acuse nullable:true,maxSize:(1024*256)
+		  acuseEstado nullable:true,maxSize:100
+		  acuseCodigoEstatus nullable:true,maxSize:100
+		  versionCfdi nullable:true,maxSize:10
+      cxp nullable: true
     }
 
     static mapping ={
-		fecha type:'date'
-		
-	}
+		  fecha type:'date'
+	  }
     
 }

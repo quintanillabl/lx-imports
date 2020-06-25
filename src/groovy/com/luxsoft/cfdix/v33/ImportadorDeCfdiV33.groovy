@@ -18,6 +18,7 @@ import com.luxsoft.impapx.contabilidad.CuentaContable
 import com.luxsoft.impapx.cxp.ConceptoDeGasto
 import com.luxsoft.lx.utils.MonedaUtils
 
+import groovy.xml.*
 
 class ImportadorDeCfdiV33 {
 
@@ -64,8 +65,11 @@ class ImportadorDeCfdiV33 {
             println "El comprobante fiscal no existen procedo a crearlo"
         }
 
+        
+        def xmlBytes =  XmlUtil.serialize(comprobante).getBytes()
+
     	comprobanteFiscal=new ComprobanteFiscal(
-    		cfdi:cfdiFile.getBytes(),
+    		cfdi: xmlBytes,
     		cfdiFileName:cfdiFile.getOriginalFilename(),
     		uuid:uuid,
     		serie:serie,
