@@ -42,9 +42,10 @@ environments {
     development {
         dataSource {
             pooled = true
-            dbCreate=""
+            dbCreate="update"
+            //url = 'jdbc:mysql://10.10.1.228/impapx2?autoReconnect=true'
+            //url = 'jdbc:mysql://10.10.1.228/paperx2?autoReconnect=true'
             url = 'jdbc:mysql://localhost/paperx2?autoReconnect=true'
-           // url = 'jdbc:mysql://localhost/paperx2?autoReconnect=true'
             driverClassName = "com.mysql.jdbc.Driver"
             dialect = org.hibernate.dialect.MySQL5InnoDBDialect
             username = "root"
