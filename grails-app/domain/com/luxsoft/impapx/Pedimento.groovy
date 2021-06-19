@@ -29,6 +29,7 @@ class Pedimento {
 	BigDecimal impuestoTasa=16
 	BigDecimal impuesto=0
 	BigDecimal incrementables=0.0
+	BigDecimal decrementables=0.0
 	String comentario
 	Proveedor proveedor
 	com.luxsoft.impapx.CuentaPorPagar incrementable1
@@ -59,6 +60,7 @@ class Pedimento {
 		comentario(nullable:true,maxSize:250)
 		proveedor(nullable:true)
 		incrementable1(nullable:true)
+		decrementables(nullable:true)
 		referenciacg(nullable:true,maxSize:50)
 		agenteAduanal(nullable:true)
 		paisDeOrigen(nullable:true)
@@ -88,7 +90,7 @@ class Pedimento {
 	}
 	
 	BigDecimal getIvaAcreditable(){
-		def iva=dta+arancel+incrementables
+		def iva=dta+arancel+incrementables-decrementables
 		iva=iva*(this.impuestoTasa/100)
 		return Rounding.round(iva+getImpuestoMateriaPrima(),0) 
 	}
@@ -117,6 +119,9 @@ class Pedimento {
 		}
 		def ivaIncrementables = pedimento.incrementables * factorIva
 
+		def ivaDecrementables = pedimento.decrementables * factorIva
+
+
 		def ivaPrevalidacion = pedimento.prevalidacion * factorIva
 
 		def ivaDta = pedimento.dta*factorIva
@@ -125,7 +130,7 @@ class Pedimento {
 
 		def ivaContraPrestacion = pedimento.contraPrestacion*factorIva
 
-		def iva1 = ivaMateriaPrima + ivaIncrementables + ivaDta + ivaArancel
+		def iva1 = ivaMateriaPrima + ivaIncrementables + ivaDta + ivaArancel - ivaDecrementables
 		def totalCP = MonedaUtils.round(ivaPrevalidacion + ivaContraPrestacion + pedimento.contraPrestacion,0)
 
 		this.impuesto = iva1 + pedimento.dta + pedimento.arancel + pedimento.prevalidacion + totalCP

@@ -13,6 +13,13 @@ import com.luxsoft.nomina.NominaAsimilado
 import com.luxsoft.impapx.cxc.CXCNota
 import com.luxsoft.cfdi.CfdiFolio
 
+import javax.xml.XMLConstants
+import javax.xml.bind.JAXBContext
+import javax.xml.bind.Marshaller
+
+import javax.xml.validation.Schema
+import javax.xml.validation.SchemaFactory
+
 @Transactional
 public class CfdiV33Service {
 
@@ -62,10 +69,9 @@ public class CfdiV33Service {
 		cfdi.impuesto = 0.0
 
 		cfdi.origen = venta.id
-		println "Voy a generar el xml del cfdi"
-		cfdi.xml = CfdiUtils.toXmlByteArray(comprobante)
+		println "CARGANDO BYTEARRAY EN cfdi.xml"
+		cfdi.xml = toXmlByteArray(comprobante)
 		cfdi.setXmlName("$cfdi.receptorRfc-${'CFDIV33'}-$cfdi.serie-$cfdi.folio"+".xml")
-		println "Voy a salvar el xml del cfdi " +cfdi
 		cfdi.save(failOnError:true)
 		cfdiFolio.save(flush:true)
 		return cfdi
@@ -105,7 +111,8 @@ public class CfdiV33Service {
 		cfdi.impuesto = 0.0
 
 		cfdi.origen = nota.id
-		cfdi.xml = CfdiUtils.toXmlByteArray(comprobante)
+		// cfdi.xml = CfdiUtils.toXmlByteArray(comprobante)
+		cfdi.xml = toXmlByteArray(comprobante)
 		cfdi.setXmlName("$cfdi.receptorRfc-${'CFDIV33'}-$cfdi.serie-$cfdi.folio"+".xml")
 		cfdi.save(failOnError:true)
 		cfdiFolio.save(flush:true)
@@ -160,5 +167,17 @@ public class CfdiV33Service {
 	def toXml(Comprobante comprobante){
 		return CfdiUtils.serialize(comprobante)
 	}
+
+	def toXmlByteArray(Comprobante comprobante){
+        JAXBContext context = JAXBContext.newInstance(Comprobante.class)
+        Marshaller marshaller = context.createMarshaller()
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
+        String xsiSchemaLocation = "http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd"
+        marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, xsiSchemaLocation)
+    
+        ByteArrayOutputStream os = new ByteArrayOutputStream()
+        marshaller.marshal(comprobante, os)
+        return os.toByteArray()
+    }
 
 }

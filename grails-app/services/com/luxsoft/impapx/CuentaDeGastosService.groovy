@@ -20,11 +20,17 @@ class CuentaDeGastosService {
 			
 			def importe=0.0
 			def incrementable=0.0
+			def decrementable=0.0
 			cuenta.facturas.each{
-				if(it.incrementable)
+				if(it.incrementable){
 					incrementable+=it.importe
-				else
+				}else if(it.decrementable){
+					decrementable+=it.importe
+				}else{
 					importe+=it.importe*it.tc
+				}
+					
+					
 			}
 			
 			def kilosTotales=embarque.partidas.sum {it.kilosNetos}
@@ -35,7 +41,9 @@ class CuentaDeGastosService {
 
 			embarque.partidas.each {
 				def res=it.kilosNetos*incrementable/kilosTotales
+				def dec=it.kilosNetos*incrementable/kilosTotales
 				it.incrementablesUsd=res
+				it.decrementablesUsd=res
 			}
 			embarque.save flush:true
 		}
@@ -87,16 +95,20 @@ class CuentaDeGastosService {
 		def gastos=0.0
 
 		def incrementable=0.0
+		def decrementable=0.0
 
 		cuenta.facturas.each{
 		    if(it.incrementable){
 		        //println 'INCREMENTABLE Fac: '+it.id + ' Importe: '+it.importe+ ' T.C:'+it.tc
 				incrementable+=it.importe*it.tc
-		    }
-		    else{
+		    }else if(it.decrementable){
+		        //println 'DECREMENTABLE Fac: '+it.id + ' Importe: '+it.importe+ ' T.C:'+it.tc
+				decrementable+=it.importe*it.tc
+		    }else{
 		        //println 'GASTO Fac: '+it.id + ' Importe: '+it.importe+ ' T.C:'+it.tc
 		        gastos+=it.importe*it.tc
 		    }
+
 		}
 
 		def kilosTotales=embarque.partidas.sum {it.kilosNetos}
@@ -111,10 +123,14 @@ class CuentaDeGastosService {
 		embarque.partidas.each {
 			
 			def res=it.kilosNetos*incrementable/kilosTotales
+
+			def dec=it.kilosNetos*decrementable/kilosTotales
+			
 			
 			//it.incrementablesUsd=res
 
 			it.incrementables = res
+			it.decrementables =dec
 			
 			/*
 			if(it.pedimento){

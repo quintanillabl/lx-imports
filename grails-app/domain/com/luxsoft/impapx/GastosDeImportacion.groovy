@@ -12,8 +12,11 @@ class GastosDeImportacion extends CuentaPorPagar{
 	
 	
 	boolean incrementable=false
+	boolean decrementable=false
+
 	
     static constraints = {
 		incrementable(nullable:true)
+		decrementable(nullable:true)
     }
 }

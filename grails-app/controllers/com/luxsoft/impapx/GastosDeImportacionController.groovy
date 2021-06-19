@@ -20,10 +20,14 @@ class GastosDeImportacionController {
 
     def index(Integer max) {
         def periodo=session.periodo
+        
         def list=GastosDeImportacion.findAll(
             "from GastosDeImportacion c  where date(c.fecha) between ? and ? order by c.fecha desc",
             [periodo.fechaInicial,periodo.fechaFinal])
+        
+            
         [gastosDeImportacionInstanceList:list]
+        
     }
 
     def show(GastosDeImportacion gastosDeImportacionInstance) {

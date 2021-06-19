@@ -52,6 +52,7 @@
 				
 				<f:display property="impuestoMateriaPrima" widget="money" wrapper="bootstrap3"/>
 				<f:field property="incrementables" widget-class="form-control numeric" widget-type="text" wrapper="bootstrap3"/>
+				<f:field property="decrementables" widget-class="form-control numeric" widget-type="text" wrapper="bootstrap3"/>
 				<f:field property="contraPrestacion" widget-class="form-control numeric" widget-type="text" wrapper="bootstrap3"/>
 				<f:display property="ivaAcreditable" widget="money" wrapper="bootstrap3"/>
 				<f:field property="prevalidacion" widget-class="form-control" widget-type="text" wrapper="bootstrap3"/>

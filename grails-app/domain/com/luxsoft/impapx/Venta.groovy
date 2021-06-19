@@ -45,6 +45,8 @@ class Venta {
 	String usoCfdi = 'G01'
 	
 	List conceptos
+
+	BigDecimal tasaCetes= 0
 	
 	static hasMany = [partidas:VentaDet, conceptos: CargoDet]
 
@@ -70,6 +72,7 @@ class Venta {
 		tipo(inList:['VENTA','NOTA_DE_CARGO'])
 		clase(nullable:true,maxSize:40)
 		usoCfdi nullable: true, maxSize:3
+		tasaCetes(nullable:false,scale:4)
     }
 	
 	static mapping = {

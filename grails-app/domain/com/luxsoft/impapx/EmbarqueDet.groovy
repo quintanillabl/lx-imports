@@ -30,6 +30,8 @@ class EmbarqueDet {
 	BigDecimal gastosPorPedimento=0 //(kilosNetos*valorPedimentoAsignado)/
 	BigDecimal incrementablesUsd=0.0
 	BigDecimal incrementables=0
+	BigDecimal decrementablesUsd=0.0
+	BigDecimal decrementables=0
 	BigDecimal costoNeto=0  //costoBruto+gosto
 	BigDecimal costoUnitarioNeto=0
 	BigDecimal precioDeVenta=0
@@ -59,8 +61,11 @@ class EmbarqueDet {
 		pedimento(nullable:true)
 		cantidad(scale:3)
 		incrementables(nullable:true,scale:2)
+		decrementables(nullable:true,scale:2)
 		gramos(nullable:true)
 		incrementablesUsd(nullable:false)
+		decrementablesUsd(nullable:false)
+
     }
 	
 	static mapping={

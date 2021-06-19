@@ -139,7 +139,8 @@ class ComprobanteFiscalService {
                     println "El impouest es iva"
                     def tasa=t.attributes()['tasa'] as BigDecimal
                     cxp.impuestos=t.attributes()['importe'] as BigDecimal
-                    cxp.tasaDeImpuesto=tasa
+                    /* Cambio para que tassa de impuesto sea 16*/
+                    cxp.tasaDeImpuesto=tasa * 100 
                 }
             }
         }
@@ -283,7 +284,8 @@ class ComprobanteFiscalService {
                     valorUnitario:model['valorUnitario'],
                     importe:model['importe']
                 )
-                det.impuestoTasa=cxp.tasaDeImpuesto
+                
+                det.impuestoTasa=cxp.tasaDeImpuesto 
                 det.impuesto=MonedaUtils.calcularImpuesto(det.importe,det.impuestoTasa/100)
                 det.total=det.importe+det.impuesto
                 if(!cxp.conceptos){

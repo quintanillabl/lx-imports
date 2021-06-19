@@ -203,7 +203,7 @@ class NotaDeCargoController {
             }
             def mismoMes = isSameMonth(corte, vto)
             def diasPena = mismoMes ? atraso : ((corte.finDeMes() - corte.inicioDeMes() + 1))   
-            def tasaCetes = 0.0538
+            def tasaCetes = notaDeCargo.tasaCetes
             
             
             def penaPorDia = ( (tasaCetes + 0.05) / 360 ) * saldo

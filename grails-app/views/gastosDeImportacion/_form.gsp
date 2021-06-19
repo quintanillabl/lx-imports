@@ -13,6 +13,7 @@
 			<f:field property="tc" input-class="numeric"/>								
 			<f:field property="importe" input-class="numeric" input-required="true"/>
 			<f:field property="incrementable"  />
+			<f:field property="decrementable"  />
 			<f:field property="tasaDeImpuesto" input-class="numeric"/>
 			<f:field property="impuestos" input-class="numeric" />
 			<f:field property="retTasa" input-id="retTasa" input-class="numeric" />

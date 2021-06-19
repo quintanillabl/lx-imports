@@ -13,6 +13,7 @@
 				<th>TC</th>
 				<th>Importe MN</th>
 				<th>Incrementables</th>
+				<th>Decrementables</th>
 				<th>Gastos</th>
 				<th>Pedimento</th>
 				<th>C. de imp(%)</th>
@@ -44,6 +45,7 @@
 					<td>${fieldValue(bean:row,field:"tc") }</td>
 					<td><lx:moneyFormat number="${row.costoBruto }"/></td>
 					<td><lx:moneyFormat number="${row.incrementables}"/></td>
+					<td><lx:moneyFormat number="${row.decrementables}"/></td>
 					<td><lx:moneyFormat number="${row.gastosHonorarios}"/></td>
 					<td name="gastosPorPedimento">
 						<g:if test="${row.pedimento}">
@@ -78,6 +80,9 @@
 				</th>
 				<th id="totalIncrementables">
 					<lx:moneyFormat number="${embarqueInstance?.getTotal('incrementables')}"/>
+				</th>
+				<th id="totalDecrementables">
+					<lx:moneyFormat number="${embarqueInstance?.getTotal('decrementables')}"/>
 				</th>
 				<th id="totalGasto">
 					<lx:moneyFormat number="${embarqueInstance?.getTotal('gastosHonorarios')}"/>

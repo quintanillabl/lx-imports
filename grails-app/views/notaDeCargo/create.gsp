@@ -21,6 +21,7 @@
 		<f:field property="cliente" wrapper="bootstrap3"/>
 		<f:field property="fecha" wrapper="bootstrap3"/>
 		<f:field property="moneda" wrapper="bootstrap3"/>
+		<f:field property="tasaCetes" wrapper="bootstrap3"/>
 		<f:field property="tc" widget="tc" widget-disabled="true" wrapper="bootstrap3"/>
 		<f:field property="formaDePago" wrapper="bootstrap3">
 			<g:select class="form-control chosen-select"  

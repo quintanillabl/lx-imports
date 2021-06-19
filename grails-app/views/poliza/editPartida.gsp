@@ -13,7 +13,7 @@
 
 <div class="row wrapper border-bottom white-bg page-heading">
     <div class="col-lg-10">
-        <h2>Partida de póliza   {poliza} </h2>
+        <h2>Partida de póliza   </h2>
 
         <ol class="breadcrumb">
             <li><g:link action="index">${entityName}(s)</g:link></li>

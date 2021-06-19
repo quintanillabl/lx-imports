@@ -27,6 +27,7 @@ class PolizaDeDescuentosSobreComprasService extends ProcesadorService{
     	def notas=NotaDeCredito.findAll ("from NotaDeCredito a where date(a.fecha)=?",[dia])
     	notas.each{nota ->
     		
+
     		
     		def importe=nota.total*nota.tc
     		def clave="702-$nota.proveedor.subCuentaOperativa"
@@ -42,20 +43,29 @@ class PolizaDeDescuentosSobreComprasService extends ProcesadorService{
     			,entidad:'NotaDeCredito'
     			,origen:nota.id)
     		
-    		clave="201-$nota.proveedor.subCuentaOperativa"
-    		poliza.addToPartidas(
-    			cuenta:CuentaContable.buscarPorClave(clave),
-    			debe:importe,
-    			haber:0.0,
-    			asiento:asiento,
-    			descripcion:"NC: $nota.documento $nota.concepto  $nota.total * $nota.tc",
-    			referencia:"$nota.documento",
-    			,fecha:poliza.fecha
-    			,tipo:poliza.tipo
-    			,entidad:'NotaDeCredito'
-    			,origen:nota.id)
+    		nota.aplicaciones.each{aplicacion ->
+
+                println "******* ${aplicacion.id}"
+
+                clave="201-$nota.proveedor.subCuentaOperativa"
+                poliza.addToPartidas(
+                    cuenta:CuentaContable.buscarPorClave(clave),
+                    debe:aplicacion.total * nota.tc,
+                    haber:0.0,
+                    asiento:asiento,
+                    descripcion:"NC: $nota.documento $nota.concepto  $nota.total * $nota.tc FAC: $aplicacion.factura.documento FECHA:  $aplicacion.factura.fecha",
+                    referencia:"$aplicacion.factura.documento",
+                    ,fecha:poliza.fecha
+                    ,tipo:poliza.tipo
+                    ,entidad:'NotaDeCredito'
+                    ,origen:nota.id)
+            }
     		
     	}
+
+
+
+
     }
 
     def procesarComplementos(def poliza){

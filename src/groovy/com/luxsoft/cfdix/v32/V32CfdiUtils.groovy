@@ -27,7 +27,7 @@ class V32CfdiUtils {
 		usos.add([clave:'G01', descripcion: 'Adquisición de mercancias (G01)'])
 		usos.add([clave:'G02', descripcion: 'Devoluciones, descuentos o bonificaciones (G02)'])
 		usos.add([clave:'G03', descripcion: 'Gastos en general (G03)'])
-		
+		usos.add([clave:'I08', descripcion: 'Otra Maquina y Equipo (I08)'])
 		
 		return usos
 	}

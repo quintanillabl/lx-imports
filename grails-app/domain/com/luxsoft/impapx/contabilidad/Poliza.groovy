@@ -45,6 +45,8 @@ class Poliza {
 	Date dateCreated
 
 	Date lastUpdated
+
+	String origen
 	
 	static hasMany = [partidas:PolizaDet]
 
@@ -60,6 +62,7 @@ class Poliza {
 		debe(nullable:false,scale:6)
 		haber(nullable:false,scale:6)
 		cierre nullable:true
+		origen nullable:true
     }
 	
 	

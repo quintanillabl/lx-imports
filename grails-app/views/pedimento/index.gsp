@@ -27,7 +27,8 @@
 				<th>T.C.</th>
 				<th>Impuesto</th>
 				<td>Incrementables</td>
-
+				<td>Decrementables</td>
+			
 			</tr>
 		</thead>
 		<tbody>
@@ -61,6 +62,9 @@
 					</td>
 					<td>
 						<lx:moneyFormat number="${pedimentoInstance.incrementables}"/>
+					</td>
+					<td>
+						<lx:moneyFormat number="${pedimentoInstance.decrementables}"/>
 					</td>
 
 				</tr>

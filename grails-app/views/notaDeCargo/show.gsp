@@ -102,6 +102,12 @@
 							<dd><g:fieldValue bean="${ventaInstance}" field="tc"/></dd>
 						
 					</g:if>
+					<g:if test="${ventaInstance?.tasaCetes}">
+						<dt><g:message code="venta.tasaCetes.label" default="Tasa Cetes" /></dt>
+						
+							<dd><g:fieldValue bean="${ventaInstance}" field="tasaCetes"/></dd>
+						
+					</g:if>
 				
 					<g:if test="${ventaInstance?.plazo}">
 						<dt><g:message code="venta.plazo.label" default="Plazo" /></dt>

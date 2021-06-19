@@ -12,6 +12,7 @@
 				<f:display property="clase" wrapper="bootstrap3" widget-class="form-control"/>
 				<f:display property="moneda" wrapper="bootstrap3"/>
 				<f:display property="tc" widget="tc" widget-disabled="true" wrapper="bootstrap3"/>
+				<f:display property="tasaCetes" wrapper="bootstrap3"/>
 
 				<g:if test="${ventaInstance.cfdi}">
 					<f:display property="fecha" wrapper="bootstrap3"/>

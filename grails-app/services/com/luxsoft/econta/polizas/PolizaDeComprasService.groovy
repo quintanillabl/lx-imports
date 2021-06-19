@@ -15,6 +15,7 @@ import grails.transaction.Transactional
 import com.luxsoft.lx.utils.MonedaUtils
 import util.Rounding
 import org.apache.commons.lang.StringUtils
+import com.luxsoft.utils.Periodo
 
 @Transactional
 class PolizaDeComprasService extends ProcesadorService{
@@ -367,7 +368,8 @@ class PolizaDeComprasService extends ProcesadorService{
             
             
             
-            clave="107-"+pedimento.proveedor.subCuentaOperativa
+            //clave="107-"+pedimento.proveedor.subCuentaOperativa
+            clave="107-S008"
 
             cuenta=CuentaContable.findByClave(clave)
             if(cuenta==null){
@@ -426,86 +428,91 @@ class PolizaDeComprasService extends ProcesadorService{
             
             def facturas = cg.facturas.findAll({!it.incrementable})
             facturas.each { fac ->
-                assert fac.proveedor.subCuentaOperativa,' No se ha registrado la sub cuenta operativa para el proveedor: '+fac.proveedor
-                def cuentaProveedor = CuentaContable.buscarPorClave("504-$fac.proveedor.subCuentaOperativa")
-                def importe=fac.importe
-                def desc = "Fac:$fac.documento ${fac.fecha.text()} $fac.proveedor.nombre  "
-                
-                //1.Cargo a cuenta de gastos
-                poliza.addToPartidas(
-                    cuenta:cuentaProveedor,
-                    debe:importe,
-                    haber:0.0,
-                    asiento:asiento,
-                    descripcion:desc,
-                    referencia:"$cg.referencia",
-                    fecha:poliza.fecha,
-                    tipo:poliza.tipo,
-                    entidad:fac.class.getSimpleName(),
-                    origen:fac.id)
-
-                ///********* Cargo al costo (501-0020) con abono a gastos de importacion (504) **********/
-                poliza.addToPartidas(
-                    cuenta:CuentaContable.buscarPorClave('501-0020'),
-                    debe:importe,
-                    haber:0.0,
-                    asiento:asiento,
-                    descripcion:" COSTOS: "+desc,
-                    referencia:"$cg.referencia",
-                    fecha:poliza.fecha,
-                    tipo:poliza.tipo,
-                    entidad:fac.class.getSimpleName(),
-                    origen:fac.id)
-
-                poliza.addToPartidas(
-                    cuenta: cuentaProveedor,
-                    debe: 0.0,
-                    haber:importe,
-                    asiento:asiento,
-                    descripcion:" GASTO: "+desc,
-                    referencia:"$cg.referencia",
-                    fecha:poliza.fecha,
-                    tipo:poliza.tipo,
-                    entidad:fac.class.getSimpleName(),
-                    origen:fac.id)
-                /*****************************************************************************************/
-
-                //2 Cargo a IVA al 11 de cuenta de gastos
-                if(fac.tasaDeImpuesto==11.0){
-                    def impuesto11=fac.impuestos*fac.tc
-                    impuesto11=Rounding.round(impuesto11, 2)
+                    if(Periodo.obtenerMes(fac.fecha) == Periodo.obtenerMes(poliza.fecha) ){
+                    assert fac.proveedor.subCuentaOperativa,' No se ha registrado la sub cuenta operativa para el proveedor: '+fac.proveedor
+                    def cuentaProveedor = CuentaContable.buscarPorClave("504-$fac.proveedor.subCuentaOperativa")
+                    def importe=fac.importe
+                    def desc = "Fac:$fac.documento ${fac.fecha.text()} $fac.proveedor.nombre  "
+                    
+                    //1.Cargo a cuenta de gastos
                     poliza.addToPartidas(
-                        cuenta:CuentaContable.buscarPorClave("118-0002"),
-                        debe:impuesto11,
+                        cuenta:cuentaProveedor,
+                        debe:importe,
                         haber:0.0,
                         asiento:asiento,
                         descripcion:desc,
                         referencia:"$cg.referencia",
-                        ,fecha:poliza.fecha
-                        ,tipo:poliza.tipo
-                        ,entidad:fac.class.getSimpleName()
-                        ,origen:fac.id)
-                }
-                //2 Cargo a IVA al 16 de cuenta de gastos
-                if(fac.tasaDeImpuesto==16.0){
-                    def impuesto16=fac.impuestos*fac.tc
-                    impuesto16=Rounding.round(impuesto16, 2)
+                        fecha:poliza.fecha,
+                        tipo:poliza.tipo,
+                        entidad:fac.class.getSimpleName(),
+                        origen:fac.id)
+
+                    ///********* Cargo al costo (501-0020) con abono a gastos de importacion (504) **********/
                     poliza.addToPartidas(
-                        cuenta:CuentaContable.buscarPorClave("118-0001"),
-                        debe:impuesto16,
+                        cuenta:CuentaContable.buscarPorClave('501-0020'),
+                        debe:importe,
                         haber:0.0,
                         asiento:asiento,
-                        descripcion:desc,
+                        descripcion:" COSTOS: "+desc,
                         referencia:"$cg.referencia",
-                        ,fecha:poliza.fecha
-                        ,tipo:poliza.tipo
-                        ,entidad:fac.class.getSimpleName()
-                        ,origen:fac.id)
+                        fecha:poliza.fecha,
+                        tipo:poliza.tipo,
+                        entidad:fac.class.getSimpleName(),
+                        origen:fac.id)
+
+                    poliza.addToPartidas(
+                        cuenta: cuentaProveedor,
+                        debe: 0.0,
+                        haber:importe,
+                        asiento:asiento,
+                        descripcion:" GASTO: "+desc,
+                        referencia:"$cg.referencia",
+                        fecha:poliza.fecha,
+                        tipo:poliza.tipo,
+                        entidad:fac.class.getSimpleName(),
+                        origen:fac.id)
+                    /*****************************************************************************************/
+
+                    //2 Cargo a IVA al 11 de cuenta de gastos
+                    if(fac.tasaDeImpuesto==11.0){
+                        def impuesto11=fac.impuestos*fac.tc
+                        impuesto11=Rounding.round(impuesto11, 2)
+                        poliza.addToPartidas(
+                            cuenta:CuentaContable.buscarPorClave("118-0002"),
+                            debe:impuesto11,
+                            haber:0.0,
+                            asiento:asiento,
+                            descripcion:desc,
+                            referencia:"$cg.referencia",
+                            ,fecha:poliza.fecha
+                            ,tipo:poliza.tipo
+                            ,entidad:fac.class.getSimpleName()
+                            ,origen:fac.id)
+                    }
+                    //2 Cargo a IVA al 16 de cuenta de gastos
+                    if(fac.tasaDeImpuesto==16.0){
+                        def impuesto16=fac.impuestos*fac.tc
+                        impuesto16=Rounding.round(impuesto16, 2)
+                        poliza.addToPartidas(
+                            cuenta:CuentaContable.buscarPorClave("118-0001"),
+                            debe:impuesto16,
+                            haber:0.0,
+                            asiento:asiento,
+                            descripcion:desc,
+                            referencia:"$cg.referencia",
+                            ,fecha:poliza.fecha
+                            ,tipo:poliza.tipo
+                            ,entidad:fac.class.getSimpleName()
+                            ,origen:fac.id)
+                    }
+
                 }
+
             }
 
             //3 Abono a Deudores
             assert cg.proveedor.subCuentaOperativa,' No existe la cuenta operativa para el proveedor: '+cg.proveedor.subCuentaOperativa
+
             poliza.addToPartidas(
                     cuenta:CuentaContable.buscarPorClave("107-$cg.proveedor.subCuentaOperativa"),
                     debe:0.0,

@@ -127,6 +127,7 @@
 							<f:field property="tc" widget-class="form-control" wrapper="bootstrap3"/>
 							<f:field property="documento" widget-class="form-control" wrapper="bootstrap3"/>
 							<f:field property="incrementable"  widget-class="form-control" wrapper="bootstrap3"/>
+							<f:field property="decrementable"  widget-class="form-control" wrapper="bootstrap3"/>
 							<f:field property="comentario" widget-class="form-control" wrapper="bootstrap3"/>
 						</div>
 						<div class="col-md-6">

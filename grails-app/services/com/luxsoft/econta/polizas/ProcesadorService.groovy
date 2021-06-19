@@ -41,6 +41,7 @@ class ProcesadorService {
         procesar(poliza)
         cuadrar(poliza)
         depurar(poliza)
+
     	save poliza
     }
 
@@ -52,6 +53,7 @@ class ProcesadorService {
         if(!poliza.folio || poliza.folio==0){
             poliza.folio=nextFolio(poliza)
         }
+        poliza.actualizar()
         poliza.save(failOnError:true,flush:true)
         return poliza
     }

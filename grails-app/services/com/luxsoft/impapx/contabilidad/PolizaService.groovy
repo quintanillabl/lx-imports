@@ -22,6 +22,7 @@ class PolizaService implements ApplicationListener<PolizaUpdateEvent>{
 			}else{
 				poliza.folio=nextFolio(poliza)
 			}
+			poliza.actualizar()
 			poliza.cuadrar()
 			poliza.save(failOnError:true)
 			return poliza
@@ -47,7 +48,7 @@ class PolizaService implements ApplicationListener<PolizaUpdateEvent>{
 			found=Poliza.findByTipoAndDescripcionAndFecha(poliza.tipo,poliza.descripcion,poliza.fecha)
 		}
 
-		
+		poliza.actualizar()
 		poliza.folio=nextFolio(poliza)
 		poliza.cuadrar()
 		poliza.save(failOnError:true)
@@ -130,6 +131,7 @@ class PolizaService implements ApplicationListener<PolizaUpdateEvent>{
 	public void onApplicationEvent(PolizaUpdateEvent event) {
 		//println "Evento en poliza: calculando saldos de cuentas contables para la poliza: "+event.source
 		actualizarSaldos(event.source)
+		event.source.actualizar()
 	}
 	
 	def actualizarSaldos(def poliza){

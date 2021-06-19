@@ -111,6 +111,7 @@ class PolizaController {
     }
 
     def recalcular(Poliza polizaInstance){
+
     	if (polizaInstance == null) {
     	    notFound()
     	    return
@@ -120,24 +121,50 @@ class PolizaController {
     		subTipo == polizaInstance.subTipo
     	}
     	if(procesador){
+    		if(polizaInstance.subTipo != 'PAGO'){
+    			def service = grailsApplication.mainContext.getBean(procesador.service)
+	    		if(!service){
+	    			flash.message = "Procesador ${procesador} no registrado en Spring context"
+	    			redirect action:'index',params:[subTipo:polizaInstance.subTipo]
+	    			return
+	    		}
+	    		
+	    		def res = service.generar(polizaInstance.fecha,procesador)
+	    		println "REcalculando la poliza ${polizaInstance.folio}"
+	    		println "Subtipo ${ polizaInstance.subTipo}"
+	    		println "Service  ${procesador.service}"
+	    		if(res.instanceOf(Poliza)){
+	    			flash.message = "Poliza ${res.subTipo} - ${res.folio} re procesada"
+	    			redirect action:'edit',id:polizaInstance.id
+	    			return
+	    		}else{
+	    			redirect action:'index',params:[subTipo:command.subTipo]
+	    			return
 
-    		def service = grailsApplication.mainContext.getBean(procesador.service)
-    		if(!service){
-    			flash.message = "Procesador ${procesador} no registrado en Spring context"
-    			redirect action:'index',params:[subTipo:polizaInstance.subTipo]
-    			return
-    		}
-    		
-    		def res = service.generar(polizaInstance.fecha,procesador)
-    		if(res.instanceOf(Poliza)){
-    			flash.message = "Poliza ${res.subTipo} - ${res.folio} re procesada"
-    			redirect action:'edit',id:res.id
-    			return
+	    		}
+
     		}else{
-    			redirect action:'index',params:[subTipo:command.subTipo]
-    			return
+    			def service = grailsApplication.mainContext.getBean(procesador.service)
+    			if(!service){
+	    			flash.message = "Procesador ${procesador} no registrado en Spring context"
+	    			redirect action:'index',params:[subTipo:polizaInstance.subTipo]
+	    			return
+	    		}
+
+	    		def res = service.recalcular(polizaInstance)
+	    		if(res.instanceOf(Poliza)){
+	    			flash.message = "Poliza ${res.subTipo} - ${res.folio} re procesada"
+	    			redirect action:'edit',id:polizaInstance.id
+	    			return
+	    		}else{
+	    			redirect action:'index',params:[subTipo:command.subTipo]
+	    			return
+
+	    		}
+	    	
 
     		}
+		
 
     	}else{
     		flash.message="No existe procesador declarado para la poliza ${polizaInstance.id} "
@@ -161,6 +188,8 @@ class PolizaController {
     		return
     	}
     	polizaDetInstance = polizaDetInstance.save flush:true
+    	polizaDetInstance.poliza.actualizar()
+    	polizaDetInstance.poliza.save flush:true
     	redirect action:'edit',id:polizaDetInstance.poliza.id
     }
 	

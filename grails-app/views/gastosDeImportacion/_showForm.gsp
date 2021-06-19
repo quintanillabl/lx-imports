@@ -15,6 +15,7 @@
 			<f:display property="tc"/>								
 			<f:display property="importe"/>
 			<f:field property="incrementable" />
+			<f:field property="decrementable" />
 			<f:display property="tasaDeImpuesto"/>
 			<f:display property="impuestos"/>
 			<f:display property="retTasa"/>

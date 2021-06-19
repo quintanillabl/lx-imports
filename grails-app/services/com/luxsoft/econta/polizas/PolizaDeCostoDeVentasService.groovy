@@ -50,7 +50,7 @@ class PolizaDeCostoDeVentasService extends ProcesadorService {
     			debe:0.0,
     			haber:costoNeto,
     			asiento:asiento,
-    			descripcion:"Fecha:$fac.fechaFactura $fac.cliente.nombre Pedimento:$pedimento",
+    			descripcion:"Fecha:$fac.fechaFactura $fac.cliente.nombre Pedimento:$pedimento Folio: $fac.facturaFolio",
     			referencia:"$fac.factura"
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
@@ -63,7 +63,7 @@ class PolizaDeCostoDeVentasService extends ProcesadorService {
     			debe:costoNeto,
     			haber:0.0,
     			asiento:asiento,
-    			descripcion:"Fecha:$fac.fechaFactura $fac.cliente.nombre Pedimento:$pedimento",
+    			descripcion:"Fecha:$fac.fechaFactura $fac.cliente.nombre Pedimento:$pedimento  Folio: $fac.facturaFolio",
     			referencia:"$fac.factura"
     			,fecha:poliza.fecha
     			,tipo:poliza.tipo
